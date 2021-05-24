@@ -1,0 +1,27 @@
+{
+  "name": "@aurailus/as_common",
+  "version": "0.0.0",
+  "description": "Common definitions shared between the AuriServe core and frontend packages.",
+  "keywords": [
+    "auriserve",
+    "lib",
+    "types",
+    "definitions"
+  ],
+  "author": "Auri <me@auri.xyz>",
+  "homepage": "https://github.com/AuriServe",
+  "license": "AGPL-3.0-only",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AuriServe/AuriServe.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/AuriServe/AuriServe/issues"
+  }
+}

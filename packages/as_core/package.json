@@ -1,0 +1,26 @@
+{
+  "name": "@aurailus/as_core",
+  "version": "0.0.0",
+  "description": "Core Server for AuriServe",
+  "keywords": [
+    "auriserve",
+    "server",
+    "express"
+  ],
+  "author": "Auri <me@auri.xyz>",
+  "homepage": "https://github.com/AuriServe",
+  "license": "AGPL-3.0-only",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AuriServe/AuriServe.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/AuriServe/AuriServe/issues"
+  }
+}
