@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v2
     
     - name: Use Node ${{ matrix.node-version }}
@@ -20,26 +20,26 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
-    - name: Install npm dependencies
+    - name: Install and Link Dependencies
       run: lerna bootstrap
     
-    - name: Build application
-      run: lerna run build --stream
-    
-    - name: Upload Build Artifact
+    - name: Build Application
+      run: npm run build
+      
+    - name: Upload Linux Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: Linux
-        path: packages/as_core/dist/as_core-linux
+        path: packages/server/dist/server-linux
     
-    - name: Upload Build Artifact
+    - name: Upload MacOS Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: MacOS
-        path: packages/as_core/dist/as_core-macos
+        path: packages/server/dist/server-macos
     
-    - name: Upload Build Artifact
+    - name: Upload Windows Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: Windows
-        path: packages/as_core/dist/as_core-win.exe
+        path: packages/server/dist/server-win.exe
