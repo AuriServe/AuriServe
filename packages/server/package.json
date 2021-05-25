@@ -37,7 +37,6 @@
     "url": "https://github.com/AuriServe/AuriServe/issues"
   },
   "devDependencies": {
-    "frontend": "file:../frontend",
     "@types/bcryptjs": "^2.4.2",
     "@types/clean-css": "^4.2.3",
     "@types/compression": "^1.7.0",
@@ -55,15 +54,16 @@
     "@typescript-eslint/parser": "^4.8.2",
     "eslint": "^7.21.0",
     "eslint-plugin-jsdoc": "^32.2.0",
+    "frontend": "file:../frontend",
     "nodemon": "^2.0.6",
     "pkg": "^4.4.9",
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "common": "file:../common/dist",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "clean-css": "^5.1.0",
+    "common": "file:../common/dist",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "debounce": "^1.2.0",
