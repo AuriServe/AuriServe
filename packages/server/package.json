@@ -30,7 +30,7 @@
     "assets": [
       "src/views/*",
       "interface/res/**/*",
-      "interface/build/*"
+      "interface/dist/*"
     ]
   },
   "bugs": {
