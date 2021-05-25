@@ -1,12 +1,10 @@
 {
   "name": "root",
+  "description": "AuriServe root package. Use the scripts below to install, develop, and build AuriServe.",
   "private": true,
-  "devDependencies": {
-    "lerna": "^4.0.0"
-  },
   "scripts": {
-  	"bootstrap": "cd packages/common; npm install && cd dist; npm install && cd ../../../packages/frontend; npm install && cd ../../packages/server; npm install",
-  	"dev": "cd packages/common; npm run dev & cd ../../packages/frontend; npm run dev & cd ../../packages/server; npm run dev",
-  	"build": "cd packages/common && npm run build && cd ../../packages/frontend && npm run build && cd ../../packages/server && npm run build"
+  	"install": "cd modules; cd common; npm install && cd dist; npm install && cd ../../frontend; npm install && cd ../server; npm install",
+  	"dev": "cd modules; cd common; npm run dev & cd ../frontend; npm run dev & cd ../server; npm run dev",
+  	"build": "cd modules; cd common && npm run build && cd ../frontend && npm run build && cd ../server && npm run build"
   }
 }

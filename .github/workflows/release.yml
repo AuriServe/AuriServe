@@ -24,7 +24,7 @@ jobs:
       run: sudo npm install -g npm@latest
       
     - name: Install and Link Dependencies
-      run: npm run bootstrap
+      run: npm run install
     
     - name: Build Application
       run: npm run build
@@ -33,16 +33,16 @@ jobs:
       uses: actions/upload-artifact@v2.2.2
       with:
         name: Linux
-        path: packages/server/dist/server-linux
+        path: modules/server/dist/server-linux
     
     - name: Upload MacOS Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: MacOS
-        path: packages/server/dist/server-macos
+        path: modules/server/dist/server-macos
     
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: Windows
-        path: packages/server/dist/server-win.exe
+        path: modules/server/dist/server-win.exe
