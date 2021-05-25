@@ -1,5 +1,5 @@
 import path from 'path';
-import { sanitizeIdentifier } from 'auriserve-api';
+import { Format } from 'as_common';
 import { promises as fs, constants as fsc } from 'fs';
 
 import Logger from '../Logger';
@@ -161,7 +161,7 @@ export default class Themes {
 	private async validate(identifier: string): Promise<ThemeConfig> {
 
 		// Ensure that the theme is structured properly.
-		if (sanitizeIdentifier(identifier) !== identifier)
+		if (Format.sanitize(identifier) !== identifier)
 			throw 'Theme identifier must be lowercase alphanumeric.';
 		const dir = path.join(this.dataPath, 'themes', identifier);
 

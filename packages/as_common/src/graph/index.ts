@@ -13,6 +13,6 @@ export * as User from './User';
 
 export * as Query from './Query';
 export * as Schema from './Schema';
-export * as Interface from './Interface';
+export * as Interface from './interface';
 
 export { SCHEMA } from './Schema';

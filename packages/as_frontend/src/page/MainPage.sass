@@ -1,0 +1,130 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.MainPage
+	background-color: $c-neutral-050
+
+	.MainPage-Header
+		background-color: $c-neutral-000
+		padding: 80px 24px 112px 24px
+		text-align: center
+		border-bottom: 1px solid $c-neutral-100
+		// box-shadow: 0px 2px 8px 0px transparentize($c-neutral-950, 0.95)
+
+		h1, h2
+			margin: 0.5em 0
+		
+		h1 img
+			width: 1em
+			height: 1em
+			vertical-align: -10%
+			margin-right: 8px
+
+		h2
+			color: $c-neutral-500
+
+	.MainPage-Content
+		display: grid
+		grid-template-columns: clamp(300px, 30vw, 400px) 1fr
+		justify-content: center
+		grid-gap: 24px
+		margin: 0 auto
+		padding: 48px 16px
+		
+		width: 100%
+		max-width: $wrap-wide
+		height: auto
+
+		@media screen and (max-width: $m-wide)
+			grid-template-columns: 1fr
+
+			aside
+				display: grid
+				grid-gap: 24px
+				grid-template-columns: repeat(auto-fill, minmax(min(350px, 100%), 1fr))
+
+		@media screen and (max-width: $m-small)
+			aside
+				order: 1
+				grid-template-columns: 1fr
+
+		.MainPage-Card
+			@extend %card
+			margin-bottom: 24px
+
+		.MainPage-Update
+			text-align: center
+
+			.MainPage-UpdateImage
+				display: block
+				width: 40%
+				height: 0
+				position: relative
+				padding-bottom: 40%
+				margin: 32px auto 40px auto
+
+				text-align: left
+				user-select: none
+				border-radius: 50%
+				background: linear-gradient(45deg, $c-accent-700, $c-accent-300)
+
+				box-shadow: 0px 0px 0px 8px $c-accent-200, 0px 0px 0px 16px $c-accent-100
+
+				img
+					position: absolute
+					padding: 28px
+					width: 100%
+					height: auto
+
+			h3
+				font-size: 1.45em
+				margin-bottom: 0
+
+			h4
+				font-family: $f-main
+				font-weight: normal
+				margin-top: 16px
+				margin-bottom: 0
+				color: $c-neutral-700
+
+			ul
+				padding: 0
+				margin: 16px 0
+				line-height: 1.6
+				list-style-type: none
+				
+				li
+					color: $c-neutral-500
+					font-weight: normal
+
+			a
+				@extend %material_button
+				display: inline-block
+
+				padding: 12px 16px
+				font-weight: normal
+				margin: 12px 0 4px 0
+
+		.MainPage-Storage
+			.MainPage-StorageMeter
+				margin-top: 8px
+				margin-bottom: 16px
+
+			a
+				display: inline-block
+				margin-bottom: 4px
+
+				text-align: right
+				font-weight: normal
+				color: $c-neutral-800
+
+		.MainPage-Other
+
+			h3
+				margin: .25em 0
+				font-weight: bold
+
+			p
+				margin-top: 0
+				font-weight: 400
+				color: $c-neutral-600

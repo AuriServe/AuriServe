@@ -1,4 +1,4 @@
-import { Resource, Layout } from './Interface';
+import { Resource, Layout } from './interface';
 import { Layout as LayoutQuery } from './Query';
 
 export interface Interface extends Resource {

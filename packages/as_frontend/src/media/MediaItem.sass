@@ -1,0 +1,59 @@
+@use '../style/ext' as *
+@use '../style/def' as *
+
+.MediaItem
+	list-style-type: none
+	display: grid
+
+	.MediaItem-Select
+		@extend %material_button
+		background: transparent
+		border-color: $c-neutral-100
+		box-sizing: content-box
+		user-select: none
+		padding: 8px
+
+		$h: 80px
+		height: $h
+
+		display: grid
+		grid-gap: 16px
+		grid-template-columns: $h 1fr
+
+		transition: background-color $t-ufast
+
+		& > *
+			box-sizing: border-box
+
+		&.Selected
+			border-color: $c-accent-400
+			background-color: transparentize($c-accent-300, 0.7)
+
+			&:focus::after, &:hover::after
+				background-color: transparentize($c-accent-300, 0.8)
+
+			.MediaIcon.Icon
+				background-color: transparentize($c-accent-500, 0.7)
+
+		.MediaItem-Description
+			height: 100%
+			overflow: auto
+			text-align: left
+			padding-top: 8px
+
+			p
+				@include ellipsize
+
+				margin-top: 0em
+				margin-bottom: 0.3em
+
+			p.MediaItem-Title
+				font-size: 18px
+
+			p.MediaItem-Author
+				font-size: 14px
+				color: $c-neutral-700
+
+			p.MediaItem-Size
+				font-size: 14px
+				color: $c-neutral-500

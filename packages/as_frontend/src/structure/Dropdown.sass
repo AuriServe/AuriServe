@@ -1,0 +1,29 @@
+@use '../style/ext'
+
+.Dropdown
+
+	// & > *
+	// 	transform: translate(-100%, 0px) scale(0.95) !important
+	// 	opacity: 0 !important
+
+	// 	transition: opacity $t-ufast, transform $t-ufast !important
+
+	// &.Animate-enter-active, &.Animate-enter-done
+	// 	& > *
+	// 		opacity: 1 !important
+	// 		transform: translate(-100%, 12px) scale(1) !important
+
+	// &.Animate-enter-active:not(.Animate-enter-done), &.Animate-exit-active:not(.Animate-exit-done)
+	// 	& > *
+	// 		will-change: transform !important
+
+
+	.Dropdown-Card
+		@extend %card
+
+		z-index: 5
+		height: auto
+		position: fixed
+		padding: 12px
+
+		// background-color: $c-neutral-050

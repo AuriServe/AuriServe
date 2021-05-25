@@ -1,0 +1,54 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.PagesPage
+	.PagesPage-Toolbar
+		@extend %card_toolbar
+
+	.PagesPage-Pages
+		display: grid
+		grid-gap: 8px
+		grid-template-columns: repeat(auto-fit, minmax(#{"min(100%, 400px)"}, 1fr))
+
+		margin: 0
+		margin-top: 16px
+		padding: 0
+
+		li
+			list-style-type: none
+
+		.PagesPage-PageItem
+			@extend %material_button
+			display: block
+			width: 100%
+			text-align: left
+
+			background: transparent
+			border-color: $c-neutral-100
+			user-select: none
+			padding: 8px
+
+			p
+				margin-top: 0em
+				margin-bottom: 0.3em
+
+				overflow: hidden
+				white-space: nowrap
+				text-overflow: ellipsis
+
+			p.PagesPage-PageItemTitle
+				font-size: 18px
+
+			p.PagesPage-PageItemDescription
+				font-size: 14px
+				color: $c-neutral-700
+
+			p.PagesPage-PageItemPath
+				margin-bottom: 0
+				font-size: 14px
+				color: $c-neutral-500
+
+	.PagesPage-Notice
+		text-align: center
+		color: $c-neutral-500
+		margin: 32px 0px 48px 0px

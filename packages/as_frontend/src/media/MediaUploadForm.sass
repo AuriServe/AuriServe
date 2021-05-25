@@ -1,0 +1,61 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.MediaUploadForm
+	.MediaUploadForm-InputWrap
+		@extend %material_button
+		@extend %material_border
+		
+		margin: 16px 0px
+		position: relative
+		display: flex
+		width: 100%
+		height: 150px
+		align-items: center
+		text-align: center
+
+		background-color: $c-neutral-050
+		border-color: $c-neutral-200
+		
+		transition: height $t-med, margin-top $t-med, opacity $t-fast
+
+		&.disabled
+			height: 0
+			margin: 0
+			opacity: 0
+		
+		.MediaUploadForm-Input
+			position: absolute
+			width: 100%
+			height: 100%
+			opacity: 0
+			cursor: pointer
+		
+		h2
+			color: $c-neutral-500
+			user-select: none
+			display: block
+			width: 100%
+
+	.MediaUploadForm-Files
+		width: 600px
+		margin: 16px 0px
+		display: grid
+		grid-gap: 8px
+
+		&.Grid
+			width: 840px
+			grid-template-columns: 1fr 1fr
+
+	.MediaUploadForm-Toolbar
+		@extend %card_toolbar
+
+	.MediaUploadForm-ActionBar
+		margin: 32px 0px 8px 0px
+		display: flex
+		flex-direction: row
+		justify-content: space-between
+
+		.MediaUploadForm-ActionBar-Button
+			@extend %material_button
+			padding: 12px

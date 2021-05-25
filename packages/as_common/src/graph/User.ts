@@ -4,6 +4,7 @@ export interface Interface {
 	id: ID;
 	username: string;
 	emails: string[];
+	roles: ID[];
 }
 
 export const Schema = `
@@ -11,6 +12,7 @@ export const Schema = `
 		id: ID!
 		username: String!
 		emails: [String!]!
+		roles: [ID!]!
 	}
 `;
 
@@ -19,5 +21,6 @@ export const Query = `
 		id
 		username
 		emails
+		roles
 	}
 `;

@@ -16,7 +16,7 @@ export const Schema = `
 		user: ID
 		created: Date!
 
-		lastModified: Int
+		lastModified: Date
 		lastModifier: ID
 
 		name: String!

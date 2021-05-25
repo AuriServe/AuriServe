@@ -1,4 +1,4 @@
-import * as Int from './Interface';
+import * as Int from './interface';
 
 export interface Interface {
 	info: Int.Info,

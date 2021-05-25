@@ -1,6 +1,6 @@
 import path from 'path';
+import { Page } from 'as_common';
 import * as Preact from 'preact';
-import { Page } from 'auriserve-api';
 import escapeHtml from 'escape-html';
 import renderToString from 'preact-render-to-string';
 import fss, { promises as fs, constants as fsc } from 'fs';

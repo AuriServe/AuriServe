@@ -1,5 +1,5 @@
 import { ID, Color } from './Type';
-import { Resource, TrackModifications } from './Interface';
+import { Resource, TrackModifications } from './interface';
 
 export interface Interface extends Resource, TrackModifications {
 	name: string;
@@ -14,9 +14,9 @@ export const Schema = `
 		user: ID
 		created: Date!
 
-		lastModified: Int
-		lastModifier: User
-
+		lastModified: Date
+		lastModifier: ID
+		
 		name: String!
 		color: Color
 		abilities: [String!]!

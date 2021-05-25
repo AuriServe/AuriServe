@@ -1,0 +1,293 @@
+@use 'sass:math'
+@use 'def' as *
+
+%card
+	height: min-content
+	border-radius: 4px
+	padding: 16px 24px
+
+	background-color: $c-neutral-000
+	// box-shadow: 0px 2px 8px 0px transparentize($c-neutral-950, 0.9)
+	// box-shadow: 0px 2px 8px 0px transparentize($c-neutral-050, 0.6)
+	border: 1px solid $c-neutral-100
+
+%card_toolbar
+	display: flex
+	flex-direction: row
+	justify-content: space-between
+
+	button
+		@extend %material_icon_button
+
+	.separator
+		width: 24px
+		display: inline-block
+
+	div:first-of-type > *
+		margin-right: 8px
+
+	div:last-of-type:not(:first-of-type) > *
+		margin-left: 8px
+
+%center_wrap
+	display: flex
+	width: 100%
+	height: 100%
+	flex-direction: column
+	justify-content: center
+	align-items: center
+
+@mixin ellipsize($lines: 0)
+	overflow: hidden
+	text-overflow: ellipsis
+
+	@if $lines == 0
+		white-space: nowrap
+	@else
+		// Fallbacks for browsers not supporting line-clamp.
+		max-height: $lines * 1.4em
+		display: block
+
+		// Line-clamp settings.
+		line-clamp: $lines
+		display: -webkit-box
+		-webkit-line-clamp: $lines
+		-webkit-box-orient: vertical
+
+%para_no_collapse
+	// Use Japanese fullwidth spaces
+	// to prevent line collapsing.
+	&::before, &::after
+		content: "　"
+		width: 0
+		height: 0
+		display: inline-block
+
+%material_border
+	border-radius: 4px
+	border-width: 1px
+	border-style: solid
+	border-color: $c-neutral-400
+
+%material_input
+	@extend %material_border
+	border-color: $c-neutral-100
+	background-color: $c-neutral-050
+	font-weight: 400
+	line-height: 1.4em
+	outline: 0
+
+	&:-webkit-autofill::first-line
+		font-size: 16px
+		font-family: $f-main
+
+	&:hover
+		border-color: $c-neutral-200
+
+	&:focus, &:focus-within
+		border-color: $c-neutral-400
+
+	&::placeholder
+		font-weight: 400
+		color: $c-neutral-400
+
+%material_checkbox
+	$disabled-accent: $c-neutral-300
+	$disabled-accent-hover: $c-neutral-400
+	$disabled-background: $c-neutral-000
+
+	$enabled-accent: $c-accent-200
+	$enabled-accent-hover: $c-accent-000
+	$enabled-background: $c-accent-900
+
+	// Light mode
+	$enabled-accent: $c-accent-600
+	$enabled-background: $c-accent-100
+	$enabled-accent-hover: $c-accent-500
+
+	$width: 34px
+	$height: 22px
+	$notch-small: 12px
+	$notch-large: 16px
+	$notch-grow: 6px
+
+	width: 1px
+	height: 1px
+	position: relative
+	margin: math.div($height, 2) math.div($width, 2) math.div($height, 2) - 1 math.div($width, 2) - 1
+
+	cursor: pointer
+
+	&::before
+		content: ' '
+		position: absolute
+
+		top: - math.div($height, 2)
+		left: - math.div($width, 2 + 1)
+		width: $width
+		height: $height
+		border-radius: $height
+
+		box-sizing: border-box
+		border: 1px solid $disabled-accent
+		background-color: $disabled-background
+
+		transition: border $t-ufast
+
+	&:hover, &:focus
+		&::before
+			border-color: $disabled-accent-hover
+
+	// &:active
+	// 	&::after
+	// 		border-color: $disabled-accent
+
+	&:checked
+		&::before
+			border-color: $enabled-accent
+			background-color: $enabled-background
+
+		&:hover, &:focus
+			&::before
+				border-color: $enabled-accent-hover
+
+		// &:active
+		// 	&::after
+		// 		border-color: $enabled-accent
+
+	&::after
+		content: ' '
+		position: absolute
+
+		width: $notch-small
+		height: $notch-small
+
+		top: math.div((-$height + $notch-large - $notch-small), 2) + 3
+		left: math.div((-$width + $notch-large - $notch-small), 2) + 4
+
+		background-color: $disabled-accent
+		border-radius: math.div($notch-large, 2)
+
+		transition: width $t-fast, height $t-fast, top $t-fast, left $t-fast, background-color $t-fast
+
+	&:checked::after
+		width: $notch-large
+		height: $notch-large
+
+		top: math.div(-$height, 2) + 3
+		left: math.div(-$width, 2) + $width - $notch-large - 2
+
+	&:checked
+		&::after
+			background-color: $enabled-accent
+
+	&:hover, &:focus
+		&::after
+			background-color: $disabled-accent-hover
+		&:checked::after
+			background-color: $enabled-accent-hover
+
+	&:active
+		&::after
+			width: $notch-small + $notch-grow
+
+			// width: $notch-large + $notch-grow
+			// top: (-$height + ($notch-large - $notch-small) / 2) / 2 + 2
+			// height: $notch-small + ($notch-large - $notch-small) / 2
+		&:checked::after
+			// left: -$width / 2 + $width - $notch-large - 2 - $notch-grow
+			// width: $notch-large + $notch-grow
+
+			width: $notch-small + $notch-grow
+			height: $notch-small
+
+			top: math.div(-$height + $notch-large - $notch-small, 2) + 3
+			left: math.div(math.div(-$width, 2) + $width - $notch-small - 4 - $notch-grow, 2) - 3
+
+%material_label
+	display: block
+	padding: 16px 0 8px 0
+	user-select: none
+
+	font-weight: 500
+	font-size: 12px
+	color: $c-neutral-500
+	letter-spacing: 1px
+	text-transform: uppercase
+
+%material_button
+	position: relative
+	background-color: transparent
+	cursor: pointer
+	border: none
+	outline: 0
+
+	user-select: none
+	border-radius: 4px
+	text-decoration: none
+	border: 1px solid transparent
+	background: transparentize($c-neutral-300, 1 - .15)
+
+	$curve: cubic-bezier(0.1, 0.43, 0.43, 1.02)
+
+	&::after
+		content: " "
+		display: block
+		position: absolute
+		user-select: none
+		pointer-events: none
+
+		// Compensate for 1px border.
+		top: -1px
+		left: -1px
+		right: -1px
+		bottom: -1px
+
+		margin: 4px
+		transform: scale(0.87)
+
+		border-radius: inherit
+		background: transparentize($c-neutral-400, 1)
+
+		transition: background $t-med $curve, transform $t-slow $curve $t-ufast, margin $t-slow $curve
+
+	&:not(:disabled)
+		&:hover, &:focus
+			&::after
+				margin: 0px
+				transform: scale(1)
+				background: transparentize($c-neutral-400, 1 - .15)
+
+				transition: background $t-fast $curve, transform $t-fast $curve, margin $t-fast $curve
+
+		&:active
+			transition: border-color $t-fast
+
+		&:focus, &:focus-within
+			border-color: $c-neutral-400
+
+	&:disabled
+		cursor: auto
+		opacity: 0.65
+		color: $c-neutral-500
+
+%material_icon_button
+	@extend %material_button
+	display: inline-block
+
+	height: 48px
+
+	padding: 8px
+	border-radius: 24px
+
+	img
+		width: 30px
+		height: 30px
+		pointer-events: none
+		vertical-align: middle
+
+	span
+		color: $c-neutral-700
+		vertical-align: middle
+		padding-right: 8px
+		padding-left: 8px

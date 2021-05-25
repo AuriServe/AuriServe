@@ -1,0 +1,56 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.Modal
+	@extend %center_wrap
+
+	position: fixed
+	top: 0
+	left: 0
+	width: 100%
+	height: 100%
+
+	background-color: transparentize($c-neutral-200, 0.3)
+	// background-color: transparentize($c-neutral-050, 0.1)
+
+	&.Closes
+		cursor: pointer
+
+	.Modal-CardWrap
+		width: 100%
+		height: auto
+		display: flex
+		overflow: auto
+		padding: 64px 12px
+		justify-content: space-around
+
+		.Modal-Card
+			@extend %card
+
+			max-width: 100%
+
+			display: block
+			cursor: auto
+
+			height: min-content
+
+	&.DefaultAnim
+		opacity: 0
+		transition: opacity $t-fast
+
+		.Modal-CardWrap
+			transform: scale(0.95)
+			opacity: 0
+
+			transition: opacity $t-fast, transform $t-fast
+
+		&.Animate-enter-active, &.Animate-enter-done
+			opacity: 1
+			
+			.Modal-CardWrap
+				opacity: 1 !important
+				transform: scale(1) !important
+
+		&.Animate-enter-active:not(.Animate-enter-done), &.Animate-exit-active:not(.Animate-exit-done)
+			.Modal-CardWrap
+				will-change: transform !important

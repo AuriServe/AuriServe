@@ -1,5 +1,5 @@
 import path from 'path';
-import { sanitizeIdentifier } from 'auriserve-api';
+import { Format } from 'as_common';
 import { promises as fs, constants as fsc } from 'fs';
 
 import Logger from '../Logger';
@@ -155,7 +155,7 @@ export default class Plugins {
 	private async validate(identifier: string): Promise<PluginConfig> {
 
 		// Ensure that the plugin is structured properly.
-		if (sanitizeIdentifier(identifier) !== identifier)
+		if (Format.sanitize(identifier) !== identifier)
 			throw 'Plugin identifier must be lowercase alphanumeric.';
 		const dir = path.join(this.dataPath, 'plugins', identifier);
 		

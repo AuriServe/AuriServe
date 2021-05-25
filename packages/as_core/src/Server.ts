@@ -8,7 +8,6 @@ import fileUpload from 'express-fileupload';
 
 import Mongoose from 'mongoose';
 import { promises as fs } from 'fs';
-import { resolvePath } from 'auriserve-api';
 
 import Logger from './Logger';
 import Media from './data/Media';
@@ -19,6 +18,7 @@ import Roles from './data/model/Role';
 import PagesManager from './PagesManager';
 import Properties from './data/model/Properties';
 
+import resolvePath from './ResolvePath';
 import { Config } from './ServerConfig';
 import AdminRouter from './router/AdminRouter';
 import PagesRouter from './router/PagesRouter';

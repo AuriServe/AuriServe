@@ -1,4 +1,4 @@
-import { Resource } from './Interface';
+import { Resource } from './interface';
 
 export interface Interface extends Resource {
 	enabled: boolean;
@@ -25,7 +25,6 @@ export const Schema = `
 		coverPath: String
 	}
 `;
-
 
 export const Query = `
 	{

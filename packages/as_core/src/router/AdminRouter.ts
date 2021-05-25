@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import Express from 'express';
+import { Format } from 'as_common';
 import { graphqlHTTP } from 'express-graphql';
 import { UploadedFile } from 'express-fileupload';
 
@@ -9,10 +10,9 @@ import Media from '../data/Media';
 import * as Auth from '../data/Auth';
 import Plugins from '../data/Plugins';
 import PagesManager from '../PagesManager';
-import { Schema, Resolver } from '../graph';
+import { Schema, Resolver } from '../data/Graph';
 import AuthRoute, { delay } from './AuthRoute';
 
-import { sanitizeIdentifier } from 'auriserve-api';
 
 // The page template, containing $MARKERS$ for page content.
 const PAGE_TEMPLATE = fs.readFileSync(path.join(
@@ -80,7 +80,7 @@ export default class AdminRouter extends Router {
 			if (!file) throw 'Request is missing a file.';
 
 			const name: string = req.body.name;
-			const identifier: string = sanitizeIdentifier(req.body.identifier || req.body.name);
+			const identifier: string = Format.sanitize(req.body.identifier || req.body.name);
 
 			if (typeof(name) != 'string' || typeof(identifier) != 'string')
 				throw 'Request is missing required data.';
@@ -223,13 +223,13 @@ export default class AdminRouter extends Router {
 		 * Basic App Content
 		 */
 
-		this.router.use('/script', Express.static(path.join(path.dirname(__dirname), '../../interface/build')));
-		this.router.use('/asset', Express.static(path.join(path.dirname(__dirname), '../../interface/res')));
+		this.router.use('/script', Express.static(path.join(path.dirname(path.dirname(__dirname)), 'interface', 'dist')));
+		this.router.use('/asset', Express.static(path.join(path.dirname(path.dirname(__dirname)), 'interface', 'res')));
 
 		this.router.get('/client.js', async (req, res) => {
 			try {
 				if (!await Auth.testToken(req.cookies.tkn)) throw 'Not auth';
-				res.sendFile(path.join(path.dirname(path.dirname(path.dirname(__dirname))), 'interface', 'build', 'client.js'));
+				res.sendFile(path.join(path.dirname(path.dirname(__dirname)), 'interface', 'dist', 'client.js'));
 			}
 			catch (e) {
 				if (typeof e !== 'string') e = 'Internal server error.';

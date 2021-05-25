@@ -1,11 +1,11 @@
 import path from 'path';
-import { resolvePath } from 'auriserve-api';
 import { promises as fs, constants as fsc } from 'fs';
 
 import minimist from 'minimist';
 
 import Server from './Server';
 import Logger from './Logger';
+import resolvePath from './ResolvePath';
 import { Config, mergeConfig } from './ServerConfig';
 
 const DEFAULT_DATA_DIR = 'site-data';

@@ -1,0 +1,24 @@
+@use '../../style/def' as *
+
+.MediaSettings
+	p
+		font-weight: 400
+		color: $c-neutral-700
+		margin: 0.25em 0
+
+	strong
+		font-weight: 500
+		color: $c-neutral-900
+
+	.InputLabel
+		padding-bottom: 12px
+		padding-top: 16px
+
+		&:first-of-type
+			padding-top: 0
+
+	.InputLabel + .InputAnnotation
+		margin-top: -16px
+
+	.InputAnnotation-Title
+		color: $c-neutral-800

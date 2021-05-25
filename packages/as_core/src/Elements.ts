@@ -1,4 +1,4 @@
-import { ServerDefinition } from 'auriserve-api';
+import { ServerDefinition } from 'as_common/definition';
 
 export default class Elements {
 	private lists: Set<Map<string, ServerDefinition>> = new Set();
