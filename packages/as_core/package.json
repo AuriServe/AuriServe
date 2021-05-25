@@ -24,8 +24,7 @@
     "lint": "eslint -c .eslintrc.js src/**/*.ts",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "npm run lint && tsc --project tsconfig.json && pkg package.json --options expose-gc --compress GZip --out-path dist && npm run clean",
-    "clean": "find src -name '*.js' -type f -delete",
-    "postinstall": "ln -s ../as_frontend ./interface"
+    "clean": "find src -name '*.js' -type f -delete"
   },
   "pkg": {
     "assets": [
