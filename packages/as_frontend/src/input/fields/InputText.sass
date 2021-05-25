@@ -1,0 +1,13 @@
+@use '../../style/ext'
+
+.InputText
+	@extend %material_input
+
+	width: 100%
+	padding: 12px
+
+	&.Long
+		resize: none
+
+	&.Code
+		font-family: monospace

@@ -1,0 +1,87 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.DatePicker
+	width: 280px
+	height: 250px
+	display: grid
+	grid-template-rows: 48px 1fr
+	user-select: none
+
+	overflow: hidden
+	border-radius: 8px
+	background-color: $c-neutral-000
+	box-shadow: 0px 2px 8px 0px transparentize($c-neutral-950, 0.9)
+
+	&.Absolute
+		z-index: 5
+		position: absolute
+		transform: translateX(-50%)
+		box-shadow: 0px 2px 12px 0px transparentize($c-neutral-950, 0.8)
+
+	.DatePicker-Header
+		display: grid
+		grid-template-columns: 32px 32px 1fr 32px
+		grid-gap: 4px
+
+		text-align: center
+		border-bottom: 1px solid $c-neutral-100
+		padding: 8px
+
+		button
+			@extend %material_button
+
+			height: 32px
+			border-color: $c-neutral-100
+
+		p
+			margin: 0
+			padding: 4px 0
+			line-height: 1.6
+			color: $c-neutral-600
+
+	.DatePicker-Grid
+		display: grid
+		grid-template-columns: repeat(7, 1fr)
+		padding: 6px
+
+		.DatePicker-Date
+			@extend %material_button
+			display: flex
+			align-items: center
+			justify-content: center
+
+			color: $c-neutral-500
+			background-color: $c-neutral-050
+			border-radius: 0
+
+			transition: background-color $t-fast
+
+			&:hover, &:focus
+				border-radius: 4px
+
+			&:nth-of-type(1)
+				border-top-left-radius: 4px
+
+			&:nth-of-type(7)
+				border-top-right-radius: 4px
+
+			&:nth-last-of-type(1)
+				border-bottom-right-radius: 4px
+
+			&:nth-last-of-type(7)
+				border-bottom-left-radius: 4px
+
+			&.CurrentMonth
+				border-radius: 4px
+				color: $c-neutral-700
+				background-color: $c-neutral-000
+
+			&.CurrentDay
+				color: $c-accent-800
+				background-color: $c-accent-100
+
+			&.Selected
+				background-color: $c-neutral-500
+				border-color: $c-neutral-500
+				color: $c-neutral-000

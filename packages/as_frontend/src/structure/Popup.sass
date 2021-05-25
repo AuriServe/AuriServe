@@ -1,0 +1,33 @@
+@use '../style/def' as *
+
+.Popup
+	position: fixed
+
+	top: 0
+	left: 0
+	right: 0
+	bottom: 0
+
+	pointer-events: none
+
+	& > *
+		pointer-events: initial
+
+	&.DefaultAnim
+		// Important selectors are used here because the wildcard selector has the lowest priority,
+		// and we have to ensure that these properties are set, otherwise it will not render properly.
+
+		& > *
+			transform: translate(-50%, 0px) scale(0.95) !important
+			opacity: 0 !important
+
+			transition: opacity $t-ufast, transform $t-ufast !important
+
+		&.Animate-enter-active, &.Animate-enter-done
+			& > *
+				opacity: 1 !important
+				transform: translate(-50%, 12px) scale(1) !important
+
+		&.Animate-enter-active:not(.Animate-enter-done), &.Animate-exit-active:not(.Animate-exit-done)
+			& > *
+				will-change: transform !important

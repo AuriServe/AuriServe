@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"alwaysStrict": true,
+
+		"target": "es6",
+		"outDir": "dist",
+		"declaration": true,
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+
+		"typeRoots": ["./node_modules/@types/"],
+
+		"removeComments": true,
+		"noUnusedLocals": true,
+		"noImplicitReturns": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true
+	},
+	"include": [
+		"./src/**/*.ts"
+	],
+	"exclude": [
+		"./node_modules"
+	]
+}

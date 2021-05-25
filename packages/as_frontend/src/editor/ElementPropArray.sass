@@ -1,0 +1,23 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.ElementPropArray
+	display: block
+	position: relative
+
+	width: 100%
+	height: auto
+	overflow: auto
+
+.ElementPropArray-Label, .ElementPropArray-Disclaimer
+	display: block
+	padding: 16px 0 8px 0
+	
+	user-select: none
+	font-weight: normal
+	color: $c-neutral-600
+
+.ElementPropArray-Disclaimer
+	padding-top: 0
+	font-style: italic
+	color: $c-neutral-800

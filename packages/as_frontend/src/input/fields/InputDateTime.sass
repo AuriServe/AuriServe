@@ -1,0 +1,43 @@
+@use '../../style/ext'
+@use '../../style/def' as *
+
+.InputDateTime
+	@function space($chars)
+		@return calc(#{$chars + 'ch'} + 6px * 2 + #{$chars + 'px'})
+
+	@extend %material_border
+
+	display: grid
+	height: 48px
+	overflow: hidden
+	padding: 0 6px
+	grid-template-columns: space(2) 0.5ch space(2) 0.5ch space(4) 1fr space(2) 0.5ch space(2)
+
+	border-color: $c-neutral-100
+	background-color: $c-neutral-050
+
+	&:hover
+		border-color: $c-neutral-200
+
+	&:focus, &:focus-within
+		border-color: $c-neutral-400
+
+	&::placeholder
+		font-weight: 400
+		color: $c-neutral-400
+
+	.InputText
+		padding: 12px 6px
+		text-align: right
+		overflow: hidden
+
+		border: none
+		font-family: monospace
+		background-color: transparentize(red, 0.8)
+		background-color: transparent
+
+.InputDateTime-Divider
+	padding-top: 12px
+	
+	line-height: 1.4
+	color: $c-neutral-300

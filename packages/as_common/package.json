@@ -1,27 +1,21 @@
 {
-  "name": "@aurailus/as_common",
+  "name": "@aurailus/as_common_build",
+  "private": "true",
   "version": "0.0.0",
-  "description": "Common definitions shared between the AuriServe core and frontend packages.",
-  "keywords": [
-    "auriserve",
-    "lib",
-    "types",
-    "definitions"
-  ],
   "author": "Auri <me@auri.xyz>",
   "homepage": "https://github.com/AuriServe",
-  "license": "AGPL-3.0-only",
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AuriServe/AuriServe.git"
-  },
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "dev": "nodemon --config nodemon.json",
+    "build": "tsc --project tsconfig.json",
+    "clean": "find dist -name '*' -not -name 'package.json' -not -name 'dist' -delete"
   },
-  "bugs": {
-    "url": "https://github.com/AuriServe/AuriServe/issues"
+  "devDependencies": {
+    "@types/node": "^14.14.9",
+    "nodemon": "^2.0.6",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "moment": "^2.29.1"
   }
 }

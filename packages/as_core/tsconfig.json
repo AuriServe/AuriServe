@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"alwaysStrict": true,
+
+		"target": "es6",
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+
+		"typeRoots": ["../node_modules/@types/"],
+
+		"noEmitHelpers": true,
+		"importHelpers": true,
+
+		"removeComments": true,
+		"noUnusedLocals": true,
+		"noImplicitReturns": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+	},
+	"include": [
+		"./src/**/*.ts"
+	],
+	"exclude": [
+		"./node_modules"
+	]
+}

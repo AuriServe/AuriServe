@@ -1,0 +1,18 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.ElementEditor
+	max-width: calc(100vw - 72px)
+
+	&.Automatic
+		width: 100%
+
+	.ElementEditor-ActionBar
+		margin: 16px 0px 8px 0px
+		display: flex
+		flex-direction: row-reverse
+		justify-content: space-between
+
+		button
+			@extend %material_button
+			padding: 12px

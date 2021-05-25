@@ -1,0 +1,92 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.Popout
+	z-index: 100
+	display: flex
+	position: fixed
+	padding: 8px
+	bottom: 8px
+	right: 8px
+
+	gap: 8px
+	width: 68px
+	height: 68px
+	overflow: hidden
+	border-radius: 50px
+	justify-content: justify
+	flex-direction: row-reverse
+
+	background-color: transparent
+	box-shadow: none
+
+	transition: background-color $t-fast, width $t-fast, box-shadow $t-fast
+
+	.Popout-Inner
+		gap: 8px
+		padding: 2px 0
+		display: none
+		flex-direction: row-reverse
+
+		.Logout
+			margin-left: 16px
+
+		.Popout-IconButton
+			background-color: transparentize($c-neutral-100, 0.2)
+			@extend %material_icon_button
+
+	&.Visible
+		width: 310px
+		background-color: $c-neutral-000
+		box-shadow: 0px 4px 16px transparentize(black, 0.65)
+
+		.Popout-Inner
+			display: flex
+
+	.Popout-Button
+		display: block
+		padding: 0
+		width: 52px
+		height: 52px
+		flex-shrink: 0
+
+		opacity: 0
+		outline: 0
+		border: none
+		cursor: pointer
+		border-radius: 50%
+		box-shadow: 0px 2px 12px transparentize(black, 0.8)
+		background: linear-gradient(-45deg, $c-accent-900, $c-accent-700)
+
+		transition: transform $t-fast, filter $t-fast
+
+		@keyframes Popout-FadeIn
+			0%
+				opacity: 0
+			100%
+				opacity: 1
+
+		@keyframes Popout-PopIn
+			0%
+				transform: scale(0.7)
+			100%
+				transform: scale(1)
+
+		animation: Popout-FadeIn $t-fast ease-in-out $t-med 1 normal forwards, Popout-PopIn $t-fast ease-in-out $t-med 1 normal
+		
+		.Popout-Icon
+			width: 100%
+			height: 100%
+			opacity: 0.7
+			padding: 6px 6px 4px 4px
+
+			transition: opacity $t-fast, filter $t-fast, transform $t-fast
+
+		&:hover, &:focus-visible
+			transform: scale(1.1)
+			filter: brightness(125%)
+
+			.Popout-Icon
+				opacity: 1
+				filter: brightness(70%)
+				transform: scale(0.95)

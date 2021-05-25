@@ -1,0 +1,86 @@
+@use '../style/ext'
+@use '../style/def' as *
+
+.ColorPicker
+	width: 300px
+	height: 200px
+	display: grid
+	user-select: none
+	grid-template-rows: 1fr 12px 28px
+
+	border-radius: 8px
+	background-color: white
+	box-shadow: 0px 2px 8px 0px transparentize($c-neutral-950, 0.9)
+
+	&.Write
+		height: 220px
+		grid-template-rows: 1fr 12px 28px 44px
+
+	&.Absolute
+		z-index: 5
+		position: absolute
+		transform: translateX(-50%)
+		box-shadow: 0px 2px 12px 0px transparentize($c-neutral-950, 0.8)
+
+	.ColorPicker-Separator
+		background-color: #000
+
+	.ColorPicker-SatVal
+		@extend %center_wrap
+		position: relative
+		
+		cursor: pointer
+
+		border-radius: 8px 8px 0 0
+		background-image: linear-gradient(0deg, #000, transparent), linear-gradient(90deg, #fff, hsla(0, 0%, 100%, 0))
+
+		.ColorPicker-Hex
+			margin: 0
+			margin-top: 16px
+			
+			font-size: 24px
+			font-family: monospace
+			color: rgba(255, 255, 255, 0.6)
+			text-shadow: 0 0 4px rgba(0, 0, 0, 0.2)
+
+
+	.ColorPicker-Hue
+		position: relative
+
+		cursor: pointer
+
+		border-radius: 0 0 8px 8px
+		background-image: linear-gradient(90deg, red 0, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, red)
+
+		.ColorPicker-Indicator
+			top: 50%
+
+	.ColorPicker-Indicator
+		position: absolute
+		z-index: 1
+		width: 24px
+		height: 24px
+	
+		border-radius: 50%
+		border: 2px solid white
+		transform: translate(-50%, -50%)
+		box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.4)
+
+
+	.ColorPicker-Details
+		display: grid
+		padding: 8px
+		grid-gap: 8px
+		grid-template-columns: 32px 1fr
+
+		.ColorPicker-ColorBlock
+			@extend %material_border
+			border-color: $c-neutral-200
+			border-radius: 4px
+
+		.ColorPicker-ColorInput
+			@extend %material_input
+
+			padding-top: 3px
+			padding-left: 6px
+			font-family: monospace

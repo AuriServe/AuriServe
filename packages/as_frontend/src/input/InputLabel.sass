@@ -1,0 +1,11 @@
+@use '../style/ext' as *
+
+.InputLabel
+	display: block
+	overflow: auto
+	position: relative
+	
+	.InputLabel-Label
+		@extend %material_label
+		@include ellipsize
+		margin: 0

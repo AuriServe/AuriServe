@@ -1,0 +1,82 @@
+@use '../../style/ext'
+@use '../../style/def' as *
+
+.InputMedia
+	@extend %material_border
+	display: grid
+	height: 48px
+	overflow: hidden
+	grid-template-columns: 48px 1fr
+
+	border-color: $c-neutral-100
+	background-color: $c-neutral-050
+
+	&:hover
+		border-color: $c-neutral-200
+
+	&:focus, &:focus-within
+		border-color: $c-neutral-400
+
+	&::placeholder
+		font-weight: 400
+		color: $c-neutral-400
+
+	.InputMedia-ClickableIcon
+		height: 46px
+
+		padding: 0
+		margin: 0
+		border: 0
+		outline: 0
+		background: transparent
+
+	.InputMedia-Img
+		margin: 7px
+		width: 32px
+		height: 32px
+
+		object-fit: cover
+		border-radius: 4px
+		background-color: $c-neutral-100
+
+		&.InputMedia-NoSelection, &.Icon
+			padding: 4px
+
+	.InputMedia-Input
+		padding: 0
+		width: 100%
+		height: 100%
+		order: 1
+		
+		border: none
+		outline: none
+		background: transparent
+		
+		&::placeholder
+			font-weight: 400
+			color: $c-neutral-400
+
+		&.Selected:not(:focus)::placeholder
+			color: $c-neutral-700
+
+.InputMedia-SearchOption
+	display: grid
+	padding: 8px
+	grid-gap: 8px
+	grid-template-columns: 32px 1fr
+	align-items: center
+
+	border: none
+	cursor: pointer
+	text-align: left
+	background-color: transparent
+
+	.MediaIcon
+		height: 32px
+
+		&.Icon
+			padding: 4px
+
+	p
+		margin: 0
+		font-weight: normal
