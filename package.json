@@ -3,5 +3,9 @@
   "private": true,
   "devDependencies": {
     "lerna": "^4.0.0"
+  },
+  "scripts": {
+  	"dev": "cd packages/common; npm run dev & cd ../../packages/frontend; npm run dev & cd ../../packages/server; npm run dev",
+  	"build": "cd packages/common && npm run build && cd ../../packages/frontend && npm run build && cd ../../packages/server && npm run build"
   }
 }

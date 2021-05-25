@@ -1,0 +1,91 @@
+{
+  "name": "@auriserve/server",
+  "version": "0.0.0",
+  "description": "Core Server for AuriServe",
+  "main": "src/Main.js",
+  "bin": "src/Main.js",
+  "keywords": [
+    "auriserve",
+    "server",
+    "express"
+  ],
+  "author": "Auri <me@auri.xyz>",
+  "homepage": "https://github.com/AuriServe",
+  "license": "AGPL-3.0-only",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AuriServe/AuriServe.git"
+  },
+  "scripts": {
+    "dev": "nodemon --config nodemon.json",
+    "lint": "eslint -c .eslintrc.js src/**/*.ts",
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "npm run lint && tsc --project tsconfig.json && pkg package.json --options expose-gc --compress GZip --out-path dist && npm run clean",
+    "clean": "find src -name '*.js' -type f -delete"
+  },
+  "pkg": {
+    "assets": [
+      "src/views/*",
+      "interface/res/**/*",
+      "interface/build/*"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/AuriServe/AuriServe/issues"
+  },
+  "devDependencies": {
+    "frontend": "file:../frontend",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/clean-css": "^4.2.3",
+    "@types/compression": "^1.7.0",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/debounce": "^1.2.0",
+    "@types/escape-html": "^1.0.1",
+    "@types/express-fileupload": "^1.1.6",
+    "@types/jsdom": "^16.2.5",
+    "@types/mime": "^2.0.3",
+    "@types/minimist": "^1.2.1",
+    "@types/mongodb": "^3.6.3",
+    "@types/node": "^14.14.17",
+    "@types/sass": "^1.16.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.8.2",
+    "eslint": "^7.21.0",
+    "eslint-plugin-jsdoc": "^32.2.0",
+    "nodemon": "^2.0.6",
+    "pkg": "^4.4.9",
+    "typescript": "^4.1.5"
+  },
+  "dependencies": {
+    "common": "file:../common/dist",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "clean-css": "^5.1.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "debounce": "^1.2.0",
+    "escape-html": "^1.0.3",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.0",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.0",
+    "image-size": "^0.9.3",
+    "jimp": "^0.16.1",
+    "log4js": "^6.3.0",
+    "mime": "^2.4.6",
+    "minimist": "^1.2.5",
+    "mongodb": "^3.6.8",
+    "mongoose": "^5.12.11",
+    "preact": "^10.5.7",
+    "preact-render-to-string": "^5.1.12",
+    "prompt": "^1.0.0",
+    "rate-limiter-flexible": "^2.2.1",
+    "recursive-watch": "^1.1.4",
+    "sass": "^1.32.6",
+    "ts-node": "^9.0.0",
+    "tslib": "^2.0.3"
+  }
+}
