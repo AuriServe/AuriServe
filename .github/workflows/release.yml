@@ -34,15 +34,3 @@ jobs:
       with:
         name: Linux
         path: modules/server/dist/server-linux
-    
-    - name: Upload MacOS Artifact
-      uses: actions/upload-artifact@v2.2.2
-      with:
-        name: MacOS
-        path: modules/server/dist/server-macos
-    
-    - name: Upload Windows Artifact
-      uses: actions/upload-artifact@v2.2.2
-      with:
-        name: Windows
-        path: modules/server/dist/server-win.exe
