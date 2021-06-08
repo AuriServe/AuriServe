@@ -27,7 +27,7 @@ jobs:
       run: npm run install; sudo npm install -g nexe
     
     - name: Acquire and Compress Node Binary
-      run: nexe --target linux-x86-12.9.1 --empty --input src/Main.ts; chmod +x ~/.nexe/linux-x86-12.9.1; upx ~/.nexe/linux-x86-12.9.1
+      run: nexe --target linux-x86-12.9.1 --empty --input modules/server/src/Main.ts; chmod +x ~/.nexe/linux-x86-12.9.1; upx ~/.nexe/linux-x86-12.9.1
 
     - name: Build Application
       run: npm run build
