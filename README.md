@@ -11,7 +11,4 @@ Finally, an Open-Source, Modern, Node based CMS.
 
 More information will come once the structure of this project is more finalized. For more information and to follow development, join Auri's Den on Discord by using the badge above.
 
-## Artifacts
-
-[Linux](https://nightly.link/AuriServe/AuriServeMono/workflows/release/master/Linux.zip) &bullet; [Windows](https://nightly.link/AuriServe/AuriServeMono/workflows/release/master/Windows.zip) &bullet; [MacOS](https://nightly.link/AuriServe/AuriServeMono/workflows/release/master/MacOS.zip
-)
+### [Download the Latest Artifact](https://nightly.link/AuriServe/AuriServe/workflows/release/master/AuriServe.zip)
