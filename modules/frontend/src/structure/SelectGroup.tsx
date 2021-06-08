@@ -1,8 +1,6 @@
 import * as Preact from 'preact';
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 
-import './SelectGroup.sass';
-
 export interface SelectGroupContextData {
 	selected: number[];
 	onSelect(ind: number, state?: boolean): void;
@@ -102,7 +100,7 @@ export default function SelectGroup(props: Props) {
 
 	return (
 		context ? <SelectGroupContext.Provider value={context}>
-			<ul class={('SelectGroup ' + (props.class ?? '')).trim()} style={props.style}>{props.children}</ul>
+			<ul role='list' class={('SelectGroup ' + (props.class ?? '')).trim()} style={props.style}>{props.children}</ul>
 		</SelectGroupContext.Provider> : null
 	);
 }

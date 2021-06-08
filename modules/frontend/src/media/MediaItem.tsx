@@ -7,27 +7,29 @@ import { User, Media } from 'common/graph/type';
 import MediaIcon from './MediaIcon';
 import Selectable from '../structure/Selectable';
 
-import './MediaItem.sass';
-
 interface Props {
 	user?: User;
-	item: Media;
+	media: Media;
 	ind: number;
 
-	onClick: (_: any) => void;
+	onClick: (id: string) => void;
 }
 
-export default function MediaItem({ user, item, ind, onClick }: Props) {
-	const callbacks = useMemo(() => ({ onDoubleClick: onClick }), []);
+export default function MediaItem({ user, media, ind, onClick }: Props) {
+	const callbacks = useMemo(() => ({ onDoubleClick: onClick.bind(undefined, media.id) }), [ media.id ]);
 
 	return (
-		<li class='MediaItem'>
-			<Selectable class='MediaItem-Select' ind={ind} callbacks={callbacks} doubleClickSelects={true}>
-				<MediaIcon path={item.url} />
-				<div class='MediaItem-Description'>
-					<p class='MediaItem-Title'>{item.name}</p>
-					<p class='MediaItem-Author'>Uploaded by {user?.username ?? '[Unknown]'} {Format.date(item.created)}.</p>
-					<p class='MediaItem-Size'>{(item.size && Format.vector(item.size, 'px') + ' • ')} {Format.bytes(item.bytes)}</p>
+		<li class='flex place-items-stretch'>
+			<Selectable class='flex !w-full gap-2'
+				ind={ind} callbacks={callbacks} doubleClickSelects={true}>
+				<MediaIcon class='flex-shrink-0 w-20 h-20' path={media.url} />
+				<div class='pl-1 text-left overflow-hidden'>
+					<p class='pt-1 text-gray-100 truncate'>
+						{media.name}</p>
+					<p class='text-sm text-gray-300 py-0.5 truncate'>
+						Uploaded by {user?.username ?? '[Unknown]'} {Format.date(media.created)}.</p>
+					<p class='text-sm text-gray-400 py-0.5 truncate'>
+						{(media.size && Format.vector(media.size, 'px') + ' • ')} {Format.bytes(media.bytes)}</p>
 				</div>
 			</Selectable>
 		</li>

@@ -1,6 +1,6 @@
 import * as Preact from 'preact';
 
-import './MediaIcon.sass';
+import { mergeClasses } from '../Util';
 
 interface Props {
 	path: string;
@@ -42,11 +42,8 @@ export default function MediaIcon(props: Props) {
 	const showImage = (props.imageIcon === undefined || props.imageIcon);
 
 	if (isImage && showImage) return (
-		<img
-			class={('MediaIcon Image ' + (props.class ?? '')).trim()}
-			src={(props.image ? props.image : props.path + '?res=thumbnail')}
-			alt='' loading='lazy'
-		/>
+		<img width={64} height={64} src={(props.image ? props.image : props.path + '?res=thumbnail')} alt='' loading='lazy'
+			class={mergeClasses('object-cover rounded bg-gray-800 dark:bg-gray-300 select-none overflow-hidden flex-shrink-0', props.class)} />
 	);
 
 	let iconUrl = ICONS.unknown;
@@ -54,10 +51,7 @@ export default function MediaIcon(props: Props) {
 	else iconUrl = ICONS[props.path.substr(props.path.lastIndexOf('.') + 1)] ?? iconUrl;
 
 	return (
-		<img
-			class={('MediaIcon Icon ' + (props.class ?? '')).trim()}
-			src={iconUrl}
-			alt=''
-		/>
+		<img width={64} height={64} src={iconUrl} alt=''
+			class={mergeClasses('object-cover rounded bg-gray-800 dark:bg-gray-300 select-none overflow-hidden p-3 flex-shrink-0', props.class)} />
 	);
 }

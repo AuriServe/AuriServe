@@ -20,10 +20,10 @@
     "url": "git+https://github.com/AuriServe/AuriServe.git"
   },
   "scripts": {
-    "dev": "nodemon --config nodemon.json",
+    "dev": "nodemon",
     "lint": "eslint -c .eslintrc.js src/**/*.ts",
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build": "npm run lint && tsc --project tsconfig.json && pkg package.json --options expose-gc --compress GZip --out-path dist && npm run clean",
+    "build": "npm run lint && tsc --project tsconfig.json && pkg package.json --options expose-gc --compress Brotli --out-path dist && npm run clean",
     "clean": "find src -name '*.js' -type f -delete"
   },
   "pkg": {
@@ -32,6 +32,14 @@
       "interface/res/**/*",
       "interface/dist/*"
     ]
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": ".ts,.js,.tsx,.json",
+    "exec": "npm run lint & ts-node --project tsconfig.json src/Main.ts -- --verbose",
+    "quiet": true
   },
   "bugs": {
     "url": "https://github.com/AuriServe/AuriServe/issues"

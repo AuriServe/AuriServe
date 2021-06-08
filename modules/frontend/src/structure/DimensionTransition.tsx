@@ -1,8 +1,6 @@
 import * as Preact from 'preact';
 import { useState, useRef, useEffect } from 'preact/hooks';
 
-import './DimensionTransition.sass';
-
 interface Props {
 	mode?: 'width' | 'height' | 'all';
 	duration?: number;
@@ -37,9 +35,9 @@ export default function DimensionTransition(props: Props) {
 	if (props.mode === 'height') appliedInnerStyles.width = 'auto';
 	if (props.mode === 'width') appliedInnerStyles.height = 'auto';
 
-	return <div className="DimensionTransition" style={Object.assign(appliedOuterStyles, props.style, {
+	return <div class='overflow-hidden' style={Object.assign(appliedOuterStyles, props.style, {
 		transition: `width ${(props.duration || 300) / 1000}s, height ${(props.duration || 300) / 1000}s`})}>
-		<div className="DimensionTransition-Inner" style={appliedInnerStyles} ref={ref}>
+		<div class='overflow-auto' style={appliedInnerStyles} ref={ref}>
 			{props.children}
 		</div>
 	</div>;

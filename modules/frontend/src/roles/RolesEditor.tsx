@@ -5,8 +5,8 @@ import { useState, useEffect } from 'preact/hooks';
 import { Color } from 'common';
 import { Role } from 'common/graph/type';
 
-import SavePopup from '../SavePopup';
 import RoleEditor from './RoleEditor';
+import { SavePopup } from '../structure';
 
 import './RolesEditor.sass';
 

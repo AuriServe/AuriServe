@@ -1,11 +1,12 @@
 import * as Preact from 'preact';
-import { NavLink as Link } from 'react-router-dom';
+// import { NavLink as Link } from 'react-router-dom';
 
 import { User } from 'common/graph/type';
 
-import UserRolesList from './UserRolesList';
+import { Button } from '../structure';
+// import UserRolesList from './UserRolesList';
 
-import './UserItem.sass';
+// import './UserItem.sass';
 
 interface Props {
 	user: User;
@@ -13,12 +14,12 @@ interface Props {
 
 export default function UserItem(props: Props) {
 	return (
-		<Link to={'/users/' + props.user.id} className='UserItem'>
-			<img class='UserItem-Icon' src='/admin/asset/icon/user-color.svg' alt=''/>
-			<h2 class='UserItem-Name'>{props.user.username}</h2>
-			<p class='UserItem-Identifier'>{props.user.emails[0] ?? ''}</p>
-			<UserRolesList user={props.user} />
-			<img class='UserItem-More' src='/admin/asset/icon/menu-dark.svg' alt=''/>
-		</Link>
+		<Button to={'/users/' + props.user.id} class='flex gap-3 px-2 py-1 !bg-transparent !border-transparent'>
+			<img class='w-8 h-8' src='/admin/asset/icon/user-color.svg' alt=''/>
+			<h2 class='w-1/5 max-w-32'>{props.user.username}</h2>
+			<p class='flex-grow text-gray-300'>{props.user.id}</p>
+			{/* <UserRolesList user={props.user} />*/}
+			<img class='w-6 h-6 m-2' src='/admin/asset/icon/menu-dark.svg' alt=''/>
+		</Button>
 	);
 }

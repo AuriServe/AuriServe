@@ -2,19 +2,21 @@ import { resolve } from 'path';
 import * as Webpack from 'webpack';
 import { merge } from 'webpack-merge';
 
-const MiniCSSExtractPlugin   = require('mini-css-extract-plugin');
-const LiveReloadPlugin       = require('webpack-livereload-plugin');
-const MomentLocalesPlugin    = require('moment-locales-webpack-plugin');
-const ForkTsCheckerPlugin    = require('fork-ts-checker-webpack-plugin');
-const BundleAnalyzerPlugin   = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
+const CSSMinimizerPlugin   = require('css-minimizer-webpack-plugin');
+const LiveReloadPlugin     = require('webpack-livereload-plugin');
+const ForkTsCheckerPlugin  = require('fork-ts-checker-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 export default function(_: {}, argv: { mode: string, analyze: boolean }) {
-	const prod = argv.mode === 'production';
+	const mode: 'production' | 'development' = argv.mode as any ?? 'development';
 	const analyze = argv.analyze;
 
+	process.env.NODE_ENV = mode ?? 'development';
+
 	let baseConfig: Webpack.Configuration = {
-		mode: argv.mode as 'production' ?? 'development',
-		devtool: prod ? undefined : 'source-map',
+		mode,
+		devtool: mode === 'production' ? undefined : 'source-map',
 		stats: 'errors-warnings',
 
 		context: resolve(__dirname, 'src'),
@@ -26,7 +28,7 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 		},
 
 		externals: {
-			"preact": "preact",
+			'preact': 'preact',
 			'preact/hooks': 'preact_hooks'
 		},
 		plugins: [
@@ -43,8 +45,7 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 						typeCheck: true
 					}
 				}
-			}),
-			new MomentLocalesPlugin()
+			})
 		],
 		module: {
 			rules: [{
@@ -64,17 +65,23 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 						}]
 					],
 					plugins: [
-						["@babel/transform-react-jsx", { pragma: "Preact.h" }],
+						['@babel/transform-react-jsx', { pragma: 'Preact.h' }],
 						['@babel/plugin-proposal-class-properties', { loose: true }],
 						['@babel/plugin-proposal-private-methods', { loose: true }]
 					]
 				}
 			}]
+		},
+		optimization: {
+			minimizer: [
+				'...',
+				new CSSMinimizerPlugin()
+			]
 		}
 	}
 
-	if (!prod) baseConfig = merge(baseConfig, {
-		plugins: [ new LiveReloadPlugin() ]
+	if (mode === 'development') baseConfig = merge(baseConfig, {
+		plugins: [ new LiveReloadPlugin({ delay: 500 }) ]
 	});
 
 	if (analyze) baseConfig = merge(baseConfig, {
@@ -86,8 +93,8 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 		context: resolve(__dirname, 'src'),
 		resolve: {
 			alias: {
-				"react": "preact/compat",
-				"react-dom": "preact/compat"
+				'react': 'preact/compat',
+				'react-dom': 'preact/compat'
 			}
 		},
 
@@ -104,9 +111,23 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 			rules: [{
 				test: /\.s[c|a]ss$/,
 				use: [
+					'null-loader'
+				]
+			}, {
+				test: /\.tw$/,
+				use: [
 					MiniCSSExtractPlugin.loader,
-					{ loader: 'css-loader', options: { url: false } },
-					'sass-loader'
+					{ loader: 'css-loader', options: { url: false, importLoaders: 1 } },
+					'postcss-loader'
+				]
+			}, {
+				test: /\.sss$/,
+				use: [
+					MiniCSSExtractPlugin.loader,
+					{ loader: 'css-loader', options: { url: false, importLoaders: 1, modules: {
+						localIdentName: mode === 'development' ? '[local]_[hash:base64:4]' : '[hash:base64:8]'
+					} } },
+					'postcss-loader'
 				]
 			}]
 		}
@@ -117,8 +138,8 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 		context: resolve(__dirname, 'src'),
 		resolve: {
 			alias: {
-				"react": "preact/compat",
-				"react-dom": "preact/compat"
+				'react': 'preact/compat',
+				'react-dom': 'preact/compat'
 			}
 		},
 
@@ -126,11 +147,13 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 
 		module: {
 			rules: [{
-				test: /\.s[c|a]ss$/,
+				test: /\.sss$/,
 				use: [
 					'style-loader',
-					{ loader: 'css-loader', options: { url: false } },
-					'sass-loader'
+					{ loader: 'css-loader', options: { url: false, importLoaders: 1, modules: {
+						localIdentName: mode === 'development' ? '[local]_[hash:base64:4]' : '[hash:base64:8]'
+					} } },
+					'postcss-loader'
 				]
 			}]
 		}

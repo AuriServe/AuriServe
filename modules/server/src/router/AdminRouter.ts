@@ -22,7 +22,7 @@ export default class AdminRouter extends Router {
 		private pages: PagesManager, private plugins: Plugins, private media: Media) { super(); }
 
 	init() {
-		const { rateLimit, authRoute } = AuthRoute();
+		const { rateLimit, authRoute } = AuthRoute({ attempts: 10000 });
 
 
 		/**

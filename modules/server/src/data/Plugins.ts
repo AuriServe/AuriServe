@@ -114,7 +114,7 @@ export default class Plugins {
 			try {
 				const config = await this.validate(dirName);
 				this.plugins.set(config.identifier, new Plugin(config, require.resolve(path.join(this.dataPath,
-					'plugins', dirName, config.sourceRoot, config.sources.server.script!)), this.elements));
+					'plugins', dirName, config.sourceRoot, config.sources.server.script!)), this.dataPath, this.elements));
 			}
 			catch (e) {
 				Logger.error('Encountered an error parsing plugin %s:\n %s', dirName, e);

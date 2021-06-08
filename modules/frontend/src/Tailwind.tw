@@ -1,0 +1,26 @@
+@import 'tailwindcss/base'
+@import 'tailwindcss/components'
+@import 'tailwindcss/utilities'
+
+html
+	overflow-y: scroll
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0)
+
+	*::selection
+		background-color: #74879D66
+
+	body
+		@media (pointer: fine)
+			&::-webkit-scrollbar, *::-webkit-scrollbar
+				width: 8px
+				height: 8px
+				background-color: #171D23
+
+			&::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb
+				background-color: rgba(87, 87, 87, .38)
+
+				&:hover
+					background-color: rgba(87, 87, 87, .6)
+
+	strong
+		@apply font-medium

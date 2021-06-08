@@ -1,6 +1,0 @@
-{
-	"watch": [ "src" ],
-	"ext": ".ts",
-	"exec": "npm run clean; npm run build",
-	"quiet": true
-}

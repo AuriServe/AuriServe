@@ -115,15 +115,14 @@ export default class Server {
 			process.exit(1);
 		}
 
-		Mongoose.set('useFindAndModify', false);
-		await Mongoose.connect(this.conf.db, { useNewUrlParser: true, useUnifiedTopology: true });
+		await Mongoose.connect(this.conf.db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 		Logger.debug('Connected to Mongoose successfully.');
 
 		if (!await Properties.findOne({})) await Properties.create({ usage: { media_allocated: 1024 * 1024 * 1024 } });
 
 		await Roles.deleteMany({});
 
-		if (!(await Roles.findOne({}))) await Auth.addUser('Auri', 'password');
+		if (!(await Auth.listUsers()).length) await Auth.addUser('Auri', 'password');
 
 		if (!await Roles.findOne({})) await Roles.create({
 			creator: (await Auth.listUsers())[0].id, name: 'Administrator', abilities: [ 'ADMINISTRATOR' ] });

@@ -1,5 +1,4 @@
-// import { AdminDefinition } from 'common_api';
-type AdminDefinition = any;
+import { AdminDefinition } from 'common/definition';
 
 declare global { interface Window { serve?: any } };
 

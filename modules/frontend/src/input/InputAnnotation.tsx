@@ -1,21 +1,23 @@
 import * as Preact from 'preact';
+import { forwardRef } from 'preact/compat';
 
-import './InputAnnotation.sass';
+import { mergeClasses } from '../Util';
 
 interface Props {
 	title: string;
 	description?: string;
 
+	style?: any;
+	class?: string;
 	children?: Preact.ComponentChildren;
 }
 
-export default function InputAnnotation(props: Props) {
+export default forwardRef<HTMLLabelElement, Props>(function InputAnnotation(props, fRef) {
 	return (
-		<label class='InputAnnotation'>
-			<p class='InputAnnotation-Title'>{props.title}</p>
-			{props.description && <p class='InputAnnotation-Description'>{props.description}</p>}
-
+		<label ref={fRef} class={mergeClasses(props.class, 'block relative overflow-auto user-select-none')} style={props.style}>
+			<p class='mt-4 mb-1 cursor-pointer'>{props.title}</p>
+			{props.description && <p class='mb-3 text-sm font-normal text-gray-500 dark:text-gray-600'>{props.description}</p>}
 			{props.children}
 		</label>
 	);
-}
+});

@@ -1,20 +1,22 @@
 import * as Preact from 'preact';
+import { forwardRef } from 'preact/compat';
 
-import './InputLabel.sass';
+import { mergeClasses } from '../Util';
 
 interface Props {
 	label: string;
 
-	class?: string;
 	style?: any;
+	class?: string;
 	children?: Preact.ComponentChildren;
 }
 
-export default function InputLabel(props: Props) {
+export default forwardRef<HTMLLabelElement, Props>(function InputLabel(props, fRef) {
 	return (
-		<label class={('InputLabel ' + (props.class ?? '')).trim()} style={props.style}>
-			<p class='InputLabel-Label'>{props.label}</p>
+		<label ref={fRef} class={mergeClasses(props.class, 'block relative overflow-visible user-select-none',
+			'font-medium text-xs text-gray-300 tracking-widest uppercase pt-3 pb-1.5')} style={props.style}>
+			<p class='truncate select-none pb-1.5'>{props.label}</p>
 			{props.children}
 		</label>
 	);
-}
+});

@@ -1,11 +1,14 @@
-import { Resource, Layout } from './type';
+import { ID, Date, Layout } from './type';
 import { Layout as LayoutQuery } from './Query';
 
-export interface Interface extends Resource {
+export interface Interface {
+	user: ID;
+	created: Date;
+	identifier: string;
+	
 	enabled: boolean;
 	
 	name: string;
-	identifier: string;
 	description: string;
 	author: string;
 	coverPath?: string;
@@ -14,15 +17,14 @@ export interface Interface extends Resource {
 }
 
 export const Schema = `
-	type Theme implements Resource {
-		id: ID!
+	type Theme {
 		user: ID
 		created: Date!
+		identifier: String!
 
 		enabled: Boolean!
 
 		name: String!
-		identifier: String!
 		description: String!
 		author: String!
 		coverPath: String
@@ -34,14 +36,13 @@ export const Schema = `
 
 export const Query = `
 	{
-		id
 		user
-		created
+		# created
+		identifier
 
 		enabled
 
 		name
-		identifier
 		description
 		author
 		coverPath

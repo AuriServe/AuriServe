@@ -1,5 +1,5 @@
 // Input
-export * as Input from '../input/Input';
+export * as Input from '../input';
 
 // Media
 export { default as MediaIcon } from '../media/MediaIcon';
@@ -9,7 +9,7 @@ export { default as MediaUploadItem } from '../media/MediaUploadItem';
 export { default as MediaView } from '../media/MediaView';
 
 // Structural
-export { default as CardHeader } from '../structure/CardHeader';
+export { default as SectionHeader } from '../structure/SectionHeader';
 export { default as DimensionTransition } from '../structure/DimensionTransition';
 export { default as Meter } from '../structure/Meter';
 export { default as Modal } from '../structure/Modal';
@@ -18,7 +18,7 @@ export { default as Selectable } from '../structure/Selectable';
 export { default as SelectGroup } from '../structure/SelectGroup';
 
 // Interactable
-export { default as SavePopup } from '../SavePopup';
+export { default as SavePopup } from '../structure/SavePopup';
 
 // Users
 export { default as UserCard } from '../user/UserCard';

@@ -58,7 +58,7 @@ class ThemeResolver {
 	identifier  = () => this.theme.config.identifier;
 	description = () => this.theme.config.description;
 	author			= () => this.theme.config.author;
-	// TODO: coverPath
+	coverPath   = () => this.theme.hasCover ? `/admin/themes/cover/${this.theme.config.identifier}.jpg` : '';
 
 	layouts = () => {
 		const layouts = this.theme.getLayouts();
@@ -82,7 +82,7 @@ class PluginResolver {
 	identifier  = () => this.plugin.config.identifier;
 	description = () => this.plugin.config.description;
 	author			= () => this.plugin.config.author;
-	// TODO: coverPath
+	coverPath   = () => this.plugin.hasCover ? `/admin/plugins/cover/${this.plugin.config.identifier}.jpg` : '';
 };
 
 class MediaResolver {
@@ -103,7 +103,7 @@ class MediaResolver {
 	
 	size = () => {
 		let size = this.media.size;
-		if (!size) return null;
+		if (!size || !size.width || !size.height) return null;
 		return { x: size.width, y: size.height };
 	};
 }

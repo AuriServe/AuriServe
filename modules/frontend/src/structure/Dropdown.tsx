@@ -1,46 +1,50 @@
 import * as Preact from 'preact';
 import { usePopupCancel } from '../Hooks';
-import { useState, useRef } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 
-import './Dropdown.sass';
+import Card, { Props as CardProps } from './Card';
+import Button, { Props as ButtonProps } from './Button';
+
+import { mergeClasses } from '../Util';
 
 import Popup from './Popup';
 
 interface Props {
+	button?: ButtonProps;
+	dropdown?: CardProps;
+
 	class?: string;
 	children?: Preact.ComponentChildren;
-	
-	buttonClass?: string;
-	buttonChildren?: Preact.ComponentChildren;
 }
 
 export default function Dropdown(props: Props) {
-	const buttonRef = useRef<HTMLButtonElement>(null);
+	const buttonRef = useRef<HTMLElement>(null);
 	const dropdownRef = useRef<HTMLDivElement>(null);
+
+	const [ style, setStyle ] = useState<any>({});
 	const [ dropdownActive, setDropdownActive ] = useState<boolean>(false);
 
 	usePopupCancel([ buttonRef, dropdownRef ], () => setDropdownActive(false));
 
-	const style: any = {};
-	if (buttonRef.current && dropdownRef.current) {
-		style.top = buttonRef.current.getBoundingClientRect().bottom + 'px';
-		style.left = buttonRef.current.getBoundingClientRect().left + buttonRef.current.getBoundingClientRect().width / 2 + 'px';
-	}
+	useEffect(() => {
+		const style: any = {};
+		if (buttonRef.current && dropdownRef.current) {
+			style.top = buttonRef.current.getBoundingClientRect().bottom + 12 + 'px';
+			style.left = buttonRef.current.getBoundingClientRect().left + buttonRef.current.getBoundingClientRect().width / 2 -
+				dropdownRef.current.getBoundingClientRect().width / 2 + 'px';
+		}
+		setStyle(style);
+	}, [ dropdownActive ]);
+
 
 	return (
-		<Preact.Fragment>
-			<button ref={buttonRef}
-				onClick={() => setDropdownActive(!dropdownActive)}
-				class={('DropdownButton ' + (props.buttonClass ?? '')).trim()}>
-				{props.buttonChildren}
-			</button>
-
-			<Popup class={('Dropdown ' + (props.class ?? '')).trim()} defaultAnimation={true}
-				active={dropdownActive} ref={dropdownRef}>
-				<div class='Dropdown-Card' ref={dropdownRef} style={style}>
+		<Button ref={buttonRef} {...props.button} onClick={() => setDropdownActive(!dropdownActive)}>
+			<Popup defaultAnimation={true} active={dropdownActive} ref={dropdownRef}>
+				<Card ref={dropdownRef} {...props.dropdown} style={style}
+					class={mergeClasses('fixed !p-3 my-0 pointer-events-auto !shadow-lg', props.class)}>
 					{props.children}
-				</div>
+				</Card>
 			</Popup>
-		</Preact.Fragment>
+		</Button>
 	);
 }

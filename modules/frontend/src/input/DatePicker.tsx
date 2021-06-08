@@ -4,9 +4,9 @@ import { useState, useEffect } from 'preact/hooks';
 
 import './DatePicker.sass';
 
-import { WidgetProps } from './Input';
+import { InputProps } from './index';
 
-interface Props {
+interface Props extends InputProps {
 	parent?: HTMLElement;
 	writable?: boolean;
 	displayHex?: boolean;
@@ -16,7 +16,7 @@ const monthNames = [
 	'January', 'February', 'March', 'April', 'May', 'June',
 	'July', 'August', 'September', 'October', 'November', 'December'];
 
-const DatePicker = forwardRef<HTMLDivElement, WidgetProps & Props>((props, ref) => {
+const DatePicker = forwardRef<HTMLDivElement, Props>((props, ref) => {
 	const [ month, setMonth ] = useState<number>(() => new Date().getMonth());
 	const [ year, setYear ] = useState<number>(() => new Date().getFullYear());
 
@@ -34,13 +34,13 @@ const DatePicker = forwardRef<HTMLDivElement, WidgetProps & Props>((props, ref) 
 		const date = new Date(props.value.getTime());
 		const now = new Date();
 		date.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
-		props.setValue(date);
+		props.onValue?.(date);
 	};
 
 	const setDate = (day: number, month: number, year: number) => {
 		const date = new Date(props.value.getTime());
 		date.setFullYear(year, month, day);
-		props.setValue(date);
+		props.onValue?.(date);
 	};
 
 	const style: any = {};

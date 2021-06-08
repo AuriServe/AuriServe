@@ -1,9 +1,13 @@
 import * as Preact from 'preact';
+import { forwardRef } from 'preact/compat';
 
-import './InputDivider.sass';
+import { mergeClasses } from '../Util';
 
-export default function InputLabel() {
-	return (
-		<hr class='InputDivider' />
-	);
+interface Props {
+	style?: any;
+	class?: string;
 }
+
+export default forwardRef<HTMLHRElement, Props>(function InputLabel(props, fRef) {
+	return <hr ref={fRef} class={mergeClasses(props.class, 'border-b border-gray-700 my-4')} />;
+});

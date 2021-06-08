@@ -13,7 +13,9 @@ import SassBuilder from './SassBuilder';
  * Represents a single theme.
  */
 
-export default class Plugin {
+export default class Theme {
+	hasCover: boolean = false;
+
 	private enabled: boolean = false;
 	private layouts: Map<string, string> = new Map();
 
@@ -25,7 +27,10 @@ export default class Plugin {
 		this.enable();
 	}, 200);
 
-	constructor(readonly config: Config, private dataPath: string) {}
+	constructor(readonly config: Config, private dataPath: string) {
+		fs.stat(path.join(this.dataPath, 'themes', this.config.identifier, 'cover.jpg'))
+			.then(() => this.hasCover = true).catch(() => {});
+	}
 
 
 	/**

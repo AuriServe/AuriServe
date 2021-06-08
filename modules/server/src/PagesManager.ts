@@ -23,6 +23,9 @@ const PAGE_TEMPLATE = fss.readFileSync(path.join(__dirname, 'views', 'page.html'
 // The error page template, containing $MARKERS$ for page content.
 const ERROR_TEMPLATE = fss.readFileSync(path.join(__dirname, 'views', 'error.html')).toString();
 
+// The default layout, included with the server.
+const DEFAULT_LAYOUT = fss.readFileSync(path.join(__dirname, 'views', 'layout.html')).toString();
+
 // Uses lookaheads / lookbehinds to find space to insert a tree into on a template.
 const FIND_INCLUDE = (label: string) => new RegExp(`(?<=\<[A-z]+ data-include='${label}'>)(\s*)(?=<\/[A-z]+>)`, 'gi');
 
@@ -127,8 +130,7 @@ export default class PagesManager {
 		html = html.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 
 		const layouts = await this.themes.listLayouts();
-		let body = layouts.get(json.layout) ?? layouts.get('default');
-		if (!body) throw `Layout '${json.layout}' doesn't exist.`;
+		let body = layouts.get(json.layout) ?? layouts.get('default') ?? DEFAULT_LAYOUT;
 
 		Object.keys(rendered).forEach(section =>
 			body = body!.replace(FIND_INCLUDE(section), rendered[section]));

@@ -1,5 +1,6 @@
-import * as fs from 'fs';
+import path from 'path';
 import debounce from 'debounce';
+import fss, { promises as fs } from 'fs';
 
 import Logger from '../../Logger';
 import Config from './PluginConfig';
@@ -12,17 +13,22 @@ import Bindings from './PluginBindings';
  */
 
 export default class Plugin {
+	hasCover: boolean = false;
+
 	private enabled: boolean = false;
 	private bindings = new Bindings();
 
-	private watcher: fs.FSWatcher | undefined = undefined;
+	private watcher: fss.FSWatcher | undefined = undefined;
 	private debounceRefresh = debounce(() => {
 		Logger.debug('Reloading plugin %s.', this.config.identifier);
 		this.disable(false);
 		this.enable();
 	}, 200);
 
-	constructor(readonly config: Config, private indexPath: string, private elements: Elements) {}
+	constructor(readonly config: Config, private indexPath: string, dataPath: string, private elements: Elements) {
+		fs.stat(path.join(dataPath, 'plugins', this.config.identifier, 'cover.jpg'))
+			.then(() => this.hasCover = true).catch(() => {});
+	}
 
 
 	/**
@@ -75,7 +81,7 @@ export default class Plugin {
 
 	private watch() {
 		if (this.watcher) return;
-		this.watcher = fs.watch(this.indexPath, { persistent: false, recursive: false, encoding: 'utf8'}, this.debounceRefresh);
+		this.watcher = fss.watch(this.indexPath, { persistent: false, recursive: false, encoding: 'utf8'}, this.debounceRefresh);
 		Logger.debug('Watching plugin %s for changes.', this.config.identifier);
 	}
 }

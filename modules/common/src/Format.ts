@@ -1,4 +1,8 @@
-// import moment from 'moment';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+dayjs.extend(relativeTime);
+dayjs.extend(advancedFormat);
 
 const tiers: string[] = ['B', 'KB', 'MB', 'GB'];
 
@@ -15,15 +19,14 @@ export function bytes(bytes: number): string {
 }
 
 export function vector(v: { x?: number, y?: number, width?: number, height?: number }, suffix?: string): string {
-	return `${v.x ?? v.width}×${v.y ?? v.height} ${suffix || ""}`;
+	return `${v.x ?? v.width} × ${v.y ?? v.height} ${suffix || ""}`;
 }
 
 export function date(date: number) {
-	// let d = new Date(date);
-	// if (Date.now() - +d < 1000 * 60 * 60 * 24 * 3) return moment(date).fromNow();
-	// else if (d.getFullYear() == new Date().getFullYear()) return "on " + moment(date).format("MMMM Do");
-	// else return "on " + moment(date).format("MMMM Do, YYYY");
-	return date.toString();
+	let d = new Date(date);
+	if (Date.now() - +d < 1000 * 60 * 60 * 24 * 3) return dayjs(date).fromNow();
+	else if (d.getFullYear() == new Date().getFullYear()) return "on " + dayjs(date).format("MMMM Do");
+	else return "on " + dayjs(date).format("MMMM Do, YYYY");
 }
 
 export function fileNameToName(name: string, len?: number) {

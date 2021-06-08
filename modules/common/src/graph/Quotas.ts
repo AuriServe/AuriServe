@@ -17,6 +17,6 @@ export const QuotaQuery = '{ used, allocated }'
 
 export const Query = `
 	{
-		storage: ${QuotaQuery}
+		storage ${QuotaQuery}
 	}
 `;

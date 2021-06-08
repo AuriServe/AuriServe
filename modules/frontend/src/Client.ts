@@ -1,7 +1,7 @@
 import Cookie from 'js-cookie';
 import * as Preact from 'preact';
 
-import Popout from './structure/Popout';
+import Popout from './Popout';
 
 let root: any;
 

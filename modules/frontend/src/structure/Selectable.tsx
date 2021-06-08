@@ -1,8 +1,11 @@
 import * as Preact from 'preact';
 import { useEffect, useRef, useContext } from 'preact/hooks';
 
-import ClickHandler, { ClickHandlerCallbacks } from '../ClickHandler';
+import Button from './Button';
 import { SelectGroupContext } from './SelectGroup';
+import ClickHandler, { ClickHandlerCallbacks } from '../ClickHandler';
+
+import { mergeClasses } from '../Util';
 
 interface Props {
 	ind: number;
@@ -43,11 +46,13 @@ export default function Selectable(props: Props) {
 	const selected = ctx.selected.indexOf(props.ind) !== -1;
 
 	return (
-		<button
-			style={props.style}
-			class={('Selectable ' + (props.class ?? '') + (selected ? ' Selected' : '')).trim()}
-			onMouseUp={handler.current.handleMouseUp}>
+		<Button onMouseUp={handler.current.handleMouseUp} style={props.style}
+			class={mergeClasses(props.class,
+				selected && '!bg-blue-300/30 dark:!bg-blue-400/10 !border-blue-400 dark:!border-blue-500/75',
+				selected && 'active:!border-blue-800 focus-visible:!border-blue-800',
+				selected && 'dark:active:!border-blue-300 dark:focus-visible:!border-blue-300')}
+			highlightClass={mergeClasses(selected && '!bg-blue-600')}>
 			{props.children}
-		</button>
+		</Button>
 	);
 }

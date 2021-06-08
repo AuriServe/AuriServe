@@ -10,7 +10,9 @@ export const graphql = new GraphQL();
 /** Used in graphql-react to target the right endpoint. */
 const fetchOptionsOverride = (options: any) => options.url = ENDPOINT;
 
+import { Query } from 'common/graph';
 import * as Int from 'common/graph/type';
+
 
 /** Specifies various options for useQuery. */
 interface Options {
@@ -78,83 +80,28 @@ export function useMutation(mutation: string) {
 	};
 }
 
+
 /** Queries basic site info. */
-export const QUERY_INFO = `
-	info {
-		domain
-		favicon
-		name
-		description
-	}
-`;
+export const QUERY_INFO = `info ${Query.Info}`;
 
 /** Queries site quotas. */
-export const QUERY_QUOTAS = `
-	quotas {
-		storage {
-			used
-			allocated
-		}
-	}
-`;
+export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;
 
 /** Queries all media elements. */
-export const QUERY_ALL_MEDIA = `
-	media {
-		id
-		user
-		created
-		name
-		description
-		bytes
-		extension
-		path
-		url
-	}
-`;
+export const QUERY_MEDIA = `media ${Query.Media}`;
 
 /** Queries all themes. */
-export const QUERY_THEMES = `
-	themes {
-		identifier
-		name
-		author
-		description
-		coverPath
-		enabled
-	}
-`;
+export const QUERY_THEMES = `themes ${Query.Theme}`;
 
 /** Queries all themes. */
-export const QUERY_PLUGINS = `
-	plugins {
-		identifier
-		name
-		author
-		description
-		coverPath
-		enabled
-	}
-`;
+export const QUERY_PLUGINS = `plugins ${Query.Plugin}`;
 
 /** Queries all media elements. */
-export const QUERY_USERS = `
-	users {
-		id
-		username
-		emails
-	}
-`;
+export const QUERY_USERS = `users ${Query.User}`;
 
 /** Queries all roles. */
-export const QUERY_ROLES = `
-	roles {
-		id
-		name
-		color { h, s, v }
-		abilities
-	}
-`;
+export const QUERY_ROLES = `roles ${Query.Role}`;
+
 
 /** Mutates basic site info. */
 export const MUTATE_INFO = `

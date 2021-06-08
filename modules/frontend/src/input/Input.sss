@@ -1,0 +1,41 @@
+.Input
+	@apply w-full h-12 p-3 bg-gray-900 border-gray-900 outline-none resize-none font-normal rounded border text-base
+	transition: border-color 75ms, color 75ms
+
+	:global(html.dark) &
+		@apply bg-gray-50 border-gray-50
+
+	&:-webkit-autofill
+		border-radius: 0
+		caret-color: theme('colors.gray.600') !important
+		-webkit-box-shadow: 0 0 0px 1000px theme('colors.gray.50') inset
+		
+
+		&::first-line
+			@apply font-sans text-base text-gray-600
+
+		&:hover, &:focus
+			border-radius: 4px
+			transition: border-color 75ms, color 75ms, border-radius 75ms
+
+	&::placeholder, *::placeholder
+		@apply opacity-100 font-normal text-gray-500
+
+	&:not([disabled])
+		&:hover
+			@apply border-gray-800
+		
+			:global(html.dark) &
+				@apply border-gray-300
+
+		&:focus-visible, &:focus-within
+			@apply border-gray-500
+		
+			:global(html.dark) &
+				@apply border-gray-400
+
+	&[disabled]
+		@apply border-gray-200 bg-gray-200 text-gray-500 cursor-not-allowed
+
+	&.Mono
+		@apply font-mono

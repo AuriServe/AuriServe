@@ -1,21 +1,30 @@
 {
-  "name": "@auriserve/common-build",
-  "private": "true",
-  "version": "0.0.0",
-  "author": "Auri <me@auri.xyz>",
-  "homepage": "https://github.com/AuriServe",
-  "license": "MIT",
-  "scripts": {
-    "dev": "nodemon --config nodemon.json",
-    "build": "tsc --project tsconfig.json",
-    "clean": "find dist -name '*' -not -name 'package.json' -not -name 'dist' -delete"
-  },
-  "devDependencies": {
-    "@types/node": "^14.14.9",
-    "nodemon": "^2.0.6",
-    "typescript": "^4.2.4"
-  },
-  "dependencies": {
-    "moment": "^2.29.1"
-  }
+	"name": "@auriserve/common-build",
+	"private": "true",
+	"version": "0.0.0",
+	"author": "Auri <me@auri.xyz>",
+	"homepage": "https://github.com/AuriServe",
+	"license": "MIT",
+	"scripts": {
+		"dev": "nodemon",
+		"build": "tsc --project tsconfig.json",
+		"clean": "find dist -name '*' -not -name 'package.json' -not -path 'dist/node_modules*' -not -name 'dist' -delete"
+	},
+	"nodemonConfig": {
+		"watch": [
+			"src"
+		],
+		"ext": ".ts",
+		"exec": "npm run clean; npm run build",
+		"quiet": true
+	},
+	"devDependencies": {
+		"@types/node": "^14.14.9",
+		"nodemon": "^2.0.6",
+		"typescript": "^4.2.4"
+	},
+	"dependencies": {
+		"dayjs": "^1.10.5",
+		"moment": "^2.29.1"
+	}
 }

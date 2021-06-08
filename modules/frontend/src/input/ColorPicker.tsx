@@ -4,17 +4,19 @@ import { useEffect, useRef } from 'preact/hooks';
 
 import { Color } from 'common';
 
-import { WidgetProps } from './Input';
-
 import './ColorPicker.sass';
 
 interface Props {
+	value: Color.HSVA;
+	onValue?: (color: Color.HSVA) => void;
+
 	parent?: HTMLElement;
+	
 	writable?: boolean;
 	displayHex?: boolean;
 }
 
-const ColorPicker = forwardRef<HTMLDivElement, WidgetProps & Props>((props, ref) => {
+export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref) {
 	const color: Color.HSVA = Color.convert(props.value).toHSVA() as any;
 
 	const mouseTarget = useRef<string>('');
@@ -24,20 +26,20 @@ const ColorPicker = forwardRef<HTMLDivElement, WidgetProps & Props>((props, ref)
 	const inputHex = (evt: any) => {
 		const val = evt.target.value;
 		if (val.length !== 7) return;
-		props.setValue(Color.convert(val).toHSVA());
+		props.onValue?.(Color.convert(val).toHSVA());
 	};
 
 	const handleHueMove = (evt: MouseEvent) => {
 		const bounds = hueElem.current.getBoundingClientRect();
 		const h = Math.max(Math.min((evt.clientX - bounds.left) / bounds.width, 1), 0);
-		props.setValue({ ...color, h });
+		props.onValue?.({ ...color, h });
 	};
 
 	const handleSatValMove = (evt: MouseEvent) => {
 		const bounds = satValElem.current.getBoundingClientRect();
 		const sat = Math.max(Math.min((evt.clientX - bounds.left) / bounds.width, 1), 0);
 		const val = Math.max(Math.min((bounds.bottom - evt.clientY) / bounds.height, 1), 0);
-		props.setValue({ ...color, s: sat, v: val });
+		props.onValue?.({ ...color, s: sat, v: val });
 	};
 
 	const handleMouseMove = (evt: MouseEvent) => {
@@ -102,5 +104,3 @@ const ColorPicker = forwardRef<HTMLDivElement, WidgetProps & Props>((props, ref)
 		</div>
 	);
 });
-
-export default ColorPicker;
