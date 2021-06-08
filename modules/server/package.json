@@ -23,7 +23,7 @@
     "dev": "nodemon",
     "lint": "eslint -c .eslintrc.js src/**/*.ts",
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build": "npm run lint && tsc --project tsconfig.json && pkg package.json --options expose-gc --compress Brotli --out-path dist && npm run clean",
+    "build": "npm run lint && tsc --project tsconfig.json && nexe --target linux-x86-12.9.1 --name AuriServe --output dist/AuriServe -r 'src/views/*' && npm run clean",
     "clean": "find src -name '*.js' -type f -delete"
   },
   "pkg": {

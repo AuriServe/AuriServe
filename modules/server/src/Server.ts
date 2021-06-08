@@ -53,8 +53,8 @@ export default class Server {
 			await this.pages.init();
 			await this.plugins.init();
 
-			// if (this.conf.super)
-			//	 new SuperUserPrompt(this.db);
+			// // if (this.conf.super)
+			// //	 new SuperUserPrompt(this.db);
 
 			await this.adminRouter.init();
 			await this.pagesRouter.init();
@@ -191,8 +191,8 @@ export default class Server {
 	private async shutdown() {
 		Logger.info('Shutting down AuriServe.');
 		await Promise.all([
-			this.plugins.cleanup(),
-			this.pages.themes.cleanup()
+			// this.plugins.cleanup(),
+			// this.pages.themes.cleanup()
 		]);
 		process.exit();
 	}
