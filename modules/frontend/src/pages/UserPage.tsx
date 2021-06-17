@@ -1,12 +1,12 @@
 import * as Preact from 'preact';
 import { useMemo } from 'preact/hooks';
-import { useQuery, QUERY_USERS } from '../Graph';
+import { useData, QUERY_USERS } from '../Graph';
 
 import { Title, Page, Card } from '../structure';
 import UserRolesList from '../user/UserRolesList';
 
 export default function UserPage() {
-	const [ { users } ] = useQuery(QUERY_USERS);
+	const [ { users } ] = useData(QUERY_USERS, []);
 	const id = useMemo(() => window.location.pathname.replace(/^\/admin\/users\//g, ''), []);
 	const user = (users ?? []).filter(u => u.id === id)[0];
 

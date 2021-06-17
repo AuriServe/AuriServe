@@ -5,16 +5,18 @@ import escapeHtml from 'escape-html';
 import renderToString from 'preact-render-to-string';
 import fss, { promises as fs, constants as fsc } from 'fs';
 
+import { Query } from 'common/graph';
+import * as Int from 'common/graph/type';
+
 import Logger from './Logger';
-import Media from './data/Media';
 import Elements from './Elements';
 import Themes from './data/Themes';
 import Plugins from './data/Plugins';
-import { IMedia } from './data/model/Media';
 import Properties from './data/model/Properties';
 import UndefinedElement from './UndefinedElement';
 
-type ExposedTree = Record<string, Page.Element>;
+
+type ExposedTree = Record<string, Page.ComponentNode>;
 type ExposedMap = Record<string, ExposedTree>;
 
 // The page template, containing $MARKERS$ for page content.
@@ -32,6 +34,7 @@ const FIND_INCLUDE = (label: string) => new RegExp(`(?<=\<[A-z]+ data-include='$
 export default class PagesManager {
 	root: string;
 	themes: Themes;
+	gql?: (q: string) => Promise<Partial<Int.Root>>;
 
 
 	/**
@@ -46,7 +49,7 @@ export default class PagesManager {
 	 * @param {string} dataPath - The root data path for AuriServe.
 	 */
 
-	constructor(private dataPath: string, private plugins: Plugins, private elements: Elements, private media: Media) {
+	constructor(private dataPath: string, private plugins: Plugins, private elements: Elements) {
 		this.root = path.join(this.dataPath, 'pages');
 		this.themes = new Themes(this.dataPath);
 	}
@@ -57,13 +60,15 @@ export default class PagesManager {
 	 * creates the pages directory if it doesn't exist already.
 	 */
 
-	async init() {
+	async init(gql: (q: string) => Promise<Partial<Int.Root>>) {
 		try {
 			await fs.access(this.root, fsc.R_OK);
 		}
 		catch (e) {
 			fs.mkdir(this.root);
 		}
+		
+		this.gql = gql;
 		this.themes.init();
 	}
 
@@ -104,7 +109,7 @@ export default class PagesManager {
 
 		Logger.perfStart('Forming HTML');
 		let html = PAGE_TEMPLATE
-			.replace('$TITLE$', (json.title ? `${escapeHtml(json.title)}&nbsp; • &nbsp;` : '') + escapeHtml(siteName))
+			.replace('$TITLE$', (json.name ? `${escapeHtml(json.name)}&nbsp; • &nbsp;` : '') + escapeHtml(siteName))
 			.replace('$DESCRIPTION$', escapeHtml(json.description || siteDescription))
 			.replace('$FAVICON$', favicon + (faviconItem ? '.' + faviconItem.ext : ''));
 
@@ -130,7 +135,7 @@ export default class PagesManager {
 		html = html.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 
 		const layouts = await this.themes.listLayouts();
-		let body = layouts.get(json.layout) ?? layouts.get('default') ?? DEFAULT_LAYOUT;
+		let body = layouts.get(json.layout ?? 'default') ?? layouts.get('default') ?? DEFAULT_LAYOUT;
 
 		Object.keys(rendered).forEach(section =>
 			body = body!.replace(FIND_INCLUDE(section), rendered[section]));
@@ -173,9 +178,9 @@ export default class PagesManager {
 	 * @returns an unexpanded page object.
 	 */
 
-	async getPage(page: string): Promise<Page.Page> {
+	async getPage(page: string): Promise<Page.PageDocument> {
 		const p = path.join(this.root, page + '.json');
-		try { return JSON.parse((await fs.readFile(p)).toString()) as Page.Page; }
+		try { return JSON.parse((await fs.readFile(p)).toString()) as Page.PageDocument; }
 		catch (e) {
 			if (e.code === 'ENOENT') throw { code: 404, description: 'Page not found.' };
 			throw { code: 500, description: 'Internal server error.', stack: e.stack};
@@ -190,8 +195,8 @@ export default class PagesManager {
 	 * @param {string} page - The page to expand.
 	 */
 
-	async getPreparedPage(page: string): Promise<Page.Page> {
-		const media = await this.media.listMedia();
+	async getPreparedPage(page: string): Promise<Page.PageDocument> {
+		const { media } = await this.gql!(`{ media ${Query.Media} }`);
 		const p = path.join(this.root, page + '.json');
 			
 		try {
@@ -215,14 +220,14 @@ export default class PagesManager {
 
 
 	/**
-	 * Returns a map of PageMeta objects for each page.
+	 * Returns a map of PageMetadata objects for each page.
 	 *
-	 * @returns a key-value map of PageMeta, where the key is the path beginning at the root.
+	 * @returns a key-value map of PageMetadata, where the key is the path beginning at the root.
 	 */
 
-	async getAllPages(): Promise<{[key: string]: Page.PageMeta}> {
+	async getAllPages(): Promise<{[key: string]: Page.PageMetadata}> {
 		let dirs: string[] = [ '' ];
-		let pages: {[key: string]: Page.PageMeta} = {};
+		let pages: {[key: string]: Page.PageMetadata} = {};
 
 		while (dirs.length > 0) {
 			const dir = dirs.pop()!;
@@ -237,13 +242,13 @@ export default class PagesManager {
 					else if (stat.isFile() && file.endsWith('.json')) {
 
 						let fileContents = JSON.parse(
-							(await fs.readFile(path.join(this.root, filePath))).toString()) as Page.PageMeta;
+							(await fs.readFile(path.join(this.root, filePath))).toString()) as Page.PageMetadata;
 
 						// If 'elements' is not defined, file is not a page.
-						if (!(fileContents as Page.Page).elements) return;
+						if (!Page.isPageDocument(fileContents as Page.Document)) return;
 
 						// Remove the 'elements' property, we just want metadata.
-						delete ((fileContents as Partial<Page.Page>).elements);
+						delete ((fileContents as Partial<Page.PageDocument>).elements);
 
 						pages[filePath.replace(/\.json$/g, '')] = fileContents;
 					}
@@ -260,10 +265,10 @@ export default class PagesManager {
 	 * Throws if the requested page doesn't exist or it isn't updateable.
 	 *
 	 * @param {string} page - The page to update.
-	 * @param {Page} obj - Page object to update the page to.
+	 * @param {PageDocument} obj - Page object to update the page to.
 	 */
 
-	async updatePage(page: string, obj: Page.Page): Promise<void> {
+	async updatePage(page: string, obj: Page.PageDocument): Promise<void> {
 		const p = path.join(this.root, page + '.json');
 		try { await fs.writeFile(p, JSON.stringify(obj)); }
 		catch (e) {
@@ -277,11 +282,11 @@ export default class PagesManager {
 	 * Renders an element tree into HTML.
 	 *
 	 * @param {string} page - The path of the page to render.
-	 * @param {Child} root - The root element to render.
+	 * @param {Node} root - The root element to render.
 	 * @returns the rendered HTML as a string.
 	 */
 
-	private async renderTree(page: string, identifier: string, root: Page.Child): Promise<string> {
+	private async renderTree(page: string, identifier: string, root: Page.Node): Promise<string> {
 		Logger.perfStart('Building tree ' + identifier);
 		const tree = await this.createTree(root, path.dirname(page));
 		Logger.perfEnd('Building tree ' + identifier);
@@ -296,14 +301,14 @@ export default class PagesManager {
 	 * Creates Preact elements recursively, starting at the provided element.
 	 * Throws if the page or page includes do not exist.
 	 *
-	 * @param {Child} child - The root element to render, must be expanded.
+	 * @param {Node} child - The root element to render, must be expanded.
 	 * @param {string} pathRoot - The path that includes are relative to.
 	 * @returns a Preact VNode representing the root of the tree.
 	 */
 
-	private async createTree(child: Page.Child, pathRoot: string): Promise<Preact.VNode> {
-		const elem: Page.Element = Page.isInclude(child) ? child.elem! : child;
-		if (Page.isInclude(elem)) pathRoot = path.dirname(path.resolve(pathRoot, elem.include));
+	private async createTree(child: Page.Node, pathRoot: string): Promise<Preact.VNode> {
+		const elem: Page.ComponentNode = Page.isIncludeNode(child) ? child.elem! : child;
+		if (Page.isIncludeNode(elem)) pathRoot = path.dirname(path.resolve(pathRoot, elem.include));
 
 		const render = this.elements.getAllElements().get(elem.elem);
 		if (!render) return Preact.h(UndefinedElement, { elem: elem.elem });
@@ -320,18 +325,18 @@ export default class PagesManager {
 	 * Directly manipulates the passed-in object, does not return anything.
 	 * Throws if the required includes do not exist.
 	 *
-	 * @param {Child} elem - The root element to expand.
+	 * @param {Node} elem - The root element to expand.
 	 * @param {string} pathRoot - The path that includes are relative to.
 	 */
 
-	private async includeTree(elem: Page.Child, pathRoot: string): Promise<void> {
-		if (Page.isInclude(elem)) {
+	private async includeTree(elem: Page.Node, pathRoot: string): Promise<void> {
+		if (Page.isIncludeNode(elem)) {
 			const includePath = elem.include;
-			elem.elem = await this.expandInclude(elem, pathRoot);
+			elem.elem = await this.expandInclude(elem as Page.IncludeNode, pathRoot);
 			pathRoot = path.resolve(pathRoot, path.dirname(includePath));
 		}
 
-		const element: Page.Element = Page.isInclude(elem) ? elem.elem! : elem;
+		const element: Page.ComponentNode = Page.isIncludeNode(elem) ? elem.elem! : elem;
 		for (let child of element.children || []) await this.includeTree(child, pathRoot);
 	}
 
@@ -343,7 +348,7 @@ export default class PagesManager {
 	 * @param {Page} page - The page to expose.
 	 */
 
-	private exposePage(page: Page.Page) {
+	private exposePage(page: Page.PageDocument) {
 		let exposedMap: ExposedMap = {};
 		Object.keys(page.elements).map((key) => {
 			exposedMap[key] = this.exposeTree(page.elements[key]);
@@ -356,13 +361,13 @@ export default class PagesManager {
 	 * Recursively exposes a tree, storing named references to all elements containing
 	 * an 'exposeAs' key. Returns a key-value map of the elements.
 	 *
-	 * @param {Child} elem - The root element to expand.
+	 * @param {ComponentNode} elem - The root element to expand.
 	 */
 
-	private exposeTree(elem: Page.Child): ExposedTree {
+	private exposeTree(elem: Page.Node): ExposedTree {
 		let exposedTree: ExposedTree = {};
 
-		const expose: Page.Element = Page.isInclude(elem) ? elem.elem! : elem;
+		const expose: Page.ComponentNode = Page.isIncludeNode(elem) ? elem.elem! : elem;
 		if (expose.exposeAs) exposedTree[expose.exposeAs] = expose;
 
 		for (let child of expose.children || []) exposedTree = { ...exposedTree, ...this.exposeTree(child) };
@@ -376,13 +381,13 @@ export default class PagesManager {
 	 * Directly manipulates the passed-in object, does not return anything.
 	 *
 	 * @param {string} tree - The identifier of the tree that is being expanded.
-	 * @param {Child} elem - The root element to expand.
+	 * @param {ComponentNode} elem - The root element to expand.
 	 * @param {IMedia[]} media - The current SiteData media array.
 	 * @param {ExposedMap} exposed - The tree's exposed map.
 	 */
 
-	private async parseTree(tree: string, elem: Page.Child, media: IMedia[], exposed: ExposedMap): Promise<void> {
-		const parse: Page.Element = Page.isInclude(elem) ? elem.elem! : elem;
+	private async parseTree(tree: string, elem: Page.Node, media: Int.Media[], exposed: ExposedMap): Promise<void> {
+		const parse: Page.ComponentNode = Page.isIncludeNode(elem) ? elem.elem! : elem;
 		if (parse.props) parse.props = await this.parseProps(parse.props, media, tree, exposed);
 
 		for (let child of parse.children || []) await this.parseTree(tree, child, media, exposed);
@@ -393,14 +398,14 @@ export default class PagesManager {
 	 * Expands an include into a tree, overriding exposed properties with include props.
 	 * Throws the requested include doesn't exist.
 	 *
-	 * @param {Include} include - The include to be expanded.
+	 * @param {IncludeNode} include - The include to be expanded.
 	 * @param {string} pathRoot - The path that includes are relative to.
 	 * @returns a page element representing the expanded include root.
 	 */
 
-	private async expandInclude(include: Page.Include, pathRoot: string): Promise<Page.Element> {
+	private async expandInclude(include: Page.IncludeNode, pathRoot: string): Promise<Page.ComponentNode> {
 		const includePath = path.join(pathRoot, include.include + '.json');
-		let element = JSON.parse((await fs.readFile(includePath)).toString()) as Page.Element;
+		let element = (JSON.parse((await fs.readFile(includePath)).toString()) as Page.IncludeDocument).element;
 		await this.overrideTree(element, include.override);
 
 		return element;
@@ -411,17 +416,16 @@ export default class PagesManager {
 	 * Recursively overrides template children exposed props with include override props.
 	 * Manipulates the passed in elemDef, does not return anything.
 	 *
-	 * @param {Page.Element} elemDef - The element to override with properties.
+	 * @param {ComponentNode} elemDef - The element to override with properties.
 	 * @param {IncludeProps} includeOverrides - The include override props to use.
 	 */
 
-	private async overrideTree(elemDef: Page.Element, includeOverrides?: Page.IncludeProps): Promise<void> {
-		if (includeOverrides && elemDef.exposeAs && includeOverrides[elemDef.exposeAs]) {
+	private async overrideTree(elemDef: Page.ComponentNode, includeOverrides?: Record<string, Record<string, any>>): Promise<void> {
+		if (includeOverrides && elemDef.exposeAs && includeOverrides[elemDef.exposeAs])
 			Object.assign(elemDef.props, includeOverrides[elemDef.exposeAs]);
-		}
 
-		for (let child of elemDef.children ?? [])
-			if (Page.isElement(child)) await this.overrideTree(child, includeOverrides);
+		for (let child of (elemDef as Page.ComponentNode).children ?? [])
+			if (Page.isComponentNode(child)) await this.overrideTree(child, includeOverrides);
 	}
 
 
@@ -461,14 +465,14 @@ export default class PagesManager {
 	 * e.g. filling out a media prop with the rest of the fields.
 	 *
 	 * @param {any} props - The property to parse.
-	 * @param {IMedia[]} media - The current SiteData media array.
+	 * @param {Media[]} media - The current SiteData media array.
 	 * @param {string} myTree - The tree the prop is contained in.
 	 * @param {ExposedMap} exposedMap - A map of exposed props.
 	 *
 	 * @returns {any} - The modified property.
 	 */
 
-	private async parseProp(prop: any, media: IMedia[], myTree: string, exposedMap: ExposedMap): Promise<any> {
+	private async parseProp(prop: any, media: Int.Media[], myTree: string, exposedMap: ExposedMap): Promise<any> {
 		let wasValue = false;
 
 		if (typeof prop === 'object') {
@@ -499,12 +503,12 @@ export default class PagesManager {
 	 * e.g. filling out a media prop with the rest of the fields.
 	 *
 	 * @param {any} prop - The props table to parse through.
-	 * @param {IMedia[]} media - The current SiteData media array.
+	 * @param {Media[]} media - The current SiteData media array.
 	 * @param {string} tree - The tree the props are contained in.
 	 * @param {ExposedMap} exposedMap - A map of exposed props.
 	 */
 
-	private async parseProps(prop: any, media: IMedia[], tree: string, exposedMap: ExposedMap) {
+	private async parseProps(prop: any, media: Int.Media[], tree: string, exposedMap: ExposedMap) {
 		const [ newProp, wasValue ] = await this.parseProp(prop, media, tree, exposedMap);
 		prop = newProp;
 

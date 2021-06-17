@@ -9,7 +9,11 @@ export interface Interface {
 	plugins: Type.Plugin[],
 	media: Type.Media[],
 	roles: Type.Role[],
-	pages: Type.Page[]
+	pages: Type.Page[],
+
+	page?: Type.Page,
+	layout?: Type.Layout,
+	include?: Type.Include
 }
 
 export const Schema = `
@@ -25,6 +29,11 @@ export const Schema = `
 		pages: [Page!]!
 
 		user(id: String): User
+
+		page(path: String): Page
+		layout(name: String): Layout
+		include(path: String): Include
+		
 		theme(identifier: String): Theme
 		plugin(identifier: String): Plugin
 	}

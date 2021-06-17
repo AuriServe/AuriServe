@@ -7,15 +7,19 @@ import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
 
 import Mongoose from 'mongoose';
+import { graphql } from 'graphql';
 import { promises as fs } from 'fs';
 
 import Logger from './Logger';
 import Media from './data/Media';
+import Pages from './data/Pages';
 import Elements from './Elements';
 import * as Auth from './data/Auth';
 import Plugins from './data/Plugins';
 import Roles from './data/model/Role';
+import * as Int from 'common/graph/type';
 import PagesManager from './PagesManager';
+import { Schema, Resolver } from './data/Graph';
 import Properties from './data/model/Properties';
 
 import resolvePath from './ResolvePath';
@@ -29,9 +33,10 @@ export default class Server {
 	private pagesRouter: PagesRouter;
 
 	private media: Media;
+	private pages: Pages;
 	private plugins: Plugins;
 	private elements: Elements;
-	private pages: PagesManager;
+	private pageBuilder: PagesManager;
 
 	constructor(public readonly conf: Config, public readonly dataPath: string) {
 		this.app.use(compression());
@@ -40,17 +45,22 @@ export default class Server {
 		this.app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
 		this.elements = new Elements();
+		this.pages = new Pages(this.dataPath);
 		this.media = new Media(this.dataPath);
 		this.plugins = new Plugins(this.dataPath, this.elements);
-		this.pages = new PagesManager(this.dataPath, this.plugins, this.elements, this.media);
 
-		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.pages, this.plugins);
-		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.pages, this.plugins, this.media);
+		this.pageBuilder = new PagesManager(this.dataPath, this.plugins, this.elements);
+
+		const gqlContext = { plugins: this.plugins, pages: this.pages, themes: this.pageBuilder.themes, media: this.media };
+		const gql = (q: string) => graphql(Schema, q, Resolver, gqlContext).then(res => res.data as Int.Root);
+
+		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.pageBuilder, this.plugins);
+		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.pageBuilder, this.plugins, this.media, gqlContext);
 
 		this.init().then(async () => {
 			if (conf.verbose || conf.logLevel === 'trace') this.debugRoutes();
 
-			await this.pages.init();
+			await this.pageBuilder.init(gql);
 			await this.plugins.init();
 
 			// // if (this.conf.super)
@@ -174,14 +184,6 @@ export default class Server {
 			next();
 		});
 	}
-
-
-	/**
-	 * Calls a GraphQL query on the server schema and resolver.
-	 */
-
-	// private gql = (q: string) => graphql(Schema, q, Resolver,
-	// 	{ themes: this.pages.themes, plugins: this.plugins, media: this.media }) as any;
 
 
 	/**

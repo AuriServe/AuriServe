@@ -1,10 +1,10 @@
 import * as Preact from 'preact';
 
 import RolesEditor from '../../roles/RolesEditor';
-import { useQuery, QUERY_ROLES } from '../../Graph';
+import { useData, QUERY_ROLES } from '../../Graph';
 
 export default function RolesSettings() {
-	const [ { roles } ] = useQuery(QUERY_ROLES);
+	const [ { roles } ] = useData(QUERY_ROLES, []);
 
 	return (
 		<div class='Settings RolesSettings'>

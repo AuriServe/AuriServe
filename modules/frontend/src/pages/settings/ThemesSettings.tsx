@@ -7,7 +7,7 @@ import { Theme } from 'common/graph/type';
 import { Label } from '../../input';
 import ThemeItem from './FeatureItem';
 import { SavePopup } from '../../structure';
-import { useQuery, useMutation, QUERY_THEMES, MUTATE_THEMES } from '../../Graph';
+import { useData, useMutation, QUERY_THEMES, MUTATE_THEMES } from '../../Graph';
 
 const sortFn = (a: Theme, b: Theme) => {
 	if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
@@ -15,7 +15,7 @@ const sortFn = (a: Theme, b: Theme) => {
 };
 
 export default function ThemesSettings() {
-	const [ data ] = useQuery(QUERY_THEMES);
+	const [ data, refresh ] = useData(QUERY_THEMES, []);
 	const updateEnabled = useMutation(MUTATE_THEMES);
 
 	const [ themes, setThemes ] = useState<Theme[]>((data.themes ?? []).sort(sortFn));
@@ -32,7 +32,8 @@ export default function ThemesSettings() {
 		setThemes(newThemes);
 	};
 
-	const handleSave = async () => updateEnabled({ enabled: themes.filter(t => t.enabled).map(t => t.identifier) });
+	const handleSave = async () =>
+		updateEnabled({ enabled: themes.filter(t => t.enabled).map(t => t.identifier) }).then(() => refresh());
 	
 	return (
 		<div class='w-full max-w-5xl mx-auto'>

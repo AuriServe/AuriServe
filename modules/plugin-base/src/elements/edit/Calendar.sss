@@ -1,0 +1,52 @@
+$c-border: #ccc
+$c-background: #fff
+$c-background-unfocused: #eee
+
+.Calendar.EditCalendar
+	.Calendar-EditEvent
+		width: 700px
+		max-width: 100%
+
+		.Calendar-EditEventHeader
+			@include ellipsize()
+			margin-bottom: 0
+
+		.Calendar-EditEventDateWrap
+			display: grid
+			grid-gap: 16px
+			grid-template-columns: 1fr 1fr
+
+		.Calendar-EditEventTitleWrap
+			display: grid
+			grid-gap: 16px
+			grid-template-columns: 66% 1fr 64px
+
+			.InputColor
+				height: 48px
+
+		.Calendar-InputInvisible
+			opacity: 0.4
+			z-index: 1
+			transition: opacity 150ms
+
+			&:hover
+				opacity: 0.6
+
+			&:focus, &:focus-within
+				opacity: 1
+
+		.Calendar-EditEventActionWrap
+			margin-top: 16px
+
+			button
+				@extend %button_style
+				margin-right: 8px
+
+	.Calendar-ActionBar
+		height: 54px
+		background-color: $c-background
+		border-top: 1px solid $c-border
+		padding: 8px
+
+		button
+			@extend %button_style

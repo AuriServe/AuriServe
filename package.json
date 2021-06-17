@@ -6,5 +6,6 @@
     "install": "cd modules; cd common; npm install && cd dist; npm install && cd ../../frontend; npm install && cd ../server; npm install",
     "dev": "cd modules; cd common; npm run dev & cd ../frontend; npm run dev & cd ../server; npm run dev",
     "build": "cd modules; cd common && npm run build && cd ../frontend && npm run build && cd ../server && npm run build"
-  }
+  },
+  "devDependencies": {}
 }

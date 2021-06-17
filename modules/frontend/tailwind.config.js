@@ -6,9 +6,13 @@ module.exports = {
 	mode: 'jit',
 	purge: [
 		'./src/**/*.sss',
-		'./src/**/*.tsx'
+		'./src/**/*.tsx',
+		'./src/**/*.tw'
 	],
 	darkMode: 'class',
+	corePlugins: {
+		preflight: false
+	},
 	theme: {
 		extend: {
 			transitionDelay: {
@@ -16,6 +20,10 @@ module.exports = {
 			},
 			fontFamily: {
 				sans: [ 'Roboto', ...defaultTheme.fontFamily.sans ]
+			},
+			height: {
+				min: 'min-content',
+				max: 'max-content'
 			}
 		},
 		colors: {
@@ -40,7 +48,9 @@ module.exports = {
 		},
 		animation: {
 			rocket: 'rocket 0.5s 1',
-			fadein: 'fadein 0.5s 1'
+			'fadein-500': 'fadein 500ms 1',
+			'fadein-150': 'fadein 150ms 1',
+			'select': 'select 150ms 1',
 		},
 		keyframes: {
 			rocket: {
@@ -60,26 +70,19 @@ module.exports = {
 				to: {
 					opacity: 1
 				}
+			},
+			select: {
+				from: {
+					opacity: 0,
+					transform: 'scale(1.05)'
+				},
+				to: {
+					opacity: 1
+				}
 			}
 		}
 	},
-	variants: {
-		extend: {
-			// opacity: [ 'focus-visible', 'group-focus-visible' ],
-			// backgroundColor: [ 'focus-visible', 'active' ],
-			// filter: [ 'dark' ],
-			// invert: [ 'dark' ],
-			// hueRotate: [ 'dark' ],
-			// brightness: [ 'dark' ],
-			// contrast: [ 'dark' ],
-			// translate: [ 'group-hover', 'group-focus-visible' ],
-			// scale: [ 'group-hover', 'focus-visible', 'group-focus-visible' ],
-			// borderColor: [ 'focus-visible', 'active' ],
-			// transitionDelay: [ 'group-hover', 'group-focus-visible' ],
-		},
-	},
 	plugins: [
-		require('tailwindcss-interaction-variants'),
-		require('nightwind')
+		require('tailwindcss-interaction-variants')
 	],
 }

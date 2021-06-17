@@ -3,6 +3,7 @@ export { Interface as Info } from '../Info';
 export { Interface as Layout } from '../Layout';
 export { Interface as Media } from '../Media';
 export { Interface as Page } from '../Page';
+export { Interface as Include } from '../Include';
 export { Interface as Plugin } from '../Plugin';
 export { Interface as Quotas } from '../Quotas';
 export { Interface as Role } from '../Role';

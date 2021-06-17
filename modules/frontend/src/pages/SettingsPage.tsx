@@ -13,7 +13,7 @@ function renderLink(name: string, path: string, icon: string, props?: any) {
 				to={path} {...props}>
 				<img width={24} height={24} src={icon} alt='' role='presentation'
 					class={'dark:filter dark:invert dark:brightness-75 dark:contrast-200 dark:hue-rotate-180 pointer-events-none'}/>
-				<span class='pl-2 text-gray-100'>{name}</span>
+				<span class='pl-2 text-gray-100 dark:text-gray-800'>{name}</span>
 			</Button>
 		</li>
 	);
@@ -44,7 +44,7 @@ export default function SettingsPage() {
 		<Page class='flex bg-white dark:bg-gray-100 !pb-0'>
 			<Title>Settings</Title>
 			{(!mobile || !inPage) &&
-				<div class='w-full md:w-72 h-full px-4 bg-gray-900 flex-shrink-0'>
+				<div class='w-full md:w-72 h-full px-4 bg-gray-900 dark:bg-gray-50 flex-shrink-0'>
 					<ul class='sticky top-0 flex flex-col gap-1 py-3.5' role='navigation'>
 						{renderLink('Overview', '/settings/overview', '/admin/asset/icon/home-dark.svg')}
 						<li><hr class='border-gray-700 dark:border-gray-300 my-2' /></li>

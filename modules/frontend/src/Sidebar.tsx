@@ -12,7 +12,9 @@ const SETTINGS_ICON = '/admin/asset/icon/settings-dark.svg';
 const THEME_ICON = '/admin/asset/icon/interface-theme-dark.svg';
 
 function handleDarkMode() {
-	document.documentElement.classList.toggle('dark');
+	document.documentElement.classList.add('AS_TRANSITION_THEME');
+	setTimeout(() => document.documentElement.classList.toggle('dark'), 50);
+	setTimeout(() => document.documentElement.classList.remove('AS_TRANSITION_THEME'), 300);
 }
 
 function handleLogout() {
@@ -27,8 +29,8 @@ const style = {
 		group-hover:opacity-75 group-focus-visible:opacity-100`,
 	label: `block absolute z-10 transform transition left-16 top-3 rounded py-1 px-2.5
 		bg-white dark:bg-gray-200 opacity-0 translate-x-1 pointer-events-none select-none dark:text-gray-800
-		group-hover:opacity-100 group-hover:translate-x-0 group-hover:delay-700 font-medium shadow-md
-		group-focus-visible:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:delay-0`,
+		group-hover:opacity-100 group-hover:translate-x-0 group-hover:delay-700 font-medium shadow-md whitespace-nowrap
+		group-focus-visible:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:delay-0 `,
 	labelArrow: 'block absolute -left-1 top-3 w-2 h-2 transform rotate-45 bg-white dark:bg-gray-200'
 };
 
@@ -42,7 +44,7 @@ function renderLink(name: string, path: string | (() => void), icon: string, exa
 				alt='' role='presentation' width={56} height={56} src={icon}/>
 			<span class={style.label}>{name}<div class={style.labelArrow}/></span>
 			<div class={mergeClasses(!isActive && 'scale-0',
-				'absolute transition w-2 h-2 bg-gray-900 transform',
+				'absolute transition w-2 h-2 bg-gray-900 dark:bg-gray-50 transform',
 				'rotate-45 top-[calc(50%-0.25rem)] left-[calc(100%-0.25rem+.5px)]')}
 			style={{ clipPath: 'polygon(0 0, 0% 100%, 100% 100%)' }}/>
 		</Link>

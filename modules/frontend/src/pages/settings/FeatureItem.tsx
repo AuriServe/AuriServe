@@ -25,8 +25,9 @@ export default function FeatureItem({ coverPath, name, description, enabled, onD
 			</div>
 
 			<div class='p-3'>
-				<h2 class={mergeClasses('font-medium transition', !enabled && 'text-gray-400')}>{name}</h2>
-				<p class={mergeClasses('text-sm truncate transition', enabled ? 'text-gray-200' : 'text-gray-500')}>{description}</p>
+				<h2 class={mergeClasses('font-medium transition', !enabled && 'text-gray-400 dark:text-gray-600')}>{name}</h2>
+				<p class={mergeClasses('text-sm truncate transition', enabled ? 'text-gray-200 dark:text-gray-700' : 'text-gray-500')}>
+					{description}</p>
 			</div>
 
 			<div class='grid grid-cols-2 gap-px bg-gray-800 dark:bg-gray-300 border-t border-gray-800 dark:border-gray-300'>

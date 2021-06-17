@@ -10,16 +10,16 @@ import Media from '../data/Media';
 import * as Auth from '../data/Auth';
 import Plugins from '../data/Plugins';
 import PagesManager from '../PagesManager';
-import { Schema, Resolver } from '../data/Graph';
 import AuthRoute, { delay } from './AuthRoute';
+import { Schema, Resolver, Context } from '../data/Graph';
 
 
 // The page template, containing $MARKERS$ for page content.
 const PAGE_TEMPLATE = fs.readFileSync(path.join(path.dirname(__dirname), 'views', 'admin.html')).toString();
 
 export default class AdminRouter extends Router {
-	constructor(private dataPath: string, private app: Express.Application,
-		private pages: PagesManager, private plugins: Plugins, private media: Media) { super(); }
+	constructor(private dataPath: string, private app: Express.Application, private pageBuilder: PagesManager,
+		private plugins: Plugins, private media: Media, private gqlContext: Context) { super(); }
 
 	init() {
 		const { rateLimit, authRoute } = AuthRoute({ attempts: 10000 });
@@ -58,8 +58,8 @@ export default class AdminRouter extends Router {
  		 * Also provides a graphiql access-point if loaded by a logged-in user.
  		 */
 
-		this.router.use('/graphql', authRoute, graphqlHTTP({ schema: Schema, rootValue: Resolver, graphiql: true,
-			context: { plugins: this.plugins, themes: this.pages.themes, media: this.media } }));
+		this.router.use('/graphql', authRoute, graphqlHTTP({
+			schema: Schema, rootValue: Resolver, graphiql: true, context: this.gqlContext }));
 
 
 		/**
@@ -84,7 +84,7 @@ export default class AdminRouter extends Router {
 			if (typeof(name) != 'string' || typeof(identifier) != 'string')
 				throw 'Request is missing required data.';
 
-			const s = this.media.addMedia(user!._id, file, name, identifier);
+			const s = await this.media.addMedia(user!._id, file, name, identifier);
 			res.sendStatus(s ? 202 : 409);
 		}));
 
@@ -244,7 +244,7 @@ export default class AdminRouter extends Router {
 					pluginStyles: this.plugins.listEnabled().filter(p => p.config.sources.editor?.style)
 						.map(p => p.config.identifier + '/' + p.config.sources.editor!.style) })}</script>`)
 				.replace('$THEMES$', `<script id='themes' type='application/json'>${
-					JSON.stringify({ themes: this.pages.themes.listEnabled() })}</script>`)
+					JSON.stringify({ themes: this.pageBuilder.themes.listEnabled().map(t => t.config.identifier) })}</script>`)
 				.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 			res.send(html);
 		});

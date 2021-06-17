@@ -26,10 +26,10 @@ export default function MediaView({ user, media, onDelete }: Props) {
 				<div class='flex flex-row gap-4 items-center'>
 					<MediaIcon path={media.url} imageIcon={false} class='w-20 h-20 !bg-gray-900 dark:!bg-gray-200'/>
 					<div>
-						<h1 class='text-gray-100 font-medium truncate'>{media.name}</h1>
-						<h2 class='text-gray-300 font-medium text-sm py-0.5 truncate'>
+						<h1 class='text-gray-100 dark:text-gray-800 font-medium truncate'>{media.name}</h1>
+						<h2 class='text-gray-300 dark:text-gray-600 font-medium text-sm py-0.5 truncate'>
 							{Format.bytes(media.bytes)} • Uploaded by <UserTag user={user} /> {Format.date(media.created)}</h2>
-						<h3 class='text-gray-400 font-medium text-sm py-0.5 truncate'>{media.url}</h3>
+						<h3 class='text-gray-400 dark:text-gray-500 font-medium text-sm py-0.5 truncate'>{media.url}</h3>
 					</div>
 				</div>
 

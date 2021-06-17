@@ -7,7 +7,7 @@ import { Plugin } from 'common/graph/type';
 import { Label } from '../../input';
 import PluginItem from './FeatureItem';
 import { SavePopup } from '../../structure';
-import { useQuery, useMutation, QUERY_PLUGINS, MUTATE_PLUGINS } from '../../Graph';
+import { useData, useMutation, QUERY_PLUGINS, MUTATE_PLUGINS } from '../../Graph';
 
 const sortFn = (a: Plugin, b: Plugin) => {
 	if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
@@ -15,7 +15,7 @@ const sortFn = (a: Plugin, b: Plugin) => {
 };
 
 export default function PluginsSettings() {
-	const [ data ] = useQuery(QUERY_PLUGINS);
+	const [ data, refresh ] = useData(QUERY_PLUGINS, []);
 	const updateEnabled = useMutation(MUTATE_PLUGINS);
 
 	const [ plugins, setPlugins ] = useState<Plugin[]>((data.plugins ?? []).sort(sortFn));
@@ -31,7 +31,7 @@ export default function PluginsSettings() {
 		setPlugins(newPlugins);
 	};
 
-	const handleSave = async () => updateEnabled({ enabled: plugins.filter(t => t.enabled).map(t => t.identifier) });
+	const handleSave = async () => updateEnabled({ enabled: plugins.filter(t => t.enabled).map(t => t.identifier) }).then(() => refresh());
 	
 	return (
 		<div class='w-full max-w-5xl mx-auto'>

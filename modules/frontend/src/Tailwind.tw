@@ -1,13 +1,19 @@
+@import '../../common/src/reset.css'
 @import 'tailwindcss/base'
 @import 'tailwindcss/components'
 @import 'tailwindcss/utilities'
 
-html
+@layer utilities
+	.interact-none
+		user-select: none
+		pointer-events: none
+		
+html.AS_APP
+	overflow-x: hidden
+
+html.AS_APP
 	overflow-y: scroll
 	-webkit-tap-highlight-color: rgba(255, 255, 255, 0)
-
-	*::selection
-		background-color: #74879D66
 
 	body
 		@media (pointer: fine)
@@ -21,6 +27,15 @@ html
 
 				&:hover
 					background-color: rgba(87, 87, 87, .6)
+
+.AS_TRANSITION_THEME, .AS_TRANSITION_THEME *, .AS_TRANSITION_THEME *::before, .AS_TRANSITION_THEME *::after
+	transition: all 0.25s 0s !important
+
+.AS_ROOT
+	font-family: theme(fontFamily.sans)
+	
+	*::selection
+		background-color: #74879D66
 
 	strong
 		@apply font-medium

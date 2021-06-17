@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+
+    "target": "es5",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "lib": [ "dom", "es2015" ],
+    
+    "noEmitHelpers": true,
+    "importHelpers": true,
+
+    "jsx": "react",
+    "jsxFactory": "Preact.h",
+
+    "baseUrl": ".",
+    "paths": {
+        "*": [ "node_modules/@types" ],
+        "as-editor": ["@types/as-editor"],
+        "as-editor/hooks": ["@types/as-editor/hooks"],
+        "as-editor/components": ["@types/as-editor/components"]
+    },
+
+    "removeComments": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true
+  }
+}

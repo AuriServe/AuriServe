@@ -1,7 +1,11 @@
+import fss from 'fs';
+import path from 'path';
+import { Page } from 'common';
 import { ObjectID } from 'mongodb';
 import { buildSchema } from 'graphql';
 import { SCHEMA } from 'common/graph';
 
+import Pages from './Pages';
 import Media from './Media';
 import Themes from './Themes';
 import Plugins from './Plugins';
@@ -14,9 +18,12 @@ import { IMedia } from './model/Media';
 import Properties from './model/Properties';
 import RoleModel, { IRole } from './model/Role';
 
+const DEFAULT_LAYOUT = fss.readFileSync(path.join(path.dirname(__dirname), 'views', 'layout.html')).toString();
+
 export const Schema = buildSchema(SCHEMA);
 
 export interface Context {
+	pages: Pages;
 	media: Media;
 	themes: Themes;
 	plugins: Plugins;
@@ -122,6 +129,22 @@ export class RoleResolver {
 	abilities		= () => this.role.abilities;
 };
 
+export class PageResolver {
+	constructor(private page: Page.PageDocument, public path: string) {}
+
+	name = () => this.page.name;
+	description = () => this.page.description;
+
+	layout = () => this.page.layout;
+	content = () => JSON.stringify(this.page.elements);
+};
+
+export class IncludeResolver {
+	constructor(private include: Page.IncludeDocument, public path: string) {}
+
+	content = () => JSON.stringify(this.include.element);
+};
+
 export const Resolver = {
 	info: async ({ info }: any) => {
 		if (info) {
@@ -133,16 +156,22 @@ export const Resolver = {
 	},
 	quotas: QuotasResolver,
 
-	users: async () => (await Auth.listUsers()).map(u => UserResolver(u)),
-	themes: (_: any, ctx: Context) => ctx.themes.listAll().map(t => new ThemeResolver(t)),
+	users:   ()                     => Auth.listUsers().then(users => users.map(u => UserResolver(u))),
+	themes:  (_: any, ctx: Context) => ctx.themes.listAll().map(t => new ThemeResolver(t)),
 	plugins: (_: any, ctx: Context) => ctx.plugins.listAll().map(p => new PluginResolver(p)),
-	media: async (_: any, ctx: Context) => (await ctx.media.listMedia()).map(m => new MediaResolver(m)),
-	roles: async () => (await RoleModel.find({})).map((r: IRole) => new RoleResolver(r)),
+	media:   (_: any, ctx: Context) => ctx.media.listMedia().then(media => media.map(m => new MediaResolver(m))),
+	roles:   ()                     => RoleModel.find({}).then((roles: IRole[]) => roles.map(r => new RoleResolver(r))),
+	pages:   (_: any, ctx: Context) => ctx.pages.listPages(),
 
 	user: async ({ id }: { id: string }) => {
 		const u = await Auth.getUser(new ObjectID(id));
 		return u ? UserResolver(u) : undefined;
 	},
+
+	page:    ({ path }: { path: string }, ctx: Context) => ctx.pages.getPage(path).then(page => new PageResolver(page, path)),
+	include: ({ path }: { path: string }, ctx: Context) => ctx.pages.getInclude(path).then(include => new IncludeResolver(include, path)),
+	layout:  ({ name }: { name: string }, _ctx: Context) => ({ identifier: name, html: DEFAULT_LAYOUT }),
+
 	theme: ({ identifier }: { identifier: string }, ctx: Context) => {
 		const t = ctx.themes.get(identifier);
 		return t ? new ThemeResolver(t) : undefined;
@@ -152,9 +181,9 @@ export const Resolver = {
 		return p ? new PluginResolver(p) : undefined;
 	},
 
-	enabled_themes: ({ enabled }: any, ctx: Context) => ctx.themes.setEnabled(enabled),
+	enabled_themes:  ({ enabled }: any, ctx: Context) => ctx.themes.setEnabled(enabled),
 	enabled_plugins: ({ enabled }: any, ctx: Context) => ctx.plugins.setEnabled(enabled),
-	delete_media: ({ media }: any, ctx: Context) => {
+	delete_media:    ({ media   }: any, ctx: Context) => {
 		try { Promise.all(media.map((id: ObjectID) => ctx.media.removeMedia(id))); return true; }
 		catch (e) { return false; }
 	}

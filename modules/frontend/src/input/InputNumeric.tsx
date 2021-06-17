@@ -1,9 +1,10 @@
 import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import './InputNumeric.sass';
-
 import { InputProps, FocusableInputProps } from './index';
+import { mergeClasses } from '../Util';
+
+import style from './Input.sss';
 
 interface Props extends InputProps, FocusableInputProps {}
 
@@ -20,7 +21,7 @@ const InputNumeric = forwardRef<HTMLInputElement, Props>((props, fRef) => {
 			onInput={cb}
 			onChange={cb}
 			
-			class={('InputNumeric ' + (props.class ?? '')).trim()}
+			class={mergeClasses(style.Input, props.class)}
 			style={props.style}
 
 			type='number'

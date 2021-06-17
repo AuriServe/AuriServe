@@ -10,7 +10,7 @@ import MediaItem from '../media/MediaItem';
 import MediaView from '../media/MediaView';
 import MediaUploadForm from '../media/MediaUploadForm';
 import { Title, Page, SectionHeader, Card, Button, Modal, Dropdown, SelectGroup, SavePopup } from '../structure';
-import { useQuery, useMutation, QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS, MUTATE_DELETE_MEDIA } from '../Graph';
+import { useData, useMutation, QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS, MUTATE_DELETE_MEDIA } from '../Graph';
 
 type SortingMode = 'size' | 'name' | 'uploader' | 'date' | 'type';
 
@@ -27,7 +27,7 @@ function titleCase(str: string): string {
 }
 
 export default function MediaPage() {
-	let [ data,, refresh ] = useQuery([ QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS ]);
+	let [ data, refresh ] = useData([ QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS ], []);
 	const deleteMedia = useMutation(MUTATE_DELETE_MEDIA);
 
 	const [ view, setView ] = useState<'grid' | 'list'>('grid');

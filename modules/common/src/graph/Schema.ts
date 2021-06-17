@@ -3,6 +3,7 @@ import { Schema as Info } from './Info';
 import { Schema as Layout } from './Layout';
 import { Schema as Media } from './Media';
 import { Schema as Page } from './Page';
+import { Schema as Include } from './Include';
 import { Schema as Plugin } from './Plugin';
 import { Schema as Quotas } from './Quotas';
 import { Schema as Role } from './Role';
@@ -18,6 +19,7 @@ export { Schema as Info } from './Info';
 export { Schema as Layout } from './Layout';
 export { Schema as Media } from './Media';
 export { Schema as Page } from './Page';
+export { Schema as Include } from './Include';
 export { Schema as Plugin } from './Plugin';
 export { Schema as Quotas } from './Quotas';
 export { Schema as Role } from './Role';
@@ -29,4 +31,4 @@ export { Schema as Resource } from './Resource';
 export { Schema as TrackModifications } from './TrackModifications';
 
 export const SCHEMA = [ Basic, Resource, TrackModifications,
-	Info, Quotas, Layout, Theme, Plugin, User, Role, Media, Page, Root ].join('\n');
+	Info, Quotas, Layout, Theme, Plugin, User, Role, Media, Page, Include, Root ].join('\n');

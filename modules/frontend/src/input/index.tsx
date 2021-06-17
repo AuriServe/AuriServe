@@ -3,6 +3,8 @@
  * exporting generic interfaces for all inputs.
  */
 
+/** The Form element. */
+export { default as Form } from './InputForm';
 
 /** Labels and structural elements. */
 export { default as Label } from './InputLabel';
@@ -13,7 +15,7 @@ export { default as Annotation } from './InputAnnotation';
 export { default as Text } from './InputText';
 // export { default as Select } from './InputSelect';
 export { default as Toggle } from './InputToggle';
-// export { default as Numeric } from './InputNumeric';
+export { default as Numeric } from './InputNumeric';
 
 /** Complex inputs. */
 // export { default as Media } from './InputMedia';

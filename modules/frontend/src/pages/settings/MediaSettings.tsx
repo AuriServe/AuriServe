@@ -4,10 +4,10 @@ import { useState } from 'preact/hooks';
 import { Format } from 'common';
 
 import { Label, Annotation, Toggle } from '../../input';
-import { useQuery, QUERY_MEDIA, QUERY_QUOTAS } from '../../Graph';
+import { useData, QUERY_MEDIA, QUERY_QUOTAS } from '../../Graph';
 
 export default function MediaSettings() {
-	const [ { media, quotas } ] = useQuery([ QUERY_MEDIA, QUERY_QUOTAS ]);
+	const [ { media, quotas } ] = useData([ QUERY_MEDIA, QUERY_QUOTAS ], []);
 	const [ generateThumbnails, setGenerateThumbnails ] = useState<boolean>(false);
 	const [ useModernFormats, setUseModernFormats ] = useState<boolean>(false);
 

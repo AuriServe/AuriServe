@@ -1,20 +1,29 @@
 import Cookie from 'js-cookie';
 import * as Preact from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+
+import Sidebar from './Sidebar';
+import { LoginPage, MainPage, PagesPage, MediaPage, UserPage,
+	SettingsPage, EditorControlPage, EditorRendererPage } from './pages';
 
 import './Tailwind.tw';
 
-import Sidebar from './Sidebar';
-import PageEditorControl from './pages/editor/PageEditorControlPage';
-import PageEditorRenderer from './pages/editor/PageEditorRendererPage';
-import { LoginPage, MainPage, PagesPage, MediaPage, SettingsPage, UserPage } from './pages';
-
-import { useQuery, QUERY_INFO } from './Graph';
+import * as Int from 'common/graph/type';
 
 type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
 document.documentElement.classList.add('dark');
+
+
+/** Defines the content of the App Context. */
+export interface AppContextData { data: Partial<Int.Root>; mergeData(data: Partial<Int.Root>): void }
+
+
+/** The App Context containing graph data. */
+export const AppContext = Preact.createContext<AppContextData>({
+	data: {}, mergeData: () => { throw 'Accessed default AppContext'; }});
+
 
 /**
  * Main entry point for the application.
@@ -23,31 +32,33 @@ document.documentElement.classList.add('dark');
  */
 
 export default function App() {
-	const [ ,, reload ] = useQuery(QUERY_INFO);
+	const [ data, setData ] = useState<Partial<Int.Root>>({});
 	const [ state, setState ] = useState<AppState>(() => Cookie.get('tkn') ? 'QUERYING' : 'LOGIN');
 
-	const initData = async () => {
-		setState('AUTH');
-		reload();
-	};
+	const mergeData = useCallback((data: Partial<Int.Root>) =>
+		setData((prevData: Partial<Int.Root>) => { return { ...prevData, ...data }; }), []);
 
 	useEffect(() => {
-		if (state === 'QUERYING') initData();
+		if (state === 'QUERYING') setState('AUTH');
 	}, [ state ]);
 
 	return (
-		<Preact.Fragment>
+		<AppContext.Provider value={{ data, mergeData }}>
 			{state === 'LOGIN' ?
-				<div class='AS_ROOT grid min-h-screen text-gray-100 dark:text-gray-800  bg-gray-900 dark:bg-gray-050'>
-					<LoginPage onLogin={initData} />
+				<div class='AS_ROOT grid min-h-screen text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-50'>
+					<LoginPage onLogin={() => setState('AUTH')} />
 				</div> :
 				<Router basename='/admin'>
 					<Switch>
-						<Route exact path='/renderer' component={PageEditorRenderer as any} />
-						<Route strict path='/pages/' component={PageEditorControl as any} />
+						<Route exact path='/renderer' component={EditorRendererPage as any} />
+						<Route strict path='/pages/'>
+							<div class='AS_ROOT grid min-h-screen text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-50'>
+								<EditorControlPage/>
+							</div>
+						</Route>
 
 						<Route>
-							<div class='AS_ROOT grid pl-14 min-h-screen text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-050'>
+							<div class='AS_ROOT grid pl-14 min-h-screen text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-50'>
 								<div class='grid animate-fadein'>
 									<Sidebar/>
 									<Switch>
@@ -66,6 +77,6 @@ export default function App() {
 					</Switch>
 				</Router>
 			}
-		</Preact.Fragment>
+		</AppContext.Provider>
 	);
 }

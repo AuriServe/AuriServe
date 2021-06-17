@@ -3,10 +3,11 @@ import { useReducer, useEffect } from 'preact/hooks';
 
 import { SavePopup } from '../../structure';
 import { Annotation, Text } from '../../input';
-import { useQuery, useMutation, QUERY_INFO, MUTATE_INFO } from '../../Graph';
+import { useData, useMutation, QUERY_INFO, MUTATE_INFO } from '../../Graph';
+
 
 export default function MainSettings() {
-	const [ data ] = useQuery(QUERY_INFO);
+	const [ data ] = useData([ QUERY_INFO ], []);
 	const updateData = useMutation(MUTATE_INFO);
 
 	const [ info, setInfo ] = useReducer((info, newInfo: any) => ({...info, ...newInfo}),

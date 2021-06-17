@@ -1,22 +1,26 @@
 .Input
 	@apply w-full h-12 p-3 bg-gray-900 border-gray-900 outline-none resize-none font-normal rounded border text-base
+
 	transition: border-color 75ms, color 75ms
 
 	:global(html.dark) &
 		@apply bg-gray-50 border-gray-50
 
 	&:-webkit-autofill
-		border-radius: 0
-		caret-color: theme('colors.gray.600') !important
+		padding: calc(0.75rem - 3px)
+		caret-color: theme('colors.blue.300')
+		border: 4px solid theme('colors.gray.200')
 		-webkit-box-shadow: 0 0 0px 1000px theme('colors.gray.50') inset
-		
+	
+		transition: border-color 0s, color 75ms
 
 		&::first-line
-			@apply font-sans text-base text-gray-600
+			@apply font-sans text-base text-blue-300
 
 		&:hover, &:focus
-			border-radius: 4px
-			transition: border-color 75ms, color 75ms, border-radius 75ms
+			padding: 0.75rem
+			@apply !border
+			transition: border-color 75ms, color 75ms
 
 	&::placeholder, *::placeholder
 		@apply opacity-100 font-normal text-gray-500

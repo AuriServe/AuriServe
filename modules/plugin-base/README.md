@@ -1,11 +1,3 @@
-# `@aurailus/as_plugin_base`
+# AS Base Plugin
 
-> TODO: description
-
-## Usage
-
-```
-const asPluginBase = require('@aurailus/as_plugin_base');
-
-// TODO: DEMONSTRATE API
-```
+Base Elements for AuriServe. 
