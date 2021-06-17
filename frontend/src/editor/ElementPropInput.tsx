@@ -50,8 +50,8 @@ export default function ElementPropInput(props: Props) {
 				case 'number':
 					return <Input.Numeric {...widgetProps} />;
 
-				//case 'datetime':
-				//	return <Input.DateTime {...widgetProps} />;*/}
+					// case 'datetime':
+					//	return <Input.DateTime {...widgetProps} />;*/}
 
 				case 'boolean':
 					return <Input.Toggle {...widgetProps} alignRight={true} />;
@@ -59,14 +59,14 @@ export default function ElementPropInput(props: Props) {
 				case 'color':
 					return <Input.Color {...widgetProps} />;
 
-				// case 'media':
-				//	return <Input.Media value={props.value.identifier}
-				//		setValue={() => props.onChange(undefined)} />;
+					// case 'media':
+					//	return <Input.Media value={props.value.identifier}
+					//		setValue={() => props.onChange(undefined)} />;
 
-				// case 'enum':
-				//	let options: { [key: string]: string } = {};
-				//	(currentType as string[]).forEach(v => options[v] = '');
-				//	return <Input.Select {...widgetProps} options={options} />;
+					// case 'enum':
+					//	let options: { [key: string]: string } = {};
+					//	(currentType as string[]).forEach(v => options[v] = '');
+					//	return <Input.Select {...widgetProps} options={options} />;
 
 				case 'custom':
 					return <span class='ElementPropArray-Disclaimer'>

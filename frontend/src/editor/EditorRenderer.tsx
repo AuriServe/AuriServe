@@ -1,6 +1,6 @@
 import * as Preact from 'preact';
 import { useMessaging } from '../Hooks';
-import { useState, useEffect, useMemo, useRef } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 
 import { Portal } from '../structure';
 import LayoutInjector from './LayoutInjector';
@@ -193,7 +193,7 @@ export default function EditorRenderer(props: Props) {
 		if (!element?.element) return renderUndefined(root.elem);
 
 		const InlineEditor = element.editing?.inlineEditor;
-		const PropertyEditor = element.editing?.propertyEditor;
+		// const PropertyEditor = element.editing?.propertyEditor;
 
 		let elemProps = root.props;
 		if (root.exposeAs && overrides[root.exposeAs]) elemProps = { ...elemProps, ...overrides[root.exposeAs ] };

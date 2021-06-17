@@ -1,13 +1,12 @@
 import * as Preact from 'preact';
 import { useState } from 'preact/hooks';
 import { ComponentNode } from 'common/Page';
-import { Prop, PropsTable, FieldProp, ArrayProp } from 'common/definition';
+import { Prop, PropsTable, FieldProp } from 'common/definition';
 
 import { Form } from '../input';
 import { Button } from '../structure';
 
 import ElementPropInput from './ElementPropInput';
-import ElementPropArray from './ElementPropArray';
 
 import { PluginElements } from './LoadPlugins';
 
@@ -66,15 +65,7 @@ export default function ElementEditor(props: Props) {
 		}
 		// Array
 		else if ('entries' in p) {
-			return (
-				<ElementPropArray
-					prop={p as ArrayProp}
-					key={fullIdentifier}
-					identifier={identifier}
-					value={values[identifier]}
-					onChange={handleSetProps}
-				/>
-			);
+			return;
 		}
 		// Field
 		else {
