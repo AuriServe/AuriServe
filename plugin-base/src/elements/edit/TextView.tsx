@@ -8,12 +8,12 @@ import { server } from '../TextView';
 import './TextView.sss';
 
 const ICONS: { [ key: string ]: string } = {
-	'header-1': require('../../../res/format-header-1.svg'),
-	'header-2': require('../../../res/format-header-2.svg'),
-	'header-3': require('../../../res/format-header-3.svg'),
-	'header-4': require('../../../res/format-header-4.svg'),
-	'header-5': require('../../../res/format-header-5.svg'),
-	'header-6': require('../../../res/format-header-6.svg'),
+	'header-2': require('../../../res/format-header-1.svg'),
+	'header-3': require('../../../res/format-header-2.svg'),
+	'header-4': require('../../../res/format-header-3.svg'),
+	'header-5': require('../../../res/format-header-4.svg'),
+	'header-6': require('../../../res/format-header-5.svg'),
+	// 'header-6': require('../../../res/format-header-6.svg'),
 
 	'bold': require('../../../res/format-bold.svg'),
 	'italic': require('../../../res/format-italic.svg'),
@@ -75,7 +75,6 @@ function EditTextView({ props, setProps }: Props) {
 			<div class='EditTextView-Body' ref={body => refs.current.body = body}/>
 			<div class='EditTextView-Toolbar'
 				ref={toolbar => refs.current.toolbar = toolbar}>
-				<FormatButton operation='header' value={1}/>
 				<FormatButton operation='header' value={2}/>
 				<FormatButton operation='header' value={3}/>
 				<FormatButton operation='header' value={4}/>

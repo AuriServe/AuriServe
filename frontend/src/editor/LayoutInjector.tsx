@@ -21,6 +21,7 @@ interface Props {
 export default function LayoutInjector(props: Props) {
 	const [ { layout } ] = useQuery(QUERY_LAYOUT, { loadOnReload: false }, { name: props.layout }) as any;
 	const [ layoutRoots, setLayoutRoots ] = useState<{[key: string]: HTMLElement} | undefined>(undefined);
+	
 	/**
 	 * Insert the layout DOM elements into the body, add necessary layout classes to body,
 	 * and stores references to the root containers to portal into.

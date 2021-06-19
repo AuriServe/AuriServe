@@ -65,7 +65,7 @@ export default function LoginPage({ onLogin }: Props) {
 					<h1 class='sr-only'>AuriServe</h1>
 					<div role='heading' aria-level='2' aria-label='Log In'
 						class={mergeClasses('relative transition-all my-4 mx-auto rounded-full bg-gradient-to-tl from-indigo-600 to-blue-500',
-							'ring-8 ring-blue-300 ring-opacity-30 select-none duration-300 transition transform',
+							'ring-8 ring-blue-500/50 dark:ring-blue-600/30 select-none duration-300 transition transform',
 							state === 'input' ? 'w-2/3 pb-[66.67%]' : 'w-3/4 pb-[75%]', state === 'auth' && 'opacity-0 scale-90 duration-300')}>
 						<img src='/admin/asset/icon/account-light.svg' alt=''
 							class={mergeClasses('absolute w-full h-full p-8 transition duration-300 transform',
@@ -91,7 +91,8 @@ export default function LoginPage({ onLogin }: Props) {
 					</div>
 				</form>
 			</Card>
-			<div class='bg-gradient-to-r from-gray-100 via-gray-100 to-transparent w-max py-2 pl-4 pr-80 justify-self-start self-end'>
+			<div class='bg-gradient-to-r from-gray-800 dark:from-gray-100 via-gray-800 dark:via-gray-100
+				to-transparent w-max py-2 pl-4 pr-80 justify-self-start self-end'>
 				<p class='text-gray-300 dark:text-gray-600 mt-0.5'>AuriServe 0.0.1&nbsp; &nbsp;&bull;&nbsp; &nbsp;AS Frontend 0.0.1</p>
 			</div>
 		</Page>
