@@ -1,7 +1,7 @@
 import * as Preact from 'preact';
 
 import { useData, QUERY_INFO } from '../Graph';
-import { Title, Page, Card, Button, Meter, SectionHeader } from '../structure';
+import { Title, Page, Card, Button, SectionHeader } from '../structure';
 
 export default function MainPage() {
 	const [ { info } ] = useData([ QUERY_INFO ], []);
@@ -20,16 +20,15 @@ export default function MainPage() {
 			</div>
 			<div class='grid grid-cols-3 gap-4 px-4 mx-auto w-full max-w-screen-xl'>
 				<Card class='w-full'>
-					<SectionHeader icon='/admin/asset/icon/document-dark.svg' title='Wanna pages?'/>
-					<Meter value={66} max={99} />
-					<Button class='mt-4' to='/pages' label='Pages'/>
+					<SectionHeader icon='/admin/asset/icon/document-dark.svg' title='Pages'/>
+					<Button class='mt-12' to='/pages' label='Pages'/>
 				</Card>
 				<Card class='w-full'>
-					<SectionHeader icon='/admin/asset/icon/image-dark.svg' title='OwO mediaa'/>
+					<SectionHeader icon='/admin/asset/icon/image-dark.svg' title='Media'/>
 					<Button class='mt-12' to='/media' label='Media'/>
 				</Card>
 				<Card class='w-full'>
-					<SectionHeader icon='/admin/asset/icon/settings-dark.svg' title='(opwinons)'/>
+					<SectionHeader icon='/admin/asset/icon/settings-dark.svg' title='Options'/>
 					<Button class='mt-12' to='/settings' label='Settings'/>
 				</Card>
 			</div>

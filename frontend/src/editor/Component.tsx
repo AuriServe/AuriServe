@@ -1,7 +1,7 @@
 import * as Preact from 'preact';
 import { useState, useRef, useContext } from 'preact/hooks';
 
-import FocusRing from './FocusRing';
+import ComponentArea from './ComponentArea';
 
 import { RendererContext } from './Renderer';
 
@@ -24,7 +24,7 @@ interface ComponentContextData {
  * under the hood to retrieve information.
  */
 
-const ComponentContext = Preact.createContext<ComponentContextData>({
+export const ComponentContext = Preact.createContext<ComponentContextData>({
 	path: '',
 	active: false,
 	hovered: false
@@ -44,11 +44,11 @@ interface Props {
 	/** True if the props should be directly spread onto the element instead of in the props key. */
 	spreadProps?: boolean;
 
+	/** True if the component should have a default component area applied to it. */
+	indicator: boolean;
+
 	/** Function to be called by the component when its props should be changed. */
 	setProps?: (props: any) => void;
-
-	/** Function to be called when the component is clicked. */
-	onClick?: () => void;
 
 	/** Rendered children for the component. */
 	children: Preact.ComponentChildren;
@@ -89,7 +89,7 @@ export default function Component(props: Props) {
 
 	const handleMouseOut = cancel(() => timeout.current = window.setTimeout(() => setHovered(false), 16));
 
-	const handleClick = cancel(() => props.onClick?.());
+	const handleClick = cancel(() => ctx.setActive(props.path));
 
 	const active = ctx.active === props.path;
 
@@ -108,7 +108,8 @@ export default function Component(props: Props) {
 			onMouseOut={handleMouseOut}>
 			<ComponentContext.Provider value={{ path: props.path, active, hovered }}>
 				<Component {...componentProps}/>
-				{(hovered || active) && <FocusRing for={ref.current!} active={active}/>}
+				{(props.indicator && (hovered || active)) &&
+					<ComponentArea for={ref.current!} active={active} indicator={true}/>}
 			</ComponentContext.Provider>
 		</button>
 	);

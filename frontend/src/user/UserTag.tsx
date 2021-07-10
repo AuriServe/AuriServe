@@ -6,8 +6,6 @@ import { User } from 'common/graph/type';
 import UserCard from './UserCard';
 import { useImmediateRerender } from '../Hooks';
 
-import './UserTag.sass';
-
 interface Props {
 	user: User;
 }
@@ -18,8 +16,9 @@ export default function UserTag({ user }: Props) {
 	const [ active, setActive ] = useState<boolean>(false);
 
 	return (
-		<button class="UserTag" ref={ref}
-			onClick={() => setActive(true)}>
+		<button ref={ref} onClick={() => setActive(true)}
+			class='inline font-medium underline focus:outline-none text-blue-600 dark:text-blue-400
+				dark:hover:text-blue-500 hover:text-blue-500 active:text-blue-400 dark:active:text-blue-600'>
 			{user.username}
 
 			{ref.current && <UserCard

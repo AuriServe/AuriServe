@@ -80,6 +80,7 @@ export interface ClientDefinition {
 
 export interface AdminDefinition extends ServerDefinition {
 	editing?: {
+		focusRing?: boolean;
 		propertyEditor?: T | true;
 		inlineEditor?: T;
 	};

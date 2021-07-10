@@ -1,7 +1,7 @@
 import * as Preact from 'preact';
 import { useState } from 'preact/hooks';
 
-import { mergeClasses } from './Util';
+import { mergeClasses } from 'common/util';
 
 import style from './Popout.sss';
 

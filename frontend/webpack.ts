@@ -100,7 +100,7 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 
 		entry: { main: './Main.ts' },
 		output: {
-			library: 'ASEditor'
+			library: 'AS_EDITOR'
 		},
 
 		plugins: [

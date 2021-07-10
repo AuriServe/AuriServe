@@ -2,11 +2,11 @@ import * as Preact from 'preact';
 import { Format } from 'common';
 import { useState, useEffect } from 'preact/hooks';
 
-import './MediaUploadForm.sass';
+import { mergeClasses } from 'common/util';
 
+import { Form } from '../input';
 import MediaUploadItem from './MediaUploadItem';
-import SelectGroup from '../structure/SelectGroup';
-import DimensionTransition from '../structure/DimensionTransition';
+import { Button, SelectGroup, DimensionTransition } from '../structure';
 
 enum MediaUploadState {
 	SELECTING,
@@ -30,8 +30,6 @@ interface Props {
 }
 
 export default function MediaUploadForm(props: Props) {
-	const [ grid, setGrid ] = useState<boolean>(true);
-
 	const [ selected, setSelected ] = useState<number[]>([]);
 	const [ files, setFiles ] = useState<UploadItemData[]>([]);
 	const [ state, setState ] = useState<MediaUploadState>(MediaUploadState.SELECTING);
@@ -75,7 +73,7 @@ export default function MediaUploadForm(props: Props) {
 			}));
 		};
 
-		Promise.all(promises).then(() => props.onUpload());
+		Promise.all(promises).then(props.onUpload);
 	};
 
 	const handleRemoveFiles = () => {
@@ -143,71 +141,55 @@ export default function MediaUploadForm(props: Props) {
 	}, [ handleRemoveFiles ]);
 
 	const uploadItems: Preact.VNode[] = files.map((f, i) => <MediaUploadItem
-		file={f} ind={i} key={f.file.name} editable={state === MediaUploadState.SELECTING}
+		file={f} ind={i} key={f.file.name} enabled={state === MediaUploadState.SELECTING}
 		onNameChange={(name) => handleNameChange(i, name)} onFilenameChange={(filename) => handleFilenameChange(i, filename)}/>);
 
 	return (
-		<form class="MediaUploadForm" onSubmit={(e) => e.preventDefault()}>
-			<div class={'MediaUploadForm-InputWrap' + (state !== MediaUploadState.SELECTING ? ' disabled' : '')}>
-				<input type="file" multiple autoFocus
-					class="MediaUploadForm-Input"
+		<Form onSubmit={handleUpload}>
+			<div class={mergeClasses(
+				'flex place-items-center group relative rounded w-auto h-40',
+				'bg-gray-900 dark:bg-gray-200 border border-gray-900 dark:border-gray-200 mt-1',
+				'active:border-gray-500 dark:active:border-gray-500 focus-within:border-gray-500 dark:focus-within:border-gray-500',
+				'focus:outline-none transition duration-150 select-none', state !== MediaUploadState.SELECTING && 'disabled')}>
+
+				<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-90 rounded bg-gray-500',
+					'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
+					'group-focus-visible:scale-100')}/>
+
+				<input type='file' multiple autoFocus
+					class='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
 					onChange={handleAddFiles}
 					disabled={state !== MediaUploadState.SELECTING} />
-				<h2>Click or drag files here to upload.</h2>
+				
+				<h2 class='block w-full text-center text-gray-500 text-xl'>Click or drag files here to upload.</h2>
 			</div>
 
-			{files.length > 0 && <div class="MediaUploadForm-Toolbar">
-				<div>
-					{selected.length > 0 && <button class="MediaUploadForm-Toolbar-Button" onClick={handleRemoveFiles}>
-						<img src="/admin/asset/icon/trash-dark.svg"/>
-						<span>{selected.length === 1 ? 'Remove' : 'Remove (' + selected.length + ')'}</span>
-					</button>}
-				</div>
-				<div>
-					{/* <button class="MediaUploadForm-Toolbar-Button">
-						<img src="/admin/asset/icon/sort-dark.svg"/><span>Sort by Size</span>
-					</button>*/}
-
-					<button class="MediaUploadForm-Toolbar-Button" onClick={() => setGrid(!grid)}>
-						<img src={`/admin/asset/icon/${grid ? 'grid' : 'list'}-view-dark.svg`}/>
-					</button>
-				</div>
+			{files.length > 0 && <div class='my-3 h-12'>
+				{selected.length > 0 && <Button onClick={handleRemoveFiles} icon='/admin/asset/icon/trash-dark.svg'
+					label={'Remove' + (selected.length === 1 ? '' : ' (' + selected.length + ')')}/>}
 			</div>}
 
 			<DimensionTransition duration={150}>
 				{state === MediaUploadState.SELECTING &&
 					<SelectGroup
-						class={'MediaUploadForm-Files ' + (grid ? 'Grid' : 'Stack')}
+						class='w-screen max-w-3xl grid grid-cols-2 gap-3'
 						selected={selected} setSelected={setSelected} multi={true}>
 						{uploadItems}
 					</SelectGroup>
 				}
 
 				{state === MediaUploadState.UPLOADING &&
-					<div class={'MediaUploadForm-Files ' + (grid ? 'Grid' : 'Stack')}>
-						{uploadItems}
-					</div>
+					<div class='w-screen max-w-3xl grid grid-cols-2 gap-3'>{uploadItems}</div>
 				}
 			</DimensionTransition>
 
-			<div class="MediaUploadForm-ActionBar">
-				<div>
-					<button
-						onClick={handleClose}
-						class="MediaUploadForm-ActionBar-Button"
-						disabled={state === MediaUploadState.UPLOADING}>
-						Cancel
-					</button>
-				</div>
-				<div>
-					{files.length > 0 && <button
-						onClick={handleUpload}
-						class="MediaUploadForm-ActionBar-Button Upload"
-						disabled={state === MediaUploadState.UPLOADING}>
-						{`Upload File${files.length > 1 ? 's' : ''}`}
-					</button>}
-				</div>
+			<div class='flex mt-3 justify-between'>
+				<Button onClick={handleClose} label='Cancel'
+					disabled={state === MediaUploadState.UPLOADING}/>
+
+				<Button type='submit' label={`Upload File${files.length > 1 ? 's' : ''}`}
+					disabled={files.length === 0 || state === MediaUploadState.UPLOADING}/>
 			</div>
-		</form>
+		</Form>
 	);
 }

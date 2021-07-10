@@ -10,9 +10,13 @@ import { PluginElements } from './LoadPlugins';
 
 interface RendererContextData {
 	active: string;
+	setActive: (path: string) => void;
 }
 
-export const RendererContext = Preact.createContext<RendererContextData>({ active: '' });
+export const RendererContext = Preact.createContext<RendererContextData>({
+	active: '',
+	setActive: () => { /* No default action. */ }
+});
 
 function UndefinedElement({ elem }: { elem: string }) {
 	return (
@@ -41,7 +45,7 @@ export default function Renderer(props: Props) {
 
 	useEffect(() => send!('page:req'), []);
 
-	const handleComponentClick = (path: string) => {
+	const handleSetActive = (path: string) => {
 		setActivePath(path);
 		send!('component:edit', path);
 	};
@@ -79,7 +83,7 @@ export default function Renderer(props: Props) {
 				props={elemProps}
 				spreadProps={!InlineEditor}
 				component={ElementComponent}
-				onClick={() => handleComponentClick(path)}
+				indicator={element.editing?.focusRing ?? true}
 				setProps={handleSetProps.bind(undefined, path)}
 				children={children}
 			/>
@@ -97,9 +101,11 @@ export default function Renderer(props: Props) {
 		'color:#ebd834;text-align-center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold');
 
 	return (
-		<RendererContext.Provider value={{ active: activePath ?? '' }}>
+		<RendererContext.Provider value={{
+			active: activePath ?? '',
+			setActive: handleSetActive
+		}}>
 			<LayoutInjector layout={page.layout ?? 'default'} elements={nodes!} />
-			{/* {hovered && renderFocusRing()}*/}
 		</RendererContext.Provider>
 	);
 }

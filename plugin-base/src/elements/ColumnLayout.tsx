@@ -1,29 +1,28 @@
 import * as Preact from 'preact';
-import { ServerDefinition } from 'auriserve-api';
+import { forwardRef } from 'preact/compat';
+import { ServerDefinition } from 'common/definition';
 
 import './ColumnLayout.sss';
 
-type Props = Partial<{
-	maxWidth: number | string;
+export type Props = Partial<{
+	maxWidth: number;
 	minWidth: number;
-	gap: number | string;
+	gap: number;
 	columns: string;
 	reverseVertical: boolean;
 	layoutChildren: 'start' | 'end' | 'stretch' | 'center';
 
 	style: string;
 	class: string;
-	children: Preact.VNode | Preact.VNode[];
+	children: Preact.ComponentChildren;
 }>;
 
-const parseMinMax = (min: string, natural: string, _max?: string) =>
-	'minmax(' + min + ', ' + natural + ')';
+const parseMinMax = (min: string, natural: string) => 'minmax(' + min + ', ' + natural + ')';
 
 const parseColumn = (raw: string) =>
-	raw.startsWith('(') ? parseMinMax(...(raw.substr(1, raw.length - 2).split(',')) as unknown as [string, string, string?]) : raw;
+	raw.startsWith('(') ? parseMinMax(...(raw.substr(1, raw.length - 2).split(',')) as unknown as [string, string]) : raw;
 
-
-function parseColumns(raw?: string): string {
+export function parseColumns(raw?: string): string {
 	if (!raw) return 'repeat(auto-fit, 1fr)';
 	let columns = raw.replace(/ /g, '').split(':').filter(s => s);
 	return columns.map(parseColumn).join(' ');
@@ -31,7 +30,7 @@ function parseColumns(raw?: string): string {
 
 const randomIdentifier = () => 'i' + Math.random().toString(36).substring(7);
 
-const toCSSUnit = (val: number | string) => (typeof val === 'string' ? val : val + 'px');
+export const toCSSUnit = (val: number | string) => (typeof val === 'string' ? val : val + 'px');
 
 /**
  * Renders a horizontal row of columns, with their own responsive sizes.
@@ -45,12 +44,13 @@ const toCSSUnit = (val: number | string) => (typeof val === 'string' ? val : val
  * Example: "(200px, 400px):3fr"
  */
 
-function ColumnLayout(props: Props) {
+export const ColumnLayout = forwardRef<HTMLDivElement, Props>(function ColumnLayout(props, ref) {
 	const identifier = props.minWidth ? randomIdentifier() : '';
 	return (
-		<div class={[ 'ColumnLayout', identifier, props.class, props.reverseVertical && 'Reverse' ].filter(s => s).join(' ')}>
+		<div ref={ref}
+			class={[ 'ColumnLayout', identifier, props.class, props.reverseVertical && 'Reverse' ].filter(s => s).join(' ')}>
 			{props.minWidth && <style dangerouslySetInnerHTML={{ __html:
-				`@media(max-width:${toCSSUnit(props.minWidth)}){.ColumnLayout.${identifier} > .ColumnLayout-Columns{display:flex}}`}
+				`@media(max-width:${toCSSUnit(props.minWidth)}){.ColumnLayout.${identifier}>.ColumnLayout-Columns{display:flex}}`}
 			}/>}
 			<div class='ColumnLayout-Columns' style={{
 				maxWidth: props.maxWidth && toCSSUnit(props.maxWidth),
@@ -63,7 +63,7 @@ function ColumnLayout(props: Props) {
 			</div>
 		</div>
 	);
-}
+});
 
 export const server: ServerDefinition = {
 	identifier: 'ColumnLayout',
@@ -73,7 +73,7 @@ export const server: ServerDefinition = {
 			maxWidth: { name: 'Max Width', type: 'number', optional: true },
 			minWidth: { name: 'Collapse At', type: 'number', optional: true },
 			columns: { name: 'Column Layout', type: 'custom', optional: true },
-			gap: { name: 'Column Gap', type: [ 'number', 'text' ], optional: true },
+			gap: { name: 'Column Gap', type: 'number', optional: true },
 			reverseVertical: { name: 'Reverse Collaped Layout', type: 'boolean', default: false },
 			layoutChildren: { name: 'Layout Children', type: [ [ 'start', 'end', 'center', 'stretch' ] ], default: 'stretch' }
 		}

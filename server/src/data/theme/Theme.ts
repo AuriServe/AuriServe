@@ -106,12 +106,15 @@ export default class Theme {
 		}
 
 		this.layouts.clear();
-		await Promise.all((await fs.readdir(path.join(this.dataPath, 'themes', this.config.identifier, 'layout'))).map(async f => {
-			if (!(await fs.lstat(path.join(this.dataPath, 'themes', this.config.identifier, 'layout', f))).isFile()) return;
+		try {
+			await Promise.all((await fs.readdir(path.join(this.dataPath, 'themes', this.config.identifier, 'layout'))).map(async f => {
+				if (!(await fs.lstat(path.join(this.dataPath, 'themes', this.config.identifier, 'layout', f))).isFile()) return;
 
-			let file = (await fs.readFile(path.join(this.dataPath, 'themes', this.config.identifier, 'layout', f))).toString();
-			this.layouts.set(path.basename(f, '.html'), file);
-		}));
+				let file = (await fs.readFile(path.join(this.dataPath, 'themes', this.config.identifier, 'layout', f))).toString();
+				this.layouts.set(path.basename(f, '.html'), file);
+			}));
+		}
+		catch {}
 
 		this.parsing = false;
 	}

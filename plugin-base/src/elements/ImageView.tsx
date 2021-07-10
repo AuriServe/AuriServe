@@ -1,8 +1,9 @@
 import * as Preact from 'preact';
+import { forwardRef } from 'preact/compat';
 import { useState, useRef, useEffect } from 'preact/hooks';
-import { ClientDefinition, ServerDefinition, AdminDefinition } from 'auriserve-api';
 
 import { Media } from 'common/graph/type';
+import { ClientDefinition, ServerDefinition } from 'common/definition';
 
 import { withHydration } from '../Hydration';
 
@@ -10,7 +11,7 @@ import './ImageView.sss';
 
 type ViewState = 'INITIAL' | 'AWAITING_OBSERVATION' | 'COMPLETE';
 
-interface Props {
+export interface Props {
 	media: Media;
 
 	alt?: string;
@@ -53,7 +54,7 @@ function getStyles(props: Props) {
 		accessStyles.userSelect = 'none';
 	}
 
-	let imageStyles: any = Object.assign({
+	let imageStyles: any = Object.assign(props.aspect ? { width: '100%', height: '100%' } : {
 		aspectRatio: `${props.media.size?.x} / ${props.media.size?.y}`
 	}, props.imgStyle);
 
@@ -67,15 +68,15 @@ function getStyles(props: Props) {
  * Renders a lazy-loaded image with optional copy protection and lightbox.
  */
 
-function ImageView(props: Props) {
-	const ref = useRef<HTMLDivElement>(null);
+export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(props, forwardRef) {
+	const imageRef = useRef<HTMLDivElement>(null);
 
 	const [ state, setState ] = useState<ViewState>('INITIAL');
 	const [ lightbox, setLightbox ] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (state !== 'INITIAL') return;
-		const img = ref.current!.querySelector('img')!;
+		const img = imageRef.current!.querySelector('img')!;
 		if (img.complete) return setState('COMPLETE');
 
 		setState('AWAITING_OBSERVATION');
@@ -89,14 +90,19 @@ function ImageView(props: Props) {
 			};
 		}, { threshold: 0, rootMargin: '0px 0px 1000px 0px' });
 
-		observer.observe(ref.current!);
+		observer.observe(imageRef.current!);
 	}, [ props.media, state ]);
 
 	const { wrapperStyles, imageStyles, accessStyles } = getStyles(props);
 
 	return (
 		<Preact.Fragment>
-			<div style={wrapperStyles} ref={ref} class={('ImageView ' + (props.class ?? '')).trim()}
+			<div style={wrapperStyles} class={('ImageView ' + (props.class ?? '')).trim()}
+				ref={ref => {
+					imageRef.current = ref!;
+					if (typeof forwardRef === 'function') (forwardRef as any)(ref);
+					else if (forwardRef) forwardRef.current = ref!;
+				}}
 				onClick={props.lightbox ? () => setLightbox(true) : undefined}>
 				<picture>
 					{state !== 'AWAITING_OBSERVATION' && <source srcset={props.media.url}/>}
@@ -114,7 +120,7 @@ function ImageView(props: Props) {
 			</div>}
 		</Preact.Fragment>
 	);
-}
+});
 
 const HydratedImageView = withHydration('ImageView', ImageView, (props: any) => {
 	props.media = {
@@ -141,9 +147,4 @@ export const server: ServerDefinition = {
 export const client: ClientDefinition = {
 	identifier: 'ImageView',
 	element: ImageView
-};
-
-export const admin: AdminDefinition = {
-	...server,
-	...client
 };

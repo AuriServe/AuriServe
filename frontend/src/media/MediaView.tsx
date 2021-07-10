@@ -49,7 +49,7 @@ export default function MediaView({ user, media, onDelete }: Props) {
 				<div class='w-full flex place-items-center p-4 mt-4 text-center rounded bg-gray-900 dark:bg-gray-200'>
 					{mediaIsImage('.' + media.extension)
 						? <img width={media.size!.x} height={media.size!.y} src={media.url} alt=''
-							class='w-full h-max min-w-16 max-h-96 object-contain'/>
+							class='w-full h-max min-w-16 max-h-128 object-contain'/>
 						: <Button icon='/admin/asset/icon/external-dark.svg' target='_blank' rel='noreferrer noopener' label='View File'
 							href={media.url} class='my-24 mx-auto py-2.5 px-3 !bg-gray-800 dark:!bg-gray-300'></Button>
 					}

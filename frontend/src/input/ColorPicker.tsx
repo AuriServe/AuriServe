@@ -3,8 +3,9 @@ import { forwardRef } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 
 import { Color } from 'common';
+import { mergeClasses } from 'common/util';
 
-import './ColorPicker.sass';
+import style from './ColorPicker.sss';
 
 interface Props {
 	value: Color.HSVA;
@@ -71,31 +72,32 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 	const hueHex = Color.convert({ h: color.h, s: 1, v: 1, a: 1 }).toHex();
 	const fullHex = Color.convert({ ...color, a: 1 }).toHex();
 
-	const style: any = {};
+	const position: any = {};
 	if (props.parent) {
-		style.top = props.parent.getBoundingClientRect().bottom + 'px';
-		style.left = ((props.parent.getBoundingClientRect().left +
-			props.parent.getBoundingClientRect().right) / 2) + 'px';
+		position.top = props.parent.getBoundingClientRect().bottom + 'px';
+		position.left = ((props.parent.getBoundingClientRect().left +
+			props.parent.getBoundingClientRect().right) / 2) - 144 + 'px';
 	}
 
 	return (
-		<div class={('ColorPicker ' + (props.writable ? 'Write ' : '' + (props.parent ? 'Absolute' : ''))).trim()}
-			ref={ref} style={style}>
+		<div class={mergeClasses('w-72 h-48 mt-2 select-none flex flex-col pointer-events-auto', props.parent && 'absolute')}
+			ref={ref} style={position}>
 			
-			<div class='ColorPicker-SatVal' ref={satValElem}
+			<div class={mergeClasses(style.SatVal, 'relative flex-grow cursor-pointer')} ref={satValElem}
 				onMouseDown={(evt) => handleMouseClick(evt, 'satval')}
 				style={{ backgroundColor: hueHex }}>
 
-				{props.displayHex && <p class='ColorPicker-Hex'>{fullHex}</p>}
+				{props.displayHex && <p class=''>{fullHex}</p>}
 
-				<div class='ColorPicker-Indicator' style={{ left: (color.s * 100) + '%',
+				<div class={style.Indicator} style={{ left: (color.s * 100) + '%',
 					top: ((1 - color.v) * 100) + '%', backgroundColor: fullHex }} />
 
 			</div>
-			<div class='ColorPicker-Separator' />
-			<div class='ColorPicker-Hue' ref={hueElem}
+			<div class='h-2 bg-black' />
+			<div class={mergeClasses(style.Hue, 'relative h-6 cursor-pointer')} ref={hueElem}
 				onMouseDown={(evt) => handleMouseClick(evt, 'hue')}>
-				<div class='ColorPicker-Indicator' style={{ left: (color.h * 100) + '%', backgroundColor: hueHex }} />
+				<div class={mergeClasses(style.Indicator, 'top-1/2')}
+					style={{ left: (color.h * 100) + '%', backgroundColor: hueHex }} />
 			</div>
 			{props.writable && <div class='ColorPicker-Details'>
 				<div class='ColorPicker-ColorBlock' style={{ backgroundColor: fullHex }} />

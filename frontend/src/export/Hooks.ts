@@ -1,2 +1,3 @@
 export * from '../Hooks';
-export { default as Preact } from 'preact';
+
+export * from '../editor/Hooks';

@@ -1,93 +1,103 @@
-// import * as Preact from 'preact';
-// import { useState, useRef } from 'preact/hooks';
+import * as Preact from 'preact';
+import { useState, useEffect, useRef } from 'preact/hooks';
 
-// import './InputMedia.sass';
+import { useData, QUERY_MEDIA, QUERY_USERS } from '../Graph';
 
-// import { WidgetProps } from '../Input';
-// import Popup from '../../structure/Popup';
-// import Modal from '../../structure/Modal';
-// import MediaIcon from '../../media/MediaIcon';
-// import MediaView from '../../media/MediaView';
-// import SearchableOptionPicker from '../SearchableOptionPicker';
+import MediaIcon from '../media/MediaIcon';
+import MediaView from '../media/MediaView';
+import { Popup, Modal } from '../structure';
+import { InputProps, FocusableInputProps } from './index';
+import SearchableOptionPicker from './SearchableOptionPicker';
 
-// type MediaSpecifier = 'image' | 'any';
+import { mergeClasses } from 'common/util';
 
-// interface Props extends WidgetProps {
-// 	type?: MediaSpecifier | MediaSpecifier[];
-// }
+import style from './Input.sss';
 
-// /**
-//  * A media selector widget.
-//  */
+type MediaSpecifier = 'image' | 'any';
 
-// function InputMedia(props: Props) {
-// 	// const [ { media } ] = useSiteData('media', []);
-// 	const media: any[] = [];
-// 	const item = media ? media.filter(m => m.identifier === props.value)[0] : undefined;
+interface Props extends InputProps, FocusableInputProps {
+	type?: MediaSpecifier | MediaSpecifier[];
+}
 
-// 	const wrapRef = useRef<HTMLInputElement>(null);
-// 	const [ search, setSearch ] = useState<string>('');
-// 	const [ focused, setFocused ] = useState<boolean>(false);
-// 	const [ viewing, setViewing ] = useState<boolean>(false);
+/**
+ * A media selector widget.
+ */
 
-// 	const handleSearch = (evt: any) => {
-// 		setSearch(evt.target.value ?? '');
-// 	};
+export default function InputMedia(props: Props) {
+	const [ { media, users } ] = useData([ QUERY_MEDIA, QUERY_USERS ], []);
+	const item = media ? media.filter(m => m.id === props.value)[0] : undefined;
 
-// 	const handleSet = (identifier: string) => {
-// 		props.setValue(identifier);
-// 		setSearch('');
-// 	};
+	const wrapRef = useRef<HTMLInputElement>(null);
+	const [ search, setSearch ] = useState<string>('');
+	const [ focused, setFocused ] = useState<boolean>(false);
+	const [ viewing, setViewing ] = useState<boolean>(false);
 
-// 	const handleFocus = (focused: boolean) => {
-// 		setFocused(focused);
-// 		if (props.onFocusChange) props.onFocusChange(focused);
-// 	};
+	useEffect(() => {
+		if (props.focusOnMount) wrapRef.current?.querySelector('input')?.focus();
+	}, []);
 
-// 	return (
-// 		<div class='InputMedia' style={props.style} ref={wrapRef}>
-// 			<input
-// 				value={search}
-// 				onInput={handleSearch}
-// 				onChange={handleSearch}
+	const handleSearch = (evt: any) => {
+		setSearch(evt.target.value ?? '');
+	};
 
-// 				type='text'
-// 				disabled={props.disabled}
-// 				placeholder={item ? item.name : 'Search Media Item'}
-// 				class={('InputMedia-Input ' + (item ? 'Selected' : '')).trim()}
+	const handleSet = (id: string) => {
+		props.onValue?.(id);
+		setSearch('');
+	};
 
-// 				onFocus={() => handleFocus(true)}
-// 				onBlur={() => handleFocus(false)}
-// 			/>
+	const handleFocus = () => {
+		setFocused(true);
+		props.onFocus?.();
+	};
 
-// 			{item &&
-// 				<button title='View Image' onClick={() => setViewing(true)} class='InputMedia-ClickableIcon'>
-// 					<MediaIcon class='InputMedia-Img' path={item?.publicPath ?? ''} />
-// 				</button>
-// 			}
-// 			{!item && <img class='InputMedia-Img InputMedia-NoSelection' src='/admin/asset/icon/element-dark.svg' alt='' />}
+	const handleBlur = () => {
+		// setFocused(false);
+		props.onBlur?.();
+	};
 
-// 			<Popup z={6} active={!!search && focused} defaultAnimation={true}>
-// 				<SearchableOptionPicker query={search} parent={wrapRef.current}
-// 					options={(media ?? []).map(m => m.identifier)}
-// 					setSelected={selected => handleSet(selected as string)}
-// 					renderOption={({ option }) => {
-// 						const item = (media ?? []).filter(m => m.identifier === option)[0];
-// 						return (
-// 							<div class='InputMedia-SearchOption'>
-// 								<MediaIcon path={item.publicPath} />
-// 								<p>{item.name}</p>
-// 							</div>
-// 						);
-// 					}} />
-// 			</Popup>
+	return (
+		<div class={mergeClasses(style.Input, 'flex flex-row-reverse !p-0')} style={props.style} ref={wrapRef}>
+			<input
+				value={search}
+				onInput={handleSearch}
+				onChange={handleSearch}
 
-// 			<Modal active={viewing} onClose={() => setViewing(false)} defaultAnimation={true}>
-// 				{item && <MediaView item={item} user={null as any}/>}
-// 			</Modal>
-// 		</div>
-// 	);
-// }
+				type='text'
+				disabled={!(props.enabled ?? true)}
+				placeholder={item ? item.name : 'Search Media Item'}
+				class={mergeClasses('flex-grow bg-transparent p-2',
+					'focus:outline-none focus:placeholder-gray-500 dark:focus:placeholder-gray-500',
+					props.value ? 'placeholder-black dark:placeholder-gray-800' : 'placeholder-gray-500')}
 
+				onFocus={handleFocus}
+				onBlur={handleBlur}
+			/>
 
-// export default InputMedia;
+			{item &&
+				<button type='button' title='View Image' onClick={() => setViewing(true)} class='w-12 h-12 p-2 -m-px focus:outline-none'>
+					<MediaIcon class='w-8 h-8' path={item?.url ?? ''} />
+				</button>
+			}
+
+			{!item && <img class='w-12 h-12 p-3 -m-px' src='/admin/asset/icon/element-dark.svg' alt='' role='presentation' />}
+
+			<Popup active={!!search && focused} defaultAnimation={true}>
+				<SearchableOptionPicker parent={wrapRef.current} query={search} fields={[ 'name', 'url' ]}
+					options={(media ?? [])} onSelect={selected => handleSet(selected.id)}>
+					{({ option, selected }) =>
+						<div class={mergeClasses('flex flex-row flex-grow text-left items-center gap-2',
+							'hover:bg-gray-800/75 dark:hover:bg-gray-200/75 active:bg-gray-800 dark:active:bg-gray-200',
+							selected && 'bg-gray-800/60 dark:bg-gray-200/50')}>
+							<MediaIcon class='w-8 h-8 m-2' path={option.url}/>
+							<p class='flex-grow text-gray-200 dark:text-gray-600'>{option.name}</p>
+						</div>
+					}
+				</SearchableOptionPicker>
+			</Popup>
+
+			<Modal active={viewing} onClose={() => setViewing(false)} defaultAnimation={true}>
+				{item && <MediaView media={item} user={(users ?? []).filter(user => user.id === item.user)[0]}/>}
+			</Modal>
+		</div>
+	);
+}

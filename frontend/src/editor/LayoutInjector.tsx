@@ -35,11 +35,9 @@ export default function LayoutInjector(props: Props) {
 		if (!layout || !layout.html) return;
 
 		let root: HTMLElement = document.createElement('div');
-		root.innerHTML = layout.html.trim().replace(/\<body/g, '<div').replace(/\<\/body/g, '</div');
+		root.innerHTML = layout.html;
+		// root.innerHTML = layout.html.trim().replace(/\<body/g, '<div').replace(/\<\/body/g, '</div');
 		root = root.childNodes[0] as HTMLElement;
-
-		const preClasses = document.body.className.split(' ');
-		const classes = root.className.split(' ').filter(c => !preClasses.includes(c));
 
 		let newLayoutRoots: {[key: string]: HTMLElement} = {};
 		root.querySelectorAll('[data-include]').forEach(e => {
@@ -49,19 +47,14 @@ export default function LayoutInjector(props: Props) {
 			else if (!newLayoutRoots[section]) newLayoutRoots[section] = e as HTMLElement;
 		});
 
-		const nodes = Array.from(root.childNodes);
-		nodes.forEach(child => document.body.appendChild(child));
-		classes.forEach(c => document.body.classList.add(c));
+		document.body.append(root);
 
 		console.log('%cRendering Layout',
 			'color:#ebd834;text-align-center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold');
 
 		setLayoutRoots(newLayoutRoots);
 
-		return () => {
-			nodes.forEach(e => e.remove());
-			classes.forEach(c => document.body.classList.remove(c));
-		};
+		return () => root.remove();
 	}, [ layout ]);
 
 	return (

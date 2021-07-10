@@ -4,7 +4,7 @@ import { CSSTransition } from 'preact-transitioning';
 
 import Portal from './Portal';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 import style from './DefaultAnimation.sss';
 
@@ -21,16 +21,14 @@ interface Props {
 
 const Popup = forwardRef<HTMLDivElement, Props>((props, fRef) => {
 	return (
-		<Portal to={document.querySelector('.AS_ROOT') ?? document.body}>
-			<div ref={fRef}>
-				<CSSTransition in={props.active} duration={props.duration ?? 150} classNames='Animate'>
-					<div style={{ zIndex: props.z ?? 30 }}
-						class={mergeClasses('fixed flex w-full h-full inset-0 pointer-events-none',
-							props.defaultAnimation && style.DefaultAnimation)}>
-						{props.children}
-					</div>
-				</CSSTransition>
-			</div>
+		<Portal class='absolute' ref={fRef} to={document.querySelector('.AS_ROOT') ?? document.body}>
+			<CSSTransition in={props.active} duration={props.duration ?? 150} classNames='Animate'>
+				<div style={{ zIndex: props.z ?? 100 }}
+					className={mergeClasses('fixed flex w-full h-full inset-0 pointer-events-none',
+						props.defaultAnimation && style.DefaultAnimation)}>
+					{props.children}
+				</div>
+			</CSSTransition>
 		</Portal>
 	);
 });

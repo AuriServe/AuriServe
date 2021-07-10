@@ -20,8 +20,7 @@ export default function MediaItem({ user, media, ind, onClick }: Props) {
 
 	return (
 		<li class='flex place-items-stretch'>
-			<Selectable class='flex !w-full gap-2'
-				ind={ind} callbacks={callbacks} doubleClickSelects={true}>
+			<Selectable class='flex !w-full gap-2' ind={ind} callbacks={callbacks} doubleClickSelects={true}>
 				<MediaIcon class='flex-shrink-0 w-20 h-20' path={media.url} />
 				<div class='pl-1 text-left overflow-hidden'>
 					<p class='pt-1 text-gray-100 dark:text-gray-800 truncate'>

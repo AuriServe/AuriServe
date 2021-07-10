@@ -1,7 +1,7 @@
 import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 interface Props {
 	style?: any;

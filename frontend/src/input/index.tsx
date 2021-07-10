@@ -18,7 +18,7 @@ export { default as Toggle } from './InputToggle';
 export { default as Numeric } from './InputNumeric';
 
 /** Complex inputs. */
-// export { default as Media } from './InputMedia';
+export { default as Media } from './InputMedia';
 export { default as Color } from './InputColor';
 // export { default as DateTime } from './InputDateTime';
 
@@ -76,6 +76,9 @@ export interface TextInputProps {
 
 /** The props for a focusable input widget. */
 export interface FocusableInputProps {
+	/** If true, the input will be focused when the element is firsh mounted. */
+	focusOnMount?: boolean;
+	
 	/** A function to be called when the input is focused. */
 	onFocus?: () => void;
 

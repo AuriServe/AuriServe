@@ -2,7 +2,8 @@ import * as Preact from 'preact';
 import { useState, useMemo } from 'preact/hooks';
 import { AdminDefinition, Color } from 'auriserve-api';
 import { TransitionGroup, CSSTransition } from 'preact-transitioning';
-import { Input, Modal, DimensionTransition } from 'as-editor/components';
+// @ts-ignore
+import { Input, Modal, DimensionTransition } from 'editor/components';
 
 import './Calendar.sss';
 

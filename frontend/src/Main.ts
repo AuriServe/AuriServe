@@ -9,3 +9,4 @@ Preact.render(Preact.h(GraphQLProvider, { graphql }, Preact.h(App, null)), docum
 
 export * as Components from './export/Components';
 export * as Hooks from './export/Hooks';
+export * as Graph from './Graph';

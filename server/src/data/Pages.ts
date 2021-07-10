@@ -27,6 +27,7 @@ export default class Pages {
 	 */
 
 	async getPage(pagePath: string): Promise<Page.PageDocument> {
+		pagePath = pagePath.replace(/\/$/, '');
 		const root = path.join(this.dataPath, 'pages');
 		const page = JSON.parse((await fs.readFile(path.join(root, pagePath + '.json'))).toString());
 		if (!page.elements) throw 'Page has no elements property.';

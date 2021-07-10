@@ -118,8 +118,9 @@ export default function(_: any, argv: { mode: string }) {
 		output: { filename: 'editor.js' },
 
 		externals: {
-			'as-editor/hooks': 'ASEditor.Hooks',
-			'as-editor/components': 'ASEditor.Components'
+			'editor/hooks': 'AS_EDITOR.Hooks',
+			'editor/graph': 'AS_EDITOR.Graph',
+			'editor/components': 'AS_EDITOR.Components'
 		},
 
 		plugins: [ new MiniCssExtractPlugin({

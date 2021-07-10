@@ -18,7 +18,7 @@ interface Props {
  * justified to the left, right, center, or stretched, with a set gap between them.
  */
 
-function LinearLayout(props: Props) {
+export function LinearLayout(props: Props) {
 	const style = {
 		display: 'flex',
 		flexDirection: props.direction === 'row' ? 'row' : 'column',

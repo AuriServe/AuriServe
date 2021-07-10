@@ -123,7 +123,9 @@ export function useQuery(query: string, options: Options = {}, variables: any = 
  */
 
 export async function query<T = any>(query: string, variables: any = {}): Promise<T> {
-	return (await graphql.operate({ operation: { query, variables }, fetchOptionsOverride }).cacheValuePromise).data as T;
+	const res = await graphql.operate({ operation: { query, variables }, fetchOptionsOverride }).cacheValuePromise;
+	if (res.graphQLErrors) console.error('Query Error:', res.graphQLErrors);
+	return res.data as T;
 }
 
 
@@ -172,16 +174,16 @@ export const QUERY_PAGES = `pages ${Query.PageMeta}`;
 
 /** Queries a page. */
 export const QUERY_PAGE = `
-  query GetPage($path: String!) {
-    page(path: $path) ${Query.Page}
-  }
+	query GetPage($path: String!) {
+		page(path: $path) ${Query.Page}
+	}
 `;
 
 /** Queries a page. */
 export const QUERY_INCLUDE = `
-  query GetInclude($path: String!) {
-    include(path: $path) ${Query.Include}
-  }
+	query GetInclude($path: String!) {
+		include(path: $path) ${Query.Include}
+	}
 `;
 
 /** Queries a layout. */

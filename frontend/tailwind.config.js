@@ -24,6 +24,9 @@ module.exports = {
 			height: {
 				min: 'min-content',
 				max: 'max-content'
+			},
+			maxHeight: {
+				'128': '32rem'
 			}
 		},
 		colors: {
@@ -83,6 +86,7 @@ module.exports = {
 		}
 	},
 	plugins: [
-		require('tailwindcss-interaction-variants')
+		require('tailwindcss-interaction-variants'),
+		require('@tailwindcss/aspect-ratio')
 	],
 }

@@ -1,4 +1,5 @@
 import * as Preact from 'preact';
+import { useData, QUERY_MEDIA } from '../Graph';
 import { FieldProp, PropType } from 'common/definition';
 
 import * as Input from '../input';
@@ -17,7 +18,9 @@ interface Props {
  * and renders the appropriate Input wrapped in a label.
  */
 
-export default function ElementPropInput(props: Props) {
+export default function PropInput(props: Props) {
+	const [ { media } ] = useData(QUERY_MEDIA, []);
+ 
 	const types = (Array.isArray(props.prop.type) ? props.prop.type : [props.prop.type]) as PropType[];
 	const currentType = types[0];
 	const baseType = (Array.isArray(currentType) ? 'enum' : (types[0] as string).split(':')[0]) as PropType | 'enum';
@@ -59,9 +62,9 @@ export default function ElementPropInput(props: Props) {
 				case 'color':
 					return <Input.Color {...widgetProps} />;
 
-					// case 'media':
-					//	return <Input.Media value={props.value.identifier}
-					//		setValue={() => props.onChange(undefined)} />;
+				case 'media':
+					return <Input.Media value={props.value.id} onValue={id =>
+						props.onChange((media ?? []).filter(media => media.id === id)[0])} />;
 
 					// case 'enum':
 					//	let options: { [key: string]: string } = {};
@@ -69,7 +72,7 @@ export default function ElementPropInput(props: Props) {
 					//	return <Input.Select {...widgetProps} options={options} />;
 
 				case 'custom':
-					return <span class='ElementPropArray-Disclaimer'>
+					return <span>
 						Custom props can't be edited by the builtin element editor.
 						Use a custom editElement until this is implemented.
 					</span>;

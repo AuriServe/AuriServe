@@ -11,12 +11,12 @@
 
 		transition: opacity 75ms, transform 75ms !important
 
-	&:global.Animate-enter-active, &:global.Animate-enter-done
+	&:global.Animate-enter-active, &:global.Animate-enter-done, &:global.Animate-appear-active, &:global.Animate-appear-done
 		opacity: 1
 
 		& > *
 			opacity: 1 !important
 			transform: scale(1) !important
 
-	&:global.Animate-enter-active:not(.Animate-enter-done), &:global.Animate-exit-active:not(.Animate-exit-done)
+	&:global.Animate-appear-active:not(.Animate-appear-done), &:global.Animate-enter-active:not(.Animate-enter-done), &:global.Animate-exit-active:not(.Animate-exit-done)
 		will-change: transform !important

@@ -1,5 +1,6 @@
 .EditTextView
 	position: relative
+	overflow: visible
 
 	.ql-clipboard
 		display: none
@@ -7,7 +8,8 @@
 	.ql-editor
 		outline: none
 		cursor: auto
-		overflow: auto
+		overflow: visible
+		// overflow: auto
 
 	.EditTextView-Toolbar
 		gap: 4px
@@ -31,12 +33,11 @@
 
 		transition: all 75ms
 
-	.EditTextView-Body:focus-within ~ .EditTextView-Toolbar
-		opacity: 1
-		pointer-events: auto
-		transform: translateX(-50%)
+		&.Active
+			opacity: 1
+			pointer-events: auto
+			transform: translateX(-50%)
 
-	.EditTextView-Toolbar
 		.EditTextView-FormatButton
 			outline: 0
 			padding: 4px

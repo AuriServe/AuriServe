@@ -2,7 +2,7 @@ import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
 import { NavLink as Link } from 'react-router-dom';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 export interface Props {
 	// Any default button properties.
@@ -29,7 +29,7 @@ export default forwardRef(function Button(props: Props, ref?: Preact.RefObject<H
 				'active:border-gray-500 dark:active:border-gray-500 focus-visible:border-gray-500 dark:focus-visible:border-gray-500',
 				'focus:outline-none transition duration-150 select-none',
 				props.class)}
-			onClick={props.onClick} type={props.onClick && (props.type ?? 'button')}
+			onClick={props.onClick} type={Tag === 'button' && (props.type ?? 'button')}
 			disabled={props.enabled ? !props.enabled : (props.disabled ?? false)}
 			aria-label={props.iconOnly ? props.label : ''} title={props.iconOnly ? props.label : ''}>
 

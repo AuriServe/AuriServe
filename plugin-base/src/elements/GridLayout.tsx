@@ -15,7 +15,7 @@ interface Props {
  * A gap can be specified to be put between each child.
  */
 
-function GridLayout(props: Props) {
+export function GridLayout(props: Props) {
 	const style = {
 		display: 'grid',
 		gap: Number.isInteger(props.gap) ? props.gap + 'px' : props.gap,

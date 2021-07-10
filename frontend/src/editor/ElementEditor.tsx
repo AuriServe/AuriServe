@@ -1,97 +1,52 @@
 import * as Preact from 'preact';
-import { useState } from 'preact/hooks';
-import { ComponentNode } from 'common/Page';
-import { Prop, PropsTable, FieldProp } from 'common/definition';
+import { PropsTable, AdminDefinition } from 'common/definition';
 
 import { Form } from '../input';
-import { Button } from '../structure';
+import PropInput from './PropInput';
 
-import ElementPropInput from './ElementPropInput';
-
-import { PluginElements } from './LoadPlugins';
-
-interface Props {
-	defs: PluginElements;
-	element: ComponentNode;
-
-	onCancel: () => void;
-	onSave: (props: any) => void;
+interface TableProps {
+	props: PropsTable;
+	values: any;
+	path: string;
+	handleSet: (key: string, value: any) => void;
 }
 
-export default function ElementEditor(props: Props) {
-	const [ data, setData ] = useState<{ element: ComponentNode; props: any }>(
-		{ element: props.element, props: JSON.parse(JSON.stringify(props.element.props ?? {})) });
+function Table({ props, values, path, handleSet }: TableProps) {
+	return (
+		<div>
+			{Object.entries(props).map(([ key, value ]) => {
+				const thisPath = path + (path !== '' ? '.' : '') + key;
+				if ('fields' in value) {
+					return <Table key={thisPath} props={value.fields}
+						values={values[key]} path={thisPath} handleSet={handleSet}/>;
+				}
+				else if ('entries' in value) {
+					return <p>Array props can't be edited.</p>;
+				}
+				else {
+					return <PropInput key={thisPath} prop={value} value={values[key]}
+						identifier={key} onChange={value => handleSet(key, value)}/>;
+				}
+			})}
+		</div>
+	);
+}
+
+interface Props {
+	props: PropsTable;
+	definition: AdminDefinition;
 	
-	if (props.element !== data.element) {
-		setData({ element: props.element, props: JSON.parse(JSON.stringify(props.element.props ?? {}))});
-		return null;
-	}
+	onChange: (props: any) => void;
+}
 
-	const definition = props.defs[props.element.elem];
-	if (!definition) return null;
-
+export default function ElementEditor({ props, definition, onChange }: Props) {
 	const propDefs = definition.config.props;
-	const EditElement = definition?.editing?.propertyEditor;
 
-	const handleSetProps = (object: any) => {
-		const newData = { ...data, props: { ...data.props, ...object } };
-		setData(newData);
-		props.onSave(newData.props);
-	};
-	const handleSetProp = (identifier: string, object: any) => handleSetProps({ [identifier]: object });
-
-	let renderProp: (identifier: string, p: Prop, values: any, fullIdentifier: string) => void;
-
-	const renderPropsTable = (props: PropsTable, values: any, fullIdentifier: string) => {
-		return (
-			<div className='ElementEditor-PropsTable'>
-				{Object.entries(props).map(([k, v]) => renderProp(
-					k, v, values, fullIdentifier + (fullIdentifier !== '' ? '.' : '') + k))}
-			</div>
-		);
-	};
-
-	renderProp = (identifier: string, p: Prop, values: any, fullIdentifier: string) => {
-		// Table
-		if ('fields' in p) {
-			const friendlyName = p.name || identifier.split(' ').map(s => s.charAt(0).toUpperCase() + s.substr(1)).join(' ');
-
-			return (
-				<label key={fullIdentifier + '-LABEL'} className='ElementEditor-TableWrap'>
-					<span>{friendlyName}</span>
-					{renderPropsTable(p.fields, values[identifier], fullIdentifier)}
-				</label>
-			);
-		}
-		// Array
-		else if ('entries' in p) {
-			return;
-		}
-		// Field
-		else {
-			return (
-				<ElementPropInput
-					prop={p as FieldProp}
-					key={fullIdentifier}
-					identifier={identifier}
-					value={values[identifier]}
-					onChange={(value) => handleSetProp(identifier, value)}
-				/>
-			);
-		}
-	};
+	const handleSet = (key: string, value: any) => onChange({ ...props, [key]: value });
 
 	return (
-		<Form onSubmit={() => props.onSave(data.props)}>
-			<div class='flex flex-row-reverse justify-between pb-3'>
-				<Button type='submit' label='Save'/>
-				<Button onClick={props.onCancel} label='Close'/>
-			</div>
-
-			{(EditElement && typeof EditElement != 'boolean' ?
-				<EditElement props={data.props} setProps={handleSetProps} /> :
-				renderPropsTable(propDefs, data.props, '')
-			)}
+		<Form>
+			<Table props={propDefs} values={props} path='' handleSet={handleSet}/>
 		</Form>
 	);
 }

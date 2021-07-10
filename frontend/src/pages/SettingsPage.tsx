@@ -41,7 +41,7 @@ export default function SettingsPage() {
 	const inPage = location.pathname.replace(/\/settings\/?/, '');
 
 	return (
-		<Page class='flex bg-white dark:bg-gray-100 !pb-0'>
+		<Page class='flex bg-white dark:bg-gray-100 !pb-0 min-h-screen'>
 			<Title>Settings</Title>
 			{(!mobile || !inPage) &&
 				<div class='w-full md:w-72 h-full px-4 bg-gray-900 dark:bg-gray-50 flex-shrink-0'>

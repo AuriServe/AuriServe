@@ -1,9 +1,21 @@
 import * as Preact from 'preact';
-import { createPortal } from 'preact/compat';
 import { useRef, useEffect } from 'preact/hooks';
+import { createPortal, forwardRef } from 'preact/compat';
 
-export default function Portal(props: { to: HTMLElement; children: Preact.ComponentChildren }) {
+interface Props {
+	to: HTMLElement;
+	class?: string;
+	children?: Preact.ComponentChildren;
+}
+
+export default forwardRef<HTMLDivElement, Props>(function Portal(props: Props, ref: Preact.RefObject<HTMLDivElement>) {
 	const root = useRef<HTMLDivElement>(document.createElement('div'));
+
+	if (ref) ref.current = root.current;
+
+	useEffect(() => {
+		root.current.className = props.class ?? '';
+	}, [ props.class ]);
 
 	useEffect(() => {
 		props.to.appendChild(root.current);
@@ -16,4 +28,4 @@ export default function Portal(props: { to: HTMLElement; children: Preact.Compon
 			root.current
 		)
 	);
-};
+});

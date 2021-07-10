@@ -1,7 +1,7 @@
 import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 export interface Props {
 	// Any default section properties.
@@ -15,8 +15,8 @@ export interface Props {
 export default forwardRef(function Card(props: Props, ref?: Preact.RefObject<HTMLElement>) {
 	return (
 		<section ref={ref} {...props} class={mergeClasses(
-			'block bg-white dark:bg-gray-100 border-gray-800 dark:border-gray-300 border rounded',
-			'p-4 max-w-7xl mx-auto my-8 max-w-screen-xl shadow-md', props.class
+			'block bg-white dark:bg-gray-100 text-gray-100 dark:text-gray-800 p-4 mx-auto my-8 max-w-screen-xl',
+			'font-sans border-gray-800 dark:border-gray-300 border rounded shadow-md', props.class
 		)}>
 			{props.children}
 		</section>

@@ -1,11 +1,12 @@
 import * as Preact from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { ServerDefinition, ClientDefinition, Media } from 'auriserve-api';
+
+import { Media } from 'common/graph/type';
+import { ClientDefinition, ServerDefinition } from 'common/definition';
 
 import './ImageGallery.sss';
 
 import { client as ImageView } from './ImageView';
-import { server as GridLayout } from './GridLayout';
 
 import { withHydration } from '../Hydration';
 
@@ -37,33 +38,34 @@ function ImageGallery(props: Props) {
 
 	return (
 		<div class='ImageGallery'>
-			<GridLayout.element
-				class={('ImageGallery-Grid ' + (props.class ?? '')).trim()}
-				gap={props.gap}
-				width={props.width}>
-
-				{props.media.map((media, i) => {
-					if (i >= loadCount) return;
-					return (
-						<ImageView.element
-							key={i}
-							media={media}
-							aspect={props.aspect}
-							lightbox={props.lightbox}
-							protect={props.protect}
-						/>
-					);
-				})}
-			</GridLayout.element>
+			<div class='ImageGallery-Grid'
+				style={{
+					columnGap: props.gap + 'px',
+					gridTemplateColumns: `repeat(auto-fit, minmax(min(${props.width ?? 300}px, 100%), 1fr))`
+				}}>
+				{props.media.slice(0, loadCount).map(media =>
+					<ImageView.element
+						media={media}
+						key={media.id}
+						aspect={props.aspect}
+						protect={props.protect}
+						lightbox={props.lightbox}
+						style={{
+							marginBottom: props.gap + 'px',
+							gridRow: props.aspect ? '' : `span ${Math.floor(media.size!.y / media.size!.x * 30)}`
+						}}
+					/>
+				)}
+			</div>
 			{'window' in global && props.loadMore && loadCount < props.media.length &&
 				<button onClick={() => setLoadCount(l => l + props.loadMore!)}
-					class='ImageGallery-ShowMore'>Show More</button>}
+					class='ImageGallery-ShowMore Button'>Show More</button>}
 		</div>
 	);
 };
 
 const HydratedImageGallery = withHydration('ImageGallery', ImageGallery, (props: Props) => {
-	props.media = props.media.map(media => ({ publicPath: media.publicPath })) as Media[];
+	props.media = props.media.map(media => ({ url: media.url, size: media.size })) as Media[];
 	return props;
 });
 
@@ -79,7 +81,7 @@ export const server: ServerDefinition = {
 			lightbox: { name: 'Open Lightbox on Click', type: 'boolean', default: true },
 			protect: { name: 'Copy Protection', type: 'boolean' },
 
-			images: { name: 'Images', entries: {
+			media: { name: 'Images', entries: {
 				src: { name: 'Image Source', type: [ 'media:image', 'url:image' ] },
 				alt: { name: 'Alt Text', type: 'text', optional: true }
 			}},

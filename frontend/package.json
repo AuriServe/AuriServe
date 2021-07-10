@@ -69,7 +69,8 @@
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.0",
     "webpack-livereload-plugin": "^3.0.1",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.7.3",
+    "@tailwindcss/aspect-ratio": "^0.2.1"
   },
   "dependencies": {
     "common": "file:../common/dist",

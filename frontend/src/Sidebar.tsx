@@ -2,7 +2,7 @@ import Cookie from 'js-cookie';
 import * as Preact from 'preact';
 import { NavLink as Link, useLocation } from 'react-router-dom';
 
-import { mergeClasses } from './Util';
+import { mergeClasses } from 'common/util';
 
 const HOME_ICON = '/admin/asset/icon/home-dark.svg';
 const MEDIA_ICON = '/admin/asset/icon/image-dark.svg';
@@ -28,10 +28,10 @@ const style = {
 	icon: `filter transition brightness-200 pointer-events-none opacity-50
 		group-hover:opacity-75 group-focus-visible:opacity-100`,
 	label: `block absolute z-10 transform transition left-16 top-3 rounded py-1 px-2.5
-		bg-white dark:bg-gray-200 opacity-0 translate-x-1 pointer-events-none select-none dark:text-gray-800
+		bg-gray-200 opacity-0 translate-x-1 pointer-events-none select-none text-gray-800
 		group-hover:opacity-100 group-hover:translate-x-0 group-hover:delay-700 font-medium shadow-md whitespace-nowrap
 		group-focus-visible:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:delay-0 `,
-	labelArrow: 'block absolute -left-1 top-3 w-2 h-2 transform rotate-45 bg-white dark:bg-gray-200'
+	labelArrow: 'block absolute -left-1 top-3 w-2 h-2 transform rotate-45 bg-gray-200'
 };
 
 function renderLink(name: string, path: string | (() => void), icon: string, exact?: boolean, props?: any) {

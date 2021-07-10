@@ -5,7 +5,7 @@ import Button from './Button';
 import { SelectGroupContext } from './SelectGroup';
 import ClickHandler, { ClickHandlerCallbacks } from '../ClickHandler';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 interface Props {
 	ind: number;

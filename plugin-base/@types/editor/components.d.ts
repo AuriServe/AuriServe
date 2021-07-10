@@ -1,7 +1,7 @@
 import type * as Preact from 'preact';
 import { SiteData, SiteDataSpecifier } from 'auriserve-api';
 
-declare module 'as-editor/components' {
+declare module 'editor/components' {
 	// Context
 	export interface AppContextData {
 		data: Partial<SiteData>;
@@ -12,6 +12,8 @@ declare module 'as-editor/components' {
 
 	export function refreshSiteData(mergeData: (data: Partial<SiteData>) => void,
 		refresh: SiteDataSpecifier | SiteDataSpecifier[]): Promise<Partial<SiteData>>;
+
+	export const ComponentArea: Preact.FunctionalComponent<any>;
 
 
 	// Input

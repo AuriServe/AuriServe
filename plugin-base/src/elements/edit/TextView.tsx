@@ -2,6 +2,7 @@ import Quill from 'quill';
 import * as Preact from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { AdminDefinition } from 'auriserve-api';
+import { useActiveState } from 'editor/hooks';
 
 import { server } from '../TextView';
 
@@ -13,7 +14,6 @@ const ICONS: { [ key: string ]: string } = {
 	'header-4': require('../../../res/format-header-3.svg'),
 	'header-5': require('../../../res/format-header-4.svg'),
 	'header-6': require('../../../res/format-header-5.svg'),
-	// 'header-6': require('../../../res/format-header-6.svg'),
 
 	'bold': require('../../../res/format-bold.svg'),
 	'italic': require('../../../res/format-italic.svg'),
@@ -56,6 +56,8 @@ function FormatButton({ operation, value }: { operation: string; value?: any }) 
 }
 
 function EditTextView({ props, setProps }: Props) {
+	const { active } = useActiveState();
+
 	const editorRef = useRef<Quill | null>(null);
 	const refs = useRef<Refs>({} as any);
 
@@ -73,7 +75,7 @@ function EditTextView({ props, setProps }: Props) {
 	return (
 		<div class='TextView EditTextView' ref={root => refs.current.root = root}>
 			<div class='EditTextView-Body' ref={body => refs.current.body = body}/>
-			<div class='EditTextView-Toolbar'
+			<div class={`EditTextView-Toolbar ${active ? 'Active' : ''}`}
 				ref={toolbar => refs.current.toolbar = toolbar}>
 				<FormatButton operation='header' value={2}/>
 				<FormatButton operation='header' value={3}/>

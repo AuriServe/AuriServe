@@ -1,18 +1,18 @@
 import * as Preact from 'preact';
 import { useAsyncMemo } from 'use-async-memo';
-import { useLocation, useHistory } from 'react-router-dom';
 import { useState, useEffect } from 'preact/hooks';
+import { useLocation, useHistory } from 'react-router-dom';
 
 import { Page, ObjectPath } from 'common';
 import * as Int from 'common/graph/type';
 
 // import EditorControl from '../editor/EditorControl';
 
-import { useMessaging } from '../Hooks';
 import ElementEditor from '../editor/ElementEditor';
+import { useForceUpdate, useMessaging } from '../Hooks';
 import { query, useData, QUERY_PAGE, QUERY_INCLUDE, QUERY_MEDIA } from '../Graph';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 import loadPlugins from '../editor/LoadPlugins';
 
 async function parseProp(prop: any, media: Int.Media[]) {
@@ -83,6 +83,7 @@ async function fetchPage(path: string, media: Int.Media[]): Promise<[ Page.PageD
 }
 
 export default function EditorControlPage() {
+	const forceUpdate = useForceUpdate();
 	const history = useHistory(), location = useLocation();
 	const pagePath = location.pathname.replace(/^\/pages\//g, '');
 	if (!pagePath) history.push('/pages');
@@ -117,9 +118,9 @@ export default function EditorControlPage() {
 		else console.warn(`Unknown data recieved, type '${type}', body:`, body);
 	}, [ page, includes, frame ], 'editor');
 
-	// Animate in the sidebar for a smoother transition from page to edit.
+	// // Animate in the sidebar for a smoother transition from page to edit.
 	const [ sidebarOpen, setSidebarOpen ] = useState<boolean>(false);
-	useEffect(() => void(setTimeout(() => setSidebarOpen(true), 1000)), []);
+	// useEffect(() => void(setTimeout(() => setSidebarOpen(true), 1000)), []);
 
 	const handleElementSave = (props: any) => {
 		const element = ObjectPath.traversePath(editing!, page!.elements);
@@ -127,20 +128,23 @@ export default function EditorControlPage() {
 		if (!changed) return;
 
 		element.props = props;
+		forceUpdate();
 		send!('page:res', [ page, includes ]);
 	};
 
 	if (!page || !elements) return <p>Loading...</p>;
 
+	const editingElem = editing && ObjectPath.traversePath(editing, page.elements);
+
 	return (
 		<Preact.Fragment>
 			<div class={mergeClasses('bg-gray-100 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
 				sidebarOpen ? 'translate-x-0' : '-translate-x-full')}>
-				{editing && <ElementEditor defs={elements} element={ObjectPath.traversePath(editing, page.elements)}
-					onCancel={() => setEditing(undefined)} onSave={props => handleElementSave(props)}/>}
+				{editing && <ElementEditor definition={elements[editingElem.elem]!}
+					props={editingElem.props} onChange={props => handleElementSave(props)}/>}
 			</div>
 			<iframe ref={setFrame} src='/admin/renderer/'
-				class={mergeClasses('place-self-stretch bg-white border-0 overflow-hidden transition-all duration-300 shadow-lg',
+				class={mergeClasses('place-self-stretch bg-white border-0 overflow-hidden transition-all duration-300 shadow-lg h-full',
 					!sidebarOpen ? 'pl-0' : 'ml-96')} />
 		</Preact.Fragment>
 	);

@@ -1,4 +1,4 @@
-import { server as ColumnLayout } from './elements/ColumnLayout';
+import { admin  as ColumnLayout } from './elements/edit/ColumnLayout';
 import { server as LinearLayout } from './elements/LinearLayout';
 import { server as GridLayout } from './elements/GridLayout';
 
@@ -9,7 +9,7 @@ import { server as Container } from './elements/Container';
 import { server as Button } from './elements/Button';
 import { server as HTMLView } from './elements/HTMLView';
 import { admin  as TextView } from './elements/edit/TextView';
-import { admin  as ImageView } from './elements/ImageView';
+import { admin  as ImageView } from './elements/edit/ImageView';
 import { server as Navigation } from './elements/Navigation';
 import { server as MarkdownView } from './elements/MarkdownView';
 

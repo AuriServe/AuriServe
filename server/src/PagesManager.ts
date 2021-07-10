@@ -29,7 +29,7 @@ const ERROR_TEMPLATE = fss.readFileSync(path.join(__dirname, 'views', 'error.htm
 const DEFAULT_LAYOUT = fss.readFileSync(path.join(__dirname, 'views', 'layout.html')).toString();
 
 // Uses lookaheads / lookbehinds to find space to insert a tree into on a template.
-const FIND_INCLUDE = (label: string) => new RegExp(`(?<=\<[A-z]+ data-include='${label}'>)(\s*)(?=<\/[A-z]+>)`, 'gi');
+const FIND_INCLUDE = (label: string) => new RegExp(`(?<=\<[A-z="'_\\- ]+ data-include='${label}'>)(\s*)(?=<\/[A-z]+>)`, 'gi');
 
 export default class PagesManager {
 	root: string;
@@ -92,10 +92,12 @@ export default class PagesManager {
 			url = path.join(url, 'index');
 		}
 
+		const { media } = await this.gql!(`{ media ${Query.Media} }`);
+
 		// Prepare and render the Preact component trees.
 		Logger.perfStart('Preparing Trees');
-		const json = await this.getPreparedPage(url);
-		const faviconItem: { ext: string } | undefined = { ext: 'png' };
+		const json = await this.getPreparedPage(url, media ?? []);
+
 		Logger.perfEnd('Preparing Trees');
 
 		Logger.perfStart('Rendering Trees');
@@ -107,11 +109,13 @@ export default class PagesManager {
 		// Populate the page template with contents.
 		const { name: siteName, description: siteDescription, favicon } = (await Properties.findOne({}))!.info;
 
+		const faviconItem = (media ?? []).filter(media => media.id === favicon)[0];
+
 		Logger.perfStart('Forming HTML');
 		let html = PAGE_TEMPLATE
 			.replace('$TITLE$', (json.name ? `${escapeHtml(json.name)}&nbsp; • &nbsp;` : '') + escapeHtml(siteName))
 			.replace('$DESCRIPTION$', escapeHtml(json.description || siteDescription))
-			.replace('$FAVICON$', favicon + (faviconItem ? '.' + faviconItem.ext : ''));
+			.replace('$FAVICON$', faviconItem?.url ?? '');
 
 		const scripts = this.plugins.listEnabled().filter(p => p.config.sources.client?.script)
 			.map(p => p.config.identifier + '/' + p.config.sources.client?.script);
@@ -195,8 +199,7 @@ export default class PagesManager {
 	 * @param {string} page - The page to expand.
 	 */
 
-	async getPreparedPage(page: string): Promise<Page.PageDocument> {
-		const { media } = await this.gql!(`{ media ${Query.Media} }`);
+	async getPreparedPage(page: string, media: Int.Media[]): Promise<Page.PageDocument> {
 		const p = path.join(this.root, page + '.json');
 			
 		try {

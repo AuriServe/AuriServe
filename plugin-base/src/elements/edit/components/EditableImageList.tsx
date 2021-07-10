@@ -1,8 +1,9 @@
 import * as Preact from 'preact';
 import { Media } from 'auriserve-api';
 import { useState } from 'preact/hooks';
-import { useSiteData } from 'as-editor/hooks';
-import { Input, SelectGroup, CardHeader, MediaItem, MediaUploadForm } from 'as-editor/components';
+// import { useSiteData } from 'editor/hooks';
+// @ts-ignore
+import { Input, SelectGroup, CardHeader, MediaItem, MediaUploadForm } from 'editor/components';
 
 import './EditableImageList.sss';
 
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function EditableImageList({ items, setItems, onClose }: Props) {
+	// @ts-ignore
 	const [ { media } ] = useSiteData('media');
 	const [ selected, setSelected ] = useState<number[]>([]);
 	const [ uploading, setUploading ] = useState<boolean>(false);
@@ -53,6 +55,7 @@ export default function EditableImageList({ items, setItems, onClose }: Props) {
 							<div class='EditableImageList-ActionPaneSticky'>
 								<Input.Label label='Add Image'>
 									<Input.Media value='' setValue={(i: string) =>
+										// @ts-ignore
 										handleAddImage((media ?? []).filter(m => m.identifier === i)[0])} />
 								</Input.Label>
 

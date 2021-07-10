@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'preact/hooks';
 import Card, { Props as CardProps } from './Card';
 import Button, { Props as ButtonProps } from './Button';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 import Popup from './Popup';
 

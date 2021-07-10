@@ -3,7 +3,7 @@ import * as Preact from 'preact';
 import Card from './Card';
 import Button from './Button';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 interface Props {
 	active: boolean;

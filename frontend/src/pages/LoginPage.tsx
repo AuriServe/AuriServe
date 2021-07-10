@@ -2,10 +2,10 @@ import Cookie from 'js-cookie';
 import * as Preact from 'preact';
 import { useState, useRef } from 'preact/hooks';
 
-import { Text, Label } from '../input';
+import { Form, Text, Label } from '../input';
 import { Title, Page, Card, Button } from '../structure';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 interface Props {
 	onLogin: () => void;
@@ -19,9 +19,7 @@ export default function LoginPage({ onLogin }: Props) {
 	const [ state, setState ] = useState<'input' | 'pending' | 'auth'>('input');
 	const [ warning, setWarning ] = useState<string>('');
 	
-	const handleSubmit = async (e: any) => {
-		e.preventDefault();
-
+	const handleSubmit = async () => {
 		try {
 			if (state === 'pending') throw 'Attempt to send request while already logging in.';
 
@@ -52,8 +50,6 @@ export default function LoginPage({ onLogin }: Props) {
 			setPassword('');
 			window.requestAnimationFrame(() => userInputRef.current!.select());
 		}
-
-		return false;
 	};
 
 	return (
@@ -61,7 +57,7 @@ export default function LoginPage({ onLogin }: Props) {
 			<Title>Login</Title>
 			<Card class={mergeClasses('w-72 mb-16 transition-all duration-200',
 				state !== 'input' && '!bg-transparent !border-transparent shadow-none px-0')}>
-				<form onSubmit={handleSubmit}>
+				<Form onSubmit={handleSubmit}>
 					<h1 class='sr-only'>AuriServe</h1>
 					<div role='heading' aria-level='2' aria-label='Log In'
 						class={mergeClasses('relative transition-all my-4 mx-auto rounded-full bg-gradient-to-tl from-indigo-600 to-blue-500',
@@ -87,9 +83,9 @@ export default function LoginPage({ onLogin }: Props) {
 						</Label>
 
 						<p class='text-center text-blue-600 -mt-1 mb-3'>{warning}</p>
-						<Button disabled={state === 'pending'} label='Log In'/>
+						<Button type='submit' disabled={state === 'pending'} label='Log In'/>
 					</div>
-				</form>
+				</Form>
 			</Card>
 			<div class='bg-gradient-to-r from-gray-800 dark:from-gray-100 via-gray-800 dark:via-gray-100
 				to-transparent w-max py-2 pl-4 pr-80 justify-self-start self-end'>

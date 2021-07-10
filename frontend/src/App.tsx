@@ -45,29 +45,32 @@ export default function App() {
 	return (
 		<AppContext.Provider value={{ data, mergeData }}>
 			{state === 'LOGIN' ?
-				<div class='AS_ROOT grid min-h-screen text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-50'>
+				<div class='AS_ROOT grid min-h-screen bg-gray-900 dark:bg-gray-50'>
 					<LoginPage onLogin={() => setState('AUTH')} />
 				</div> :
 				<Router basename='/admin'>
+					<Route path="/:url*" exact strict render={(props) =>
+						<Redirect to={`${props.location.pathname}/${props.location.search}`} />} />
+					
 					<Switch>
 						<Route exact path='/renderer' component={EditorRendererPage as any} />
-						<Route strict path='/pages/'>
-							<div class='AS_ROOT grid min-h-screen text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-50'>
+						<Route strict path='/pages/:page'>
+							<div class='AS_ROOT grid min-h-screen bg-gray-900 dark:bg-gray-50'>
 								<EditorControlPage/>
 							</div>
 						</Route>
 
 						<Route>
-							<div class='AS_ROOT grid pl-14 min-h-screen text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-50'>
+							<div class='AS_ROOT grid pl-14 min-h-screen bg-gray-900 dark:bg-gray-50'>
 								<div class='grid animate-fadein'>
 									<Sidebar/>
 									<Switch>
 										<Route exact path='/' component={MainPage as any}/>
-										<Route exact path='/pages' component={PagesPage as any}/>
-										<Route exact path='/media' component={MediaPage as any}/>
-										<Route path='/settings' component={SettingsPage as any}/>
+										<Route exact path='/pages/' component={PagesPage as any}/>
+										<Route exact path='/media/:id?' component={MediaPage as any}/>
+										<Route path='/settings/' component={SettingsPage as any}/>
 
-										<Route path='/users/' component={UserPage as any}/>
+										<Route path='/users/:id' component={UserPage as any}/>
 
 										<Redirect exact to='/'/>
 									</Switch>

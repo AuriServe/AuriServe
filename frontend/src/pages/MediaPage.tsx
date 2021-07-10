@@ -1,9 +1,10 @@
 import * as Preact from 'preact';
 import { useState, useEffect } from 'preact/hooks';
+import { useParams, useHistory } from 'react-router-dom';
 
 import { Media } from 'common/graph/type';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 import { Text } from '../input';
 import MediaItem from '../media/MediaItem';
@@ -27,6 +28,12 @@ function titleCase(str: string): string {
 }
 
 export default function MediaPage() {
+	const history = useHistory();
+	const { id } = useParams<{ id: string }>();
+
+	const uploading: boolean = id === 'upload';
+	const viewing: string | null = !uploading ? id : null;
+
 	let [ data, refresh ] = useData([ QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS ], []);
 	const deleteMedia = useMutation(MUTATE_DELETE_MEDIA);
 
@@ -39,28 +46,20 @@ export default function MediaPage() {
 	const [ deleted, setDeleted ] = useState<number[]>([]);
 	const [ selected, setSelected ] = useState<number[]>([]);
 
-	const [ viewing, setViewing ] = useState<string | undefined>(undefined);
-	const [ uploading, setUploading ] = useState<boolean>(false);
-
-	const handleUploadMedia = () => {
-		setSelected([]);
-		setUploading(true);
-	};
-
 	const handleUploaded = () => {
 		refresh();
-		setUploading(false);
+		history.push('/media');
 	};
 
 	const handleDelete = (items: number[]) => {
 		setDeleted([ ...deleted, ...items ]);
-		setViewing(undefined);
+		if (viewing) history.push('..');
 	};
 
 	const handleSave = async () => {
 		await deleteMedia({ media: media.filter((_, i) => deleted.includes(i)).map(m => m.id) });
 		await refresh();
-		setViewing(undefined);
+		if (viewing) history.push('..');
 		setDeleted([]);
 	};
 
@@ -105,9 +104,9 @@ export default function MediaPage() {
 					<div class='flex sticky top-0 place-content-between py-3 bg-white dark:bg-gray-100
 						border-b border-gray-800 dark:border-gray-300 z-10 -mx-1.5 px-1.5'>
 						<div class='flex gap-2'>
-							<Button onClick={handleUploadMedia} icon='/admin/asset/icon/add-dark.svg' label='Upload Media'/>
+							<Button to='/media/upload/' onClick={() => setSelected([])} icon='/admin/asset/icon/add-dark.svg' label='Upload Media'/>
 
-							{selected.length === 1 && <Button onClick={() => setViewing(media[selected[0]].id)}
+							{selected.length === 1 && <Button onClick={() => history.push(media[selected[0]].id + '/')}
 								icon='/admin/asset/icon/view-dark.svg' label='View'/>}
 
 							{selected.length > 0 && <Button onClick={() => handleDelete(selected)}
@@ -152,7 +151,7 @@ export default function MediaPage() {
 
 							<Button onClick={refresh} iconOnly icon='/admin/asset/icon/refresh-dark.svg' label='Refresh'/>
 
-							<Button to='/settings/media' iconOnly icon='/admin/asset/icon/settings-dark.svg' label='Media Settings'/>
+							<Button to='/settings/media/' iconOnly icon='/admin/asset/icon/settings-dark.svg' label='Media Settings'/>
 						</div>
 					</div>
 
@@ -161,7 +160,7 @@ export default function MediaPage() {
 							class='grid gap-3 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 pt-3'>
 							{media.map((item: any, ind: number) => !deleted.includes(ind) ? (
 								<MediaItem ind={ind} user={data.users?.filter(u => u.id === item.user)[0]}
-									media={item} key={item.identifier} onClick={setViewing}/>
+									media={item} key={item.identifier} onClick={(id) => history.push(id + '/')}/>
 							): null).filter(item => item)}
 						</SelectGroup>
 					}
@@ -186,7 +185,7 @@ export default function MediaPage() {
 				</div>
 			</div>
 
-			<Modal active={viewingItem !== undefined} onClose={() => setViewing(undefined)} defaultAnimation={true}>
+			<Modal active={viewingItem !== undefined} onClose={() => history.push('..')} defaultAnimation={true}>
 				{viewingItem && <MediaView onDelete={() => handleDelete([ media.map(a => a.id).indexOf(viewing!) ])}
 					user={data.users?.filter(u => u.id === viewingItem!.user)[0]!} media={viewingItem}/>}
 			</Modal>
@@ -194,7 +193,7 @@ export default function MediaPage() {
 			<Modal active={uploading} defaultAnimation={true}>
 				<SectionHeader icon='/admin/asset/icon/document-dark.svg' title='Upload Media'
 					subtitle={`Upload new media assets to ${data.info?.name ?? ''}.`} />
-				<MediaUploadForm onCancel={() => setUploading(false)} onUpload={handleUploaded}/>
+				<MediaUploadForm onCancel={() => history.push('..')} onUpload={handleUploaded}/>
 			</Modal>
 
 			<SavePopup active={deleted.length !== 0} onSave={handleSave} onReset={() => setDeleted([])} />

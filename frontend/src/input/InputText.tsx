@@ -4,7 +4,7 @@ import { useRef, useLayoutEffect } from 'preact/hooks';
 
 import { InputProps, FocusableInputProps, TextInputProps } from './index';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 import style from './Input.sss';
 

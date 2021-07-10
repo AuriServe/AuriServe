@@ -1,6 +1,6 @@
 import * as Preact from 'preact';
 
-import { mergeClasses } from '../Util';
+import { mergeClasses } from 'common/util';
 
 interface Props {
 	children?: Preact.ComponentChildren;

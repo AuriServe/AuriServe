@@ -16,6 +16,7 @@ export default function PageEditorRendererPage() {
 	return (
 		<Preact.Fragment>
 			<Helmet><style>{'body { height: auto; overflow: auto; }'}</style></Helmet>
+			<div class='AS_ROOT text-gray-100 dark:text-gray-800 bg-gray-900 dark:bg-gray-50'/>
 			<Renderer defs={elements} />
 		</Preact.Fragment>
 	);
