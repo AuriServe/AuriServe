@@ -133,7 +133,7 @@ export default class Server {
 		if (!(await Auth.listUsers()).length) Logger.warn('No users are registered, run with --super to create one.');
 
 		if (!await Roles.findOne({})) await Roles.create({
-			creator: (await Auth.listUsers())[0]?.id ?? '', name: 'Administrator', abilities: [ 'ADMINISTRATOR' ] });
+			creator: (await Auth.listUsers())[0]?.id ?? 'nobody', name: 'Administrator', abilities: [ 'ADMINISTRATOR' ] });
 
 		process.on('SIGINT',  () => this.shutdown());
 		process.on('SIGQUIT', () => this.shutdown());
