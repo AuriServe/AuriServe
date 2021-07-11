@@ -13,6 +13,7 @@ export interface Interface {
 	author: string;
 	coverPath?: string;
 
+	head: string;
 	layouts: Layout[];
 }
 
@@ -29,8 +30,8 @@ export const Schema = `
 		author: String!
 		coverPath: String
 
+		head: String!
 		layouts: [Layout]!
-		layout(identifier: String): Layout
 	}
 `;
 
@@ -47,6 +48,7 @@ export const Query = `
 		author
 		coverPath
 
+		head
 		layouts ${LayoutQuery}
 	}
 `;

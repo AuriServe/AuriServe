@@ -70,7 +70,7 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
 			if (!valid) return;
 			mergeData(data);
 		});
-		
+
 		return () => valid = false;
 	}, dependents);
 
@@ -218,5 +218,13 @@ export const MUTATE_THEMES = `
 export const MUTATE_PLUGINS = `
 	mutation UpdateEnabledPlugins($enabled: [String!]!) {
 		enabled_plugins(enabled: $enabled)
+	}
+`;
+
+
+/** Mutates a page. */
+export const MUTATE_PAGE = `
+	mutation UpdatePage($path: String!, $content: String!) {
+		page(path: $path, content: $content)
 	}
 `;

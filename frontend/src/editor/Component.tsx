@@ -3,7 +3,7 @@ import { useState, useRef, useContext } from 'preact/hooks';
 
 import ComponentArea from './ComponentArea';
 
-import { RendererContext } from './Renderer';
+import { RendererContext } from '../pages/EditorRendererPage';
 
 
 interface ComponentContextData {

@@ -22,7 +22,7 @@
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "prepublishOnly": "cd ../; npm run build"
+    "prepublishOnly": "cd ../; npm run clean; npm run build"
   },
   "bugs": {
     "url": "https://github.com/AuriServe/AuriServe/issues"

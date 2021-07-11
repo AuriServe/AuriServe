@@ -59,7 +59,7 @@ export default function SettingsPage() {
 			}
 			{(!mobile || inPage) &&
 				<Preact.Fragment>
-					<div class='w-full p-4 pb-16'>
+					<div class='w-full p-4 pb-16 text-gray-100 dark:text-gray-800'>
 						<Switch>
 							<Route exact path='/settings/overview' 	component={MainSettings as any} />
 							<Route exact path='/settings/themes' 		component={ThemesSettings as any} />

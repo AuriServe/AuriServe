@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 
-import { RendererContext } from './Renderer';
 import { ComponentContext } from './Component';
+import { RendererContext } from '../pages/EditorRendererPage';
 
 interface ActiveState {
 	active: boolean;

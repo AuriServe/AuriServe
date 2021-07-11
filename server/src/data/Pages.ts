@@ -20,18 +20,33 @@ export default class Pages {
 	/**
 	 * Gets a page from its relative path.
 	 * The path should start within the pages folder.
-	 * Throws if there's no page at the path, or the page is ill-formatted.
+	 * Throws if there's no page at the path, or the page is ill-formed.
 	 *
 	 * @param {string} pagePath - The page's path.
 	 * @returns the page.
 	 */
 
 	async getPage(pagePath: string): Promise<Page.PageDocument> {
-		pagePath = pagePath.replace(/\/$/, '');
-		const root = path.join(this.dataPath, 'pages');
-		const page = JSON.parse((await fs.readFile(path.join(root, pagePath + '.json'))).toString());
+		const page = JSON.parse((await fs.readFile(
+			path.join(this.dataPath, 'pages', pagePath.replace(/\/$/, '') + '.json'))).toString());
 		if (!page.elements) throw 'Page has no elements property.';
 		return page;
+	}
+
+
+	/**
+	 * Updates a page's content to the JSON provided.
+	 * The path should start within the pages folder.
+	 * Throws if there is no page at the path, or if the path is ill-formed.
+	 *
+	 * @param pagePath - The page's path.
+	 * @param elements - The page's elements.
+	 */
+
+	async setPageContents(pagePath: string, elements: Record<string, Page.Node>) {
+		const page = await this.getPage(pagePath);
+		page.elements = elements;
+		await fs.writeFile(path.join(this.dataPath, 'pages', pagePath.replace(/\/$/, '') + '.json'), JSON.stringify(page));
 	}
 
 

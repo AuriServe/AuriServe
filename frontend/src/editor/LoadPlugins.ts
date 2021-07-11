@@ -31,20 +31,27 @@ export default async function loadPlugins({ scripts, styles, themes }:
 	}
 
 	if (themes) {
-		const { themes: siteThemes }: { themes: string[] } =
-			JSON.parse((document.getElementById('themes') as any).innerText);
+		// const { themes: siteThemes }: { themes: string[] } =
+		// 	JSON.parse((document.getElementById('themes') as any).innerText);
 
-		await Promise.all(siteThemes.map((s: string) => {
-			return new Promise<void>((resolve) => {
-				const style = document.createElement('link');
+		// await Promise.all(siteThemes.map((s: string) => {
+		// 	return new Promise<void>((resolve) => {
+		// 		const style = document.createElement('link');
 
-				style.rel = 'stylesheet';
-				style.href = '/theme/' + s + '.css';
-				style.addEventListener('load', () => resolve());
+		// 		style.rel = 'stylesheet';
+		// 		style.href = '/theme/' + s + '.css';
+		// 		style.addEventListener('load', () => resolve());
 
-				document.head.appendChild(style);
-			});
-		}));
+		// 		document.head.appendChild(style);
+		// 	});
+		// }));
+
+		const style = document.createElement('link');
+
+		style.rel = 'stylesheet';
+		style.href = '/styles.css';
+
+		document.head.appendChild(style);
 	}
 
 

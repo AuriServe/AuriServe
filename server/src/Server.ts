@@ -26,6 +26,7 @@ import resolvePath from './ResolvePath';
 import { Config } from './ServerConfig';
 import AdminRouter from './router/AdminRouter';
 import PagesRouter from './router/PagesRouter';
+import createUserPrompt from './CreateUserPrompt';
 
 export default class Server {
 	private app = Express();
@@ -63,11 +64,10 @@ export default class Server {
 			await this.pageBuilder.init(gql);
 			await this.plugins.init();
 
-			// // if (this.conf.super)
-			// //	 new SuperUserPrompt(this.db);
+			if (this.conf.super) createUserPrompt();
 
-			await this.adminRouter.init();
-			await this.pagesRouter.init();
+			this.adminRouter.init();
+			this.pagesRouter.init();
 		});
 	}
 
@@ -130,16 +130,10 @@ export default class Server {
 
 		if (!await Properties.findOne({})) await Properties.create({ usage: { media_allocated: 1024 * 1024 * 1024 } });
 
-		await Roles.deleteMany({});
-
-		if (!(await Auth.listUsers()).length) await Auth.addUser('Auri', 'password');
+		if (!(await Auth.listUsers()).length) Logger.warn('No users are registered, run with --super to create one.');
 
 		if (!await Roles.findOne({})) await Roles.create({
-			creator: (await Auth.listUsers())[0].id, name: 'Administrator', abilities: [ 'ADMINISTRATOR' ] });
-
-		// await Promise.all((await Auth.listUsers()).map(u => Auth.removeUser(u._id)));
-
-		// (await this.media.listMedia()).forEach(m => this.media.removeMedia(m._id));
+			creator: (await Auth.listUsers())[0]?.id ?? '', name: 'Administrator', abilities: [ 'ADMINISTRATOR' ] });
 
 		process.on('SIGINT',  () => this.shutdown());
 		process.on('SIGQUIT', () => this.shutdown());

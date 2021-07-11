@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie';
-import * as Preact from 'preact';
+import Preact from 'preact';
 
 import Popout from './Popout';
 
@@ -10,4 +10,6 @@ const onLogout = () => {
 	Preact.render('', document.body, root);
 };
 
-root = Preact.render(Preact.h(Popout, { onLogout }), document.body);
+const container = document.createElement('div');
+document.body.appendChild(container);
+root = Preact.render(Preact.h(Popout, { onLogout }), container);

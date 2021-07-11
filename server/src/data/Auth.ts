@@ -89,8 +89,8 @@ export const getUser = async (id: ObjectID) => User.findById(id);
 /**
  * Adds a new user to the database.
  *
- * @param {string} username - The user's username. May contains spaces and special characters.
- * @param {string} password - The user's password in plaintext.
+ * @param username - The user's username. May contains spaces and special characters.
+ * @param password - The user's password in plaintext.
  * @returns the newly created user document.
  */
 
@@ -101,6 +101,17 @@ export const addUser = async (username: string, password: string) => {
 		emails: [],
 		roles: []
 	});
+};
+
+/**
+ * Gives a role to a user.
+ *
+ * @param id - The user's id.
+ * @param roles - The role IDs.
+ */
+
+export const addRolesToUser = async (id: ObjectID, roles: ObjectID[]) => {
+	await User.updateOne({ id }, { $addToSet: { roles } });
 };
 
 

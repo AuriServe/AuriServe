@@ -35,7 +35,7 @@ const InfoResolver = {
 	favicon:		 async () => (await Properties.findOne({}))!.info.favicon,
 	description: async () => (await Properties.findOne({}))!.info.description
 };
- 
+
 const QuotasResolver = {
 	storage: async () => {
 		let usage = (await Properties.findOne({}))!.usage;
@@ -67,13 +67,10 @@ class ThemeResolver {
 	author			= () => this.theme.config.author;
 	coverPath   = () => this.theme.hasCover ? `/admin/themes/cover/${this.theme.config.identifier}.jpg` : '';
 
+	head = () => this.theme.config.head;
 	layouts = () => {
 		const layouts = this.theme.getLayouts();
 		return [ ...layouts.keys() ].map(l => LayoutResolver(l, layouts.get(l)!));
-	};
-	layout = ({ identifier }: { identifier: string }) => {
-		const layout = this.theme.getLayouts().get(identifier);
-		return layout ? LayoutResolver(identifier, layout) : undefined;
 	};
 	format = () => this.theme.config.preprocessor.toUpperCase();
 };
@@ -107,7 +104,7 @@ class MediaResolver {
 	extension   = () => this.media.extension;
 	path				= () => this.media.fileName;
 	url         = () => '/media/' + this.media.fileName + '.' + this.media.extension;
-	
+
 	size = () => {
 		let size = this.media.size;
 		if (!size || !size.width || !size.height) return null;
@@ -168,7 +165,17 @@ export const Resolver = {
 		return u ? UserResolver(u) : undefined;
 	},
 
-	page:    ({ path }: { path: string }, ctx: Context) => ctx.pages.getPage(path).then(page => new PageResolver(page, path)),
+	page: async ({ path, content }: { path: string; content?: string }, ctx: Context) => {
+		if (!content) return ctx.pages.getPage(path).then(page => new PageResolver(page, path));
+		try {
+			await ctx.pages.setPageContents(path, JSON.parse(content));
+			return true;
+		}
+		catch (e) {
+			return false;
+		}
+	},
+
 	include: ({ path }: { path: string }, ctx: Context) => ctx.pages.getInclude(path).then(include => new IncludeResolver(include, path)),
 	layout:  ({ name }: { name: string }, _ctx: Context) => ({ identifier: name, html: DEFAULT_LAYOUT }),
 

@@ -11,8 +11,6 @@
     "noEmitHelpers": true,
     "importHelpers": true,
 
-    "outFile": "dist",
-
     "jsx": "react",
     "jsxFactory": "Preact.h",
 

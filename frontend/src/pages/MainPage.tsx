@@ -11,7 +11,7 @@ export default function MainPage() {
 			<Title>Home</Title>
 			<div class='flex flex-col text-center bg-white dark:bg-gray-100
 				border-b border-gray-800 dark:border-gray-300 py-32'>
-				<h1 class='text-3xl my-2'>
+				<h1 class='text-3xl my-2 text-gray-100 dark:text-gray-800'>
 					<img class='w-8 h-8 inline mr-2 mb-0.5 align-bottom filter dark:brightness-200 dark:saturate-50'
 						src='/admin/asset/icon/globe-dark.svg' width={32} height={32} alt='' role='presentation'/>
 					{info?.domain ?? '...'}

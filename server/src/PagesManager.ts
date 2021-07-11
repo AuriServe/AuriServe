@@ -1,6 +1,6 @@
 import path from 'path';
 import { Page } from 'common';
-import * as Preact from 'preact';
+import Preact from 'preact';
 import escapeHtml from 'escape-html';
 import renderToString from 'preact-render-to-string';
 import fss, { promises as fs, constants as fsc } from 'fs';
@@ -133,8 +133,7 @@ export default class PagesManager {
 			.replace('$PLUGINS$', (scripts.length || styles.length) ?
 				scripts.map(script => `<script src='/plugin/${script}' defer></script>`).join('') +
 					styles.map(style => `<link rel='stylesheet' href='/plugin/${style}'/>`).join('') : '')
-			.replace('$THEMES$', this.themes.listEnabled().map(t =>
-				`<link rel='stylesheet' href='/theme/${t.config.identifier}.css'/>`).join(''));
+			.replace('$THEME_HEAD$', this.themes.listEnabled().map(t => t.config.head).join(''));
 
 		html = html.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 

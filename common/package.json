@@ -15,7 +15,7 @@
 			"src"
 		],
 		"ext": ".ts",
-		"exec": "npm run clean; npm run build",
+		"exec": "npm run build",
 		"quiet": true
 	},
 	"devDependencies": {

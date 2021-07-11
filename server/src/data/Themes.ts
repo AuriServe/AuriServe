@@ -1,6 +1,6 @@
 import path from 'path';
 import { Format } from 'common';
-import { promises as fs, constants as fsc } from 'fs';
+import fss, { promises as fs, constants as fsc } from 'fs';
 
 import Logger from '../Logger';
 import Theme from './theme/Theme';
@@ -8,8 +8,10 @@ import ThemeConfig from './theme/ThemeConfig';
 
 import Properties from './model/Properties';
 
-export const OUT_DIR = '.public';
+export const OUT_FILE = '.build.css';
 
+// The css reset styles.
+const CSS_RESET = fss.readFileSync(path.join(path.dirname(__dirname), 'views', 'reset.css')).toString();
 
 /**
  * Manages themes and theme states.
@@ -22,9 +24,9 @@ export default class Themes {
 		// Create themes directory if it doesn't exist.
 		fs.access(path.join(this.dataPath, 'themes'), fsc.R_OK).catch(
 			_ => fs.mkdir(path.join(this.dataPath, 'themes')));
-		// Create themes out directory if it doesn't exist.
-		fs.access(path.join(this.dataPath, 'themes', OUT_DIR), fsc.R_OK).catch(
-			_ => fs.mkdir(path.join(this.dataPath, 'themes', OUT_DIR)));
+		// // Create themes out directory if it doesn't exist.
+		// fs.access(path.join(this.dataPath, 'themes', OUT_DIR), fsc.R_OK).catch(
+		// 	_ => fs.mkdir(path.join(this.dataPath, 'themes', OUT_DIR)));
 	};
 
 
@@ -51,6 +53,7 @@ export default class Themes {
 			if (identifiers.includes(t.config.identifier)) t.enable();
 			else t.disable();
 		});
+		this.buildThemeCSS();
 	}
 
 
@@ -60,7 +63,10 @@ export default class Themes {
 	 * @param {string} identifier - The theme identifier.
 	 */
 
-	enable = (identifier: string) => this.themes.get(identifier)?.enable();
+	enable(identifier: string) {
+		this.themes.get(identifier)?.enable();
+		this.buildThemeCSS();
+	}
 
 
 	/**
@@ -69,7 +75,10 @@ export default class Themes {
 	 * @param {string} identifier - The theme identifier.
 	 */
 
-	disable = (identifier: string) => this.themes.get(identifier)?.disable();
+	disable(identifier: string) {
+		this.themes.get(identifier)?.disable();
+		this.buildThemeCSS();
+	}
 
 
 	/**
@@ -117,7 +126,7 @@ export default class Themes {
 
 		const themeDirs = await fs.readdir(path.join(this.dataPath, 'themes'));
 		await Promise.all(themeDirs.map(async dirName => {
-			if (dirName === OUT_DIR) return;
+			if (dirName === OUT_FILE) return;
 			try {
 				const config = await this.validate(dirName);
 				this.themes.set(config.identifier, new Theme(config, this.dataPath));
@@ -176,9 +185,29 @@ export default class Themes {
 		catch (e) { throw 'Failed to parse configuration file:\n ' + e; }
 		config.identifier = identifier;
 
+		config.head ??= '';
+
 		if (config.preprocessor !== 'sass' && config.preprocessor !== '')
 			throw 'Preprocessor is not valid.';
 
 		return config;
+	}
+
+
+	/**
+	 * Updates the CSS build file to contain the styles from all the themes.
+	 */
+
+	private async buildThemeCSS() {
+		return new Promise<void>(async (resolve) => {
+			const segments = await Promise.all([ ...this.themes.values() ].filter(t => t.isEnabled()).map(theme => theme.parse()));
+			let stream = fss.createWriteStream(path.join(this.dataPath, 'themes', OUT_FILE));
+			stream.once('open', () => {
+				stream.write(CSS_RESET);
+			  segments.forEach(segment => stream.write(segment));
+			  stream.end();
+			  resolve();
+			});
+		});
 	}
 }

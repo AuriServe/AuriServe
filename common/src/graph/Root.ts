@@ -41,7 +41,8 @@ export const Schema = `
 	type Mutation {
 		info(info: InputInfo): Info!
 		delete_media(media: [ID!]!): Boolean
-		enabled_themes(enabled: [String!]!): Boolean,
-		enabled_plugins(enabled: [String!]!): Boolean,
+		enabled_themes(enabled: [String!]!): Boolean
+		enabled_plugins(enabled: [String!]!): Boolean
+		page(path: String!, content: String!): Boolean
 	}
 `;

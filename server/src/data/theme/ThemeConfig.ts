@@ -8,4 +8,5 @@ export default interface ThemeConfig {
 	description: string;
 
 	preprocessor: ThemePreprocessor;
+	head: string;
 }

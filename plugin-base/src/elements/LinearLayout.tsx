@@ -21,6 +21,7 @@ interface Props {
 export function LinearLayout(props: Props) {
 	const style = {
 		display: 'flex',
+		width: '100%',
 		flexDirection: props.direction === 'row' ? 'row' : 'column',
 		maxWidth: Number.isInteger(props.width) ? props.width + 'px' : props.width,
 		gap: Number.isInteger(props.gap) ? props.gap + 'px' : props.gap ? props.gap : 8,

@@ -1,18 +1,20 @@
-import * as Preact from 'preact';
+import Preact from 'preact';
 import { useAsyncMemo } from 'use-async-memo';
 import { useState, useEffect } from 'preact/hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { Page, ObjectPath } from 'common';
 import * as Int from 'common/graph/type';
+import { Page, ObjectPath } from 'common';
+
+import { Button } from '../structure';
 
 // import EditorControl from '../editor/EditorControl';
 
-import ElementEditor from '../editor/ElementEditor';
-import { useForceUpdate, useMessaging } from '../Hooks';
-import { query, useData, QUERY_PAGE, QUERY_INCLUDE, QUERY_MEDIA } from '../Graph';
+// import ElementEditor from '../editor/ElementEditor';
+import { useMessaging } from '../Hooks';
+import { query, useData, QUERY_PAGE, QUERY_INCLUDE, QUERY_MEDIA, MUTATE_PAGE } from '../Graph';
 
-import { mergeClasses } from 'common/util';
+// import { mergeClasses } from 'common/util';
 import loadPlugins from '../editor/LoadPlugins';
 
 async function parseProp(prop: any, media: Int.Media[]) {
@@ -48,10 +50,12 @@ async function parseProps(prop: any, media: Int.Media[]) {
 	return prop;
 }
 
-async function fetchPage(path: string, media: Int.Media[]): Promise<[ Page.PageDocument, Record<string, Page.ComponentNode> ]> {
+async function fetchPage(path: string, media: Int.Media[]):
+Promise<[ Page.PageDocument, Record<string, Page.ComponentNode> ]> {
+
 	const { page: raw } = await query<{ page: Int.Page }>(QUERY_PAGE, { path });
 	const rawIncludes: Record<string, string> = {};
-	
+
 	const elements: Record<string, Page.Node> = JSON.parse(raw.content ?? '');
 	const includes: Record<string, Page.ComponentNode> = {};
 
@@ -83,7 +87,7 @@ async function fetchPage(path: string, media: Int.Media[]): Promise<[ Page.PageD
 }
 
 export default function EditorControlPage() {
-	const forceUpdate = useForceUpdate();
+	// const forceUpdate = useForceUpdate();
 	const history = useHistory(), location = useLocation();
 	const pagePath = location.pathname.replace(/^\/pages\//g, '');
 	if (!pagePath) history.push('/pages');
@@ -97,8 +101,8 @@ export default function EditorControlPage() {
 	}, []);
 
 	const [ frame, setFrame ] = useState<HTMLIFrameElement | null>(null);
-	
-	const [ editing, setEditing ] = useState<string | undefined>(undefined);
+
+	// const [ editing, setEditing ] = useState<string | undefined>(undefined);
 	const [ page, setPage ] = useState<Page.PageDocument | undefined>(undefined);
 	const [ includes, setIncludes ] = useState<Record<string, Page.ComponentNode>>({});
 
@@ -114,38 +118,43 @@ export default function EditorControlPage() {
 	const send = useMessaging(frame?.contentWindow, (type: string, body: any) => {
 		if (type === 'page:req') send!('page:res', [ page, includes ]);
 		else if (type === 'page:set') setPage(body);
-		else if (type === 'component:edit') setEditing(body);
+		// else if (type === 'component:edit') setEditing(body);
 		else console.warn(`Unknown data recieved, type '${type}', body:`, body);
 	}, [ page, includes, frame ], 'editor');
 
+	const handleSave = () => {
+		console.log('Attempting to save.');
+		query(MUTATE_PAGE, { path: pagePath, content: JSON.stringify(page?.elements) });
+	};
+
 	// // Animate in the sidebar for a smoother transition from page to edit.
-	const [ sidebarOpen, setSidebarOpen ] = useState<boolean>(false);
+	// const [ sidebarOpen, setSidebarOpen ] = useState<boolean>(false);
 	// useEffect(() => void(setTimeout(() => setSidebarOpen(true), 1000)), []);
 
-	const handleElementSave = (props: any) => {
-		const element = ObjectPath.traversePath(editing!, page!.elements);
-		const changed = JSON.stringify(element.props) !== JSON.stringify(props);
-		if (!changed) return;
+	// const handleElementSave = (props: any) => {
+	// 	const element = ObjectPath.traversePath(editing!, page!.elements);
+	// 	const changed = JSON.stringify(element.props) !== JSON.stringify(props);
+	// 	if (!changed) return;
 
-		element.props = props;
-		forceUpdate();
-		send!('page:res', [ page, includes ]);
-	};
+	// 	element.props = props;
+	// 	forceUpdate();
+	// 	send!('page:res', [ page, includes ]);
+	// };
 
 	if (!page || !elements) return <p>Loading...</p>;
 
-	const editingElem = editing && ObjectPath.traversePath(editing, page.elements);
+	// const editingElem = editing && ObjectPath.traversePath(editing, page.elements);
 
 	return (
 		<Preact.Fragment>
-			<div class={mergeClasses('bg-gray-100 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
+			{/* <div class={mergeClasses('bg-gray-100 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
 				sidebarOpen ? 'translate-x-0' : '-translate-x-full')}>
 				{editing && <ElementEditor definition={elements[editingElem.elem]!}
 					props={editingElem.props} onChange={props => handleElementSave(props)}/>}
-			</div>
+				</div>*/}
 			<iframe ref={setFrame} src='/admin/renderer/'
-				class={mergeClasses('place-self-stretch bg-white border-0 overflow-hidden transition-all duration-300 shadow-lg h-full',
-					!sidebarOpen ? 'pl-0' : 'ml-96')} />
+				class='place-self-stretch bg-white border-0 overflow-hidden transition-all duration-300 shadow-lg h-full pl-0' />
+			<div class='fixed bottom-8 right-8 z-10'><Button label='Save' onClick={handleSave}/></div>
 		</Preact.Fragment>
 	);
 }

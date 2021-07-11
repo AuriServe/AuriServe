@@ -8,7 +8,7 @@ import Router from './Router';
 import Logger from '../Logger';
 import Plugins from '../data/Plugins';
 import PagesManager from '../PagesManager';
-import { OUT_DIR as THEME_DIR } from '../data/Themes';
+import { OUT_FILE } from '../data/Themes';
 
 export default class PagesRouter extends Router {
 
@@ -47,7 +47,11 @@ export default class PagesRouter extends Router {
 		});
 
 		this.router.use('/media', Express.static(path.join(this.dataPath, 'media')));
-		this.router.use('/theme', Express.static(path.join(this.dataPath, 'themes', THEME_DIR)));
+		this.router.use('/styles.css', async (_, res) => {
+			const filePath = path.join(this.dataPath, 'themes', OUT_FILE);
+			const file = (await fs.readFile(filePath)).toString();
+			res.header('Content-Type', 'text/css; charset=UTF-8').send(file);
+		});
 
 		this.router.use('/plugin/:identifier/:file', async (req, res, next) => {
 			try {
