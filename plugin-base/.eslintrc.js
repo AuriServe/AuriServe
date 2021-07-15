@@ -38,14 +38,15 @@ module.exports = {
 			"tab",
 			{
 				"CallExpression": {
-					"arguments": "first"
+					"arguments": 1
 				},
 				"FunctionDeclaration": {
-					"parameters": "first"
+					"parameters": 1
 				},
 				"FunctionExpression": {
-					"parameters": "first"
-				}
+					"parameters": 1
+				},
+				"flatTernaryExpressions": true
 			}
 		],
 		"@typescript-eslint/member-delimiter-style": [

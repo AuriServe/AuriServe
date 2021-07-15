@@ -1,6 +1,6 @@
 import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useState, useRef, useEffect } from 'preact/hooks';
+import { useState, useRef, useEffect, useLayoutEffect } from 'preact/hooks';
 
 import { Media } from 'common/graph/type';
 import { ClientDefinition, ServerDefinition } from 'common/definition';
@@ -8,8 +8,9 @@ import { ClientDefinition, ServerDefinition } from 'common/definition';
 import { withHydration } from '../Hydration';
 
 import './ImageView.sss';
+import { mergeClasses } from 'common/util';
 
-type ViewState = 'INITIAL' | 'AWAITING_OBSERVATION' | 'COMPLETE';
+type ViewState = 'STATIC' | 'WAITING' | 'TRANSITIONING' | 'LOADED';
 
 export interface Props {
 	media: Media;
@@ -36,87 +37,89 @@ export interface Props {
  * @returns a table of styles.
  */
 
-function getStyles(props: Props) {
-	let wrapperStyles: any = Object.assign({}, props.style);
-	
-	wrapperStyles.maxWidth = Number.isInteger(props.width) ? props.width + 'px' : props.width;
-	wrapperStyles.maxHeight = Number.isInteger(props.height) ? props.height + 'px' : props.height;
+// function getStyles(props: Props) {
+// 	let wrapperStyles: any = Object.assign({}, props.style);
 
-	if (props.aspect) {
-		wrapperStyles.height = 0;
-		wrapperStyles.paddingBottom = props.aspect + '%';
-	}
+// 	wrapperStyles.maxWidth = Number.isInteger(props.width) ? props.width + 'px' : props.width;
+// 	wrapperStyles.maxHeight = Number.isInteger(props.height) ? props.height + 'px' : props.height;
 
-	let accessStyles: any = {};
+// 	if (props.aspect) {
+// 		wrapperStyles.height = 0;
+// 		wrapperStyles.paddingBottom = props.aspect + '%';
+// 	}
 
-	if (props.protect) {
-		accessStyles.pointerEvents = 'none';
-		accessStyles.userSelect = 'none';
-	}
+// 	let accessStyles: any = {};
 
-	let imageStyles: any = Object.assign(props.aspect ? { width: '100%', height: '100%' } : {
-		aspectRatio: `${props.media.size?.x} / ${props.media.size?.y}`
-	}, props.imgStyle);
+// 	if (props.protect) {
+// 		accessStyles.pointerEvents = 'none';
+// 		accessStyles.userSelect = 'none';
+// 	}
 
-	if (props.aspect) imageStyles.position = 'absolute';
+// 	let imageStyles: any = Object.assign(props.aspect ? { width: '100%', height: '100%' } : {
+// 		aspectRatio: `${props.media.size?.x} / ${props.media.size?.y}`
+// 	}, props.imgStyle);
 
-	return { wrapperStyles: wrapperStyles, imageStyles: imageStyles, accessStyles: accessStyles };
-}
+// 	if (props.aspect) imageStyles.position = 'absolute';
+
+// 	return { wrapperStyles: wrapperStyles, imageStyles: imageStyles, accessStyles: accessStyles };
+// }
 
 
 /**
  * Renders a lazy-loaded image with optional copy protection and lightbox.
  */
 
-export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(props, forwardRef) {
-	const imageRef = useRef<HTMLDivElement>(null);
+export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(props, ref) {
+	const imageRef = useRef<HTMLImageElement>(null);
 
-	const [ state, setState ] = useState<ViewState>('INITIAL');
 	const [ lightbox, setLightbox ] = useState<boolean>(false);
+	const [ state, setState ] = useState<ViewState>('STATIC');
+
+	useLayoutEffect(() => setState('WAITING'), []);
 
 	useEffect(() => {
-		if (state !== 'INITIAL') return;
-		const img = imageRef.current!.querySelector('img')!;
-		if (img.complete) return setState('COMPLETE');
+		if (state !== 'WAITING') return;
+		if (imageRef.current!.complete) setState('LOADED');
+		else imageRef.current!.addEventListener('load', () => {
+			setState('TRANSITIONING');
+			setTimeout(() => setState('LOADED'), 1000);
+		});
+	}, [ props.media.url, state ]);
 
-		setState('AWAITING_OBSERVATION');
 
-		const completeCb = () => setState('COMPLETE');
-		const observer = new IntersectionObserver(([ observing ]: IntersectionObserverEntry[]) => {
-			if (observing.intersectionRatio > 0) {
-				if (img.complete) setState('COMPLETE');
-				else img.addEventListener('load', completeCb);
-				observer.disconnect();
-			};
-		}, { threshold: 0, rootMargin: '0px 0px 1000px 0px' });
-
-		observer.observe(imageRef.current!);
-	}, [ props.media, state ]);
-
-	const { wrapperStyles, imageStyles, accessStyles } = getStyles(props);
+	const width = props.media.size?.x ?? 1;
+	const height = props.media.size?.y ?? 1;
 
 	return (
 		<Preact.Fragment>
-			<div style={wrapperStyles} class={('ImageView ' + (props.class ?? '')).trim()}
-				ref={ref => {
-					imageRef.current = ref!;
-					if (typeof forwardRef === 'function') (forwardRef as any)(ref);
-					else if (forwardRef) forwardRef.current = ref!;
-				}}
-				onClick={props.lightbox ? () => setLightbox(true) : undefined}>
-				<picture>
-					{state !== 'AWAITING_OBSERVATION' && <source srcset={props.media.url}/>}
+			<div class={mergeClasses('ImageView', props.class)}>
+				<div
+					ref={ref}
+					class={'ImageView-Aspect'}
+					style={{ paddingBottom: (props.aspect ? props.aspect : height / width * 100) + '%', ...props.style }}
+					onClick={props.lightbox ? () => setLightbox(true) : undefined}>
 					<img
-						width={props.media.size?.x}
-						height={props.media.size?.y}
-						style={Object.assign({}, imageStyles, accessStyles)}
-						src={props.media.url + '?res=preload'} alt={props.alt || ''} loading={state === 'INITIAL' ? 'lazy' : undefined}/>
-				</picture>
+						ref={imageRef}
+						width={width}
+						height={height}
+						src={props.media.url}
+						class={mergeClasses('ImageView-Image',
+							(state !== 'STATIC' && state !== 'LOADED') && 'Hide', state === 'TRANSITIONING' && 'FadeIn')}
+						alt={props.alt ?? ''}
+						loading='lazy'/>
+					{state !== 'STATIC' && state !== 'LOADED' && <img
+						width={width}
+						height={height}
+						src={props.media.url + '?res=preload'}
+						class={mergeClasses('ImageView-Preload', state === 'TRANSITIONING' && 'FadeOut')}
+						alt=''
+						role='presentation'/>}
+				</div>
 			</div>
 
 			{lightbox && <div onClick={() => setLightbox(false)}
-				class={('ImageView-Modal ' + (props.class ?? '')).trim()}>
-				<img style={accessStyles} src={props.media.url} alt={props.alt || ''}/>
+				class={mergeClasses('ImageView-Modal ', props.class)}>
+				<img src={props.media.url} alt={props.alt ?? ''}/>
 			</div>}
 		</Preact.Fragment>
 	);

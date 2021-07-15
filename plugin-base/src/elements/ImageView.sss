@@ -1,24 +1,56 @@
 .ImageView
 	width: 100%
 	height: auto
-	margin: 0 auto
-	overflow: hidden
+	overflow: auto
 	position: relative
+	isolation: isolate
 
-	object-fit: cover
-	object-position: 50% 50%
-
-	picture
-		object-fit: inherit
-		object-position: inherit
-
-	img
-		display: block
+	.ImageView-Aspect
 		width: 100%
-		height: auto
+		height: 0
+		margin: 0 auto
+		overflow: hidden
+		position: relative
 
-		object-fit: inherit
-		object-position: inherit
+		object-fit: cover
+		object-position: 50% 50%
+
+		img
+			object-fit: inherit
+			object-position: inherit
+
+			width: 100%
+			height: 100%
+			display: block
+			position: absolute
+
+		.ImageView-Preload
+			z-index: 1
+			filter: blur(8px)
+			will-change: opacity
+			transform: scale(1.1)
+
+			&.FadeOut
+				opacity: 0
+				transform: scale(1)
+				transition: opacity 500ms, transform 500ms
+
+		.ImageView-Image
+			transition: opacity 350ms
+
+			@keyframes FadeIn
+				from
+					transform: scale(1.1)
+
+				to
+					transform: scale(1)
+
+			&.Hide
+				opacity: 0
+
+			&.FadeIn
+				opacity: 1
+				animation: FadeIn 500ms forwards
 
 .ImageView-Modal
 	position: fixed

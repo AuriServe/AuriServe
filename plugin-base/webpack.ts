@@ -17,7 +17,7 @@ export default function(_: any, argv: { mode: string }) {
 		context: resolve(__dirname, 'src'),
 		output: { path: resolve(__dirname, 'dist') },
 		resolve: {
-			extensions: [ '.ts', '.tsx' ],
+			extensions: [ '.ts', '.tsx', '.js', '.jsx' ],
 			alias: {
 				"react": "preact/compat",
 				"react-dom": "preact/compat"
