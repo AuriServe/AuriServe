@@ -43,7 +43,7 @@ function EditColumnLayout({ props }: EditProps<Props>) {
 
 	const margin = Math.max(((ref.current?.children[0]?.clientWidth ?? 0) - (props.maxWidth ?? 0)) / 2 - 2, 0);
 
-	return (<>
+	return (<Fragment>
 		<ColumnLayout ref={elem => ref.current = elem?.parentElement} {...props}>{props.children}</ColumnLayout>
 		{(hovered || active) && <ComponentArea for={ref.current} active={active} indicator={true}>
 			<div class='EditColumnLayout-Margin' style={{ width: margin }}/>
@@ -59,7 +59,7 @@ function EditColumnLayout({ props }: EditProps<Props>) {
 				}}
 			>{columns}</div>
 		</ComponentArea>}
-	</>);
+	</Fragment>);
 }
 
 export const admin: AdminDefinition = {

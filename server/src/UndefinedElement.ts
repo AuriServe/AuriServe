@@ -1,4 +1,4 @@
-import { createElement } from 'preact';
+import { h } from 'preact';
 
 const style = {
 	'margin': '8px',
@@ -14,9 +14,9 @@ const style = {
 
 export default function UndefinedElement(props: any) {
 	return (
-		createElement('div', { class: 'UndefinedElement', style: style },
-			createElement('p', null,
-				createElement('strong', null, props.elem),
+		h('div', { class: 'UndefinedElement', style: style },
+			h('p', null,
+				h('strong', null, props.elem),
 				' is undefined.'
 			)
 		)

@@ -35,7 +35,7 @@ export type Color = HSVA | RGBA | Hex;
  */
 
 function isHex(color: Color): color is Hex {
-	return typeof color === 'string';
+	return typeof color === 'string' && color[0] === '#' && (color.length === 7 || color.length === 9);
 }
 
 
@@ -48,9 +48,9 @@ function isRGBA(color: Color): color is RGBA {
 }
 
 
-// /**
-//  * Checks if the color provided is a HSVA color.
-//  */
+/**
+ * Checks if the color provided is a HSVA color.
+ */
 
 // function isHSVA(color: Color): color is HSVA {
 // 	return typeof color !== 'string' && 'h' in color;
@@ -63,7 +63,7 @@ function isRGBA(color: Color): color is RGBA {
 
 export function convert(color: Color) {
 	const c: HSVA = (isHex(color) ? HexToHSVA(color) : isRGBA(color) ? RGBAtoHSVA(color) : color) as HSVA;
-	
+
 	return {
 		toRGBA: () => HSVAtoRGBA(c),
 		toHSVA: () => c,
@@ -115,7 +115,7 @@ function RGBAtoHSVA(rgba: RGBA = { r: 0, g: 0, b: 0, a: 1 }): HSVA {
 	v = Math.max(rgba.r, rgba.g, rgba.b);
 	diff = v - Math.min(rgba.r, rgba.g, rgba.b);
 	diffc = (c: any) => (v - c) / 6 / diff + 1 / 2;
-	
+
 	if (diff === 0) h = s = 0;
 	else {
 		s = diff / v;
@@ -130,7 +130,7 @@ function RGBAtoHSVA(rgba: RGBA = { r: 0, g: 0, b: 0, a: 1 }): HSVA {
 		if (h < 0) h += 1;
 		else if (h > 1) h -= 1;
 	}
-	
+
 	return { h, s, v, a: rgba.a };
 }
 
@@ -155,7 +155,7 @@ function componentToHex(c: number) {
  */
 
 function RGBAtoHex(rgb: RGBA = { r: 0, g: 0, b: 0, a: 1 }): Hex {
-	return '#' + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b) + componentToHex(rgb.a);
+	return '#' + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b) + componentToHex(rgb.a) as Hex;
 }
 
 

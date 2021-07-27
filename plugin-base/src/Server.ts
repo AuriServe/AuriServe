@@ -5,7 +5,9 @@ import { server as ColumnLayout } from './elements/ColumnLayout';
 import { server as Float } from './elements/Float';
 import { server as Section } from './elements/Section';
 import { server as Container } from './elements/Container';
+import { server as ImageCarousel } from './elements/ImageCarousel';
 
+import { server as FAQ } from './elements/FAQ';
 import { server as Button } from './elements/Button';
 import { server as HTMLView } from './elements/HTMLView';
 import { server as TextView } from './elements/TextView';
@@ -17,15 +19,16 @@ import { server as Calendar } from './elements/CalendarServer';
 import { server as ImageGallery } from './elements/ImageGallery';
 
 export default function(serve: any) {
-	[
-		GridLayout,
+	[ GridLayout,
 		LinearLayout,
 		ColumnLayout,
 
 		Float,
 		Section,
 		Container,
+		ImageCarousel,
 
+		FAQ,
 		Button,
 		HTMLView,
 		TextView,

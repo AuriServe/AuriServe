@@ -54,7 +54,7 @@ export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(pr
 	const height = props.media.size?.y ?? 1;
 	const imageStyle = props.protect ? { 'pointer-events': 'none', 'user-select': 'none' } : {};
 
-	return (<>
+	return (<Fragment>
 		<div class={mergeClasses('ImageView', props.class)}>
 			<div
 				ref={ref}
@@ -86,7 +86,7 @@ export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(pr
 			class={mergeClasses('ImageView-Modal ', props.class)}>
 			<img style={imageStyle} src={props.media.url} alt={props.alt ?? ''}/>
 		</div>}
-	</>);
+	</Fragment>);
 });
 
 export const HydratedImageView = withHydration('ImageView', ImageView, (props: any) => {

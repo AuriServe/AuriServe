@@ -6,6 +6,7 @@ import Logger from '../Logger';
 import Elements from '../Elements';
 import Plugin from './plugin/Plugin';
 import PluginConfig from './plugin/PluginConfig';
+import { PagesManagerContext } from '../PagesManager';
 
 import Properties from './model/Properties';
 
@@ -15,7 +16,8 @@ import Hooks from 'preact/hooks';
 /** @ts-ignore Globals to avoid duplicate Preact instances. */
 global._AS_ = {
 	preact: Preact,
-	preact_hooks: Hooks
+	preact_hooks: Hooks,
+	pages_manager_context: PagesManagerContext
 };
 
 
@@ -158,7 +160,7 @@ export default class Plugins {
 		if (Format.sanitize(identifier) !== identifier)
 			throw 'Plugin identifier must be lowercase alphanumeric.';
 		const dir = path.join(this.dataPath, 'plugins', identifier);
-		
+
 		if (!(await fs.stat(dir)).isDirectory()) throw 'Plugin is not a directory.';
 
 		try { await fs.access(path.join(dir, 'plugin.json')); }

@@ -1,7 +1,11 @@
 import { h } from 'preact';
+import { useContext } from 'preact/hooks';
 
-import { ServerDefinition } from 'common/definition';
 import { mergeClasses } from 'common/util';
+import { ServerDefinition } from 'common/definition';
+
+// @ts-ignore
+const Context = _AS_.pages_manager_context;
 
 export type NavEntry = NavItem | 'separator';
 
@@ -20,6 +24,8 @@ export interface Props {
 }
 
 function Entries({ entries }: { entries: NavEntry[] }) {
+	const { path: activePath } = useContext(Context);
+
 	return (
 		<ul>
 			{entries.map(entry => {
@@ -28,10 +34,10 @@ function Entries({ entries }: { entries: NavEntry[] }) {
 				return <li class='Navigation-Item'>
 					{!entry.to && <span class='Navigation-ItemLabel'>{entry.label}</span>}
 					{entry.to && <a
-						class='Navigation-ItemLabel'
 						rel='noopener'
 						href={entry.to}
 						target={entry.target === 'new' ? '_blank' : undefined}
+						class={mergeClasses('Navigation-ItemLabel', entry.to === activePath && 'Active')}
 					>
 						{entry.label}
 						{entry.target === 'new' && <span class='sr-only'>(Opens in a new tab.)</span>}

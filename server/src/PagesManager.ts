@@ -15,7 +15,6 @@ import Plugins from './data/Plugins';
 import Properties from './data/model/Properties';
 import UndefinedElement from './UndefinedElement';
 
-
 type ExposedTree = Record<string, Page.ComponentNode>;
 type ExposedMap = Record<string, ExposedTree>;
 
@@ -30,6 +29,13 @@ const DEFAULT_LAYOUT = fss.readFileSync(path.join(__dirname, 'views', 'layout.ht
 
 // Uses lookaheads / lookbehinds to find space to insert a tree into on a template.
 const FIND_INCLUDE = (label: string) => new RegExp(`(?<=\<[A-z="'_\\- ]+ data-include='${label}'>)(\s*)(?=<\/[A-z]+>)`, 'gi');
+
+interface PagesManagerContextData {
+	path: string;
+	cookies: Record<string, string>;
+}
+
+export const PagesManagerContext = Preact.createContext<PagesManagerContextData>(undefined as any);
 
 export default class PagesManager {
 	root: string;
@@ -64,15 +70,16 @@ export default class PagesManager {
 	/**
 	 * Attempts to render a page given a URL.
 	 *
-	 * @param {string} url - The URL of the page to render, without the domain.
+	 * @param url - The URL of the page to render, without the domain.
 	 * @returns a promise resolving to the rendered HTML, or rejecting to an error.
 	 */
 
 	async render(rawUrl: string): Promise<string> {
+		rawUrl = rawUrl.replace(/(?<=\/.+)\/$/g, '');
 		Logger.perfStart('Rendering Page ' + rawUrl);
-		let url = rawUrl.replace(/\/$/, '');
 
 		// Search for an index file if the target doesn't exist.
+		let url = rawUrl;
 		try { await fs.access(path.join(this.root, url + '.json')); }
 		catch {
 			try { await fs.access(path.join(this.root, url, 'index.json')); }
@@ -88,10 +95,15 @@ export default class PagesManager {
 
 		Logger.perfEnd('Preparing Trees');
 
+		const contextData: PagesManagerContextData = {
+			path: rawUrl,
+			cookies: {}
+		};
+
 		Logger.perfStart('Rendering Trees');
 		let rendered: {[key: string]: string } = {};
 		await Promise.all(Object.keys(json.elements).map(async (key) =>
-			rendered[key] = await this.renderTree(url, key, json.elements[key])));
+			rendered[key] = await this.renderTree(url, key, json.elements[key], contextData)));
 		Logger.perfEnd('Rendering Trees');
 
 		// Populate the page template with contents.
@@ -143,7 +155,7 @@ export default class PagesManager {
 	/**
 	 * Renders an error page, returning an error code and an HTML document.
 	 *
-	 * @param {string} url - The error to display.
+	 * @param url - The error to display.
 	 * @returns the error status code and the error HTML page.
 	 */
 
@@ -165,7 +177,7 @@ export default class PagesManager {
 	 * Returns a raw page document, not ready for use.
 	 * Throws if there is no page at the requested path.
 	 *
-	 * @param {string} page - The page to return.
+	 * @param page - The page to return.
 	 * @returns an unexpanded page object.
 	 */
 
@@ -183,7 +195,7 @@ export default class PagesManager {
 	 * Returns a page that has been prepared for use.
 	 * Throws if there is no page at the requested path.
 	 *
-	 * @param {string} page - The page to expand.
+	 * @param page - The page to expand.
 	 */
 
 	async getPreparedPage(page: string, media: Int.Media[]): Promise<Page.PageDocument> {
@@ -195,7 +207,7 @@ export default class PagesManager {
 			await Promise.all(Object.keys(pageObj.elements).map(async (key) =>
 				await this.includeTree(pageObj.elements[key], path.dirname(p))));
 
-			const exposed = await this.exposePage(pageObj);
+			const exposed = this.exposePage(pageObj);
 
 			await Promise.all(Object.keys(pageObj.elements).map(async (key) =>
 				await this.parseTree(key, pageObj.elements[key], media ?? [], exposed)));
@@ -254,8 +266,8 @@ export default class PagesManager {
 	 * Writes new data to a page.
 	 * Throws if the requested page doesn't exist or it isn't updateable.
 	 *
-	 * @param {string} page - The page to update.
-	 * @param {PageDocument} obj - Page object to update the page to.
+	 * @param page - The page to update.
+	 * @param obj - Page object to update the page to.
 	 */
 
 	async updatePage(page: string, obj: Page.PageDocument): Promise<void> {
@@ -271,17 +283,18 @@ export default class PagesManager {
 	/**
 	 * Renders an element tree into HTML.
 	 *
-	 * @param {string} page - The path of the page to render.
-	 * @param {Node} root - The root element to render.
+	 * @param page - The path of the page to render.
+	 * @param root - The root element to render.
 	 * @returns the rendered HTML as a string.
 	 */
 
-	private async renderTree(page: string, identifier: string, root: Page.Node): Promise<string> {
+	private async renderTree(page: string, identifier: string,
+		root: Page.Node, contextData: PagesManagerContextData): Promise<string> {
 		Logger.perfStart('Building tree ' + identifier);
 		const tree = await this.createTree(root, path.dirname(page));
 		Logger.perfEnd('Building tree ' + identifier);
 		Logger.perfStart('Rendering tree ' + identifier);
-		const res = renderToString(tree);
+		const res = renderToString(Preact.h(PagesManagerContext.Provider, { value: contextData, children: tree }));
 		Logger.perfEnd('Rendering tree ' + identifier);
 		return res;
 	}
@@ -291,8 +304,8 @@ export default class PagesManager {
 	 * Creates Preact elements recursively, starting at the provided element.
 	 * Throws if the page or page includes do not exist.
 	 *
-	 * @param {Node} child - The root element to render, must be expanded.
-	 * @param {string} pathRoot - The path that includes are relative to.
+	 * @param child - The root element to render, must be expanded.
+	 * @param pathRoot - The path that includes are relative to.
 	 * @returns a Preact VNode representing the root of the tree.
 	 */
 
@@ -315,8 +328,8 @@ export default class PagesManager {
 	 * Directly manipulates the passed-in object, does not return anything.
 	 * Throws if the required includes do not exist.
 	 *
-	 * @param {Node} elem - The root element to expand.
-	 * @param {string} pathRoot - The path that includes are relative to.
+	 * @param elem - The root element to expand.
+	 * @param pathRoot - The path that includes are relative to.
 	 */
 
 	private async includeTree(elem: Page.Node, pathRoot: string): Promise<void> {
@@ -335,7 +348,7 @@ export default class PagesManager {
 	 * Recursively exposes a page, storing named references to all elements containing
 	 * an 'exposeAs' key. Returns a key-value map of the elements organized by tree.
 	 *
-	 * @param {Page} page - The page to expose.
+	 * @param page - The page to expose.
 	 */
 
 	private exposePage(page: Page.PageDocument) {
@@ -351,7 +364,7 @@ export default class PagesManager {
 	 * Recursively exposes a tree, storing named references to all elements containing
 	 * an 'exposeAs' key. Returns a key-value map of the elements.
 	 *
-	 * @param {ComponentNode} elem - The root element to expand.
+	 * @param elem - The root element to expand.
 	 */
 
 	private exposeTree(elem: Page.Node): ExposedTree {
@@ -370,10 +383,10 @@ export default class PagesManager {
 	 * Recursively parses the properties of an element tree.
 	 * Directly manipulates the passed-in object, does not return anything.
 	 *
-	 * @param {string} tree - The identifier of the tree that is being expanded.
-	 * @param {ComponentNode} elem - The root element to expand.
-	 * @param {IMedia[]} media - The current SiteData media array.
-	 * @param {ExposedMap} exposed - The tree's exposed map.
+	 * @param tree - The identifier of the tree that is being expanded.
+	 * @param elem - The root element to expand.
+	 * @param media - The current SiteData media array.
+	 * @param exposed - The tree's exposed map.
 	 */
 
 	private async parseTree(tree: string, elem: Page.Node, media: Int.Media[], exposed: ExposedMap): Promise<void> {
@@ -388,8 +401,8 @@ export default class PagesManager {
 	 * Expands an include into a tree, overriding exposed properties with include props.
 	 * Throws the requested include doesn't exist.
 	 *
-	 * @param {IncludeNode} include - The include to be expanded.
-	 * @param {string} pathRoot - The path that includes are relative to.
+	 * @param include - The include to be expanded.
+	 * @param pathRoot - The path that includes are relative to.
 	 * @returns a page element representing the expanded include root.
 	 */
 
@@ -406,8 +419,8 @@ export default class PagesManager {
 	 * Recursively overrides template children exposed props with include override props.
 	 * Manipulates the passed in elemDef, does not return anything.
 	 *
-	 * @param {ComponentNode} elemDef - The element to override with properties.
-	 * @param {IncludeProps} includeOverrides - The include override props to use.
+	 * @param elemDef - The element to override with properties.
+	 * @param includeOverrides - The include override props to use.
 	 */
 
 	private async overrideTree(elemDef: Page.ComponentNode, includeOverrides?: Record<string, Record<string, any>>): Promise<void> {
@@ -422,7 +435,7 @@ export default class PagesManager {
 	/**
 	 * Reads a Prop Ref and returns a list of keys.
 	 *
-	 * @param {string} ref - The prop ref to parse.
+	 * @param ref - The prop ref to parse.
 	 */
 
 	private parsePropRef(ref: string): { page?: string; tree?: string; exposed: string } {
@@ -454,12 +467,12 @@ export default class PagesManager {
 	 * Applies transformations to a non-trivial property,
 	 * e.g. filling out a media prop with the rest of the fields.
 	 *
-	 * @param {any} props - The property to parse.
-	 * @param {Media[]} media - The current SiteData media array.
-	 * @param {string} myTree - The tree the prop is contained in.
-	 * @param {ExposedMap} exposedMap - A map of exposed props.
+	 * @param props - The property to parse.
+	 * @param media - The current SiteData media array.
+	 * @param myTree - The tree the prop is contained in.
+	 * @param exposedMap - A map of exposed props.
 	 *
-	 * @returns {any} - The modified property.
+	 * @returns the modified property.
 	 */
 
 	private async parseProp(prop: any, media: Int.Media[], myTree: string, exposedMap: ExposedMap): Promise<any> {
@@ -492,10 +505,10 @@ export default class PagesManager {
 	 * Applies transformations to non-trivial properties, modifying the table directly.
 	 * e.g. filling out a media prop with the rest of the fields.
 	 *
-	 * @param {any} prop - The props table to parse through.
-	 * @param {Media[]} media - The current SiteData media array.
-	 * @param {string} tree - The tree the props are contained in.
-	 * @param {ExposedMap} exposedMap - A map of exposed props.
+	 * @param prop - The props table to parse through.
+	 * @param media - The current SiteData media array.
+	 * @param tree - The tree the props are contained in.
+	 * @param exposedMap - A map of exposed props.
 	 */
 
 	private async parseProps(prop: any, media: Int.Media[], tree: string, exposedMap: ExposedMap) {

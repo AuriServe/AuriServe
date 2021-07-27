@@ -57,7 +57,7 @@ export default function(_: any, argv: { mode: string }) {
 						[ '@babel/preset-env', { targets: { browsers: ['Chrome 78'] } } ]
 					],
 					plugins: [
-						[ '@babel/transform-react-jsx', { pragma: 'h' } ],
+						[ '@babel/transform-react-jsx', { pragma: 'h', pragmaFrag: 'Fragment' } ],
 						[ '@babel/plugin-proposal-class-properties', {} ]
 					]
 				}
