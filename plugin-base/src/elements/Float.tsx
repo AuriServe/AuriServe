@@ -1,15 +1,17 @@
-import * as Preact from 'preact';
+import { h, ComponentChildren } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { ServerDefinition, ClientDefinition, AdminDefinition } from 'auriserve-api';
+import { ServerDefinition, ClientDefinition } from 'common/definition';
 
 import { withHydration, Static } from '../Hydration';
+import { mergeClasses } from 'common/util';
 
-interface Props {
-	threshold?: number;
+export interface Props {
 	target?: string;
+	threshold?: number;
 
+	style?: any;
 	class?: string;
-	children?: Preact.VNode[];
+	children?: ComponentChildren;
 }
 
 /**
@@ -17,7 +19,7 @@ interface Props {
  * Can be used to allow for floating headers.
  */
 
-function Float(props: Props) {
+export function Float(props: Props) {
 	const [ floating, setFloating ] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -28,13 +30,13 @@ function Float(props: Props) {
 		let scrolled = true;
 
 		const markScroll = () => scrolled = true;
-		
+
 		const onScroll = () => {
 			if (!scrolled) return;
 			setFloating(elem.scrollTop > (props.threshold ?? 32));
 			scrolled = false;
 		};
-		
+
 		const interval = setInterval(onScroll, 50);
 		onScroll();
 
@@ -47,32 +49,15 @@ function Float(props: Props) {
 	}, [ props.target, props.threshold ]);
 
 	return (
-		<div class={[ 'Float', floating && 'Floating', props.class ].filter(s => s).join(' ')}>
+		<div class={mergeClasses('Float', floating && 'Floating', props.class)}>
 			<Static class='Float-Contents'>{props.children}</Static>
 		</div>
 	);
 }
 
-const HydratedFloat = withHydration('Float', Float);
+export const HydratedFloat = withHydration('Float', Float);
 
-export const server: ServerDefinition = {
-	identifier: 'Float',
-	element: HydratedFloat,
-	config: {
-		props: {
-			threshold: { type: 'number', default: 32 },
-			target: { type: 'text', default: 'html' }
-		}
-	}
-};
+export const server: ServerDefinition = { identifier: 'Float', element: HydratedFloat };
 
-export const client: ClientDefinition = {
-	identifier: 'Float',
-	element: Float
-};
-
-export const admin: AdminDefinition = {
-	...server,
-	...client
-};
+export const client: ClientDefinition = { identifier: 'Float', element: Float };
 

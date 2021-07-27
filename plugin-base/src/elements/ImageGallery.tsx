@@ -1,38 +1,36 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
 import { Media } from 'common/graph/type';
 import { ClientDefinition, ServerDefinition } from 'common/definition';
 
-import './ImageGallery.sss';
-
-import { client as ImageView } from './ImageView';
-
+import { ImageView } from './ImageView';
 import { withHydration } from '../Hydration';
 
-interface Props {
-	gap: number;
-	width: number;
-	aspect?: number;
+import './ImageGallery.sss';
+
+export interface Props {
+	gap?: number;
+	width?: number;
 
 	lightbox?: true;
 	protect?: true;
+	aspect?: number;
 
 	media: Media[];
-
-	class?: string;
-	children?: Preact.VNode[];
-
 	count?: number;
 	loadMore?: number;
+
+	style?: any;
+	class?: string;
 }
 
 /**
- * Renders a grid of images, the same way a GridLayout renders children.
- * Can specify properties to apply to all of the images.
+ * Renders a grid of images in a grid or masonry layout.
+ * Can disclose only a subset of images, and show a button to show more.
  */
 
-function ImageGallery(props: Props) {
+export function ImageGallery(props: Props) {
 	const [ loadCount, setLoadCount ] = useState<number>(props.count ?? props.media.length);
 	useEffect(() => setLoadCount(props.count ?? props.media.length), [ props.count, props.media ]);
 
@@ -40,19 +38,19 @@ function ImageGallery(props: Props) {
 		<div class='ImageGallery'>
 			<div class='ImageGallery-Grid'
 				style={{
-					columnGap: props.gap + 'px',
+					columnGap: props.gap ? props.gap + 'px' : undefined,
 					gridTemplateColumns: `repeat(auto-fit, minmax(min(${props.width ?? 300}px, 100%), 1fr))`
 				}}>
 				{props.media.slice(0, loadCount).map(media =>
-					<ImageView.element
+					<ImageView
 						media={media}
 						key={media.id}
 						aspect={props.aspect}
 						protect={props.protect}
 						lightbox={props.lightbox}
 						style={{
-							marginBottom: props.gap + 'px',
-							gridRow: props.aspect ? '' : `span ${Math.floor(media.size!.y / media.size!.x * 30)}`
+							marginBottom: props.gap ? props.gap + 'px' : undefined,
+							gridRow: !props.aspect ? `span ${Math.floor(media.size!.y / media.size!.x * 30)}` : undefined
 						}}
 					/>
 				)}
@@ -64,35 +62,14 @@ function ImageGallery(props: Props) {
 	);
 };
 
-const HydratedImageGallery = withHydration('ImageGallery', ImageGallery, (props: Props) => {
-	props.media = props.media.map(media => ({ url: media.url, size: media.size })) as Media[];
+export const HydratedImageGallery = withHydration('ImageGallery', ImageGallery, (props: Props) => {
+	props.media = props.media.map(media => ({
+		url: media.url,
+		size: media.size })
+	) as Media[];
 	return props;
 });
 
-export const server: ServerDefinition = {
-	identifier: 'ImageGallery',
-	element: HydratedImageGallery,
-	config: {
-		props: {
-			gap: { name: 'Children Gap', type: [ 'number', 'text' ], default: 8 },
-			width: { name: 'Children Width', type: [ 'number', 'text' ], default: 300 },
-			aspect: { name: 'Aspect Ratio', type: [ 'number' ], optional: true },
+export const server: ServerDefinition = { identifier: 'ImageGallery', element: HydratedImageGallery };
 
-			lightbox: { name: 'Open Lightbox on Click', type: 'boolean', default: true },
-			protect: { name: 'Copy Protection', type: 'boolean' },
-
-			media: { name: 'Images', entries: {
-				src: { name: 'Image Source', type: [ 'media:image', 'url:image' ] },
-				alt: { name: 'Alt Text', type: 'text', optional: true }
-			}},
-
-			count: { name: 'Initial Images', type: [ 'number' ], optional: true },
-			loadMore: { name: 'Load More Count', type: [ 'number' ], optional: true }
-		}
-	}
-};
-
-export const client: ClientDefinition = {
-	identifier: 'ImageGallery',
-	element: ImageGallery
-};
+export const client: ClientDefinition = { identifier: 'ImageGallery', element: ImageGallery };

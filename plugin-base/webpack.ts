@@ -43,10 +43,24 @@ export default function(_: any, argv: { mode: string }) {
 
 		module: {
 			rules: [{
-				test: /\.tsx?$/,
-				loader: 'ts-loader',
-				exclude: /node_modules/,
-				options: { transpileOnly: true }
+				test: /\.[t|j]sx?$/,
+				loader: 'babel-loader',
+				options: {
+					babelrc: false,
+					cacheDirectory: true,
+					presets: [
+						[ '@babel/preset-typescript', {
+							isTSX: true,
+							allExtensions: true,
+							jsxPragma: 'h'
+						} ],
+						[ '@babel/preset-env', { targets: { browsers: ['Chrome 78'] } } ]
+					],
+					plugins: [
+						[ '@babel/transform-react-jsx', { pragma: 'h' } ],
+						[ '@babel/plugin-proposal-class-properties', {} ]
+					]
+				}
 			}]
 		},
 
@@ -92,7 +106,7 @@ export default function(_: any, argv: { mode: string }) {
 		},
 
 		externals: {
-			preact: 'root _AS_.preact',
+			'preact': 'root _AS_.preact',
 			'preact/hooks': 'root _AS_.preact_hooks'
 		},
 

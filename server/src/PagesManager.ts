@@ -33,7 +33,6 @@ const FIND_INCLUDE = (label: string) => new RegExp(`(?<=\<[A-z="'_\\- ]+ data-in
 
 export default class PagesManager {
 	root: string;
-	themes: Themes;
 	gql?: (q: string) => Promise<Partial<Int.Root>>;
 
 
@@ -41,17 +40,10 @@ export default class PagesManager {
 	 * Handles generating and expanding pages.
 	 * Can create an HTML representation of a page,
 	 * or return an expanded JSON representation with includes included.
-	 *
-	 * @param {Plugins} plugins - The plugin parser.
-	 * @param {DBView} db - The database.
-	 * @param {Elements} elements - The registered elements.
-	 * @param {GetSiteData} getSiteData - The getSiteData function.
-	 * @param {string} dataPath - The root data path for AuriServe.
 	 */
 
-	constructor(private dataPath: string, private plugins: Plugins, private elements: Elements) {
+	constructor(private dataPath: string, private themes: Themes, private plugins: Plugins, private elements: Elements) {
 		this.root = path.join(this.dataPath, 'pages');
-		this.themes = new Themes(this.dataPath);
 	}
 
 
@@ -61,13 +53,9 @@ export default class PagesManager {
 	 */
 
 	async init(gql: (q: string) => Promise<Partial<Int.Root>>) {
-		try {
-			await fs.access(this.root, fsc.R_OK);
-		}
-		catch (e) {
-			fs.mkdir(this.root);
-		}
-		
+		try {	await fs.access(this.root, fsc.R_OK); }
+		catch (e) { fs.mkdir(this.root); }
+
 		this.gql = gql;
 		this.themes.init();
 	}
@@ -200,7 +188,7 @@ export default class PagesManager {
 
 	async getPreparedPage(page: string, media: Int.Media[]): Promise<Page.PageDocument> {
 		const p = path.join(this.root, page + '.json');
-			
+
 		try {
 			const pageObj = await this.getPage(page);
 
@@ -208,7 +196,7 @@ export default class PagesManager {
 				await this.includeTree(pageObj.elements[key], path.dirname(p))));
 
 			const exposed = await this.exposePage(pageObj);
-			
+
 			await Promise.all(Object.keys(pageObj.elements).map(async (key) =>
 				await this.parseTree(key, pageObj.elements[key], media ?? [], exposed)));
 
@@ -236,7 +224,7 @@ export default class PagesManager {
 
 			await Promise.all((await fs.readdir(path.join(this.root, dir)))
 				.map((file: string) => (async () => {
-	
+
 					const filePath = path.join(dir, file);
 					const stat = await fs.lstat(path.join(this.root, filePath));
 
@@ -317,7 +305,7 @@ export default class PagesManager {
 
 		let children: any[] = [];
 		for (let child of elem.children ?? []) children.push(await this.createTree(child, pathRoot));
-		
+
 		return Preact.h(render.element, { ...elem.props, children: children });
 	}
 
@@ -491,7 +479,7 @@ export default class PagesManager {
 					const pageObj = await this.getPage(page);
 					exposedMap = this.exposePage(pageObj);
 				}
-				
+
 				prop = { _AS_PROP_REF: prop._AS_PROP_REF, ...exposedMap[tree ?? myTree][exposed].props };
 			}
 		}

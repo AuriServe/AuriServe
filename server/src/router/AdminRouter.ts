@@ -7,9 +7,9 @@ import { UploadedFile } from 'express-fileupload';
 
 import Router from './Router';
 import Media from '../data/Media';
+import Themes from '../data/Themes';
 import * as Auth from '../data/Auth';
 import Plugins from '../data/Plugins';
-import PagesManager from '../PagesManager';
 import AuthRoute, { delay } from './AuthRoute';
 import { Schema, Resolver, Context } from '../data/Graph';
 
@@ -18,12 +18,11 @@ import { Schema, Resolver, Context } from '../data/Graph';
 const PAGE_TEMPLATE = fs.readFileSync(path.join(path.dirname(__dirname), 'views', 'admin.html')).toString();
 
 export default class AdminRouter extends Router {
-	constructor(private dataPath: string, private app: Express.Application, private pageBuilder: PagesManager,
-		private plugins: Plugins, private media: Media, private gqlContext: Context) { super(); }
+	constructor(private dataPath: string, private app: Express.Application,
+		private plugins: Plugins, private themes: Themes, private media: Media, private gqlContext: Context) { super(); }
 
 	init() {
 		const { rateLimit, authRoute } = AuthRoute({ attempts: 10000 });
-
 
 		/**
 		 * Attempts to authenticate a user with the supplied password.
@@ -42,7 +41,7 @@ export default class AdminRouter extends Router {
 
 				if (typeof user != 'string' || typeof pass != 'string')
 					throw 'Request is missing required parameters.';
-				
+
 				res.send(await Auth.getToken(user, pass));
 			}
 			catch (e) {
@@ -52,7 +51,7 @@ export default class AdminRouter extends Router {
 			}
 		});
 
- 
+
  		/**
  		 * GraphQL endpoint for querying server data.
  		 * Also provides a graphiql access-point if loaded by a logged-in user.
@@ -128,34 +127,6 @@ export default class AdminRouter extends Router {
 			res.sendFile(path.join(this.dataPath, 'themes', req.params.identifier, 'cover.jpg'))));
 
 
-		// /**
-		//  * Gets a layout template.
-		//  *
-		//  * @param {string} req.body.layout - The identifier for the layout.
-		//  * @returns {200} The layout template.
-		//  * @returns {403} An error indicating that the layout doesn't exist.
-		//  */
-
-		// this.router.post('/themes/layout', authRoute, Router.safeRoute(async (req, res) => {
-		// 	if (typeof req.body.layout !== 'string') throw 'Request is missing required data.';
-		// 	const layouts = await this.themes.listLayouts();
-		// 	if (!layouts.has(req.body.layout)) throw 'Layout doesn\'t exist';
-		// 	res.send(layouts.get(req.body.layout));
-		// }));
-
-
-		// *
-		//  * Refreshes the theme listings.
-		//  *
-		//  * @returns {200} A site data partial containing the theme listings.
-		//  * @returns {403} An error.
-		 
-
-		// this.router.post('/themes/refresh', authRoute, Router.safeRoute(async (_, res) => {
-		// 	await this.themes.refresh();
-		// 	res.send(JSON.stringify(await this.getSiteData('themes&info')));
-		// }));
-
 		/*
 		 * Plugin Routes
 		 */
@@ -163,30 +134,6 @@ export default class AdminRouter extends Router {
 		this.router.get('/plugins/cover/:identifier.jpg', authRoute, Router.safeRoute((req, res) =>
 			res.sendFile(path.join(this.dataPath, 'plugins', req.params.identifier, 'cover.jpg'))));
 
-		// this.router.post('/plugins/refresh', authRoute, async (_, res) => {
-		// 	await this.plugins.refresh();
-		// 	res.send(JSON.stringify(await this.getSiteData('plugins&info')));
-		// });
-
-		// /*
-		//  * Page Routes
-		//  */
-
-		// this.router.post('/pages/data', authRoute, Router.safeRoute(async (req, res) => {
-		// 	if (typeof req.body !== 'object' || typeof req.body.page !== 'string')
-		// 		throw 'Request is missing required data.';
-
-		// 	const data = await this.pages.getPreparedPage(req.body.page);
-		// 	res.send(JSON.stringify(data));
-		// }));
-
-		// this.router.post('/pages/update', authRoute, Router.safeRoute(async (req, res) => {
-		// 	if (typeof req.body !== 'object' || typeof req.body.path !== 'string' || typeof req.body.body !== 'object')
-		// 		throw 'Request is missing required data.';
-
-		// 	await this.pages.updatePage(req.body.path, req.body.body);
-		// 	res.sendStatus(200);
-		// }));
 
 		// /*
 		//  * Role Routes
@@ -244,7 +191,7 @@ export default class AdminRouter extends Router {
 					pluginStyles: this.plugins.listEnabled().filter(p => p.config.sources.editor?.style)
 						.map(p => p.config.identifier + '/' + p.config.sources.editor!.style) })}</script>`)
 				.replace('$THEMES$', `<script id='themes' type='application/json'>${
-					JSON.stringify({ themes: this.pageBuilder.themes.listEnabled().map(t => t.config.identifier) })}</script>`)
+					JSON.stringify({ themes: this.themes.listEnabled().map(t => t.config.identifier) })}</script>`)
 				.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 			res.send(html);
 		});

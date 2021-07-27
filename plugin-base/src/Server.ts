@@ -1,5 +1,3 @@
-import { ServerBindings } from 'auriserve-api';
-
 import { server as GridLayout } from './elements/GridLayout';
 import { server as LinearLayout } from './elements/LinearLayout';
 import { server as ColumnLayout } from './elements/ColumnLayout';
@@ -18,8 +16,9 @@ import { server as MarkdownView } from './elements/MarkdownView';
 import { server as Calendar } from './elements/CalendarServer';
 import { server as ImageGallery } from './elements/ImageGallery';
 
-export default function(serve: ServerBindings) {
-	[ GridLayout,
+export default function(serve: any) {
+	[
+		GridLayout,
 		LinearLayout,
 		ColumnLayout,
 

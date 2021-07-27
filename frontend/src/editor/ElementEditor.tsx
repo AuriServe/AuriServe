@@ -35,11 +35,12 @@ function Table({ props, values, path, handleSet }: TableProps) {
 interface Props {
 	props: PropsTable;
 	definition: AdminDefinition;
-	
+
 	onChange: (props: any) => void;
 }
 
 export default function ElementEditor({ props, definition, onChange }: Props) {
+	// @ts-ignore
 	const propDefs = definition.config.props;
 
 	const handleSet = (key: string, value: any) => onChange({ ...props, [key]: value });

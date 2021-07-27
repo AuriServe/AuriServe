@@ -1,16 +1,20 @@
-import * as Preact from 'preact';
-import { ServerDefinition } from 'auriserve-api';
+import { h, ComponentChildren } from 'preact';
 
-interface Props {
-	direction: 'column' | 'row';
-	layoutChildren: 'start' | 'end' | 'center';
-	
+import { mergeClasses } from 'common/util';
+import { ServerDefinition } from 'common/definition';
+
+import './LinearLayout.sss';
+
+export interface Props {
+	direction?: 'column' | 'row';
+	layoutChildren?: 'start' | 'end' | 'center' | 'stretch';
+
+	gap?: number;
 	width?: number;
-	gap: number | string;
 
-	style?: string;
+	style?: any;
 	class?: string;
-	children?: Preact.VNode | Preact.VNode[];
+	children?: ComponentChildren;
 }
 
 /**
@@ -19,34 +23,23 @@ interface Props {
  */
 
 export function LinearLayout(props: Props) {
-	const style = {
-		display: 'flex',
-		width: '100%',
-		flexDirection: props.direction === 'row' ? 'row' : 'column',
-		maxWidth: Number.isInteger(props.width) ? props.width + 'px' : props.width,
-		gap: Number.isInteger(props.gap) ? props.gap + 'px' : props.gap ? props.gap : 8,
-		alignItems: props.layoutChildren === 'start' ? 'flex-start' :
-			props.layoutChildren === 'end' ? 'flex-end' :
-				props.layoutChildren === 'center' ? 'center' : 'stretch'
-	};
-
 	return (
-		<div style={Object.assign({}, style, props.style)}
-			class={('LinearLayout ' + (props.class ?? '')).trim()}>
-			{props.children}
-		</div>
+		<div
+			style={{
+				flexDirection: props.direction === 'row' ? 'row' : undefined,
+				maxWidth: props.width ? props.width + 'px' : undefined,
+				gap: props.gap ? props.gap + 'px' : undefined,
+				alignItems:
+					props.layoutChildren === 'start' ? 'flex-start' :
+					props.layoutChildren === 'end' ? 'flex-end' :
+					props.layoutChildren === 'center' ? 'center' :
+					undefined,
+				...props.style ?? {}
+			}}
+			class={mergeClasses('LinearLayout', props.class)}
+			children={props.children}
+		/>
 	);
 }
 
-export const server: ServerDefinition = {
-	identifier: 'LinearLayout',
-	element: LinearLayout,
-	config: {
-		props: {
-			maxWidth: { name: 'Max Width', type: 'number', optional: true },
-			gap: { name: 'Children Gap', type: [ 'number', 'text' ], default: 8 },
-			direction: { name: 'List Direction', type: [ [ 'column', 'row' ] ], default: 'column' },
-			layoutChildren: { name: 'Layout Children', type: [ [ 'start', 'end', 'center', 'stretch' ] ], default: 'stretch' }
-		}
-	}
-};
+export const server: ServerDefinition = { identifier: 'LinearLayout', element: LinearLayout };

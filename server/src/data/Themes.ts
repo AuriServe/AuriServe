@@ -199,15 +199,13 @@ export default class Themes {
 	 */
 
 	private async buildThemeCSS() {
-		return new Promise<void>(async (resolve) => {
-			const segments = await Promise.all([ ...this.themes.values() ].filter(t => t.isEnabled()).map(theme => theme.parse()));
-			let stream = fss.createWriteStream(path.join(this.dataPath, 'themes', OUT_FILE));
-			stream.once('open', () => {
-				stream.write(CSS_RESET);
-			  segments.forEach(segment => stream.write(segment));
-			  stream.end();
-			  resolve();
-			});
-		});
+		const segments = [
+			CSS_RESET,
+			...await Promise.all([ ...this.themes.values() ]
+				.filter(t => t.isEnabled()).map(theme => theme.parse()))
+		];
+
+		await fs.writeFile(path.join(this.dataPath, 'themes', OUT_FILE),
+			segments.join('\n'), { flag: 'w' });
 	}
 }

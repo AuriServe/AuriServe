@@ -1,13 +1,17 @@
-import * as Preact from 'preact';
-import { ServerDefinition } from 'auriserve-api';
+import { h, ComponentChildren } from 'preact';
 
-interface Props {
-	gap: number;
-	width: number;
+import { mergeClasses } from 'common/util';
+import { ServerDefinition } from 'common/definition';
 
-	style?: string;
+import './GridLayout.sss';
+
+export interface Props {
+	gap?: number;
+	width?: number;
+
+	style?: any;
 	class?: string;
-	children?: Preact.VNode[];
+	children?: ComponentChildren;
 }
 
 /**
@@ -16,29 +20,16 @@ interface Props {
  */
 
 export function GridLayout(props: Props) {
-	const style = {
-		display: 'grid',
-		gap: Number.isInteger(props.gap) ? props.gap + 'px' : props.gap,
-		gridGap: Number.isInteger(props.gap) ? props.gap + 'px' : props.gap,
-		gridTemplateColumns: `repeat(auto-fit, minmax(min(
-			${Number.isInteger(props.width) ? props.width : props.width ? props.width : 300}px, 100%), 1fr))`
-	};
-
-	return (
-		<div style={Object.assign({}, style, props.style)}
-			class={('GridLayout ' + (props.class ?? '')).trim()}>
-			{props.children}
-		</div>
-	);
+	return <div
+		style={{
+			gap: props.gap ? props.gap + 'px' : undefined,
+			gridTemplateColumns: `repeat(auto-fit, minmax(min(
+				${Number.isInteger(props.width) ? props.width : props.width ? props.width : 300}px, 100%), 1fr))`,
+			...props.style
+		}}
+		class={mergeClasses('GridLayout', props.class)}
+		children={props.children}
+	/>;
 }
 
-export const server: ServerDefinition = {
-	identifier: 'GridLayout',
-	element: GridLayout,
-	config: {
-		props: {
-			gap: { name: 'Children Gap', type: [ 'number', 'text' ], default: 8 },
-			width: { name: 'Children Width', type: [ 'number', 'text' ], default: 300 }
-		}
-	}
-};
+export const server: ServerDefinition = { identifier: 'GridLayout', element: GridLayout };

@@ -1,10 +1,12 @@
 import Quill from 'quill';
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import { AdminDefinition } from 'auriserve-api';
-import { useActiveState } from 'editor/hooks';
 
-import { server } from '../TextView';
+import { mergeClasses } from 'common/util';
+import { useActiveState } from 'editor/hooks';
+import { AdminDefinition, EditProps } from 'common/definition';
+
+import { server, Props } from '../TextView';
 
 import './TextView.sss';
 
@@ -22,24 +24,13 @@ const ICONS: { [ key: string ]: string } = {
 	'code': require('../../../res/format-code.svg'),
 
 	'link': require('../../../res/format-link.svg'),
-	
+
 	'code-block': require('../../../res/format-code-block.svg'),
 	'blockquote': require('../../../res/format-blockquote.svg'),
 	'list': require('../../../res/format-list.svg')
 };
 
-interface Props {
-	props: {
-		content: string;
-		class?: string;
-		style?: any;
-	};
-
-	setProps: (object: any) => void;
-}
-
 interface Refs {
-	root: HTMLDivElement | null;
 	body: HTMLDivElement | null;
 	toolbar: HTMLDivElement | null;
 }
@@ -47,36 +38,37 @@ interface Refs {
 function FormatButton({ operation, value }: { operation: string; value?: any }) {
 	const prevent = (evt: any) => evt.preventDefault();
 
-	return (
-		<button onMouseDown={prevent} class={`EditTextView-FormatButton ql-${operation}`}
-			value={value} aria-label={operation}>
-			<img src={ICONS[operation + (value ? '-' + value : '')]} alt='' role='presentation'/>
-		</button>
-	);
+	return <button
+		value={value}
+		onMouseDown={prevent}
+		aria-label={operation}
+		class={'EditTextView-FormatButton ql-' + operation}>
+		<img src={ICONS[operation + (value ? '-' + value : '')]} alt='' role='presentation'/>
+	</button>;
 }
 
-function EditTextView({ props, setProps }: Props) {
+export function EditTextView({ props, setProps }: EditProps<Props>) {
 	const { active } = useActiveState();
 
-	const editorRef = useRef<Quill | null>(null);
 	const refs = useRef<Refs>({} as any);
+	const editorRef = useRef<Quill | null>(null);
 
 	useEffect(() => {
 		if (!refs.current.toolbar || !refs.current.body) return;
-		let editor = new Quill(refs.current.body, {
-			modules: { toolbar: { container: refs.current.toolbar } }
-		});
-		editor.root.innerHTML = props.content;
+		const editor = new Quill(refs.current.body, {
+			modules: { toolbar: { container: refs.current.toolbar } }});
+		editor.root.innerHTML = props.content ?? '';
 		editorRef.current = editor;
 
 		editor.on('text-change', () => setProps({ content: editor.root.innerHTML }));
 	}, []); // eslint-disable-line
 
 	return (
-		<div class='TextView EditTextView' ref={root => refs.current.root = root}>
+		<div class='TextView EditTextView'>
 			<div class='EditTextView-Body' ref={body => refs.current.body = body}/>
-			<div class={`EditTextView-Toolbar ${active ? 'Active' : ''}`}
-				ref={toolbar => refs.current.toolbar = toolbar}>
+			<div ref={toolbar => refs.current.toolbar = toolbar}
+				class={mergeClasses('EditTextView-Toolbar', active && 'Active')}>
+
 				<FormatButton operation='header' value={2}/>
 				<FormatButton operation='header' value={3}/>
 				<FormatButton operation='header' value={4}/>

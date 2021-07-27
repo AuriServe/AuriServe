@@ -1,10 +1,11 @@
 import * as Preact from 'preact';
+import { h, ComponentChildren, FunctionalComponent } from 'preact';
 
-import { ClientDefinition } from 'auriserve-api';
+import { ClientDefinition } from 'common/definition';
 
 import './Hydration.sss';
 
-export function withHydration(identifier: string, Element: any, mutateProps?: (props: any) => any): Preact.FunctionalComponent {
+export function withHydration(identifier: string, Element: any, mutateProps?: (props: any) => any): FunctionalComponent {
 	return function(props: any) {
 		let safeProps = JSON.parse(JSON.stringify({ ...props, children: undefined }));
 		if (mutateProps) safeProps = mutateProps(safeProps);
@@ -28,7 +29,7 @@ export function hydrate(e: ClientDefinition) {
 	});
 }
 
-export function Static({ children, class: className }: { children: Preact.ComponentChildren; class?: string }) {
+export function Static({ children, class: className }: { children: ComponentChildren; class?: string }) {
 	return (typeof window === 'undefined' || 'ASEditor' in window) ?
 		<div class={[ 'Static', className ].filter(s => s).join(' ')}>{children}</div> :
 		<div class={[ 'Static', className ].filter(s => s).join(' ')} dangerouslySetInnerHTML={{ __html: '' }}/>;

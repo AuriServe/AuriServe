@@ -1,7 +1,6 @@
 import HTTP from 'http';
 import HTTPS from 'https';
 import Express from 'express';
-import bodyParser from 'body-parser';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
@@ -14,6 +13,7 @@ import Logger from './Logger';
 import Media from './data/Media';
 import Pages from './data/Pages';
 import Elements from './Elements';
+import Themes from './data/Themes';
 import * as Auth from './data/Auth';
 import Plugins from './data/Plugins';
 import Roles from './data/model/Role';
@@ -35,6 +35,7 @@ export default class Server {
 
 	private media: Media;
 	private pages: Pages;
+	private themes: Themes;
 	private plugins: Plugins;
 	private elements: Elements;
 	private pageBuilder: PagesManager;
@@ -42,21 +43,22 @@ export default class Server {
 	constructor(public readonly conf: Config, public readonly dataPath: string) {
 		this.app.use(compression());
 		this.app.use(cookieParser());
-		this.app.use(bodyParser.json());
+		this.app.use(Express.json());
 		this.app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
 		this.elements = new Elements();
 		this.pages = new Pages(this.dataPath);
 		this.media = new Media(this.dataPath);
+		this.themes = new Themes(this.dataPath);
 		this.plugins = new Plugins(this.dataPath, this.elements);
 
-		this.pageBuilder = new PagesManager(this.dataPath, this.plugins, this.elements);
+		this.pageBuilder = new PagesManager(this.dataPath, this.themes, this.plugins, this.elements);
 
-		const gqlContext = { plugins: this.plugins, pages: this.pages, themes: this.pageBuilder.themes, media: this.media };
+		const gqlContext = { plugins: this.plugins, pages: this.pages, themes: this.themes, media: this.media };
 		const gql = (q: string) => graphql(Schema, q, Resolver, gqlContext).then(res => res.data as Int.Root);
 
 		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.pageBuilder, this.plugins);
-		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.pageBuilder, this.plugins, this.media, gqlContext);
+		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.plugins, this.themes, this.media, gqlContext);
 
 		this.init().then(async () => {
 			if (conf.verbose || conf.logLevel === 'trace') this.debugRoutes();
@@ -126,7 +128,7 @@ export default class Server {
 		}
 
 		await Mongoose.connect(this.conf.db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
-		Logger.debug('Connected to Mongoose successfully.');
+		Logger.debug('Connected to MongoDB successfully.');
 
 		if (!await Properties.findOne({})) await Properties.create({ usage: { media_allocated: 1024 * 1024 * 1024 } });
 
@@ -145,9 +147,6 @@ export default class Server {
 
 	/**
 	 * Routing function to forward HTTP traffic to HTTPS.
-	 *
-	 * @param {Express.Request} req - The request object.
-	 * @param {Express.Response} res - The response object.
 	 */
 
 	private forwardHttps(req: Express.Request, res: Express.Response) {
@@ -187,8 +186,8 @@ export default class Server {
 	private async shutdown() {
 		Logger.info('Shutting down AuriServe.');
 		await Promise.all([
-			// this.plugins.cleanup(),
-			// this.pages.themes.cleanup()
+			this.plugins.cleanup(),
+			this.themes.cleanup()
 		]);
 		process.exit();
 	}

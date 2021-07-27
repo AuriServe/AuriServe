@@ -12,14 +12,16 @@
     "importHelpers": true,
 
     "jsx": "react",
-    "jsxFactory": "Preact.h",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
 
     "baseUrl": ".",
     "paths": {
         "*": [ "node_modules/@types" ],
-        "as-editor": ["@types/as-editor"],
-        "as-editor/hooks": ["@types/as-editor/hooks"],
-        "as-editor/components": ["@types/as-editor/components"]
+        "editor": [ "@types/editor" ],
+        "editor/hooks": [ "@types/editor/hooks" ],
+        "editor/graph": [ "@types/editor/graph" ],
+        "editor/components": [ "@types/editor/components" ],
     },
 
     "removeComments": true,

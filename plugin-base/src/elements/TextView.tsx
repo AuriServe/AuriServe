@@ -1,32 +1,26 @@
-import * as Preact from 'preact';
-import { ServerDefinition } from 'auriserve-api';
+import { h } from 'preact';
 
-interface Props {
-	content: string;
-	class?: string;
+import { mergeClasses } from 'common/util';
+import { ServerDefinition } from 'common/definition';
+
+export interface Props {
+	content?: string;
+
 	style?: any;
+	class?: string;
 }
 
 /**
- * Renders HTML text content.
+ * Displays textual HTML contents.
+ * In the page editor, the text can be visually edited.
  */
 
-function TextView(props: Props) {
-	return (
-		<div
-			style={props.style}
-			class={('TextView ' + (props.class ?? ' ')).trim()}
-			dangerouslySetInnerHTML={{__html: props.content}}
-		/>
-	);
+export function TextView(props: Props) {
+	return <div
+		style={props.style}
+		class={mergeClasses('TextView', props.class)}
+		dangerouslySetInnerHTML={{ __html: props.content ?? '' }}
+	/>;
 };
 
-export const server: ServerDefinition = {
-	identifier: 'TextView',
-	element: TextView,
-	config: {
-		props: {
-			content: { type: 'html' }
-		}
-	}
-};
+export const server: ServerDefinition = {	identifier: 'TextView',	element: TextView };

@@ -1,26 +1,24 @@
-import * as Preact from 'preact';
-import { ServerDefinition } from 'auriserve-api';
+import { h, ComponentChildren } from 'preact';
 
-interface Props {
+import { mergeClasses } from 'common/util';
+import { ServerDefinition } from 'common/definition';
+
+export interface Props {
 	style?: any;
 	class?: string;
-	children?: Preact.VNode[];
+	children?: ComponentChildren;
 }
 
 /**
  * Renders a single div with the specified style and class.
  */
 
-function Container(props: Props) {
-	return (
-		<div style={props.style} class={props.class}>{props.children}</div>
-	);
+export function Container(props: Props) {
+	return <div
+		style={props.style}
+		class={mergeClasses('Container', props.class)}
+		children={props.children}
+	/>;
 }
 
-export const server: ServerDefinition = {
-	identifier: 'Container',
-	element: Container,
-	config: {
-		props: {}
-	}
-};
+export const server: ServerDefinition = { identifier: 'Container', element: Container };

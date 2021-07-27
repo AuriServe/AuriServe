@@ -1,9 +1,11 @@
-import * as Preact from 'preact';
+import { h, Fragment } from 'preact';
 import { useState, useMemo } from 'preact/hooks';
-import { AdminDefinition, Color } from 'auriserve-api';
 import { TransitionGroup, CSSTransition } from 'preact-transitioning';
-// @ts-ignore
-import { Input, Modal, DimensionTransition } from 'editor/components';
+
+import { Color } from 'common';
+import { AdminDefinition } from 'common/definition';
+import { Label, Text, Select, Toggle, Color as ColorInput,
+	DateTime, Modal, DimensionTransition } from 'editor/components';
 
 import './Calendar.sss';
 
@@ -38,7 +40,7 @@ function daysDifferent(a: Date, b: Date): number {
 export function CalendarEvent(props: EventProps) {
 	const [ event, setEvent ] = useState<Event>(props.event);
 	const [ editingMedia, setEditingMedia ] = useState<boolean>(false);
-	
+
 	const categoriesMap = useMemo(() => {
 		let map: { [key: string]: string } = {};
 		Object.keys(props.categories).forEach(c => map[c] = props.categories[c].name);
@@ -64,57 +66,57 @@ export function CalendarEvent(props: EventProps) {
 	};
 
 	return (
-		<Preact.Fragment>
+		<>
 			<Modal active={true} onClose={props.onClose}>
 				<DimensionTransition mode='height' duration={150}>
 					<div class="Calendar-EditEvent">
 						<h4 class="Calendar-EditEventHeader">{props.event.ind === -1 ? 'New Event' : 'Editing ' + props.event.name}</h4>
 
 						<div class='Calendar-EditEventTitleWrap'>
-							<Input.Label label='Title'>
-								<Input.Text placeholder='My Event' value={event.name}
+							<Label label='Title'>
+								<Text placeholder='My Event' value={event.name}
 									setValue={(title: string) => setEvent({ ...event, name: title })}/>
-							</Input.Label>
+							</Label>
 
-							<Input.Label label='Category'>
-								<Input.Select value={event.category} options={categoriesMap}
+							<Label label='Category'>
+								<Select value={event.category} options={categoriesMap}
 									setValue={(category: string) => setEvent({ ...event, category: category, color: undefined })}/>
-							</Input.Label>
+							</Label>
 
-							<Input.Label label='Color'>
-								<Input.Color full={true} value={event.color ?? props.categories[event.category].color}
-									setValue={(color: Color.HSV) => setEvent({ ...event, color: color })}/>
-							</Input.Label>
+							<Label label='Color'>
+								<ColorInput full={true} value={event.color ?? props.categories[event.category].color}
+									setValue={(color: Color.HSVA) => setEvent({ ...event, color: color })}/>
+							</Label>
 						</div>
 
 						<div class='Calendar-EditEventDateWrap'>
-							<Input.Label label='Start Date'>
-								<Input.DateTime value={new Date(event.startDate)}
+							<Label label='Start Date'>
+								<DateTime value={new Date(event.startDate)}
 									setValue={handleSetStartDate}/>
-							</Input.Label>
+							</Label>
 
-							<Input.Label class={event.endDate ? '' : 'Calendar-InputInvisible'} label='End Date'>
-								<Input.DateTime value={new Date(event.endDate ?? event.startDate)}
+							<Label class={event.endDate ? '' : 'Calendar-InputInvisible'} label='End Date'>
+								<DateTime value={new Date(event.endDate ?? event.startDate)}
 									setValue={handleSetEndDate}/>
-							</Input.Label>
+							</Label>
 						</div>
 
-						<Input.Label label='Date TDB?'>
-							<Input.Checkbox alignRight={true} value={event.hideDate}
+						<Label label='Date TDB?'>
+							<Toggle alignRight={true} value={event.hideDate}
 								setValue={(hideDate: boolean) => setEvent({ ...event, hideDate })}/>
-						</Input.Label>
+						</Label>
 
-						<Input.Label label='Description'>
-							<Input.Text placeholder='Lorem ipsum dolor sit amet...'
+						<Label label='Description'>
+							<Text placeholder='Lorem ipsum dolor sit amet...'
 								long={true} maxHeight={Infinity} value={event.description}
 								setValue={(description: string) => setEvent({ ...event, description })}/>
-						</Input.Label>
+						</Label>
 
-						{event.media?.length && <Input.Label label='Image Attachment'>
-							<Input.Select value={event.mediaAttachment}
+						{event.media?.length && <Label label='Image Attachment'>
+							<Select value={event.mediaAttachment}
 								setValue={(mediaAttachment: any) => setEvent({ ...event, mediaAttachment })}
 								options={{'top': 'Top', 'center': 'Middle', 'bottom': 'Bottom'}}/>
-						</Input.Label>}
+						</Label>}
 
 						<div class='Calendar-EditEventActionWrap'>
 							<button onClick={() => props.onSave(event)}>Save</button>
@@ -128,9 +130,9 @@ export function CalendarEvent(props: EventProps) {
 			</Modal>
 			<Modal active={editingMedia} defaultAnimation={true} onClose={() => setEditingMedia(false)}>
 				<EditableImageList items={event.media as any[] ?? []} onClose={() => setEditingMedia(false)}
-					setItems={(media) => setEvent({ ...event, media: media })} />
+					setItems={(media) => setEvent({ ...event, media: media as any })} />
 			</Modal>
-		</Preact.Fragment>
+		</>
 	);
 }
 
@@ -196,7 +198,7 @@ export function EditCalendar(props: CalendarProps & { setProps: (props: any) => 
 
 								hovered={hovered}
 								showHidden={true}
-								
+
 								onHover={setHovered}
 								onClick={setSelected}
 							/>

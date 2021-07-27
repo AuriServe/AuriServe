@@ -70,7 +70,6 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
     "clean-css": "^5.1.0",
     "common": "file:../common/dist",
     "compression": "^1.7.4",

@@ -2,7 +2,7 @@ import { admin  as ColumnLayout } from './elements/edit/ColumnLayout';
 import { server as LinearLayout } from './elements/LinearLayout';
 import { server as GridLayout } from './elements/GridLayout';
 
-import { admin  as Float } from './elements/Float';
+import { client as Float } from './elements/Float';
 import { server as Section } from './elements/Section';
 import { server as Container } from './elements/Container';
 

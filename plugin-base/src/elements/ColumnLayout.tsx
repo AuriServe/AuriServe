@@ -1,21 +1,21 @@
-import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
+import { h, ComponentChildren } from 'preact';
 import { ServerDefinition } from 'common/definition';
 
 import './ColumnLayout.sss';
 
-export type Props = Partial<{
-	maxWidth: number;
-	minWidth: number;
-	gap: number;
-	columns: string;
-	reverseVertical: boolean;
-	layoutChildren: 'start' | 'end' | 'stretch' | 'center';
+export type Props = {
+	maxWidth?: number;
+	minWidth?: number;
+	gap?: number;
+	columns?: string;
+	reverseVertical?: boolean;
+	layoutChildren?: 'start' | 'end' | 'stretch' | 'center';
 
-	style: string;
-	class: string;
-	children: Preact.ComponentChildren;
-}>;
+	style?: any;
+	class?: string;
+	children?: ComponentChildren;
+};
 
 const parseMinMax = (min: string, natural: string) => 'minmax(' + min + ', ' + natural + ')';
 
@@ -57,7 +57,7 @@ export const ColumnLayout = forwardRef<HTMLDivElement, Props>(function ColumnLay
 				gap: props.gap && toCSSUnit(props.gap),
 				gridTemplateColumns: parseColumns(props.columns),
 				alignItems: props.layoutChildren === 'start' ? 'flex-start' :
-					props.layoutChildren === 'end' ? 'flex-end' : props.layoutChildren ?? 'stretch'
+				props.layoutChildren === 'end' ? 'flex-end' : props.layoutChildren ?? 'stretch'
 			}}>
 				{props.children}
 			</div>
@@ -65,17 +65,4 @@ export const ColumnLayout = forwardRef<HTMLDivElement, Props>(function ColumnLay
 	);
 });
 
-export const server: ServerDefinition = {
-	identifier: 'ColumnLayout',
-	element: ColumnLayout,
-	config: {
-		props: {
-			maxWidth: { name: 'Max Width', type: 'number', optional: true },
-			minWidth: { name: 'Collapse At', type: 'number', optional: true },
-			columns: { name: 'Column Layout', type: 'custom', optional: true },
-			gap: { name: 'Column Gap', type: 'number', optional: true },
-			reverseVertical: { name: 'Reverse Collaped Layout', type: 'boolean', default: false },
-			layoutChildren: { name: 'Layout Children', type: [ [ 'start', 'end', 'center', 'stretch' ] ], default: 'stretch' }
-		}
-	}
-};
+export const server: ServerDefinition = {	identifier: 'ColumnLayout', element: ColumnLayout };

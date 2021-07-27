@@ -1,4 +1,4 @@
-// import * as Preact from 'preact';
+// import { h } from 'preact';
 
 // import { ImageProp } from '../ImageGallery';
 // // import { SelectGroupContext } from '../../../../../../../admin/src/components/SelectGroup';

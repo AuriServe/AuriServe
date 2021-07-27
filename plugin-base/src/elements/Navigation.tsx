@@ -1,43 +1,43 @@
-import * as Preact from 'preact';
-import { ServerDefinition } from 'auriserve-api';
+import { h } from 'preact';
 
-type NavEntry = NavItem | 'separator';
+import { ServerDefinition } from 'common/definition';
+import { mergeClasses } from 'common/util';
 
-interface NavItem {
+export type NavEntry = NavItem | 'separator';
+
+export interface NavItem {
 	label: string;
 	to?: string;
 	target?: 'new';
 	entries: NavEntry[];
 }
 
-interface Props {
-	entries: NavEntry[];
+export interface Props {
+	entries?: NavEntry[];
+
+	style?: any;
+	class?: string;
 }
 
-/**
- * Renders a tree of navigation entries recursively, returning
- * a single unordered list containing all of the entries.
- *
- * @param {NavEntry[]} entries - The list of entries to render.
- * @returns the rendered entries.
- */
-
-function recursivelyRenderEntries(entries: NavEntry[]) {
+function Entries({ entries }: { entries: NavEntry[] }) {
 	return (
 		<ul>
-			{entries.map((entry) => {
-				if (typeof entry === 'string') return <li class="Navigation-ItemSeparator" aria-hidden="true" />;
+			{entries.map(entry => {
+				if (typeof entry === 'string') return <li class='Navigation-ItemSeparator' aria-hidden='true'/>;
 
-				return <li class="Navigation-Item">
-					{!entry.to && <span class="Navigation-ItemLabel">{entry.label}</span>}
+				return <li class='Navigation-Item'>
+					{!entry.to && <span class='Navigation-ItemLabel'>{entry.label}</span>}
 					{entry.to && <a
-						class="Navigation-ItemLabel"
+						class='Navigation-ItemLabel'
 						rel='noopener'
 						href={entry.to}
 						target={entry.target === 'new' ? '_blank' : undefined}
-					>{entry.label}</a>}
+					>
+						{entry.label}
+						{entry.target === 'new' && <span class='sr-only'>(Opens in a new tab.)</span>}
+					</a>}
 
-					{entry.entries && recursivelyRenderEntries(entry.entries)}
+					{entry.entries && <Entries entries={entry.entries}/>}
 				</li>;
 			})}
 		</ul>
@@ -45,28 +45,19 @@ function recursivelyRenderEntries(entries: NavEntry[]) {
 }
 
 /**
- * Renders a Navigation element containing a list of navigation entries.
+ * Renders a nav tag containing a tree of navigation entries.
+ * Entries may be nested, go to internal or external pages, and open new tabs.
  */
 
-function Navigation(props: Props) {
+export function Navigation(props: Props) {
 	return (
-		<Preact.Fragment>
-			<nav class="Navigation">
-				<label id="Navigation-Toggle" for="Navigation-Open" />
-				<div class="Navigation-Wrap">
-					{recursivelyRenderEntries(props.entries)}
-				</div>
-			</nav>
-		</Preact.Fragment>
+		<nav class={mergeClasses('Navigation', props.class)} style={props.style}>
+			<label id='Navigation-Toggle' for='Navigation-Open'/>
+			<div class='Navigation-Wrap'>
+				<Entries entries={props.entries ?? []}/>
+			</div>
+		</nav>
 	);
 }
 
-export const server: ServerDefinition = {
-	identifier: 'Navigation',
-	element: Navigation,
-	config: {
-		props: {
-			entries: { type: 'custom' }
-		}
-	}
-};
+export const server: ServerDefinition = { identifier: 'Navigation', element: Navigation };

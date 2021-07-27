@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { EventProp } from '../Calendar';
 

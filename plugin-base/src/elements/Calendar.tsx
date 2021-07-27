@@ -1,6 +1,9 @@
-import * as Preact from 'preact';
 import { useState, useMemo } from 'preact/hooks';
-import { ClientDefinition, Color, Media } from 'auriserve-api';
+import { h, Fragment, ComponentChild } from 'preact';
+
+import { Color } from 'common';
+import { Media } from 'common/graph/type';
+import { ClientDefinition } from 'common/definition';
 import { TransitionGroup, CSSTransition } from 'preact-transitioning';
 
 import './Calendar.sss';
@@ -11,57 +14,22 @@ export interface EventProp {
 	name: string;
 	category: string;
 	description: string;
-	
+
 	startDate: number;
 	endDate?: number;
 	hideDate: boolean;
-	
-	color?: Color.HSV;
+
+	color?: Color.HSVA;
 	media?: Partial<Media>[];
 	mediaAttachment?: 'top' | 'center' | 'bottom';
-	
+
 	// Added via Hydration
 	dateString?: string;
 }
 
 export interface Category {
 	name: string;
-	color?: Color.HSV;
-}
-
-function HSVToRGB(hsv: Color.HSV = { h: 0, s: 0, v: 0}): Color.RGB {
-	let r: number = 0, g: number = 0, b: number = 0;
-
-	let i = Math.floor(hsv.h * 6);
-	let f = hsv.h * 6 - i;
-	let p = hsv.v * (1 - hsv.s);
-	let q = hsv.v * (1 - f * hsv.s);
-	let t = hsv.v * (1 - (1 - f) * hsv.s);
-
-	switch(i % 6) {
-	default: break;
-	case 0: r = hsv.v; g = t; b = p; break;
-	case 1: r = q; g = hsv.v; b = p; break;
-	case 2: r = p; g = hsv.v; b = t; break;
-	case 3: r = p; g = q; b = hsv.v; break;
-	case 4: r = t; g = p; b = hsv.v; break;
-	case 5: r = hsv.v; g = p; b = q; break;
-	}
-
-	return { r: r * 255, g: g * 255, b: b * 255 };
-}
-
-function componentToHex(c: number) {
-	let hex = Math.round(c).toString(16);
-	return hex.length === 1 ? '0' + hex : hex;
-}
-
-function RGBToHex(rgb: Color.RGB = { r: 0, g: 0, b: 0}): string {
-	return '#' + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b);
-}
-
-function HSVToHex(hsv: Color.HSV = { h: 0, s: 0, v: 0}): string {
-	return RGBToHex(HSVToRGB(hsv));
+	color?: Color.HSVA;
 }
 
 export interface Event extends EventProp { ind: number }
@@ -190,7 +158,7 @@ function CalendarDate(props: DateProps) {
 
 		let { event, classes } = evt;
 		const color = event.color ?? props.categories[event.category].color;
-		
+
 		if (event.hideDate) {
 			if (!props.showHidden) return null;
 			else classes += ' Hidden';
@@ -201,14 +169,14 @@ function CalendarDate(props: DateProps) {
 		return (
 			<button
 				class={'Calendar-Event ' + classes}
-				style={color && {'--color': HSVToHex(color) } as any}
+				style={color && {'--color': Color.convert(color).toHex() } as any}
 				onMouseOut={() => props.onHover(undefined)}
 				onMouseOver={() => props.onHover(event.ind)}
 				onClick={() => props.onClick(event.ind)}>
-				{classes.indexOf('start') !== -1 && <Preact.Fragment>
+				{classes.indexOf('start') !== -1 && <>
 					<div class='Calendar-EventColorIndicator'/>
 					<span>{evt.event.name}</span>
-				</Preact.Fragment>}
+				</>}
 			</button>
 		);
 	});
@@ -280,7 +248,7 @@ function CalendarRow(props: RowProps) {
 	const eventCascade = useEventCascade(new Date(props.weekStart.getTime()), props.events);
 
 	let date = new Date(props.weekStart.getTime());
-	let days: Preact.VNode[] = [];
+	let days: ComponentChild[] = [];
 
 	const currentDate = new Date();
 
@@ -331,7 +299,7 @@ export function CalendarPage(props: PageProps) {
 	monthDate.setMonth(props.month, 1);
 	monthDate.setFullYear(props.year);
 
-	let rows: Preact.VNode[] = [];
+	let rows: ComponentChild[] = [];
 
 	const firstDayOfMonth = monthDate.getDay();
 	for (let i = 1; true; i += 7) {
@@ -429,7 +397,7 @@ export function Calendar(props: CalendarProps) {
 
 								hovered={hovered}
 								showHidden={false}
-				
+
 								onHover={setHovered}
 								onClick={setSelected}
 							/>

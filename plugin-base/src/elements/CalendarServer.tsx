@@ -18,7 +18,7 @@ const HydratedCalendar = withHydration('Calendar', Calendar, (props: CalendarPro
 	props.events = (props.events || []).filter(f => !f.hideDate);
 	props.events.forEach((event: EventProp) => {
 		event.description = converter.makeHtml(event.description);
-		if (event.media) event.media = event.media.map(({ publicPath }) => ({ publicPath }));
+		if (event.media) event.media = event.media.map(({ url }) => ({ url }));
 		event.dateString = dayjs(event.startDate).format('MMMM Do, h:mm a') +
 			(event.endDate ? ' – ' + (sameDay(new Date(event.startDate), new Date(event.endDate))
 				? dayjs(event.endDate).format('h:mm a') : dayjs(event.endDate).format('MMMM Do, h:mm a')) : '');

@@ -1,15 +1,13 @@
-import * as Preact from 'preact';
-import { Media } from 'auriserve-api';
+import { h, Fragment } from 'preact';
 import { useState } from 'preact/hooks';
-// import { useSiteData } from 'editor/hooks';
-// @ts-ignore
-import { Input, SelectGroup, CardHeader, MediaItem, MediaUploadForm } from 'editor/components';
+import { Media as IMedia } from 'common/graph/type';
+import { Label, Media, SelectGroup, CardHeader, MediaItem, MediaUploadForm } from 'editor/components';
 
 import './EditableImageList.sss';
 
 interface Props {
-	items: Media[];
-	setItems: (items: Media[]) => void;
+	items: IMedia[];
+	setItems: (items: IMedia[]) => void;
 	onClose?: () => void;
 }
 
@@ -19,11 +17,11 @@ export default function EditableImageList({ items, setItems, onClose }: Props) {
 	const [ selected, setSelected ] = useState<number[]>([]);
 	const [ uploading, setUploading ] = useState<boolean>(false);
 
-	const handleAddImage = (item: Media) => {
+	const handleAddImage = (item: IMedia) => {
 		setItems([ ...items, item ]);
 	};
 
-	const handleUploadImages = (newMedia: Media[]) => {
+	const handleUploadImages = (newMedia: IMedia[]) => {
 		setItems([ ...items, ...newMedia ]);
 		setUploading(false);
 	};
@@ -47,17 +45,17 @@ export default function EditableImageList({ items, setItems, onClose }: Props) {
 	return (
 		<div class='EditableImageList'>
 			{!uploading &&
-				<Preact.Fragment>
+				<>
 					<CardHeader icon='/admin/asset/icon/document-dark.svg' title='Edit Images'
 						subtitle={'Add, remove, and reorder images.'} />
 					<div class='EditableImageList-EditContainer'>
 						<div class='EditableImageList-ActionPane'>
 							<div class='EditableImageList-ActionPaneSticky'>
-								<Input.Label label='Add Image'>
-									<Input.Media value='' setValue={(i: string) =>
+								<Label label='Add Image'>
+									<Media value='' setValue={(i: string) =>
 										// @ts-ignore
 										handleAddImage((media ?? []).filter(m => m.identifier === i)[0])} />
-								</Input.Label>
+								</Label>
 
 								<button style={{ marginTop: '8px', marginBottom: '0' }}
 									class="EditableImageList-ActionButton" onClick={() => setUploading(true)}>
@@ -65,47 +63,47 @@ export default function EditableImageList({ items, setItems, onClose }: Props) {
 								</button>
 
 								{selected.length > 0 &&
-									<Preact.Fragment>
-										<Input.Label label='Actions' />
+									<>
+										<Label label='Actions' />
 
 										<button class="EditableImageList-ActionButton" onClick={handleRemoveImages}>
 											Remove {selected.length > 1 ? `(${selected.length})` : ''}
 										</button>
 
 										{selected.length === 1 &&
-											<Preact.Fragment>
+											<>
 												<button class="EditableImageList-ActionButton" onClick={() => handleShiftImages(-1)}>
 													Move Up
 												</button>
 												<button class="EditableImageList-ActionButton" onClick={() => handleShiftImages(1)}>
 													Move Down
 												</button>
-											</Preact.Fragment>
+											</>
 										}
-									</Preact.Fragment>
+									</>
 								}
 
-								<Input.Label label='　'>
+								<Label label='　'>
 									{onClose && <button class="EditableImageList-ActionButton" onClick={onClose}>Done</button>}
-								</Input.Label>
+								</Label>
 							</div>
 						</div>
 
 						<div class='EditableImageList-ItemsPane'>
-							<Input.Label label='Images' />
+							<Label label='Images' />
 							<SelectGroup multi={true} class='EditableImageList-Items' selected={selected} setSelected={setSelected}>
-								{items.map((item, ind) => <MediaItem item={item} ind={ind} key={item.identifier} />)}
+								{items.map((item, ind) => <MediaItem item={item} ind={ind} key={item.id} />)}
 							</SelectGroup>
 						</div>
 					</div>
-				</Preact.Fragment>
+				</>
 			}
 			{uploading &&
-				<Preact.Fragment>
+				<>
 					<CardHeader icon='/admin/asset/icon/document-dark.svg' title='Upload Images'
 						subtitle={'Upload new images to this list.'} />
 					<MediaUploadForm onCancel={() => setUploading(false)} onUpload={handleUploadImages}/>
-				</Preact.Fragment>
+				</>
 			}
 		</div>
 	);

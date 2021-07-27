@@ -1,32 +1,23 @@
-import * as Preact from 'preact';
-import { ServerDefinition } from 'auriserve-api';
+import { h, ComponentChildren } from 'preact';
 
-interface Props {
+import { mergeClasses } from 'common/util';
+import { ServerDefinition } from 'common/definition';
+
+export interface Props {
 	role?: 'header' | 'footer' | 'aside' | 'section';
-	
+
 	class?: string;
-	children?: Preact.VNode[];
+	children?: ComponentChildren;
 }
 
 /**
- * Renders a section, header, footer, or aside
- * depending on the specified role. Defaults to section.
+ * Renders a section, header, footer, or aside depending on the specified role,
+ * and the children within them. Defaults to section.
  */
 
-function Section(props: Props) {
-	return Preact.h(
-		props.role ?? 'section',
-		{ class: ('Section ' + (props.class ?? '')).trim() },
-		props.children
-	);
+export function Section(props: Props) {
+	const Tag = props.role ?? 'section';
+	return <Tag class={mergeClasses('Section', props.class)} children={props.children}/>;
 }
 
-export const server: ServerDefinition = {
-	identifier: 'Section',
-	element: Section,
-	config: {
-		props: {
-			role: { type: [ [ 'header', 'footer', 'aside', 'section' ] ], optional: true }
-		}
-	}
-};
+export const server: ServerDefinition = { identifier: 'Section', element: Section };

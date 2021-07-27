@@ -1,13 +1,16 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { Media } from 'common/graph/type';
+
+import { mergeClasses } from 'common/util';
 import { useActiveState } from 'editor/hooks';
 import { useData, QUERY_MEDIA } from 'editor/graph';
-import { AdminDefinition } from 'common/definition';
 import { useState, useRef, useEffect } from 'preact/hooks';
+import { AdminDefinition, EditProps } from 'common/definition';
 import { ComponentArea, Card, Label, Media as MediaInput } from 'editor/components';
 
-import { client as ImageView } from '../ImageView';
-import { server as ImageGallery } from '../ImageGallery';
+
+import { ImageView } from '../ImageView';
+import { server as ImageGallery, Props } from '../ImageGallery';
 
 import './ImageGallery.sss';
 
@@ -18,7 +21,7 @@ import sort_down from '../../../res/sort-down.svg';
 
 interface ImageProps {
 	media: Media;
-	
+
 	gap: number;
 	aspect?: number;
 
@@ -34,7 +37,7 @@ function GalleryImage(props: ImageProps) {
 				marginBottom: props.gap + 'px',
 				gridRow: props.aspect ? '' : `span ${Math.floor(props.media.size!.y / props.media.size!.x * 30)}`
 			}}>
-			<ImageView.element
+			<ImageView
 				media={props.media}
 				aspect={props.aspect}
 				protect={true}
@@ -57,30 +60,12 @@ function GalleryImage(props: ImageProps) {
 	);
 }
 
-interface Props {
-	props: {
-		gap: number;
-		width: number;
-		aspect?: number;
-
-		lightbox: boolean;
-		protect: boolean;
-
-		count?: number;
-		loadMore?: number;
-
-		media: Media[];
-	};
-
-	setProps: (object: any) => void;
-}
-
-export function EditImageGallery({ props, setProps }: Props) {
+export function EditImageGallery({ props, setProps }: EditProps<Props>) {
 	const { hovered, active } = useActiveState();
 	const [ { media } ] = useData(QUERY_MEDIA, []);
 
 	const ref = useRef<HTMLDivElement>(null);
-	
+
 	const [ adding, setAdding ] = useState<boolean>(false);
 	const [ loadCount, setLoadCount ] = useState<number>(props.count ?? props.media.length);
 
@@ -111,7 +96,7 @@ export function EditImageGallery({ props, setProps }: Props) {
 	};
 
 	return (
-		<div class={['ImageGallery EditImageGallery', active && 'Active'].filter(s => s).join(' ')}
+		<div class={mergeClasses('ImageGallery EditImageGallery', active && 'Active')}
 			ref={elem => ref.current = elem?.parentElement as HTMLDivElement}>
 			<div class='ImageGallery-Grid'
 				style={{
@@ -122,7 +107,7 @@ export function EditImageGallery({ props, setProps }: Props) {
 					<GalleryImage
 						key={i}
 						media={media}
-						gap={props.gap}
+						gap={props.gap ?? 0}
 						aspect={props.aspect}
 
 						handleSort={(offset: number) => handleSort(i, offset)}
@@ -151,7 +136,6 @@ export function EditImageGallery({ props, setProps }: Props) {
 
 export const admin: AdminDefinition = {
 	...ImageGallery,
-	element: ImageGallery.element,
 	editing: {
 		focusRing: false,
 		inlineEditor: EditImageGallery

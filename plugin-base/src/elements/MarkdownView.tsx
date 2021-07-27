@@ -1,11 +1,14 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { Converter } from 'showdown';
-import { ServerDefinition } from 'auriserve-api';
+
+import { mergeClasses } from 'common/util';
+import { ServerDefinition } from 'common/definition';
 
 interface Props {
-	content: string;
-	class?: string;
+	content?: string;
+
 	style?: any;
+	class?: string;
 }
 
 /**
@@ -17,23 +20,13 @@ function MarkdownView(props: Props) {
 	converter.setFlavor('github');
 	converter.setOption('emoji', true);
 	converter.setOption('tables', true);
-	const content = converter.makeHtml(props.content);
+	const content = converter.makeHtml(props.content ?? '');
 
-	return (
-		<div
-			style={props.style}
-			class={('MarkdownView ' + (props.class ?? ' ')).trim()}
-			dangerouslySetInnerHTML={{__html: content}}
-		/>
-	);
+	return <div
+		style={props.style}
+		class={mergeClasses('MarkdownView', props.class)}
+		dangerouslySetInnerHTML={{ __html: content }}
+	/>;
 };
 
-export const server: ServerDefinition = {
-	identifier: 'MarkdownView',
-	element: MarkdownView,
-	config: {
-		props: {
-			content: { type: 'long_text:markdown' }
-		}
-	}
-};
+export const server: ServerDefinition = { identifier: 'MarkdownView', element: MarkdownView };

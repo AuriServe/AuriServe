@@ -17,19 +17,17 @@ declare module 'editor/components' {
 
 
 	// Input
-	export module Input {
-		export const Label: Preact.FunctionalComponent<any>;
-		export const Divider: Preact.FunctionalComponent<any>;
-		export const Annotation: Preact.FunctionalComponent<any>;
+	export const Label: Preact.FunctionalComponent<any>;
+	export const Divider: Preact.FunctionalComponent<any>;
+	export const Annotation: Preact.FunctionalComponent<any>;
 
-		export const Text: Preact.FunctionalComponent<any>;
-		export const Media: Preact.FunctionalComponent<any>;
-		export const Color: Preact.FunctionalComponent<any>;
-		export const Select: Preact.FunctionalComponent<any>;
-		export const Numeric: Preact.FunctionalComponent<any>;
-		export const Checkbox: Preact.FunctionalComponent<any>;
-		export const DateTime: Preact.FunctionalComponent<any>;
-	}
+	export const Text: Preact.FunctionalComponent<any>;
+	export const Media: Preact.FunctionalComponent<any>;
+	export const Color: Preact.FunctionalComponent<any>;
+	export const Select: Preact.FunctionalComponent<any>;
+	export const Numeric: Preact.FunctionalComponent<any>;
+	export const Toggle: Preact.FunctionalComponent<any>;
+	export const DateTime: Preact.FunctionalComponent<any>;
 
 	// Media
 	export const MediaIcon: Preact.FunctionalComponent<any>;
@@ -40,6 +38,7 @@ declare module 'editor/components' {
 	export const MediaView: Preact.FunctionalComponent<any>;
 
 	// Presentational
+	export const Card: Preact.FunctionalComponent<any>;
 	export const CardHeader: Preact.FunctionalComponent<any>;
 	export const DimensionTransition: Preact.FunctionalComponent<any>;
 	export const Meter: Preact.FunctionalComponent<any>;

@@ -55,22 +55,12 @@ export type PropType =
 	PrimitivePropType | AuriServePropType | 'custom'
 
 /*
-* Configuration Object
-*/
-
-export interface DefinitionConfig {
-	name?: string;
-	props: PropsTable;
-}
-
-/*
 * Definitions
 */
 
 export interface ServerDefinition {
 	identifier: string;
 	element: T;
-	config: DefinitionConfig;
 }
 
 export interface ClientDefinition {
@@ -84,4 +74,9 @@ export interface AdminDefinition extends ServerDefinition {
 		propertyEditor?: T | true;
 		inlineEditor?: T;
 	};
+}
+
+export interface EditProps<T> {
+	props: T,
+	setProps: (props: T) => void;
 }
