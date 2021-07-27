@@ -1,10 +1,7 @@
 import dayjs from 'dayjs';
 
-// import advancedFormat from 'dayjs/plugin/advancedFormat';
-// dayjs.extend(advancedFormat);
-
 import { Converter } from 'showdown';
-import { ServerDefinition } from 'auriserve-api';
+import { ServerDefinition } from 'common/definition';
 
 import { withHydration } from '../Hydration';
 import { Calendar, CalendarProps, EventProp, sameDay } from './Calendar';
@@ -27,27 +24,4 @@ const HydratedCalendar = withHydration('Calendar', Calendar, (props: CalendarPro
 	return props;
 });
 
-export const server: ServerDefinition = {
-	identifier: 'Calendar',
-	element: HydratedCalendar,
-	config: {
-		props: {
-			events: {
-				name: 'Events',
-				entries: {
-					name: { type: 'text' },
-					description: { type: 'long_text:markdown' },
-					startDate: { name: 'Start Date', type: 'date' },
-					endDate: { type: 'date', optional: true },
-					color: { type: 'color', optional: true },
-					media: { name: 'Images', entries: 'media:image', optional: true },
-					mediaAttachment: { name: 'Media Attachment', entries: 'media:image', optional: true }
-				}
-			},
-			categories: {
-				name: 'Event Categories',
-				type: 'custom'
-			}
-		}
-	}
-};
+export const server: ServerDefinition = { identifier: 'Calendar', element: HydratedCalendar };

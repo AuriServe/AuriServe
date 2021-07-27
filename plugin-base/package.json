@@ -71,7 +71,6 @@
   },
   "dependencies": {
     "common": "file:../common/dist",
-    "auriserve-api": "0.0.13",
     "dayjs": "^1.10.5",
     "preact-transitioning": "^1.2.0",
     "quill": "^1.3.7",
