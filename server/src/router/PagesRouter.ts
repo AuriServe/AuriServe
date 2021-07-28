@@ -75,7 +75,7 @@ export default class PagesRouter extends Router {
 		});
 
 		this.router.get('*', async (req, res) => {
-			try { res.send(await this.pages.render(req.params[0])); }
+			try { res.send(await this.pages.render(req.params[0], req.cookies)); }
 			catch (e) {
 				if (e.type && e.error) {
 					let [ status, page ] = this.pages.renderError(e);

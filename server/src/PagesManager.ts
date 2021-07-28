@@ -74,7 +74,7 @@ export default class PagesManager {
 	 * @returns a promise resolving to the rendered HTML, or rejecting to an error.
 	 */
 
-	async render(rawUrl: string): Promise<string> {
+	async render(rawUrl: string, cookies: Record<string, string>): Promise<string> {
 		rawUrl = rawUrl.replace(/(?<=\/.+)\/$/g, '');
 		Logger.perfStart('Rendering Page ' + rawUrl);
 
@@ -97,7 +97,7 @@ export default class PagesManager {
 
 		const contextData: PagesManagerContextData = {
 			path: rawUrl,
-			cookies: {}
+			cookies: cookies
 		};
 
 		Logger.perfStart('Rendering Trees');
