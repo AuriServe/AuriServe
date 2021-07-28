@@ -16,6 +16,7 @@ import { server as Navigation } from './elements/Navigation';
 import { server as MarkdownView } from './elements/MarkdownView';
 
 import { server as Calendar } from './elements/CalendarServer';
+import { server as PersonCard } from './elements/PersonCard';
 import { server as ImageGallery } from './elements/ImageGallery';
 
 export default function(serve: any) {
@@ -37,6 +38,7 @@ export default function(serve: any) {
 		MarkdownView,
 
 		Calendar,
+		PersonCard,
 		ImageGallery
 	].forEach(serve.registerElement);
 }

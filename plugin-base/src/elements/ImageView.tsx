@@ -1,12 +1,10 @@
 import { h, Fragment } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useState, useRef, useEffect, useLayoutEffect } from 'preact/hooks';
+import { withHydration, ClientDefinition, ServerDefinition } from 'plugin-api';
 
 import { Media } from 'common/graph/type';
 import { mergeClasses } from 'common/util';
-import { ClientDefinition, ServerDefinition } from 'common/definition';
-
-import { withHydration } from '../Hydration';
 
 import './ImageView.sss';
 

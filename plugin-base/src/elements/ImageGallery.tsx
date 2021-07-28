@@ -1,11 +1,10 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
+import { withHydration, ClientDefinition, ServerDefinition } from 'plugin-api';
 
 import { Media } from 'common/graph/type';
-import { ClientDefinition, ServerDefinition } from 'common/definition';
 
 import { ImageView } from './ImageView';
-import { withHydration } from '../Hydration';
 
 import './ImageGallery.sss';
 

@@ -1,7 +1,4 @@
 .EditTextView
-	position: relative
-	overflow: visible
-
 	.ql-clipboard
 		display: none
 
@@ -9,17 +6,27 @@
 		outline: none
 		cursor: auto
 
+.EditTextView-ToolbarWrap
+	top: 0
+	left: 50%
+	z-index: 100
+	display: flex
+	position: absolute
+	width: max-content
+	flex-direction: column
+	justify-content: flex-end
+	height: calc(100% + 64px)
+	transform: translateX(-50%)
+
 	.EditTextView-Toolbar
 		gap: 4px
-		left: 50%
-		top: -64px
+		bottom: 16px
 		padding: 8px
-		z-index: 100
 		display: flex
+		position: sticky
 		width: max-content
-		position: absolute
 		white-space: nowrap
-		
+
 		opacity: 0
 		color: white
 		border-radius: 8px
@@ -27,14 +34,14 @@
 		background: #1D2731
 		pointer-events: none
 		box-shadow: 0px 2px 12px 0 rgba(0, 0, 0, 0.2)
-		transform: translateX(-50%) scale(0.95) translateY(8px)
+		transform: scale(0.95) translateY(8px)
 
 		transition: all 75ms
 
 		&.Active
 			opacity: 1
 			pointer-events: auto
-			transform: translateX(-50%)
+			transform: none
 
 		.EditTextView-FormatButton
 			outline: 0

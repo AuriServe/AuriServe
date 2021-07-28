@@ -1,10 +1,8 @@
 import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
-
-import { withHydration } from '../Hydration';
+import { withHydration, ServerDefinition, ClientDefinition } from 'plugin-api';
 
 import { mergeClasses } from 'common/util';
-import { ServerDefinition, ClientDefinition } from 'common/definition';
 
 import './FAQ.sss';
 
@@ -38,8 +36,6 @@ export function FAQ(props: Props) {
 		ref.current!.querySelectorAll('.FAQ-Item dd').forEach(elem => heights.push(elem.getBoundingClientRect().height));
 		setHeights(heights);
 	}, [ props.entries ]);
-
-	console.log(heights);
 
 	return (
 		<dl class={mergeClasses('FAQ', props.class)} ref={ref}>

@@ -5,7 +5,7 @@ import { server as GridLayout } from './elements/GridLayout';
 import { client as Float } from './elements/Float';
 import { server as Section } from './elements/Section';
 import { server as Container } from './elements/Container';
-import { server as ImageCarousel } from './elements/ImageCarousel';
+import { client as ImageCarousel } from './elements/ImageCarousel';
 
 import { client as FAQ } from './elements/FAQ';
 import { server as Button } from './elements/Button';
@@ -15,8 +15,9 @@ import { admin  as ImageView } from './elements/edit/ImageView';
 import { server as Navigation } from './elements/Navigation';
 import { server as MarkdownView } from './elements/MarkdownView';
 
-import { admin as Calendar } from './elements/edit/Calendar';
-import { admin as ImageGallery } from './elements/edit/ImageGallery';
+import { admin  as Calendar } from './elements/edit/Calendar';
+import { server as PersonCard } from './elements/PersonCard';
+import { admin  as ImageGallery } from './elements/edit/ImageGallery';
 
 declare let serve: any;
 
@@ -39,6 +40,7 @@ declare let serve: any;
 		MarkdownView,
 
 		Calendar,
+		PersonCard,
 		ImageGallery
 	].forEach(serve.registerElement);
 })();

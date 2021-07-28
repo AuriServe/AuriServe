@@ -12,7 +12,7 @@ interface ComponentContextData {
 
 	/** Whether or not the current component is active. */
 	active: boolean;
-	
+
 	/** Whether or not the current component is hovered. */
 	hovered: boolean;
 }
@@ -34,7 +34,7 @@ export const ComponentContext = Preact.createContext<ComponentContextData>({
 interface Props {
 	/** The component's path in the document. */
 	path: string;
-	
+
 	/** The component to render. */
 	component: any;
 
@@ -96,9 +96,9 @@ export default function Component(props: Props) {
 	const Component = props.component;
 
 	const componentProps = Object.assign({}, props.spreadProps ? props.props : {}, {
-		props: props.spreadProps ? undefined : props.props,
+		props: props.spreadProps ? undefined : { ...props.props, children: props.children },
 		setProps: props.setProps,
-		children: props.children
+		children: props.spreadProps ? props.children : undefined
 	});
 
 	return (

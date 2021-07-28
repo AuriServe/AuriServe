@@ -1,9 +1,9 @@
 import { h, Fragment } from 'preact';
+import { AdminDefinition } from 'plugin-api';
 import { useState, useMemo } from 'preact/hooks';
 import { TransitionGroup, CSSTransition } from 'preact-transitioning';
 
 import { Color } from 'common';
-import { AdminDefinition } from 'common/definition';
 import { Label, Text, Select, Toggle, Color as ColorInput,
 	DateTime, Modal, DimensionTransition } from 'editor/components';
 

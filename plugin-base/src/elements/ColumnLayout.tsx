@@ -1,6 +1,6 @@
 import { forwardRef } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
-import { ServerDefinition } from 'common/definition';
+import { ServerDefinition } from 'plugin-api';
 
 import './ColumnLayout.sss';
 

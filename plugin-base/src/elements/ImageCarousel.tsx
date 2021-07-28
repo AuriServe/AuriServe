@@ -1,12 +1,10 @@
 import { h, ComponentChildren } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { TransitionGroup, CSSTransition } from 'preact-transitioning';
-
-import { withHydration, Static } from '../Hydration';
+import { withHydration, Static, ServerDefinition, ClientDefinition } from 'plugin-api';
 
 import { Media } from 'common/graph/type';
 import { mergeClasses } from 'common/util';
-import { ServerDefinition, ClientDefinition } from 'common/definition';
 
 import './ImageCarousel.sss';
 
@@ -61,7 +59,7 @@ export function ImageCarousel(props: Props) {
 			</TransitionGroup>
 		</div>
 		<div class='ImageCarousel-Children'>
-			<Static children={props.children}/>
+			<Static>{props.children}</Static>
 		</div>
 	</div>;
 }

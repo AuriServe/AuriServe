@@ -1,5 +1,4 @@
 import * as Preact from 'preact';
-import Helmet from 'react-helmet';
 import { useMessaging } from '../Hooks';
 import { Page, ObjectPath } from 'common';
 import { useAsyncMemo } from 'use-async-memo';
@@ -115,7 +114,6 @@ export default function EditorRendererPage() {
 			active: activePath ?? '',
 			setActive: handleSetActive
 		}}>
-			<Helmet><style>{'body { height: auto; overflow: auto; }'}</style></Helmet>
 			<div class='AS_ROOT'/>
 			<LayoutInjector layout={page.layout ?? 'default'} elements={nodes!} />
 		</RendererContext.Provider>

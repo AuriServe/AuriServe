@@ -1,8 +1,8 @@
 import { h } from 'preact';
 import { Converter } from 'showdown';
+import { ServerDefinition } from 'plugin-api';
 
 import { mergeClasses } from 'common/util';
-import { ServerDefinition } from 'common/definition';
 
 interface Props {
 	content?: string;

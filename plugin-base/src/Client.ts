@@ -1,4 +1,4 @@
-import { hydrate } from './Hydration';
+import { hydrate } from 'plugin-api';
 
 import { client as FAQ } from './elements/FAQ';
 import { client as Float } from './elements/Float';

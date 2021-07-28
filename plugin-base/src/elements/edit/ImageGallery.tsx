@@ -1,11 +1,11 @@
 import { h } from 'preact';
 import { Media } from 'common/graph/type';
+import { AdminDefinition, EditProps } from 'plugin-api';
 
 import { mergeClasses } from 'common/util';
 import { useActiveState } from 'editor/hooks';
 import { useData, QUERY_MEDIA } from 'editor/graph';
 import { useState, useRef, useEffect } from 'preact/hooks';
-import { AdminDefinition, EditProps } from 'common/definition';
 import { ComponentArea, Card, Label, Media as MediaInput } from 'editor/components';
 
 

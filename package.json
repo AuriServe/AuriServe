@@ -5,7 +5,7 @@
   "scripts": {
     "install": "cd common; npm install && cd dist; npm install && cd ../../frontend; npm install && cd ../server; npm install",
     "dev-core": "cd common; npm run dev & cd ../frontend; npm run dev & cd ../server; npm run dev",
-    "dev-plugins": "cd plugin-base; npm run dev",
+    "dev-plugins": "cd plugin-api; npm run dev & cd ../plugin-base; npm run dev",
     "dev": "npm run dev-plugins & npm run dev-core",
     "build": "cd common && npm run build && cd ../frontend && npm run build && cd ../server && npm run build"
   }

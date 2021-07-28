@@ -1,28 +1,37 @@
 {
-  "name": "@aurailus/as_plugin_base",
+  "name": "@aurailus/as_plugin_api",
+  "main": "dist/Main.js",
+  "types": "dist/Main.d.ts",
   "version": "0.0.0",
-  "description": "Base Plugin for AuriServe",
+  "description": "Common plugin functionality for AuriServe",
   "keywords": [
     "auriserve",
-    "plugin",
-    "base"
+    "api"
   ],
   "author": "Auri <me@auri.xyz>",
   "homepage": "https://github.com/AuriServe",
   "license": "MIT",
   "scripts": {
-    "dist": "webpack --mode=production --progress --config ./webpack.ts",
-    "dev": "webpack --mode=development --watch --progress --config ./webpack.ts"
+    "dist": "nodemon",
+    "dev": "tsc --project tsconfig.json",
+    "distweb": "webpack --mode=production --progress --config ./webpack.ts",
+    "devweb": "webpack --mode=development --watch --progress --config ./webpack.ts"
+  },
+  "nodemonConfig": {
+		"watch": [ "src" ],
+		"ext": ".ts",
+		"quiet": true,
+		"exec": "tsc --project tsconfig.json"
   },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AuriServe/AuriServeMono.git"
+    "url": "git+https://github.com/AuriServe/AuriServe.git"
   },
   "bugs": {
-    "url": "https://github.com/AuriServe/AuriServeMono/issues"
+    "url": "https://github.com/AuriServe/AuriServe/issues"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
@@ -31,33 +40,20 @@
     "@babel/preset-env": "^7.14.8",
     "@babel/preset-typescript": "^7.14.5",
     "@types/css-minimizer-webpack-plugin": "^3.0.1",
-    "@types/mini-css-extract-plugin": "^1.4.3",
-    "@types/quill": "^2.0.8",
-    "@types/showdown": "^1.9.3",
     "@types/webpack": "^5.28.0",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
-    "autoprefixer": "^10.2.6",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.6",
     "css-minimizer-webpack-plugin": "^3.0.1",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-loader": "^4.0.2",
     "eslint-plugin-jsdoc": "^35.3.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-webpack-plugin": "^3.0.1",
     "fork-ts-checker-webpack-plugin": "^6.2.10",
-    "mini-css-extract-plugin": "^1.6.0",
-    "null-loader": "^4.0.0",
-    "postcss": "^8.3.5",
-    "postcss-extend": "^1.0.5",
-    "postcss-import": "^14.0.2",
-    "postcss-loader": "^6.1.0",
-    "postcss-nested": "^5.0.5",
-    "postcss-nested-vars": "^1.0.0",
-    "postcss-simple-extend": "^1.0.0",
     "preact": "^10.5.13",
-    "sugarss": "^4.0.1",
+    "style-loader": "^3.2.1",
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.4",
@@ -71,11 +67,6 @@
   },
   "dependencies": {
     "common": "file:../common/dist",
-    "plugin-api": "file:../plugin-api/",
-    "dayjs": "^1.10.5",
-    "preact-transitioning": "^1.2.0",
-    "quill": "^1.3.7",
-    "showdown": "^1.9.1",
     "tslib": "^2.3.0"
   }
 }

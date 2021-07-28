@@ -1,10 +1,10 @@
+import { ClientDefinition } from 'plugin-api';
 import { useState, useMemo } from 'preact/hooks';
 import { h, Fragment, ComponentChild } from 'preact';
+import { TransitionGroup, CSSTransition } from 'preact-transitioning';
 
 import { Color } from 'common';
 import { Media } from 'common/graph/type';
-import { ClientDefinition } from 'common/definition';
-import { TransitionGroup, CSSTransition } from 'preact-transitioning';
 
 import './Calendar.sss';
 

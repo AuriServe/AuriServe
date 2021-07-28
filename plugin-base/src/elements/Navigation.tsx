@@ -1,11 +1,7 @@
 import { h } from 'preact';
-import { useContext } from 'preact/hooks';
+import { ServerDefinition, useServerContext } from 'plugin-api';
 
 import { mergeClasses } from 'common/util';
-import { ServerDefinition } from 'common/definition';
-
-// @ts-ignore
-const Context = _AS_.pages_manager_context;
 
 export type NavEntry = NavItem | 'separator';
 
@@ -24,7 +20,7 @@ export interface Props {
 }
 
 function Entries({ entries }: { entries: NavEntry[] }) {
-	const { path: activePath } = useContext(Context);
+	const { path: activePath } = useServerContext();
 
 	return (
 		<ul>

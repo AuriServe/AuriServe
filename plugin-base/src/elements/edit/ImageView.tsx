@@ -1,9 +1,9 @@
 import { h, Fragment } from 'preact';
 import { useRef } from 'preact/hooks';
+import { AdminDefinition, EditProps } from 'plugin-api';
 
 import { useActiveState } from 'editor/hooks';
 import { useData, QUERY_MEDIA } from 'editor/graph';
-import { AdminDefinition, EditProps } from 'common/definition';
 import { ComponentArea, Label, Text, Numeric, Toggle, Media, Card } from 'editor/components';
 
 import { server, ImageView, Props } from '../ImageView';
@@ -15,7 +15,7 @@ export function EditImageView({ props, setProps }: EditProps<Props>) {
 	const { hovered, active } = useActiveState();
 	const [ { media } ] = useData(QUERY_MEDIA, []);
 
-	return (<>
+	return (<Fragment>
 		<ImageView ref={elem => ref.current = elem?.parentElement} {...props}/>
 		{(hovered || active) && <ComponentArea for={ref.current} active={active} indicator={true}>
 			{active && <Card class='EditImageView-Props'>
@@ -37,7 +37,7 @@ export function EditImageView({ props, setProps }: EditProps<Props>) {
 				</Label>
 			</Card>}
 		</ComponentArea>}
-	</>);
+	</Fragment>);
 }
 
 export const admin: AdminDefinition = {

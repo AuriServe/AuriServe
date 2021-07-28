@@ -35,7 +35,7 @@ export default function FocusRing(props: Props) {
 		width: Math.min(props.elem.right + FOCUS_RING_POPOUT * 2,
 			document.documentElement.scrollWidth - FOCUS_RING_BOUNDARY * 2) - props.elem.left,
 		height: Math.min(props.elem.bottom + FOCUS_RING_POPOUT * 2,
-			document.documentElement.scrollHeight - FOCUS_RING_BOUNDARY * 2) - props.elem.top
+			document.documentElement.scrollHeight) - props.elem.top
 	};
 
 	const shadowAlpha = props.active ? 0.2 : 0.05;

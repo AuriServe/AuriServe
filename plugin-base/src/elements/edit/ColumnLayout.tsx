@@ -1,10 +1,10 @@
 import { useRef } from 'preact/hooks';
+import { AdminDefinition, EditProps } from 'plugin-api';
 import { h, Fragment, ComponentChildren } from 'preact';
 
 import { mergeClasses } from 'common/util';
 import { useActiveState } from 'editor/hooks';
 import { ComponentArea } from 'editor/components';
-import { AdminDefinition, EditProps } from 'common/definition';
 
 import { server, ColumnLayout, Props, parseColumns, toCSSUnit } from '../ColumnLayout';
 

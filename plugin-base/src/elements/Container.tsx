@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
+import { ServerDefinition } from 'plugin-api';
 
 import { mergeClasses } from 'common/util';
-import { ServerDefinition } from 'common/definition';
 
 export interface Props {
 	style?: any;

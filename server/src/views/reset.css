@@ -244,3 +244,7 @@ button, input, optgroup, select, textarea {
 	white-space: nowrap;
 	border-width: 0;
 }
+
+[data-element], .Static {
+	display: contents;
+}

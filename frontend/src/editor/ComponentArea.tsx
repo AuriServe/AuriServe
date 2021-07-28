@@ -53,6 +53,9 @@ export function getElementBounds(elem: HTMLElement, includeMargins: boolean = fa
 }
 
 interface Props {
+	/** Whether or not the component area is visible. */
+	visible?: boolean;
+
 	/** Whether or not the component area is active.*/
 	active: boolean;
 
@@ -86,7 +89,7 @@ export default function ComponentArea(props: Props) {
 				<div class='absolute pointer-events-none' style={style as any}>
 					{props.children}
 				</div>
-				{props.indicator && <IndicatorRing active={props.active} elem={bounds}/>}
+				{props.indicator && (props.visible ?? true) && <IndicatorRing active={props.active} elem={bounds}/>}
 			</Preact.Fragment>
 		</Portal>
 	);

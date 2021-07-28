@@ -1,9 +1,7 @@
 import dayjs from 'dayjs';
-
 import { Converter } from 'showdown';
-import { ServerDefinition } from 'common/definition';
+import { withHydration, ServerDefinition } from 'plugin-api';
 
-import { withHydration } from '../Hydration';
 import { Calendar, CalendarProps, EventProp, sameDay } from './Calendar';
 
 const HydratedCalendar = withHydration('Calendar', Calendar, (props: CalendarProps) => {

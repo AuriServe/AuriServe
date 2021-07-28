@@ -1,8 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { ServerDefinition, ClientDefinition } from 'common/definition';
+import { withHydration, Static, ServerDefinition, ClientDefinition } from 'plugin-api';
 
-import { withHydration, Static } from '../Hydration';
 import { mergeClasses } from 'common/util';
 
 export interface Props {

@@ -1,10 +1,11 @@
 import Quill from 'quill';
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
+import { AdminDefinition, EditProps } from 'plugin-api';
 
 import { mergeClasses } from 'common/util';
 import { useActiveState } from 'editor/hooks';
-import { AdminDefinition, EditProps } from 'common/definition';
+import { ComponentArea } from 'editor/components';
 
 import { server, Props } from '../TextView';
 
@@ -48,7 +49,7 @@ function FormatButton({ operation, value }: { operation: string; value?: any }) 
 }
 
 export function EditTextView({ props, setProps }: EditProps<Props>) {
-	const { active } = useActiveState();
+	const { hovered, active } = useActiveState();
 
 	const refs = useRef<Refs>({} as any);
 	const editorRef = useRef<Quill | null>(null);
@@ -63,44 +64,48 @@ export function EditTextView({ props, setProps }: EditProps<Props>) {
 		editor.on('text-change', () => setProps({ content: editor.root.innerHTML }));
 	}, []); // eslint-disable-line
 
-	return (
-		<div class='TextView EditTextView'>
-			<div class='EditTextView-Body' ref={body => refs.current.body = body}/>
-			<div ref={toolbar => refs.current.toolbar = toolbar}
-				class={mergeClasses('EditTextView-Toolbar', active && 'Active')}>
+	return (<Fragment>
+		<div class='TextView EditTextView' ref={body => refs.current.body = body}/>
 
-				<FormatButton operation='header' value={2}/>
-				<FormatButton operation='header' value={3}/>
-				<FormatButton operation='header' value={4}/>
-				<FormatButton operation='header' value={5}/>
-				<FormatButton operation='header' value={6}/>
+		<ComponentArea for={refs.current.body} visible={hovered || active} active={active} indicator={true}>
+			<div class='EditTextView-ToolbarWrap'>
+				<div ref={toolbar => refs.current.toolbar = toolbar}
+					class={mergeClasses('EditTextView-Toolbar', active && 'Active')}>
 
-				<div class='EditTextView-FormatSeparator'/>
+					<FormatButton operation='header' value={2}/>
+					<FormatButton operation='header' value={3}/>
+					<FormatButton operation='header' value={4}/>
+					<FormatButton operation='header' value={5}/>
+					<FormatButton operation='header' value={6}/>
 
-				<FormatButton operation='bold'/>
-				<FormatButton operation='italic'/>
-				<FormatButton operation='underline'/>
-				<FormatButton operation='strike'/>
-				<FormatButton operation='code'/>
+					<div class='EditTextView-FormatSeparator'/>
 
-				<div class='EditTextView-FormatSeparator'/>
+					<FormatButton operation='bold'/>
+					<FormatButton operation='italic'/>
+					<FormatButton operation='underline'/>
+					<FormatButton operation='strike'/>
+					<FormatButton operation='code'/>
 
-				<FormatButton operation='link'/>
+					<div class='EditTextView-FormatSeparator'/>
 
-				<div class='EditTextView-FormatSeparator'/>
+					<FormatButton operation='link'/>
 
-				<FormatButton operation='code-block'/>
-				<FormatButton operation='blockquote'/>
-				<FormatButton operation='list'/>
+					<div class='EditTextView-FormatSeparator'/>
+
+					<FormatButton operation='code-block'/>
+					<FormatButton operation='blockquote'/>
+					<FormatButton operation='list'/>
+				</div>
 			</div>
-		</div>
-	);
+		</ComponentArea>
+	</Fragment>);
 };
 
 export const admin: AdminDefinition = {
 	...server,
 	editing: {
 		propertyEditor: false,
-		inlineEditor: EditTextView
+		inlineEditor: EditTextView,
+		focusRing: false
 	}
 };
