@@ -3,43 +3,41 @@ import { Page } from 'common';
 import Preact from 'preact';
 import escapeHtml from 'escape-html';
 import renderToString from 'preact-render-to-string';
-import fss, { promises as fs, constants as fsc } from 'fs';
+import { promises as fs, constants as fsc } from 'fs';
 
 import { Query } from 'common/graph';
 import * as Int from 'common/graph/type';
 
 import Logger from './Logger';
-import Elements from './Elements';
 import Themes from './data/Themes';
 import Plugins from './data/Plugins';
 import Properties from './data/model/Properties';
 import UndefinedElement from './UndefinedElement';
 
-type ExposedTree = Record<string, Page.ComponentNode>;
 type ExposedMap = Record<string, ExposedTree>;
+type ExposedTree = Record<string, Page.ComponentNode>;
+type GQLQueryFunction = (query: string, variables?: any) => Promise<any>;
 
-// The page template, containing $MARKERS$ for page content.
-const PAGE_TEMPLATE = fss.readFileSync(path.join(__dirname, 'views', 'page.html')).toString();
+/** The page template, containing $MARKERS$ for page content. */
+const PAGE_TEMPLATE_PATH = path.resolve(path.join('src', 'views', 'page.html'));
 
-// The error page template, containing $MARKERS$ for page content.
-const ERROR_TEMPLATE = fss.readFileSync(path.join(__dirname, 'views', 'error.html')).toString();
+/** The error page template, containing $MARKERS$ for page content. */
+const ERROR_TEMPLATE_PATH = path.resolve(path.join('src', 'views', 'error.html'));
 
-// The default layout, included with the server.
-const DEFAULT_LAYOUT = fss.readFileSync(path.join(__dirname, 'views', 'layout.html')).toString();
+/** Uses lookaheads / lookbehinds to find space to insert a tree into on a template. */
+const FIND_INCLUDE = (label: string) =>
+	new RegExp(`(?<=\<[A-z="'_\\- ]+ data-include='${label}'>)(\s*)(?=<\/[A-z]+>)`, 'gi');
 
-// Uses lookaheads / lookbehinds to find space to insert a tree into on a template.
-const FIND_INCLUDE = (label: string) => new RegExp(`(?<=\<[A-z="'_\\- ]+ data-include='${label}'>)(\s*)(?=<\/[A-z]+>)`, 'gi');
-
-interface PagesManagerContextData {
+interface PageBuilderContextData {
 	path: string;
 	cookies: Record<string, string>;
 }
 
-export const PagesManagerContext = Preact.createContext<PagesManagerContextData>(undefined as any);
+export const PageBuilderContext = Preact.createContext<PageBuilderContextData>(undefined as any);
 
-export default class PagesManager {
+export default class PageBuilder {
 	root: string;
-	gql?: (q: string) => Promise<Partial<Int.Root>>;
+	gql?: GQLQueryFunction;
 
 
 	/**
@@ -48,7 +46,7 @@ export default class PagesManager {
 	 * or return an expanded JSON representation with includes included.
 	 */
 
-	constructor(private dataPath: string, private themes: Themes, private plugins: Plugins, private elements: Elements) {
+	constructor(private dataPath: string, private themes: Themes, private plugins: Plugins) {
 		this.root = path.join(this.dataPath, 'pages');
 	}
 
@@ -58,12 +56,10 @@ export default class PagesManager {
 	 * creates the pages directory if it doesn't exist already.
 	 */
 
-	async init(gql: (q: string) => Promise<Partial<Int.Root>>) {
+	async init(gql: GQLQueryFunction) {
 		try {	await fs.access(this.root, fsc.R_OK); }
 		catch (e) { fs.mkdir(this.root); }
-
 		this.gql = gql;
-		this.themes.init();
 	}
 
 
@@ -87,15 +83,14 @@ export default class PagesManager {
 			url = path.join(url, 'index');
 		}
 
-		const { media } = await this.gql!(`{ media ${Query.Media} }`);
-
+		const { media } = await this.gql!(`{ media ${Query.Media} }`).then(res => res.data as Int.Root);
 		// Prepare and render the Preact component trees.
 		Logger.perfStart('Preparing Trees');
 		const json = await this.getPreparedPage(url, media ?? []);
 
 		Logger.perfEnd('Preparing Trees');
 
-		const contextData: PagesManagerContextData = {
+		const contextData: PageBuilderContextData = {
 			path: rawUrl,
 			cookies: cookies
 		};
@@ -112,15 +107,15 @@ export default class PagesManager {
 		const faviconItem = (media ?? []).filter(media => media.id === favicon)[0];
 
 		Logger.perfStart('Forming HTML');
-		let html = PAGE_TEMPLATE
+		let html = (await fs.readFile(PAGE_TEMPLATE_PATH)).toString()
 			.replace('$TITLE$', (json.name ? `${escapeHtml(json.name)}&nbsp; • &nbsp;` : '') + escapeHtml(siteName))
 			.replace('$DESCRIPTION$', escapeHtml(json.description || siteDescription))
 			.replace('$FAVICON$', faviconItem?.url ?? '');
 
-		const scripts = this.plugins.listEnabled().filter(p => p.config.sources.client?.script)
-			.map(p => p.config.identifier + '/' + p.config.sources.client?.script);
-		const styles = this.plugins.listEnabled().filter(p => p.config.sources.client?.style)
-			.map(p => p.config.identifier + '/' + p.config.sources.client?.style);
+		const scripts = this.plugins.listEnabled().filter(p => p.sources.scripts?.client)
+			.map(p => p.identifier + '/' + p.sources.scripts.client);
+		const styles = this.plugins.listEnabled().filter(p => p.sources.styles?.client)
+			.map(p => p.identifier + '/' + p.sources.styles.client);
 
 		html = html
 			.replace('$PREACT$', scripts.length ? `
@@ -133,12 +128,14 @@ export default class PagesManager {
 			.replace('$PLUGINS$', (scripts.length || styles.length) ?
 				scripts.map(script => `<script src='/plugin/${script}' defer></script>`).join('') +
 					styles.map(style => `<link rel='stylesheet' href='/plugin/${style}'/>`).join('') : '')
-			.replace('$THEME_HEAD$', this.themes.listEnabled().map(t => t.config.head).join(''));
+			.replace('$THEME_HEAD$', (await Promise.all(this.themes.listEnabled().filter(t => t.sources.head)
+				.map(t => fs.readFile(path.join(this.dataPath, 'themes',
+					t.identifier, t.sourceRoot ?? '.', t.sources.head!))))).join(''));
 
 		html = html.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 
-		const layouts = await this.themes.listLayouts();
-		let body = layouts.get(json.layout ?? 'default') ?? layouts.get('default') ?? DEFAULT_LAYOUT;
+		const layouts = this.themes.listLayouts();
+		let body = (await fs.readFile(layouts.get(json.layout ?? '-') ?? layouts.get('default')!)).toString();
 
 		Object.keys(rendered).forEach(section =>
 			body = body!.replace(FIND_INCLUDE(section), rendered[section]));
@@ -159,12 +156,12 @@ export default class PagesManager {
 	 * @returns the error status code and the error HTML page.
 	 */
 
-	renderError(error: { type: string; error: any }): [ number, string ] {
+	async renderError(error: { type: string; error: any }): Promise<[ number, string ]> {
 		const code = error.type === 'NOTFOUND' ? 404 : 500;
 		const description = error.type === 'NOTFOUND' ?
 			'The page you have requested could not be found.' : 'Internal server error.';
 
-		const html = ERROR_TEMPLATE
+		const html = (await fs.readFile(ERROR_TEMPLATE_PATH)).toString()
 			.replace('$ERROR_CODE$', code.toString())
 			.replace('$ERROR_DESCRIPTION$', description)
 			.replace('$ERROR_STACK$', `<code><pre>${error.error.stack}</pre></code>`);
@@ -289,12 +286,12 @@ export default class PagesManager {
 	 */
 
 	private async renderTree(page: string, identifier: string,
-		root: Page.Node, contextData: PagesManagerContextData): Promise<string> {
+		root: Page.Node, contextData: PageBuilderContextData): Promise<string> {
 		Logger.perfStart('Building tree ' + identifier);
 		const tree = await this.createTree(root, path.dirname(page));
 		Logger.perfEnd('Building tree ' + identifier);
 		Logger.perfStart('Rendering tree ' + identifier);
-		const res = renderToString(Preact.h(PagesManagerContext.Provider, { value: contextData, children: tree }));
+		const res = renderToString(Preact.h(PageBuilderContext.Provider, { value: contextData, children: tree }));
 		Logger.perfEnd('Rendering tree ' + identifier);
 		return res;
 	}
@@ -313,7 +310,7 @@ export default class PagesManager {
 		const elem: Page.ComponentNode = Page.isIncludeNode(child) ? child.elem! : child;
 		if (Page.isIncludeNode(elem)) pathRoot = path.dirname(path.resolve(pathRoot, elem.include));
 
-		const render = this.elements.getAllElements().get(elem.elem);
+		const render = this.plugins.elements.getAllElements().get(elem.elem);
 		if (!render) return Preact.h(UndefinedElement, { elem: elem.elem });
 
 		let children: any[] = [];

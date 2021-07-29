@@ -7,13 +7,12 @@ import { promises as fs, constants as fsc } from 'fs';
 import Router from './Router';
 import Logger from '../Logger';
 import Plugins from '../data/Plugins';
-import PagesManager from '../PagesManager';
+import PageBuilder from '../PageBuilder';
 import { OUT_FILE } from '../data/Themes';
 
 export default class PagesRouter extends Router {
-
 	constructor(private dataPath: string, private app: Express.Application,
-		private pages: PagesManager, private plugins: Plugins) { super(); }
+		private plugins: Plugins, private pages: PageBuilder) { super(); }
 
 	init() {
 		this.router.get('/media/:asset', async (req, res, next) => {
@@ -38,7 +37,7 @@ export default class PagesRouter extends Router {
 			  const width = image.bitmap.width;
 			  const height = image.bitmap.height;
 			  const factor = size / Math.max(width, height);
-			  await image.resize(width * factor, height * factor);
+			  image.resize(width * factor, height * factor);
 			  await image.writeAsync(destP);
 			}
 
@@ -55,10 +54,10 @@ export default class PagesRouter extends Router {
 
 		this.router.use('/plugin/:identifier/:file', async (req, res, next) => {
 			try {
-				let plugins = this.plugins.listEnabled().filter(p => p.config.identifier === req.params.identifier);
+				let plugins = this.plugins.listEnabled().filter(p => p.identifier === req.params.identifier);
 				if (plugins.length === 0) throw `There is no loaded plugin with identifier ${req.params.identifier}.`;
 				Express.static(path.join(this.dataPath, 'plugins', req.params.identifier,
-					plugins[0].config.sourceRoot, req.params.file))(req, res, next);
+					plugins[0].sourceRoot ?? '.', req.params.file))(req, res, next);
 			}
 			catch (e) {
 				res.status(403).send(e);
@@ -66,19 +65,19 @@ export default class PagesRouter extends Router {
 		});
 
 		this.router.get('/plugin/styles/:identifier.css', (req, res) => {
-			const plugins = this.plugins.listEnabled().filter(p => p.config.identifier === req.params.identifier);
+			const plugins = this.plugins.listEnabled().filter(p => p.identifier === req.params.identifier);
 			if (plugins.length !== 1) { res.sendStatus(404); return; }
 			const plugin = plugins[0];
 
-			if (!plugin.config.sources.client?.style) { res.sendStatus(404); return; }
-			res.sendFile(path.join(this.dataPath, 'plugins', plugin.config.identifier, plugin.config.sources.client.style));
+			if (!plugin.sources.styles?.client) { res.sendStatus(404); return; }
+			res.sendFile(path.join(this.dataPath, 'plugins', plugin.identifier, plugin.sources.styles?.client));
 		});
 
 		this.router.get('*', async (req, res) => {
 			try { res.send(await this.pages.render(req.params[0], req.cookies)); }
 			catch (e) {
 				if (e.type && e.error) {
-					let [ status, page ] = this.pages.renderError(e);
+					let [ status, page ] = await this.pages.renderError(e);
 					res.status(status).send(page);
 				}
 				else {

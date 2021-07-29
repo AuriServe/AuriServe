@@ -1,8 +1,7 @@
-import fs from 'fs';
 import path from 'path';
 import Express from 'express';
 import { Format } from 'common';
-import { graphqlHTTP } from 'express-graphql';
+import { promises as fs } from 'fs';
 import { UploadedFile } from 'express-fileupload';
 
 import Router from './Router';
@@ -11,15 +10,15 @@ import Themes from '../data/Themes';
 import * as Auth from '../data/Auth';
 import Plugins from '../data/Plugins';
 import AuthRoute, { delay } from './AuthRoute';
-import { Schema, Resolver, Context } from '../data/Graph';
 
+type GQLQueryFunction = (query: string, variables: any) => Promise<any>;
 
-// The page template, containing $MARKERS$ for page content.
-const PAGE_TEMPLATE = fs.readFileSync(path.join(path.dirname(__dirname), 'views', 'admin.html')).toString();
+// The path to the page template, containing $MARKERS$ for page content.
+const PAGE_TEMPLATE_PATH = path.resolve(path.join('src', 'views', 'admin.html'));
 
 export default class AdminRouter extends Router {
 	constructor(private dataPath: string, private app: Express.Application,
-		private plugins: Plugins, private themes: Themes, private media: Media, private gqlContext: Context) { super(); }
+		private plugins: Plugins, private themes: Themes, private media: Media, private gql: GQLQueryFunction) { super(); }
 
 	init() {
 		const { rateLimit, authRoute } = AuthRoute({ attempts: 10000 });
@@ -57,9 +56,8 @@ export default class AdminRouter extends Router {
  		 * Also provides a graphiql access-point if loaded by a logged-in user.
  		 */
 
-		this.router.use('/graphql', authRoute, graphqlHTTP({
-			schema: Schema, rootValue: Resolver, graphiql: true, context: this.gqlContext }));
-
+		this.router.post('/graphql', authRoute, Router.safeRoute(async (req, res) =>
+			res.send(await this.gql(req.body.query, req.body.variables))));
 
 		/**
 		 * Uploads a media asset and stores it in the media database.
@@ -184,14 +182,14 @@ export default class AdminRouter extends Router {
 		});
 
 		this.router.get('(/*)?', async (_, res) => {
-			const html = PAGE_TEMPLATE
+			const html = (await fs.readFile(PAGE_TEMPLATE_PATH)).toString()
 				.replace('$PLUGINS$', `<script id='plugins' type='application/json'>${JSON.stringify({
-					pluginScripts: this.plugins.listEnabled().filter(p => p.config.sources.editor?.script)
-						.map(p => p.config.identifier + '/' + p.config.sources.editor!.script),
-					pluginStyles: this.plugins.listEnabled().filter(p => p.config.sources.editor?.style)
-						.map(p => p.config.identifier + '/' + p.config.sources.editor!.style) })}</script>`)
+					pluginScripts: this.plugins.listEnabled().filter(p => p.sources.scripts?.editor)
+						.map(p => p.identifier + '/' + p.sources.scripts.editor!),
+					pluginStyles: this.plugins.listEnabled().filter(p => p.sources.styles?.editor)
+						.map(p => p.identifier + '/' + p.sources.styles.editor!) })}</script>`)
 				.replace('$THEMES$', `<script id='themes' type='application/json'>${
-					JSON.stringify({ themes: this.themes.listEnabled().map(t => t.config.identifier) })}</script>`)
+					JSON.stringify({ themes: this.themes.listEnabled().map(t => t.identifier) })}</script>`)
 				.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 			res.send(html);
 		});

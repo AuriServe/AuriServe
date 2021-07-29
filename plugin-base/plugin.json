@@ -1,20 +1,18 @@
 {
-	"identifier": "Base",
+	"identifier": "base",
 	"name": "Base Plugin",
 	"author": "Aurailus Design",
 	"description": "Contains base elements for AuriServe.",
 	"sourceRoot": "dist",
 	"sources": {
-		"server": {
-			"script": "server.js"
+		"scripts": {
+			"server": "server.js",
+			"client": "client.js",
+			"editor": "editor.js"
 		},
-		"client": {
-			"script": "client.js",
-			"style": "client.css"
-		},
-		"editor": {
-			"script": "editor.js",
-			"style": "editor.css"
+		"styles": {
+			"client": "client.css",
+			"editor": "editor.css"
 		}
 	}
 }

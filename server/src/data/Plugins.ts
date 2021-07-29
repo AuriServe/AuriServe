@@ -4,188 +4,166 @@ import { promises as fs, constants as fsc } from 'fs';
 
 import Logger from '../Logger';
 import Elements from '../Elements';
-import Plugin from './plugin/Plugin';
-import PluginConfig from './plugin/PluginConfig';
-import { PagesManagerContext } from '../PagesManager';
-
 import Properties from './model/Properties';
+import PluginBindings from './PluginBindings';
 
-import Preact from 'preact';
-import Hooks from 'preact/hooks';
+/** Represents one plugin. */
+export interface Plugin {
+	name: string;
+	author: string;
+	identifier: string;
+	description: string;
 
-/** @ts-ignore Globals to avoid duplicate Preact instances. */
-global._AS_ = {
-	preact: Preact,
-	preact_hooks: Hooks,
-	pages_manager_context: PagesManagerContext
-};
+	sourceRoot?: string;
+	sources: {
+		scripts: {
+			server?: string;
+			client?: string;
+			editor?: string;
+		};
+		styles: {
+			client?: string;
+			editor?: string;
+		};
+	};
 
+	enabled: boolean;
+	hasCover: boolean;
+}
 
-/**
- * Manages plugins and plugin states.
- */
-
+/** Manages finding, toggling, and building plugins.*/
 export default class Plugins {
+	readonly elements: Elements = new Elements();
 	private plugins: Map<string, Plugin> = new Map();
+	private bindings: Map<string, PluginBindings> = new Map();
 
-	constructor(private dataPath: string, private elements: Elements) {
-		// Create themes directory if it doesn't exist.
+	constructor(private dataPath: string) {
+		// Create plugins directory if it doesn't exist.
 		fs.access(path.join(this.dataPath, 'plugins'), fsc.R_OK).catch(
 			() => fs.mkdir(path.join(this.dataPath, 'plugins')));
 	};
 
-
-	/**
-	 * Loads plugins from the filesystem and
-	 * enables those which were previously enabled.
-	 */
-
-	async init() {
-		await this.refresh();
-		((await Properties.findOne())?.enabled.plugins ?? []).forEach((p: string) => this.enable(p));
-		this.syncToDb();
-	}
-
-
-	/**
-	 * Enables the plugins specified, and disables all other ones.
-	 *
-	 * @param {string[]} identifiers - The plugins to enable.
-	 */
-
-	setEnabled(identifiers: string[]) {
+	/** Enables only the plugins specified. */
+	async setEnabled(identifiers: string[]) {
 		this.plugins.forEach(p => {
-			if (identifiers.includes(p.config.identifier)) p.enable();
-			else p.disable();
+			if (identifiers.includes(p.identifier)) this.enable(p.identifier);
+			else this.disable(p.identifier);
 		});
 	}
 
+	/** Enables the plugin specified. */
+	async enable(identifier: string) {
+		const plugin = this.plugins.get(identifier);
+		if (!plugin || plugin.enabled) return;
 
-	/**
-	 * Enables a plugin with the identifier provided.
-	 *
-	 * @param {string} identifier - The plugin identifier.
-	 */
+		plugin.enabled = true;
+		if (!plugin.sources.scripts?.server) return;
+		const indexPath = path.join(this.dataPath, 'plugins', identifier,
+			plugin.sourceRoot ?? '.', plugin.sources.scripts!.server);
+		delete require.cache[indexPath];
 
-	enable = (identifier: string) => this.plugins.get(identifier)?.enable();
+		const bindings = new PluginBindings();
+		this.bindings.set(identifier, bindings);
+		require(indexPath)(bindings);
+		this.elements.addList(bindings.elements);
+	}
 
+	/** Disables the plugin specified. */
+	async disable(identifier: string) {
+		const plugin = this.plugins.get(identifier);
+		if (!plugin?.enabled) return;
 
-	/**
-	 * Disables a plugin with the identifier provided.
-	 *
-	 * @param {string} identifier - The plugin identifier.
-	 */
+		plugin.enabled = false;
+		if (!plugin.sources.scripts?.server) return;
+		const bindings = this.bindings.get(identifier);
+		if (!bindings) return;
+		this.elements.removeList(bindings.elements);
+		this.bindings.delete(identifier);
+	}
 
-	disable = (identifier: string) => this.plugins.get(identifier)?.disable();
+	/** Gets the specified plugin. */
+	get(identifier: string) {
+		return this.plugins.get(identifier);
+	}
 
+	/** Gets a list of enabled plugins. */
+	listEnabled() {
+		return [ ...this.plugins.values() ].filter(p => p.enabled);
+	}
 
-	/**
-	 * Gets a plugin from the identifier provided.
-	 *
-	 * @param {string} identifier - The identifier of the plugin to get.
-	 * @returns the plugin, if it exists.
-	 */
+	/** Gets a list of all themes. */
+	listAll() {
+		return [ ...this.plugins.values() ];
+	}
 
-	get = (identifier: string) => this.plugins.get(identifier);
-
-
-	/**
-	 * Returns a list of enabled plugins.
-	 */
-
-	listEnabled = () => [ ...this.plugins.values() ].filter(p => p.isEnabled());
-
-
-	/**
-	 * Returns a list of all plugins.
-	 */
-
-	listAll = () => [ ...this.plugins.values() ];
-
-
-	/**
-	 * Disables all plugins, and refreshes the plugin listings from the plugins directory.
-	 */
-
+	/** Discover all plugins in the directory and updates the plugins list. */
 	async refresh() {
-		this.plugins.forEach(p => p.disable());
+		this.plugins.forEach(p => p.enabled = false);
 		this.plugins.clear();
 
+		const enabled = ((await Properties.findOne())?.enabled.plugins ?? []);
 		const pluginDirs = await fs.readdir(path.join(this.dataPath, 'plugins'));
 		await Promise.all(pluginDirs.map(async dirName => {
 			try {
-				const config = await this.validate(dirName);
-				this.plugins.set(config.identifier, new Plugin(config, require.resolve(path.join(this.dataPath,
-					'plugins', dirName, config.sourceRoot, config.sources.server.script!)), this.dataPath, this.elements));
+				const plugin = await this.parsePlugin(dirName);
+				this.plugins.set(plugin.identifier, plugin);
 			}
 			catch (e) {
 				Logger.error('Encountered an error parsing plugin %s:\n %s', dirName, e);
 			}
 		}));
+
+		this.setEnabled(enabled);
 	}
 
-
-	/**
-	 * Saves the current list of enabled plugins to
-	 * the database, and shuts down all plugins.
-	 */
-
+	/** Synchronizes with the database and then cleans up all plugins. */
 	async cleanup() {
 		await this.syncToDb();
-		this.plugins.forEach(p => p.disable());
+		this.plugins.forEach(p => this.disable(p.identifier));
+		this.plugins.clear();
 	}
 
-
-	/**
-	 * Saves the current list of enabled plugins to the database.
-	 */
-
+	/** Saves the current list of enabled plugins to the database. */
 	private async syncToDb() {
-		await Properties.updateOne({}, { $set: { 'enabled.plugins': [ ...this.plugins.values() ]
-			.filter(p => p.isEnabled()).map(p => p.config.identifier) } });
+		await Properties.updateOne({}, { $set: { 'enabled.plugins':
+			[ ...this.plugins.values() ].filter(p => p.enabled).map(p => p.identifier) } });
 	}
 
+	/** Reads a plugin directory and returns a Plugin. Throws if the plugin is invalid. */
+	private async parsePlugin(identifier: string): Promise<Plugin> {
+		const confPath = path.join(this.dataPath, 'plugins', identifier, 'plugin.json');
+		const plugin: Plugin = JSON.parse((await fs.readFile(confPath)).toString());
 
-	/**
-	 * Validates a plugin directory, and returns the plugin config.
-	 * Throws if the plugin is ill-formed.
-	 *
-	 * @param {string} identifier - The identifier (file name) of the plugin.
-	 * @returns a configuration object for the plugin.
-	 */
+		// Ensure that the plugin has the basic metadata.
+		if (typeof plugin.identifier !== 'string' || typeof plugin.name !== 'string' ||
+		typeof plugin.author !== 'string' || typeof plugin.author !== 'string')
+			throw 'Theme is missing metadata. (identifier, name, author, description)';
 
-	private async validate(identifier: string): Promise<PluginConfig> {
+		// Ensure that the folder name matches the plugin identifier.
+		if (identifier !== plugin.identifier) throw 'Plugin directory name must match plugin identifier.';
 
-		// Ensure that the plugin is structured properly.
-		if (Format.sanitize(identifier) !== identifier)
-			throw 'Plugin identifier must be lowercase alphanumeric.';
-		const dir = path.join(this.dataPath, 'plugins', identifier);
+		// Ensure that the identifier is formatted properly.
+		if (Format.sanitize(plugin.identifier) !== plugin.identifier && plugin.identifier.length >= 3)
+			throw 'Plugin identifier must be lowercase alphanumeric, and >= 3 characters.';
 
-		if (!(await fs.stat(dir)).isDirectory()) throw 'Plugin is not a directory.';
+		// Assert that the plugin has a sources object.
+		if (!plugin.sources || typeof plugin.sources !== 'object')
+			throw 'Plugin must contain a sources object.';
 
-		try { await fs.access(path.join(dir, 'plugin.json')); }
-		catch (e) { throw 'plugin.json not found in plugin root directory.'; }
+		// Assert that all plugin sources exist.
+		const pluginRoot = path.join(path.dirname(confPath), plugin.sourceRoot ?? '.');
+		await Promise.all(Object.keys(plugin.sources).map(async (sourceKey: string) => {
+			if (sourceKey !== 'scripts' && sourceKey !== 'styles')
+				throw 'Plugin contains invalid key in sources, \'' + sourceKey + '\'.';
 
-		// Create the configuration file.
-		let config: PluginConfig;
-		try { config = JSON.parse((await fs.readFile(path.join(dir, 'plugin.json'))).toString()); }
-		catch (e) { throw 'Failed to parse configuration file:\n ' + e; }
-		config.identifier = identifier;
+			await Promise.all(Object.entries((plugin.sources as any)[sourceKey] as Record<string, string>)
+				.map(async ([ source, sourcePath ]) => {
+					try { await fs.access(path.join(pluginRoot, sourcePath!)); }
+					catch (e) { throw `Source file \'${sourcePath}\' not found for source \'${sourceKey}.${source}\'.`; };
+				})
+			);
+		}));
 
-		if (!config.sources || !config.sources.server) throw 'Plugin configuration is missing sources.server.';
-
-		for (let root of Object.keys(config.sources)) {
-			let source = (config.sources as any)[root];
-			if (source.script) {
-				try { await fs.access(path.join(dir, config.sourceRoot, source.script ?? '___')); }
-				catch (e) { throw `${root} source file '${config.sourceRoot}/${source.script}' not found.`; }
-			}
-			if (source.style) {
-				try { await fs.access(path.join(dir, config.sourceRoot, source.style ?? '___')); }
-				catch (e) { throw `${root} style file '${config.sourceRoot}/${source.style}' not found.`; }
-			}
-		}
-
-		return config;
+		return plugin;
 	}
 }

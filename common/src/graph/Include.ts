@@ -1,15 +1,9 @@
-import { ID } from './Basic';
-
 export interface Interface {
 	// id: ID;
 	// user: ID;
 	// created: Date;
 
-	name?: string;
 	path: string;
-	description?: string;
-	
-	layout?: ID;
 	content?: string
 }
 

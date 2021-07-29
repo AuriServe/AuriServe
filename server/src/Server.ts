@@ -12,13 +12,11 @@ import { promises as fs } from 'fs';
 import Logger from './Logger';
 import Media from './data/Media';
 import Pages from './data/Pages';
-import Elements from './Elements';
 import Themes from './data/Themes';
 import * as Auth from './data/Auth';
 import Plugins from './data/Plugins';
 import Roles from './data/model/Role';
-import * as Int from 'common/graph/type';
-import PagesManager from './PagesManager';
+import PageBuilder from './PageBuilder';
 import { Schema, Resolver } from './data/Graph';
 import Properties from './data/model/Properties';
 
@@ -27,6 +25,7 @@ import { Config } from './ServerConfig';
 import AdminRouter from './router/AdminRouter';
 import PagesRouter from './router/PagesRouter';
 import createUserPrompt from './CreateUserPrompt';
+import { ObjectId } from 'mongodb';
 
 export default class Server {
 	private app = Express();
@@ -37,8 +36,7 @@ export default class Server {
 	private pages: Pages;
 	private themes: Themes;
 	private plugins: Plugins;
-	private elements: Elements;
-	private pageBuilder: PagesManager;
+	private pageBuilder: PageBuilder;
 
 	constructor(public readonly conf: Config, public readonly dataPath: string) {
 		this.app.use(compression());
@@ -46,25 +44,29 @@ export default class Server {
 		this.app.use(Express.json());
 		this.app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
-		this.elements = new Elements();
 		this.pages = new Pages(this.dataPath);
 		this.media = new Media(this.dataPath);
-		this.themes = new Themes(this.dataPath);
-		this.plugins = new Plugins(this.dataPath, this.elements);
 
-		this.pageBuilder = new PagesManager(this.dataPath, this.themes, this.plugins, this.elements);
+		this.pages.getPage('.').catch(() => {});
+		this.media.getMedia(new ObjectId('123456789012')).catch(() => {});
+
+		this.themes = new Themes(this.dataPath);
+		this.plugins = new Plugins(this.dataPath);
+
+		this.pageBuilder = new PageBuilder(this.dataPath, this.themes, this.plugins);
 
 		const gqlContext = { plugins: this.plugins, pages: this.pages, themes: this.themes, media: this.media };
-		const gql = (q: string) => graphql(Schema, q, Resolver, gqlContext).then(res => res.data as Int.Root);
+		const gql = (q: string, variables: any = undefined) => graphql(Schema, q, Resolver, gqlContext, variables);
 
-		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.pageBuilder, this.plugins);
-		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.plugins, this.themes, this.media, gqlContext);
+		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.plugins, this.pageBuilder);
+		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.plugins, this.themes, this.media, gql);
 
 		this.init().then(async () => {
 			if (conf.verbose || conf.logLevel === 'trace') this.debugRoutes();
 
+			await this.themes.refresh();
+			await this.plugins.refresh();
 			await this.pageBuilder.init(gql);
-			await this.plugins.init();
 
 			if (this.conf.super) createUserPrompt();
 
