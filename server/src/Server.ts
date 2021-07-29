@@ -25,7 +25,6 @@ import { Config } from './ServerConfig';
 import AdminRouter from './router/AdminRouter';
 import PagesRouter from './router/PagesRouter';
 import createUserPrompt from './CreateUserPrompt';
-import { ObjectId } from 'mongodb';
 
 export default class Server {
 	private app = Express();
@@ -46,9 +45,6 @@ export default class Server {
 
 		this.pages = new Pages(this.dataPath);
 		this.media = new Media(this.dataPath);
-
-		this.pages.getPage('.').catch(() => {});
-		this.media.getMedia(new ObjectId('123456789012')).catch(() => {});
 
 		this.themes = new Themes(this.dataPath);
 		this.plugins = new Plugins(this.dataPath);
