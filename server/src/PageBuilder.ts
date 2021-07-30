@@ -136,7 +136,9 @@ export default class PageBuilder {
 		html = html.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');
 
 		const layouts = this.themes.listLayouts();
-		let body = (await fs.readFile(layouts.get(json.layout ?? '-') ?? layouts.get('default')!)).toString();
+		let body = await new Promise<string>((resolve) =>
+			fss.readFile(layouts.get(json.layout ?? '-') ?? layouts.get('default')!,
+			(_, res) => resolve(res.toString())));
 
 		Object.keys(rendered).forEach(section =>
 			body = body!.replace(FIND_INCLUDE(section), rendered[section]));
