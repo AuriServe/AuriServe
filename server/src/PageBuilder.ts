@@ -3,7 +3,7 @@ import { Page } from 'common';
 import Preact from 'preact';
 import escapeHtml from 'escape-html';
 import renderToString from 'preact-render-to-string';
-import { promises as fs, constants as fsc } from 'fs';
+import fss, { promises as fs, constants as fsc } from 'fs';
 
 import { Query } from 'common/graph';
 import * as Int from 'common/graph/type';
@@ -19,10 +19,10 @@ type ExposedTree = Record<string, Page.ComponentNode>;
 type GQLQueryFunction = (query: string, variables?: any) => Promise<any>;
 
 /** The page template, containing $MARKERS$ for page content. */
-const PAGE_TEMPLATE_PATH = path.resolve(path.join('src', 'views', 'page.html'));
+const PAGE_TEMPLATE_PATH = path.join(__dirname, 'views', 'page.html');
 
 /** The error page template, containing $MARKERS$ for page content. */
-const ERROR_TEMPLATE_PATH = path.resolve(path.join('src', 'views', 'error.html'));
+const ERROR_TEMPLATE_PATH = path.join(__dirname, 'views', 'error.html');
 
 /** Uses lookaheads / lookbehinds to find space to insert a tree into on a template. */
 const FIND_INCLUDE = (label: string) =>
@@ -107,7 +107,8 @@ export default class PageBuilder {
 		const faviconItem = (media ?? []).filter(media => media.id === favicon)[0];
 
 		Logger.perfStart('Forming HTML');
-		let html = (await fs.readFile(PAGE_TEMPLATE_PATH)).toString()
+		let html = (await new Promise<string>((resolve) =>
+			fss.readFile(PAGE_TEMPLATE_PATH, (_, res) => resolve(res.toString()))))
 			.replace('$TITLE$', (json.name ? `${escapeHtml(json.name)}&nbsp; • &nbsp;` : '') + escapeHtml(siteName))
 			.replace('$DESCRIPTION$', escapeHtml(json.description || siteDescription))
 			.replace('$FAVICON$', faviconItem?.url ?? '');
@@ -161,7 +162,8 @@ export default class PageBuilder {
 		const description = error.type === 'NOTFOUND' ?
 			'The page you have requested could not be found.' : 'Internal server error.';
 
-		const html = (await fs.readFile(ERROR_TEMPLATE_PATH)).toString()
+		const html = (await new Promise<string>((resolve) =>
+			fss.readFile(ERROR_TEMPLATE_PATH, (_, res) => resolve(res.toString()))))
 			.replace('$ERROR_CODE$', code.toString())
 			.replace('$ERROR_DESCRIPTION$', description)
 			.replace('$ERROR_STACK$', `<code><pre>${error.error.stack}</pre></code>`);

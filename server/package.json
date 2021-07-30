@@ -21,17 +21,10 @@
   },
   "scripts": {
     "dev": "nodemon",
+    "debug": "node --inspect -r ts-node/register src/Main.ts -- --verbose",
     "lint": "eslint -c .eslintrc.js src/**/*.ts",
-    "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "npm run lint && tsc --project tsconfig.json && nexe --target linux-x86-12.9.1 --name AuriServe --output dist/AuriServe -r 'src/views/*' -r 'interface/dist/*' -r 'interface/res/**/*' && npm run clean",
     "clean": "find src -name '*.js' -type f -delete"
-  },
-  "pkg": {
-    "assets": [
-      "src/views/*",
-      "interface/res/**/*",
-      "interface/dist/*"
-    ]
   },
   "nodemonConfig": {
     "watch": [
@@ -46,7 +39,6 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
-    "@types/clean-css": "^4.2.3",
     "@types/compression": "^1.7.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/debounce": "^1.2.0",
@@ -58,7 +50,6 @@
     "@types/mongodb": "^3.6.3",
     "@types/node": "^14.14.17",
     "@types/prompt": "^1.1.1",
-    "@types/sass": "^1.16.0",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
     "@typescript-eslint/parser": "^4.8.2",
     "eslint": "^7.21.0",
@@ -70,15 +61,12 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "clean-css": "^5.1.0",
     "common": "file:../common/dist",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
-    "debounce": "^1.2.0",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.0",
-    "express-graphql": "^0.12.0",
     "graphql": "^15.5.0",
     "image-size": "^0.9.3",
     "jimp": "^0.16.1",
@@ -92,7 +80,6 @@
     "prompt": "^1.0.0",
     "rate-limiter-flexible": "^2.2.1",
     "recursive-watch": "^1.1.4",
-    "sass": "^1.32.6",
     "ts-node": "^9.0.0",
     "tslib": "^2.0.3"
   }

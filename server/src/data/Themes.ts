@@ -1,6 +1,6 @@
 import path from 'path';
 import { Format } from 'common';
-import { promises as fs, constants as fsc } from 'fs';
+import fss, { promises as fs, constants as fsc } from 'fs';
 
 import Logger from '../Logger';
 import Properties from './model/Properties';
@@ -9,10 +9,10 @@ import Properties from './model/Properties';
 export const OUT_FILE = '.build.css';
 
 /** The path to the CSS Reset document. */
-const CSS_RESET_PATH = path.resolve(path.join('src', 'views', 'reset.css'));
+const CSS_RESET_PATH = path.join(__dirname, '..', 'views', 'reset.css');
 
 /** The default layout, included with the server. */
-const DEFAULT_LAYOUT_PATH = path.resolve(path.join('src', 'views', 'layout.html'));
+const DEFAULT_LAYOUT_PATH = path.join(__dirname, '..', 'views', 'layout.html');
 
 /** Represents one theme. */
 export interface Theme {
@@ -155,7 +155,8 @@ export default class Themes {
 
 	/** Combines all theme styles into a single CSS document and writes it to OUT_FILE, loads layouts. */
 	private async buildThemes() {
-		const resetPromise = fs.readFile(CSS_RESET_PATH);
+		const resetPromise = new Promise<string>((resolve) =>
+			fss.readFile(CSS_RESET_PATH, (_, res) => resolve(res.toString())));
 
 		const themesPromise = Promise.all([ ...this.themes.values() ]
 			.filter(t => t.enabled && t.sources.style)
