@@ -53,11 +53,11 @@ export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(pr
 	const imageStyle = props.protect ? { 'pointer-events': 'none', 'user-select': 'none' } : {};
 
 	return (<Fragment>
-		<div class={mergeClasses('ImageView', props.class)}>
+		<div class={mergeClasses('ImageView', props.class)} style={props.style}>
 			<div
 				ref={ref}
 				class={'ImageView-Aspect'}
-				style={{ paddingBottom: (props.aspect ? props.aspect : height / width * 100) + '%', ...props.style }}
+				style={{ paddingBottom: (props.aspect ? props.aspect : height / width * 100) + '%' }}
 				onClick={props.lightbox ? () => setLightbox(true) : undefined}>
 				<img
 					ref={imageRef}

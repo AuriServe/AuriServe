@@ -106,6 +106,7 @@ export default class Plugins {
 		await Promise.all(pluginDirs.map(async dirName => {
 			try {
 				const plugin = await this.parsePlugin(dirName);
+				plugin.enabled = false;
 				this.plugins.set(plugin.identifier, plugin);
 			}
 			catch (e) {

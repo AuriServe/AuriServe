@@ -1,7 +1,7 @@
+import fss from 'fs';
 import path from 'path';
 import Express from 'express';
 import { Format } from 'common';
-import { promises as fs } from 'fs';
 import { UploadedFile } from 'express-fileupload';
 
 import Router from './Router';
@@ -182,7 +182,8 @@ export default class AdminRouter extends Router {
 		});
 
 		this.router.get('(/*)?', async (_, res) => {
-			const html = (await fs.readFile(PAGE_TEMPLATE_PATH)).toString()
+			const html = (await new Promise<string>((resolve) =>
+				fss.readFile(PAGE_TEMPLATE_PATH, (_, res) => resolve(res.toString()))))
 				.replace('$PLUGINS$', `<script id='plugins' type='application/json'>${JSON.stringify({
 					pluginScripts: this.plugins.listEnabled().filter(p => p.sources.scripts?.editor)
 						.map(p => p.identifier + '/' + p.sources.scripts.editor!),
