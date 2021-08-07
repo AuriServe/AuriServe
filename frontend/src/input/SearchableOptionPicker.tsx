@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, VNode } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
 import Label from './InputLabel';
@@ -6,13 +6,13 @@ import { Card } from '../structure';
 
 interface Props {
 	parent: HTMLElement;
-	
+
 	query: string;
 
 	options: Record<string, any>[];
 	fields: string | string[];
 
-	children: (data: { option: Record<string, any>; ind: number; selected: boolean }) => Preact.VNode;
+	children: (data: { option: Record<string, any>; ind: number; selected: boolean }) => VNode;
 
 	onSelect: (value: Record<string, any>) => void;
 }
@@ -48,7 +48,7 @@ export default function SearchableOptionPicker(props: Props) {
 	useEffect(() => {
 		const handleArrowSelect = (evt: KeyboardEvent) => {
 			if (evt.key !== 'ArrowUp' && evt.key !== 'ArrowDown' && evt.key !== 'Enter') return;
-			
+
 			evt.preventDefault();
 			evt.stopPropagation();
 

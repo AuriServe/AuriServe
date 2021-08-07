@@ -1,5 +1,5 @@
-import * as Preact from 'preact';
 import { usePopupCancel } from '../Hooks';
+import { h, ComponentChildren } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 
 import Card, { Props as CardProps } from './Card';
@@ -14,7 +14,7 @@ interface Props {
 	dropdown?: CardProps;
 
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
 export default function Dropdown(props: Props) {

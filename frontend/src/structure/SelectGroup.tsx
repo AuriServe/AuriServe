@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, createContext, ComponentChildren } from 'preact';
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 
 export interface SelectGroupContextData {
@@ -6,7 +6,7 @@ export interface SelectGroupContextData {
 	onSelect(ind: number, state?: boolean): void;
 }
 
-export const SelectGroupContext = Preact.createContext<SelectGroupContextData>({
+export const SelectGroupContext = createContext<SelectGroupContextData>({
 	selected: [], onSelect: () => { /* No action for default context. */ }});
 
 interface Props {
@@ -18,11 +18,11 @@ interface Props {
 
 	style?: any;
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
 export default function SelectGroup(props: Props) {
-	const oldChildren = useRef<Preact.ComponentChildren>(null);
+	const oldChildren = useRef<ComponentChildren>(null);
 
 	const [ additive, setAdditive ] = useState<boolean>(false);
 	const [ connect, setConnect ] = useState<boolean>(false);

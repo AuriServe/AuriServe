@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { PropsTable, AdminDefinition } from 'common/definition';
 
 import { Form } from '../input';

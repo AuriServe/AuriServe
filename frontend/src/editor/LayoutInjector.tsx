@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, VNode, Fragment } from 'preact';
 import { createPortal } from 'preact/compat';
 import { useState, useEffect } from 'preact/hooks';
 
@@ -6,7 +6,7 @@ import { useQuery, QUERY_LAYOUT } from '../Graph';
 
 interface Props {
 	layout: string;
-	elements: {[key: string]: Preact.VNode};
+	elements: {[key: string]: VNode};
 }
 
 /**
@@ -21,7 +21,7 @@ interface Props {
 export default function LayoutInjector(props: Props) {
 	const [ { layout } ] = useQuery(QUERY_LAYOUT, { loadOnReload: false }, { name: props.layout }) as any;
 	const [ layoutRoots, setLayoutRoots ] = useState<{[key: string]: HTMLElement} | undefined>(undefined);
-	
+
 	/**
 	 * Insert the layout DOM elements into the body, add necessary layout classes to body,
 	 * and stores references to the root containers to portal into.
@@ -58,11 +58,11 @@ export default function LayoutInjector(props: Props) {
 	}, [ layout ]);
 
 	return (
-		<Preact.Fragment>
+		<Fragment>
 			{layoutRoots && Object.keys(layoutRoots).map(section => {
 				if (!props.elements[section]) return undefined;
 				return createPortal(props.elements[section], layoutRoots[section]);
 			})}
-		</Preact.Fragment>
+		</Fragment>
 	);
 }

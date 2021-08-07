@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useState, useRef } from 'preact/hooks';
 
@@ -18,7 +18,7 @@ import style from './Input.sss';
 
 /** Props for the color input element. */
 interface Props extends InputProps, FocusableInputProps {
-	
+
 	/** Whether or not you can directly input a hex value. */
 	writable?: boolean;
 
@@ -37,7 +37,7 @@ interface Props extends InputProps, FocusableInputProps {
 export default forwardRef<HTMLInputElement, Props>(function InputColor(props, fRef) {
 	const ref = useRef<HTMLDivElement>(null);
 	const [ pickerActive, setPickerActive ] = useState(false);
-	
+
 	usePopupCancel(ref, () => setPickerActive(false));
 
 	const value: Color.HSVA = props.value ?? { h: 0.58, s: 0.52, v: 0.41, a: 1 };
@@ -52,7 +52,7 @@ export default forwardRef<HTMLInputElement, Props>(function InputColor(props, fR
 				class='pl-12 font-mono p-0 border-none bg-transparent'
 				value={Color.convert(value).toHex()}
 				onValue={hex => props.onValue?.(Color.convert(hex).toHSVA())}/>
-			
+
 			<div style={{ backgroundColor: Color.convert(value).toHex() }}
 				class='absolute top-2 left-2 -m-px w-8 h-8 rounded pointer-events-none shadow-sm'/>
 

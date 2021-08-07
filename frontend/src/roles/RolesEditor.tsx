@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { Prompt } from 'react-router-dom';
 import { useState, useEffect } from 'preact/hooks';
 
@@ -65,7 +65,7 @@ export default function RolesEditor(props: Props) {
 					<button onClick={() => setEditing(i)}><span>{r.name}</span></button>
 				</li>)}
 			</ul>
-			
+
 			{roles[editing] && <RoleEditor role={roles[editing]} setRole={handleSetRole} />}
 			<SavePopup active={dirty} onReset={handleReset} onSave={handleSave} />
 		  <Prompt when={dirty} message='Are you sure you want to leave this page? Unsaved changes will be lost.'/>

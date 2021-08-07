@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 
 import { mergeClasses } from 'common/util';
 
@@ -6,7 +6,7 @@ interface Props {
 	icon: string;
 	title: string;
 	subtitle?: string;
-	
+
 	style?: any;
 	class?: string;
 }

@@ -12,7 +12,7 @@
     "importHelpers": true,
 
     "jsx": "react",
-    "jsxFactory": "Preact.h",
+    "jsxFactory": "h",
 
     "removeComments": true,
     "noUnusedLocals": true,

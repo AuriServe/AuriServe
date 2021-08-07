@@ -1,5 +1,5 @@
-import Preact from 'preact';
 import { forwardRef } from 'preact/compat';
+import { h, ComponentChildren, RefObject } from 'preact';
 
 import { mergeClasses } from 'common/util';
 
@@ -9,10 +9,10 @@ export interface Props {
 
 	style?: any;
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
-export default forwardRef(function Card(props: Props, ref?: Preact.RefObject<HTMLElement>) {
+export default forwardRef(function Card(props: Props, ref?: RefObject<HTMLElement>) {
 	return (
 		<section ref={ref} {...props} class={mergeClasses(
 			'block bg-white dark:bg-gray-100 text-gray-100 dark:text-gray-800 p-4 mx-auto my-8 max-w-screen-xl',

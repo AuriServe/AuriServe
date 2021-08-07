@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState } from 'preact/hooks';
 
 import { Format } from 'common';

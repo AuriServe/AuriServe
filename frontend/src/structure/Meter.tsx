@@ -1,9 +1,9 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 
 interface Props {
 	max: number;
 	value: number;
-	
+
 	class?: string;
 }
 

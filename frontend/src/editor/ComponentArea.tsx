@@ -1,4 +1,4 @@
-import Preact from 'preact';
+import { h, ComponentChildren, Fragment } from 'preact';
 
 import { Portal } from '../structure';
 import IndicatorRing from './IndicatorRing';
@@ -63,7 +63,7 @@ interface Props {
 	for: HTMLElement;
 
 	/** Children to render into the component area. */
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 
 	/** Whether or not to render an indicator ring. */
 	indicator?: boolean;
@@ -85,12 +85,12 @@ export default function ComponentArea(props: Props) {
 
 	return (
 		<Portal to={document.getElementById('root')!}>
-			<Preact.Fragment>
+			<Fragment>
 				<div class='absolute pointer-events-none' style={style as any}>
 					{props.children}
 				</div>
 				{props.indicator && (props.visible ?? true) && <IndicatorRing active={props.active} elem={bounds}/>}
-			</Preact.Fragment>
+			</Fragment>
 		</Portal>
 	);
 }

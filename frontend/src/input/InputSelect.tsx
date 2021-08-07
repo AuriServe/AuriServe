@@ -1,4 +1,4 @@
-// import * as Preact from 'preact';
+// import { h } from 'preact';
 // import { forwardRef } from 'preact/compat';
 // import { useState, useRef } from 'preact/hooks';
 

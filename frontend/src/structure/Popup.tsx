@@ -1,5 +1,5 @@
-import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
+import { h, ComponentChildren } from 'preact';
 import { CSSTransition } from 'preact-transitioning';
 
 import Portal from './Portal';
@@ -16,7 +16,7 @@ interface Props {
 	z?: number;
 
 	class?: string;
-	children: Preact.ComponentChildren;
+	children: ComponentChildren;
 }
 
 const Popup = forwardRef<HTMLDivElement, Props>((props, fRef) => {

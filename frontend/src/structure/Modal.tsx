@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, ComponentChildren } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { CSSTransition } from 'preact-transitioning';
 
@@ -20,7 +20,7 @@ interface Props {
 
 	style?: any;
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
 export default function Modal(props: Props) {

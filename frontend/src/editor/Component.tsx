@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, createContext, ComponentChildren } from 'preact';
 import { useState, useRef, useContext } from 'preact/hooks';
 
 import ComponentArea from './ComponentArea';
@@ -24,7 +24,7 @@ interface ComponentContextData {
  * under the hood to retrieve information.
  */
 
-export const ComponentContext = Preact.createContext<ComponentContextData>({
+export const ComponentContext = createContext<ComponentContextData>({
 	path: '',
 	active: false,
 	hovered: false
@@ -51,7 +51,7 @@ interface Props {
 	setProps?: (props: any) => void;
 
 	/** Rendered children for the component. */
-	children: Preact.ComponentChildren;
+	children: ComponentChildren;
 }
 
 

@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, Fragment } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom';
 
@@ -58,7 +58,7 @@ export default function SettingsPage() {
 				</div>
 			}
 			{(!mobile || inPage) &&
-				<Preact.Fragment>
+				<Fragment>
 					<div class='w-full p-4 pb-16 text-gray-100 dark:text-gray-800'>
 						<Switch>
 							<Route exact path='/settings/overview' 	component={MainSettings as any} />
@@ -73,7 +73,7 @@ export default function SettingsPage() {
 						</Switch>
 					</div>
 					<div class='w-72 flex-shrink hidden 2xl:block'/>
-				</Preact.Fragment>
+				</Fragment>
 			}
 		</Page>
 	);

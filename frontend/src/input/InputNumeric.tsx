@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { InputProps, FocusableInputProps } from './index';
@@ -20,7 +20,7 @@ const InputNumeric = forwardRef<HTMLInputElement, Props>((props, fRef) => {
 			value={props.value}
 			onInput={cb}
 			onChange={cb}
-			
+
 			class={mergeClasses(style.Input, props.class)}
 			style={props.style}
 

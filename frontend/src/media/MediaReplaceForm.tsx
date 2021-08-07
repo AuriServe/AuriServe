@@ -1,4 +1,4 @@
-// import * as Preact from 'preact';
+// import { h } from 'preact';
 // import { Format } from 'auriserve-api';
 
 // import './MediaReplaceForm.sass';

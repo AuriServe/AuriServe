@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, ComponentChildren, RefObject } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { NavLink as Link } from 'react-router-dom';
 
@@ -15,10 +15,10 @@ export interface Props {
 	style?: any;
 	class?: string;
 	highlightClass?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
-export default forwardRef(function Button(props: Props, ref?: Preact.RefObject<HTMLElement>) {
+export default forwardRef(function Button(props: Props, ref?: RefObject<HTMLElement>) {
 	const Tag = props.to ? Link : props.href ? 'a' : 'button';
 	return (
 		// @ts-ignore - Dynamically setting Link.to makes typescript mad.
@@ -35,13 +35,13 @@ export default forwardRef(function Button(props: Props, ref?: Preact.RefObject<H
 
 			{props.icon && <img src={props.icon} alt='' role='presentation' width={32} height={32}
 				class='w-8 h-8 dark:filter dark:invert dark:brightness-75 dark:contrast-200 dark:hue-rotate-180 pointer-events-none'/>}
-			
+
 			<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-75 rounded bg-gray-500',
 				'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
 				'group-focus-visible:scale-100', props.highlightClass)}/>
-			
+
 			{props.label && !props.iconOnly && <p class='px-2 mt-px -mb-px py-1 w-full text-center'>{props.label}</p>}
-			
+
 			{props.children}
 		</Tag>
 	);

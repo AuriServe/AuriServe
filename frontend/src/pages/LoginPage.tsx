@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie';
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState, useRef } from 'preact/hooks';
 
 import { Form, Text, Label } from '../input';
@@ -18,7 +18,7 @@ export default function LoginPage({ onLogin }: Props) {
 
 	const [ state, setState ] = useState<'input' | 'pending' | 'auth'>('input');
 	const [ warning, setWarning ] = useState<string>('');
-	
+
 	const handleSubmit = async () => {
 		try {
 			if (state === 'pending') throw 'Attempt to send request while already logging in.';

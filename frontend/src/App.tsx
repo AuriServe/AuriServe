@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie';
-import * as Preact from 'preact';
+import { h, createContext } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ export interface AppContextData { data: Partial<Int.Root>; mergeData(data: Parti
 
 
 /** The App Context containing graph data. */
-export const AppContext = Preact.createContext<AppContextData>({
+export const AppContext = createContext<AppContextData>({
 	data: {}, mergeData: () => { throw 'Accessed default AppContext'; }});
 
 
@@ -51,7 +51,7 @@ export default function App() {
 				<Router basename='/admin'>
 					<Route path="/:url*" exact strict render={(props) =>
 						<Redirect to={`${props.location.pathname}/${props.location.search}`} />} />
-					
+
 					<Switch>
 						<Route exact path='/renderer' component={EditorRendererPage as any} />
 						<Route strict path='/pages/:page'>

@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useData, QUERY_USERS } from '../../Graph';
 
 import UserItem from '../../user/UserItem';

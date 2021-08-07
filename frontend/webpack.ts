@@ -31,6 +31,7 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 			'preact': 'preact',
 			'preact/hooks': 'preact_hooks'
 		},
+
 		plugins: [
 			new ForkTsCheckerPlugin({
 				typescript: {
@@ -58,14 +59,14 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 						['@babel/preset-typescript', {
 							isTSX: true,
 							allExtensions: true,
-							jsxPragma: 'Preact.h'
+							jsxPragma: 'h'
 						}],
 						[ '@babel/preset-env', {
-							targets: { browsers: ['Chrome 78']},
+							targets: { browsers: [ 'Chrome 90' ]},
 						}]
 					],
 					plugins: [
-						['@babel/transform-react-jsx', { pragma: 'Preact.h' }],
+						['@babel/transform-react-jsx', { pragma: 'h' }],
 						['@babel/plugin-proposal-class-properties', { loose: true }],
 						['@babel/plugin-proposal-private-methods', { loose: true }]
 					]

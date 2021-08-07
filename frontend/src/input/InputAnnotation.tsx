@@ -1,5 +1,5 @@
-import * as Preact from 'preact';
 import { forwardRef } from 'preact/compat';
+import { h, ComponentChildren } from 'preact';
 
 import { mergeClasses } from 'common/util';
 
@@ -9,7 +9,7 @@ interface Props {
 
 	style?: any;
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
 export default forwardRef<HTMLLabelElement, Props>(function InputAnnotation(props, fRef) {

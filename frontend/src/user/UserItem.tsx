@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 // import { NavLink as Link } from 'react-router-dom';
 
 import { User } from 'common/graph/type';

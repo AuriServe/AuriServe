@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { Helmet } from 'react-helmet';
 import { useData, QUERY_INFO } from '../Graph';
 

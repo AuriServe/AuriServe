@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 
 import { mergeClasses } from 'common/util';
 
@@ -8,7 +8,7 @@ interface Props {
 	name: string;
 	coverPath?: string;
 	description: string;
-	
+
 	enabled: boolean;
 
 	onToggle: () => void;

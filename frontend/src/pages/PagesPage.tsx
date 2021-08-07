@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 
 import { useData, QUERY_PAGES } from '../Graph';
 import { Title, Page, Card, SectionHeader, Button } from '../structure';

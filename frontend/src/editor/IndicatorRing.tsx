@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 
 import { mergeClasses } from 'common/util';
 

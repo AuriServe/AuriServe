@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState } from 'preact/hooks';
 
 import { mergeClasses } from 'common/util';
@@ -30,7 +30,7 @@ export default function Popout(props: Props) {
 			<div class={style.Inner}>
 				<button class={mergeClasses(style.IconButton, style.Logout)} onClick={handleLogout}>
 					<img src='/admin/asset/icon/logout-dark.svg' alt='Logout'/></button>
-				
+
 				<a class={style.IconButton} href={settingsUrl}>
 					<img src='/admin/asset/icon/settings-dark.svg' alt='Site Settings'/></a>
 				<a class={style.IconButton}>

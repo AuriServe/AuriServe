@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie';
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { NavLink as Link, useLocation } from 'react-router-dom';
 
 import { mergeClasses } from 'common/util';

@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useData, QUERY_MEDIA } from '../Graph';
 import { FieldProp, PropType } from 'common/definition';
 
@@ -20,7 +20,7 @@ interface Props {
 
 export default function PropInput(props: Props) {
 	const [ { media } ] = useData(QUERY_MEDIA, []);
- 
+
 	const types = (Array.isArray(props.prop.type) ? props.prop.type : [props.prop.type]) as PropType[];
 	const currentType = types[0];
 	const baseType = (Array.isArray(currentType) ? 'enum' : (types[0] as string).split(':')[0]) as PropType | 'enum';
@@ -46,7 +46,7 @@ export default function PropInput(props: Props) {
 
 				case 'long_text':
 					return <Input.Text {...widgetProps} multiline={true} />;
-				
+
 				case 'html':
 					return <Input.Text {...widgetProps} multiline={true} mono={true} />;
 

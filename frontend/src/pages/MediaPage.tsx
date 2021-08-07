@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { useParams, useHistory } from 'react-router-dom';
 
@@ -78,7 +78,7 @@ export default function MediaPage() {
 
 		if (sortDir === 'ascending') newMedia = newMedia.sort(SORTING_FUNCS[sortType]);
 		else newMedia = newMedia.sort(SORTING_FUNCS[sortType]).reverse();
-		
+
 		setMedia(newMedia);
 	}, [ sortType, sortDir, data.media, filter ]);
 
@@ -119,10 +119,10 @@ export default function MediaPage() {
 								button={{ label: 'View Options', iconOnly: true,
 									icon: `/admin/asset/icon/view-${filter ? 'color' : 'dark'}.svg` }}
 								class='grid gap-2 p-2 w-48'>
-								
+
 								<Button label={titleCase(view) + ' View'} icon={`/admin/asset/icon/${view}-view-dark.svg`}
 									onClick={() => setView(view === 'grid' ? 'list' : 'grid')}/>
-								
+
 								<div class='flex gap-2'>
 									{/* <Select class='flex-shrink flex-grow-0' multi
 										style={{ '--icon': 'url(/admin/asset/icon/sort-dark.svg)' } as any}
@@ -132,7 +132,7 @@ export default function MediaPage() {
 									<Button label={titleCase(sortDir)} iconOnly
 										icon={`/admin/asset/icon/sort-${sortDir === 'ascending' ? 'desc' : 'asc'}-dark.svg`}
 										onClick={() => setSortDir(sortDir === 'ascending' ? 'descending' : 'ascending')}/>
-									
+
 									<Button label={titleCase(sortDir)} iconOnly
 										onClick={() => setSortDir(sortDir === 'ascending' ? 'descending' : 'ascending')}>
 										<img width={32} height={32} alt='' role='presentation' src='/admin/asset/icon/sort-desc-dark.svg'

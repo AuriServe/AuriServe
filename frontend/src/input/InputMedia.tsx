@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 
 import { useData, QUERY_MEDIA, QUERY_USERS } from '../Graph';

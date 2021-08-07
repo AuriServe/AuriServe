@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import FlipMove from 'react-flip-move';
 import { useState, useEffect } from 'preact/hooks';
 
@@ -32,7 +32,7 @@ export default function PluginsSettings() {
 	};
 
 	const handleSave = async () => updateEnabled({ enabled: plugins.filter(t => t.enabled).map(t => t.identifier) }).then(() => refresh());
-	
+
 	return (
 		<div class='w-full max-w-5xl mx-auto'>
 			<Label label='Plugins' class='!text-lg dark:!text-gray-800'/>

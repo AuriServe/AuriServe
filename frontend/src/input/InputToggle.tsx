@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import './InputCheckbox.sass';
@@ -15,7 +15,7 @@ interface Props extends InputProps {
 
 const InputCheckbox = forwardRef<HTMLInputElement, Props>((props, fRef) => {
 	const cb = () => props.onValue?.(!props.value);
-	
+
 	return (
 		<input
 			class={('InputCheckbox ' + (props.alignRight ? 'AlignRight ' : '') + (props.class ?? '')).trim()}
@@ -23,7 +23,7 @@ const InputCheckbox = forwardRef<HTMLInputElement, Props>((props, fRef) => {
 
 			checked={props.value}
 			onChange={cb}
-			
+
 			ref={fRef as any}
 			type='checkbox'
 		/>

@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useRef } from 'preact/hooks';
 import { User } from 'common/graph/type';
 
@@ -17,7 +17,7 @@ interface Props {
 export default function UserCard(props: Props) {
 	const ref = useRef<HTMLDivElement>(null);
 	usePopupCancel(ref, props.onClose, () => props.visible, [ props.visible ]);
-	
+
 	return (
 		<Popup active={props.visible} defaultAnimation={true}>
 			<Card class='fixed w-56 h-auto !p-0 pointer-events-auto overflow-hidden !shadow-lg !my-2' ref={ref} style={{

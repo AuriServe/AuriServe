@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, ComponentChildren } from 'preact';
 import { useState, useRef, useEffect } from 'preact/hooks';
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
 	duration?: number;
 
 	style?: any;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
 export default function DimensionTransition(props: Props) {

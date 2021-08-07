@@ -1,4 +1,4 @@
-// import * as Preact from 'preact';
+// import { h } from 'preact';
 // import { forwardRef } from 'preact/compat';
 // import { useState, useRef, useEffect, useReducer } from 'preact/hooks';
 
@@ -26,7 +26,7 @@
 
 // 	const hourRef = useRef<HTMLInputElement>(null);
 // 	const minuteRef = useRef<HTMLInputElement>(null);
-	
+
 // 	const inputRef = useRef<HTMLDivElement>(null);
 // 	const portalRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +45,7 @@
 // 		if (parseInt(editedDate.year, 10) !== props.value.getFullYear()) newDate.year = zeroPad(props.value.getFullYear());
 // 		if (parseInt(editedDate.hour, 10) !== props.value.getHours()) newDate.hour = zeroPad(props.value.getHours());
 // 		if (parseInt(editedDate.minute, 10) !== props.value.getMinutes()) newDate.minute = zeroPad(props.value.getMinutes());
-		
+
 // 		setEditedDate(newDate);
 // 	};
 
@@ -66,7 +66,7 @@
 
 // 	const handleSet = (val: string, type: DateIdentifier, pad: number, min: number | undefined,
 // 		max: number | undefined, next?: Preact.RefObject<HTMLInputElement>) => {
-		
+
 // 		setEditedDate({ [type]: val } as any);
 // 		val = val.replace(/\D/g, '');
 // 		setEditedDate({ [type]: val } as any);
@@ -95,7 +95,7 @@
 
 // 	const handleBlur = (_: any, type: DateIdentifier, min: number | undefined,
 // 		max: number | undefined, pad: number) => {
-		
+
 // 		let numeric = parseInt(editedDate[type], 10);
 // 		if (isNaN(numeric) || numeric < (min ?? 1)) numeric = 1;
 // 		if (max && numeric > max) numeric = max;
@@ -106,7 +106,7 @@
 
 // 	const handleFocusChange = (state: boolean, ...other: [ Preact.RefObject<HTMLInputElement>,
 // 		DateIdentifier, number | undefined, number | undefined, number ]) => {
-		
+
 // 		if (state) handleFocus(...other);
 // 		else handleBlur(...other);
 // 	};

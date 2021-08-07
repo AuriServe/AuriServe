@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState, useRef } from 'preact/hooks';
 
 import { User } from 'common/graph/type';
@@ -36,7 +36,7 @@ export default function UserRolesList(props: Props) {
 	// 		headers: {'Content-Type': 'application/json'},
 	// 		body: JSON.stringify({ user: props.user.id, role: role })
 	// 	}).then(r => r.json()).then(setData);
-		
+
 	// 	setEditing(false);
 	// }, [ props.user, setData, setEditing ]);
 

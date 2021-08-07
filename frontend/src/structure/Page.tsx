@@ -1,10 +1,10 @@
-import Preact from 'preact';
+import { h, ComponentChildren } from 'preact';
 
 import { mergeClasses } from 'common/util';
 
 interface Props {
-	children?: Preact.ComponentChildren;
 	class?: string;
+	children?: ComponentChildren;
 }
 
 export default function Page(props: Props) {

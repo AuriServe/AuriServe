@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useState, useEffect } from 'preact/hooks';
 
@@ -49,12 +49,12 @@ const DatePicker = forwardRef<HTMLDivElement, Props>((props, ref) => {
 		style.left = ((props.parent.getBoundingClientRect().left +
 			props.parent.getBoundingClientRect().right) / 2) + 'px';
 	}
-		
+
 	let monthDate = new Date();
 	monthDate.setMonth(month, 1);
 	monthDate.setFullYear(year);
 
-	let days: Preact.VNode[] = [];
+	let days: VNode[] = [];
 
 	const firstDayOfMonth = monthDate.getDay();
 	for (let i = 1; true; i += 7) {

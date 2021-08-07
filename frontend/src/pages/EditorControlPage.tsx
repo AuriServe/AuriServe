@@ -1,5 +1,5 @@
-import Preact from 'preact';
-import { useAsyncMemo } from 'use-async-memo';
+import { h, Fragment } from 'preact';
+import { useAsyncMemo } from 'vibin-hooks';
 import { useState, useEffect } from 'preact/hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 
@@ -146,7 +146,7 @@ export default function EditorControlPage() {
 	// const editingElem = editing && ObjectPath.traversePath(editing, page.elements);
 
 	return (
-		<Preact.Fragment>
+		<Fragment>
 			{/* <div class={mergeClasses('bg-gray-100 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
 				sidebarOpen ? 'translate-x-0' : '-translate-x-full')}>
 				{editing && <ElementEditor definition={elements[editingElem.elem]!}
@@ -155,6 +155,6 @@ export default function EditorControlPage() {
 			<iframe ref={setFrame} src='/admin/renderer/'
 				class='place-self-stretch bg-white border-0 overflow-hidden transition-all duration-300 shadow-lg h-full pl-0' />
 			<div class='fixed bottom-8 right-8 z-10'><Button label='Save' onClick={handleSave}/></div>
-		</Preact.Fragment>
+		</Fragment>
 	);
 }

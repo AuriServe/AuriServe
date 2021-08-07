@@ -1,14 +1,14 @@
-import * as Preact from 'preact';
+import { h, Fragment, ComponentChildren, RefObject } from 'preact';
 import { useRef, useEffect } from 'preact/hooks';
 import { createPortal, forwardRef } from 'preact/compat';
 
 interface Props {
 	to: HTMLElement;
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
-export default forwardRef<HTMLDivElement, Props>(function Portal(props: Props, ref: Preact.RefObject<HTMLDivElement>) {
+export default forwardRef<HTMLDivElement, Props>(function Portal(props: Props, ref: RefObject<HTMLDivElement>) {
 	const root = useRef<HTMLDivElement>(document.createElement('div'));
 
 	if (ref) ref.current = root.current;
@@ -24,7 +24,7 @@ export default forwardRef<HTMLDivElement, Props>(function Portal(props: Props, r
 
 	return (
 		createPortal(
-			<Preact.Fragment>{props.children}</Preact.Fragment>,
+			<Fragment>{props.children}</Fragment>,
 			root.current
 		)
 	);

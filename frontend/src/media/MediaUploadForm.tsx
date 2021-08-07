@@ -1,5 +1,5 @@
-import * as Preact from 'preact';
 import { Format } from 'common';
+import { h, VNode } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
 import { mergeClasses } from 'common/util';
@@ -92,7 +92,7 @@ export default function MediaUploadForm(props: Props) {
 			const isImage = ext === 'png' || ext === 'jpeg' || ext === 'jpg' || ext === 'svg' || ext === 'gif';
 
 			const cleanName = Format.fileNameToName(file.name, 32);
-			
+
 			const resolveFile = (image?: string) => {
 				if (!newFiles.map(f => f.name).includes(cleanName)) {
 					newFiles.push({
@@ -140,7 +140,7 @@ export default function MediaUploadForm(props: Props) {
 		return () => window.removeEventListener('keyup', handleKeyUp);
 	}, [ handleRemoveFiles ]);
 
-	const uploadItems: Preact.VNode[] = files.map((f, i) => <MediaUploadItem
+	const uploadItems: VNode[] = files.map((f, i) => <MediaUploadItem
 		file={f} ind={i} key={f.file.name} enabled={state === MediaUploadState.SELECTING}
 		onNameChange={(name) => handleNameChange(i, name)} onFilenameChange={(filename) => handleFilenameChange(i, filename)}/>);
 
@@ -160,7 +160,7 @@ export default function MediaUploadForm(props: Props) {
 					class='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
 					onChange={handleAddFiles}
 					disabled={state !== MediaUploadState.SELECTING} />
-				
+
 				<h2 class='block w-full text-center text-gray-500 text-xl'>Click or drag files here to upload.</h2>
 			</div>
 

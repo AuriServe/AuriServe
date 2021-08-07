@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, Fragment } from 'preact';
 
 import { Color } from 'common';
 import { Role } from 'common/graph/type';
@@ -35,13 +35,13 @@ export default function RoleEditor(props: Props) {
 
 	const renderAbilitySwitch = (ability: string, title: string, description?: string, sep?: boolean) => {
 		return (
-			<Preact.Fragment>
+			<Fragment>
 				<Annotation title={title} description={description}>
 					<Toggle onValue={() => handleToggleAbility(ability)}
 						value={props.role.abilities.filter(f => f === ability).length > 0} />
 				</Annotation>
 				{sep !== false && <Divider/>}
-			</Preact.Fragment>
+			</Fragment>
 		);
 	};
 

@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, RefObject } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useRef, useLayoutEffect } from 'preact/hooks';
 
@@ -19,7 +19,7 @@ import style from './Input.sss';
  * @returns a RefObject to attach to the targeted TextArea.
  */
 
-function useAutoTextArea(maxHeight?: number, dependents?: any[]): Preact.RefObject<HTMLTextAreaElement> {
+function useAutoTextArea(maxHeight?: number, dependents?: any[]): RefObject<HTMLTextAreaElement> {
 	const ref = useRef<HTMLTextAreaElement>(null);
 
 	useLayoutEffect(() => {
@@ -34,13 +34,13 @@ function useAutoTextArea(maxHeight?: number, dependents?: any[]): Preact.RefObje
 
 /** Props for the text input element. */
 interface Props extends InputProps, FocusableInputProps, TextInputProps {
-	
+
 	/** Whether or not the text should wrap. */
 	multiline?: boolean;
-	
+
 	/** The maximum height of a multiline element, defaults to 420. */
 	maxHeight?: number;
-	
+
 	/** Whether or not to use a monospace font. */
 	mono?: boolean;
 
@@ -57,7 +57,7 @@ interface Props extends InputProps, FocusableInputProps, TextInputProps {
 
 export default forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(function InputText(props: Props, fRef) {
 	const ref = useAutoTextArea(props.maxHeight ?? 420, [ props.value ]);
-	
+
 	const onValue = (evt: any) => props.onValue?.(evt.target.value);
 	const classes = mergeClasses(style.Input, props.mono && style.Mono, props.class);
 
@@ -67,7 +67,7 @@ export default forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(functio
 		onChange: onValue,
 		onFocus: props.onFocus,
 		onBlur: props.onBlur,
-		
+
 		minLength: props.minLength,
 		maxLength: props.maxLength,
 		placeholder: props.placeholder,

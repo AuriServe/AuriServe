@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, ComponentChildren } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
 
 	style?: any;
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
 /**

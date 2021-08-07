@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 
 import RolesEditor from '../../roles/RolesEditor';
 import { useData, QUERY_ROLES } from '../../Graph';

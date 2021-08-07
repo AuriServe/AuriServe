@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 
@@ -12,7 +12,7 @@ interface Props {
 	onValue?: (color: Color.HSVA) => void;
 
 	parent?: HTMLElement;
-	
+
 	writable?: boolean;
 	displayHex?: boolean;
 }
@@ -82,7 +82,7 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 	return (
 		<div class={mergeClasses('w-72 h-48 mt-2 select-none flex flex-col pointer-events-auto', props.parent && 'absolute')}
 			ref={ref} style={position}>
-			
+
 			<div class={mergeClasses(style.SatVal, 'relative flex-grow cursor-pointer')} ref={satValElem}
 				onMouseDown={(evt) => handleMouseClick(evt, 'satval')}
 				style={{ backgroundColor: hueHex }}>

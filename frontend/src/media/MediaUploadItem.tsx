@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useRef } from 'preact/hooks';
 
 import { Format } from 'common';
@@ -21,7 +21,7 @@ interface Props {
 export default function MediaUploadItem(props: Props) {
 	const filenameRef = useRef<HTMLInputElement>(null);
 	const identifier = props.file.name.toLowerCase().replace(/[ -]/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-	
+
 	const handleStopPropagation = (elem: any) =>
 		elem?.addEventListener('mouseup', (evt: any) => evt.stopPropagation());
 
@@ -33,7 +33,7 @@ export default function MediaUploadItem(props: Props) {
 
 		let oldVal = elem.value;
 		elem.value = elem.value.toLowerCase().replace(/[ -]/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-		
+
 		if (oldVal.length > elem.value.length) {
 			start -= oldVal.length - elem.value.length;
 			end -= oldVal.length - elem.value.length;

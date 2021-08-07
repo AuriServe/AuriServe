@@ -1,12 +1,13 @@
-import * as Preact from 'preact';
-import { useMessaging } from '../Hooks';
 import { Page, ObjectPath } from 'common';
-import { useAsyncMemo } from 'use-async-memo';
-import { useData, QUERY_THEMES } from '../Graph';
+import { useAsyncMemo } from 'vibin-hooks';
+import { h, createContext, VNode } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
 import Component from '../editor/Component';
 import LayoutInjector from '../editor/LayoutInjector';
+
+import { useMessaging } from '../Hooks';
+import { useData, QUERY_THEMES } from '../Graph';
 
 import loadPlugins from '../editor/LoadPlugins';
 
@@ -15,7 +16,7 @@ interface RendererContextData {
 	setActive: (path: string) => void;
 }
 
-export const RendererContext = Preact.createContext<RendererContextData>({
+export const RendererContext = createContext<RendererContextData>({
 	active: '',
 	setActive: () => { /* No default action. */ }
 });
@@ -68,7 +69,7 @@ export default function EditorRendererPage() {
 		setPage(newPage);
 	};
 
-	const renderTree = (root: Page.Node, path: string, overrides: Record<string, Record<string, any>>): Preact.VNode => {
+	const renderTree = (root: Page.Node, path: string, overrides: Record<string, Record<string, any>>): VNode => {
 		if (Page.isIncludeNode(root)) {
 			overrides = root.override ?? {};
 			root = includes[path];
@@ -102,7 +103,7 @@ export default function EditorRendererPage() {
 	if (!page) return null;
 
 	const start = performance.now();
-	const nodes: {[key: string]: Preact.VNode} = {};
+	const nodes: {[key: string]: VNode} = {};
 	Object.keys(page.elements).forEach(section =>
 		nodes[section] = renderTree(page.elements[section], section, {}));
 	const time = performance.now() - start;

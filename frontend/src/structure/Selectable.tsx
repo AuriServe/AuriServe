@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h, ComponentChildren } from 'preact';
 import { useEffect, useRef, useContext } from 'preact/hooks';
 
 import Button from './Button';
@@ -14,7 +14,7 @@ interface Props {
 
 	style?: any;
 	class?: string;
-	children?: Preact.ComponentChildren;
+	children?: ComponentChildren;
 }
 
 export default function Selectable(props: Props) {
@@ -31,7 +31,7 @@ export default function Selectable(props: Props) {
 				clickCallback(e);
 			};
 		}
-		
+
 		if (callbacks.onDoubleClick && props.doubleClickSelects) {
 			let doubleClickCallback = callbacks.onDoubleClick;
 			callbacks.onDoubleClick = e => {

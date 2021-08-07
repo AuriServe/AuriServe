@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 // import { useState } from 'preact/hooks';
 
 import { Format } from 'common';
@@ -19,7 +19,7 @@ export default function MediaView({ user, media, onDelete }: Props) {
 	// const [ replacing, setReplacing ] = useState<boolean>(false);
 
 	console.log(media.id);
-	
+
 	return (
 		<DimensionTransition duration={200} mode='height'>
 			<div class='block overflow-hidden w-screen max-w-3xl'>
@@ -43,7 +43,7 @@ export default function MediaView({ user, media, onDelete }: Props) {
 					{mediaIsImage('.' + media.extension) &&
 						<Button icon='/admin/asset/icon/external-dark.svg' label='Open in New Tab'
 							href={media.url} target='_blank' rel='noreferrer noopener'/>}
-					
+
 				</div>
 
 				<div class='w-full flex place-items-center p-4 mt-4 text-center rounded bg-gray-900 dark:bg-gray-200'>

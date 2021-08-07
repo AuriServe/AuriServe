@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { h } from 'preact';
 import { useState, useReducer, useEffect } from 'preact/hooks';
 
 import { HSVA } from 'common/color';
@@ -20,7 +20,7 @@ export default function MainSettings() {
 
 	const handleReset = () => setInfo({ name: data.info?.name ?? '', domain: data.info?.domain ?? '',
 		description: data.info?.description ?? '', favicon: data.info?.favicon });
-	
+
 	useEffect(() => handleReset(), [ data ]);
 
 	const isDirty = info.name !== data.info?.name || info.domain !== data.info?.domain ||

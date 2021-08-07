@@ -1,4 +1,4 @@
-import * as Preact from 'preact';
+import { RefObject } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
 
@@ -39,9 +39,9 @@ export function useImmediateRerender() {
  * @param {any[]} dependents - An array of dependents for the condition function.
  */
 
-export function usePopupCancel(roots: Preact.RefObject<any> | Preact.RefObject<any>[],
+export function usePopupCancel(roots: RefObject<any> | RefObject<any>[],
 	onCancel: () => any, condition?: () => boolean, dependents?: any[]) {
-	
+
 	const body = document.getElementsByTagName('body')[0];
 
 	useEffect(() => {
