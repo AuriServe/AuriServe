@@ -59,6 +59,15 @@ export default class AdminRouter extends Router {
 		this.router.post('/graphql', authRoute, Router.safeRoute(async (req, res) =>
 			res.send(await this.gql(req.body.query, req.body.variables))));
 
+		// @ts-ignore
+		// this.router.ws('/aaawatch', (ws: any) => {
+		// 	console.log('queried ws');
+		// 	ws.on('message', (msg: string) => {
+		// 		console.log('message, ' + msg);
+		// 		ws.send(msg);
+		// 	});
+		// });
+
 		/**
 		 * Uploads a media asset and stores it in the media database.
 		 *

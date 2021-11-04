@@ -1,13 +1,14 @@
 import path from 'path';
-import { Format } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
+import { Format, assert, assertEq, isType } from 'common';
 
 import Logger from '../Logger';
+import Watcher from './Watcher';
 import Elements from '../Elements';
 import Properties from './model/Properties';
 import PluginBindings from './PluginBindings';
 
-/** Represents one plugin. */
+/** Represents a plugin. */
 export interface Plugin {
 	name: string;
 	author: string;
@@ -31,17 +32,48 @@ export interface Plugin {
 	hasCover: boolean;
 }
 
-/** Manages finding, toggling, and building plugins.*/
+/** Manages finding, toggling, and loading plugins.*/
 export default class Plugins {
+
+	/** The elements registered by the currently enabled plugins. */
 	readonly elements: Elements = new Elements();
+
+	/** A map of plugins indexed by their identifiers. */
 	private plugins: Map<string, Plugin> = new Map();
+
+	/** A map of plugin bindings indexed by their identifiers. */
 	private bindings: Map<string, PluginBindings> = new Map();
 
-	constructor(private dataPath: string) {
+	/** A map of plugin source watchers indexed by their identifiers. */
+	private watchers: Map<string, Watcher> = new Map();
+
+	/** A map of callback identifiers to callbacks. */
+	private callbacks: Map<string, Function[]> = new Map();
+
+	constructor(private dataPath: string, private watch: boolean) {
 		// Create plugins directory if it doesn't exist.
 		fs.access(path.join(this.dataPath, 'plugins'), fsc.R_OK).catch(
 			() => fs.mkdir(path.join(this.dataPath, 'plugins')));
 	};
+
+	/**
+	 * If watching is enabled, enabled plugins' source files will be watched,
+	 * and plugins will be reloaded when they change.
+	 *
+	 * @param watch - Whether watching should be enabled.
+	 */
+
+	setWatch(watch: boolean) {
+		if (this.watch === watch) return;
+		this.watch = watch;
+
+		if (this.watch) {
+			this.plugins.forEach(p => {	if (p.enabled) this.startWatch(p.identifier); });
+		}
+		else {
+			for(let p of this.watchers.keys()) this.stopWatch(p);
+		}
+	}
 
 	/** Enables only the plugins specified. */
 	async setEnabled(identifiers: string[]) {
@@ -66,6 +98,8 @@ export default class Plugins {
 		this.bindings.set(identifier, bindings);
 		require(indexPath)(bindings);
 		this.elements.addList(bindings.elements);
+
+		if (this.watch) this.startWatch(identifier);
 	}
 
 	/** Disables the plugin specified. */
@@ -79,6 +113,8 @@ export default class Plugins {
 		if (!bindings) return;
 		this.elements.removeList(bindings.elements);
 		this.bindings.delete(identifier);
+
+		this.stopWatch(identifier);
 	}
 
 	/** Gets the specified plugin. */
@@ -124,6 +160,16 @@ export default class Plugins {
 		this.plugins.clear();
 	}
 
+	bind(event: string, cb: Function) {
+		if (!this.callbacks.has(event)) this.callbacks.set(event, []);
+		this.callbacks.get(event)!.push(cb);
+	}
+
+	unbind(event: string, cb: Function) {
+		if (!this.callbacks.has(event)) return;
+		this.callbacks.get(event)!.filter(c => c !== cb);
+	}
+
 	/** Saves the current list of enabled plugins to the database. */
 	private async syncToDb() {
 		await Properties.updateOne({}, { $set: { 'enabled.plugins':
@@ -135,36 +181,82 @@ export default class Plugins {
 		const confPath = path.join(this.dataPath, 'plugins', identifier, 'plugin.json');
 		const plugin: Plugin = JSON.parse((await fs.readFile(confPath)).toString());
 
-		// Ensure that the plugin has the basic metadata.
-		if (typeof plugin.identifier !== 'string' || typeof plugin.name !== 'string' ||
-		typeof plugin.author !== 'string' || typeof plugin.author !== 'string')
-			throw 'Theme is missing metadata. (identifier, name, author, description)';
+		assert(isType('string', plugin.identifier, plugin.name, plugin.author, plugin.description),
+			'Plugin is missing metadata (identifier, name, author, description).');
 
-		// Ensure that the folder name matches the plugin identifier.
-		if (identifier !== plugin.identifier) throw 'Plugin directory name must match plugin identifier.';
+		assertEq(identifier, plugin.identifier, 'Plugin identifier does not match directory name.');
 
-		// Ensure that the identifier is formatted properly.
-		if (Format.sanitize(plugin.identifier) !== plugin.identifier && plugin.identifier.length >= 3)
-			throw 'Plugin identifier must be lowercase alphanumeric, and >= 3 characters.';
+		assert(Format.sanitize(plugin.identifier) === plugin.identifier && plugin.identifier.length >= 3,
+			'Plugin identifier must be lowercase alphanumeric and at least 3 characters.');
 
-		// Assert that the plugin has a sources object.
-		if (!plugin.sources || typeof plugin.sources !== 'object')
-			throw 'Plugin must contain a sources object.';
+		assert(isType('object', plugin.sources), 'Plugin must contain a sources object.');
 
 		// Assert that all plugin sources exist.
 		const pluginRoot = path.join(path.dirname(confPath), plugin.sourceRoot ?? '.');
 		await Promise.all(Object.keys(plugin.sources).map(async (sourceKey: string) => {
-			if (sourceKey !== 'scripts' && sourceKey !== 'styles')
-				throw 'Plugin contains invalid key in sources, \'' + sourceKey + '\'.';
+			assert(sourceKey === 'scripts' || sourceKey === 'styles',
+				'Plugin contains invalid key in sources: \'' + sourceKey + '\'.');
 
 			await Promise.all(Object.entries((plugin.sources as any)[sourceKey] as Record<string, string>)
-				.map(async ([ source, sourcePath ]) => {
-					try { await fs.access(path.join(pluginRoot, sourcePath!)); }
-					catch (e) { throw `Source file \'${sourcePath}\' not found for source \'${sourceKey}.${source}\'.`; };
-				})
-			);
+				.map(async ([ source, sourcePath ]) =>
+					await fs.access(path.join(pluginRoot, sourcePath!)).catch(_ =>
+						assert(false, `Source file \'${sourcePath}\' not found for source \'${sourceKey}.${source}\'.`))));
 		}));
 
 		return plugin;
+	}
+
+	/** Begins watching a plugin's source files for changes. */
+	private startWatch(identifier: string) {
+		this.stopWatch(identifier);
+		const plugin = this.plugins.get(identifier);
+		assert(plugin !== undefined, `Plugin '${identifier}' cannot be watched, as it does not exist.`);
+
+		const paths = Object.values(plugin.sources).reduce<string[]>((paths, source) => {
+			paths.push(...(Object.values(source) as string[]).map(sourcePath =>
+				path.join(this.dataPath, 'plugins', identifier, plugin.sourceRoot ?? '.', sourcePath)));
+			return paths;
+		}, []);
+
+		assert(paths.length > 0, `Plugin '${identifier}' has no sources to watch.`);
+
+		const watcher = new Watcher(paths);
+		watcher.bind(() => this.watchCallback(identifier));
+		this.watchers.set(identifier, watcher);
+	}
+
+	/** Stops watching a plugin's source files for changes. */
+	private stopWatch(identifier: string) {
+		const watcher = this.watchers.get(identifier);
+		if (!watcher) return;
+
+		watcher.stop();
+		this.watchers.delete(identifier);
+	}
+
+	/** Triggers a plugin to reload when it changes. */
+	private async watchCallback(identifier: string) {
+		Logger.debug(`Plugin '${identifier}' source files changed, reloading.`);
+
+		const plugin = this.plugins.get(identifier);
+		assert(plugin && plugin.enabled, 'Shouldn\'t happen! [1]');
+
+		if (plugin.sources.scripts?.server) {
+			const indexPath = await fs.realpath(path.resolve(this.dataPath, 'plugins', identifier,
+				plugin.sourceRoot ?? '.', plugin.sources.scripts!.server));
+			assert(require.cache[indexPath], 'Shouldn\'t happen! [2]');
+			delete require.cache[indexPath];
+
+			let bindings = this.bindings.get(identifier);
+			assert(bindings !== undefined, 'Shouldn\'t happen! [3]');
+			this.elements.removeList(bindings.elements);
+			this.bindings.delete(identifier);
+
+			bindings = new PluginBindings();
+			this.bindings.set(identifier, bindings);
+			require(indexPath)(bindings);
+			this.elements.addList(bindings.elements);
+			this.callbacks.get('refresh')?.forEach(cb => cb());
+		}
 	}
 }

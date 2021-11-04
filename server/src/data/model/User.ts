@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import Mongoose from 'mongoose';
 
 
@@ -11,7 +11,7 @@ export interface IUser extends Mongoose.Document {
 	username: string;
 	passwordHash: string;
 	emails: string[];
-	roles: ObjectID[];
+	roles: ObjectId[];
 
 	passwordEquals(password: string): boolean;
 }
@@ -20,7 +20,7 @@ const UserSchema = new Mongoose.Schema<IUser>({
 	username: { type: String, required: true },
 	passwordHash: { type: String, required: true },
 	emails: { type: [String], required: true },
-	roles: { type: [ObjectID], required: true }
+	roles: { type: [ObjectId], required: true }
 });
 
 

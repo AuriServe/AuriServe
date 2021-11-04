@@ -5,9 +5,9 @@ export interface Interface {
 	user: ID;
 	created: Date;
 	identifier: string;
-	
+
 	enabled: boolean;
-	
+
 	name: string;
 	description: string;
 	author: string;

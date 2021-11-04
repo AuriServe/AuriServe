@@ -3,7 +3,8 @@ import { useState, useEffect } from 'preact/hooks';
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom';
 
 import { Title, Page, Button } from '../structure';
-import { MainSettings, ThemesSettings, PluginsSettings, MediaSettings, UsersSettings, RolesSettings } from './settings';
+import { MainSettings, ThemesSettings, PluginsSettings,
+	MediaSettings, UsersSettings, RolesSettings, DeveloperSettings } from './settings';
 
 function renderLink(name: string, path: string, icon: string, props?: any) {
 	return (
@@ -54,6 +55,8 @@ export default function SettingsPage() {
 						{renderLink('Users', '/settings/users', '/admin/asset/icon/users-dark.svg')}
 						{renderLink('Media', '/settings/media', '/admin/asset/icon/image-dark.svg')}
 						{renderLink('Roles', '/settings/roles', '/admin/asset/icon/role-dark.svg')}
+						<li><hr class='border-gray-700 dark:border-gray-300 m-1' /></li>
+						{renderLink('Developer', '/settings/developer', '/admin/asset/icon/developer-dark.svg')}
 					</ul>
 				</div>
 			}
@@ -68,6 +71,8 @@ export default function SettingsPage() {
 
 							<Route exact path='/settings/users' 		component={UsersSettings as any} />
 							<Route exact path='/settings/roles' 		component={RolesSettings as any} />
+
+							<Route exact path='/settings/developer' component={DeveloperSettings as any} />
 
 							{!mobile && <Redirect exact to='/settings/overview'/>}
 						</Switch>

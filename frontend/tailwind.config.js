@@ -1,6 +1,7 @@
 const plugin = require('tailwindcss/plugin');
 const colors = require('tailwindcss/colors');
 const defaultTheme = require('tailwindcss/defaultTheme');
+const { transform } = require('typescript');
 
 module.exports = {
 	mode: 'jit',
@@ -54,6 +55,8 @@ module.exports = {
 			'fadein-500': 'fadein 500ms 1',
 			'fadein-150': 'fadein 150ms 1',
 			'select': 'select 150ms 1',
+			'spinner-1': 'spinner 1s ease-in-out alternate infinite',
+			'spinner-2': 'spinner 1s ease-in-out -1s alternate infinite'
 		},
 		keyframes: {
 			rocket: {
@@ -81,6 +84,14 @@ module.exports = {
 				},
 				to: {
 					opacity: 1
+				}
+			},
+			spinner: {
+				from: {
+					transform: 'scale(0)'
+				},
+				to: {
+					transform: 'scale(1)'
 				}
 			}
 		}

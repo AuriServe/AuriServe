@@ -1,31 +1,5 @@
 import { RefObject } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
-
-
-/**
- * Returns a function that forces a component to rerender.
- * Can be used to manually reload a component if it becomes desync'd from the state.
- * Warning: If you're considering using this function, there's probably larger issues here, AURI.
- *
- * @returns a function that can be called to rerender the component.
- */
-
-export function useForceUpdate(): () => void {
-	const [ , setValue ] = useState<boolean>(false);
-	return () => setValue(value => !value);
-};
-
-
-/**
- * Forces an immediate rerender of a component as soon as it mounts.
- * Can be used to ensure that a component is rerendered after a ref is attached.
- */
-
-export function useImmediateRerender() {
-	const forceUpdate = useForceUpdate();
-	useEffect(() => forceUpdate(), []);
-};
-
+import { useEffect } from 'preact/hooks';
 
 /**
  * Calls onCancel if a click event is triggered on an element that is not a child of the currently ref'd popup.

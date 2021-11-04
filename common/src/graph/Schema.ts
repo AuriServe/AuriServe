@@ -1,4 +1,5 @@
 import { Schema as Root } from './Root';
+import { Schema as Developer } from './Developer';
 import { Schema as Info } from './Info';
 import { Schema as Layout } from './Layout';
 import { Schema as Media } from './Media';
@@ -15,6 +16,7 @@ import { Schema as Resource } from './Resource';
 import { Schema as TrackModifications } from './TrackModifications';
 
 export { Schema as Root } from './Root';
+export { Schema as Developer } from './Developer';
 export { Schema as Info } from './Info';
 export { Schema as Layout } from './Layout';
 export { Schema as Media } from './Media';
@@ -31,4 +33,4 @@ export { Schema as Resource } from './Resource';
 export { Schema as TrackModifications } from './TrackModifications';
 
 export const SCHEMA = [ Basic, Resource, TrackModifications,
-	Info, Quotas, Layout, Theme, Plugin, User, Role, Media, Page, Include, Root ].join('\n');
+	Info, Quotas, Developer, Layout, Theme, Plugin, User, Role, Media, Page, Include, Root ].join('\n');

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import sizeOf from 'image-size';
 import Mongoose from 'mongoose';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { UploadedFile } from 'express-fileupload';
 import { promises as fs, constants as fsc } from 'fs';
 
@@ -11,10 +11,10 @@ import { promises as fs, constants as fsc } from 'fs';
  */
 
 export interface IMedia extends Mongoose.Document {
-	uploader?: ObjectID;
+	uploader?: ObjectId;
 
 	lastModified: number;
-	lastModifier: ObjectID;
+	lastModifier: ObjectId;
 
 	name: string;
 	description: string;
@@ -27,7 +27,7 @@ export interface IMedia extends Mongoose.Document {
 		height?: number;
 	};
 
-	acceptUpload(upload: UploadedFile, uploader: ObjectID, destPath: string): boolean;
+	acceptUpload(upload: UploadedFile, uploader: ObjectId, destPath: string): boolean;
 }
 
 export const MediaSchema = new Mongoose.Schema<IMedia>({
@@ -53,13 +53,13 @@ export const MediaSchema = new Mongoose.Schema<IMedia>({
  * Accepts an uploaded file, updates this document to refer to it,
  * and moves it to the destination provided.
  *
- * @param {UploadedFile} upload - The file to accept.
- * @param {ObjectId} uploader - The user who uploaded the file.
- * @param {string} destPath - The destination to put the uploaded file at.
+ * @param upload - The file to accept.
+ * @param uploader - The user who uploaded the file.
+ * @param destPath - The destination to put the uploaded file at.
  * @returns a promise to a boolean indicating success.
  */
 
-MediaSchema.method('acceptUpload', async function(this: IMedia, upload: UploadedFile, uploader: ObjectID, destPath: string) {
+MediaSchema.method('acceptUpload', async function(this: IMedia, upload: UploadedFile, uploader: ObjectId, destPath: string) {
 	const extension = upload.name.substr(upload.name.lastIndexOf('.') + 1);
 	const fullPath = path.join(destPath, this.fileName + '.' + extension);
 

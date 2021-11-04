@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import AuthToken from './model/AuthToken';
 import User, { IUser } from './model/User';
@@ -69,21 +69,21 @@ export const testToken = async (token: string) => {
 /**
  * Removes all authentication tokens for the specified user, effectively logging them out.
  *
- * @param {ObjectID} id - The user id to log out.
+ * @param id - The user id to log out.
  * @returns a boolean indicating if any tokens were removed.
  */
 
-export const removeTokensForUser = async (id: ObjectID) => (await AuthToken.deleteMany({ user: id })).deletedCount > 0;
+export const removeTokensForUser = async (id: ObjectId) => (await AuthToken.deleteMany({ user: id } as any)).deletedCount > 0;
 
 
 /**
  * Gets a user document from its id.
  *
- * @param {ObjectID} id - The user's id.
+ * @param id - The user's id.
  * @returns the user document, or null if there is no user with that id.
  */
 
-export const getUser = async (id: ObjectID) => User.findById(id);
+export const getUser = async (id: ObjectId) => User.findById(id);
 
 
 /**
@@ -110,7 +110,7 @@ export const addUser = async (username: string, password: string) => {
  * @param roles - The role IDs.
  */
 
-export const addRolesToUser = async (id: ObjectID, roles: ObjectID[]) => {
+export const addRolesToUser = async (id: ObjectId, roles: ObjectId[]) => {
 	await User.updateOne({ id }, { $addToSet: { roles } });
 };
 
@@ -118,11 +118,11 @@ export const addRolesToUser = async (id: ObjectID, roles: ObjectID[]) => {
 /**
  * Removes a user from the database by its id.
  *
- * @param {ObjectID} id - The user's id.
+ * @param id - The user's id.
  * @returns the deleted user document, or null if there was no user with that id.
  */
 
-export const removeUser = async (id: ObjectID) => {
+export const removeUser = async (id: ObjectId) => {
 	removeTokensForUser(id);
 	return User.findByIdAndDelete(id);
 };

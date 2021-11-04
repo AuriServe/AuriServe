@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { UploadedFile } from 'express-fileupload';
 import { promises as fs, constants as fsc } from 'fs';
 
@@ -22,11 +22,11 @@ export default class Media {
 	/**
 	 * Gets a media document from its id.
 	 *
-	 * @param {ObjectID} id - The media elements's id.
+	 * @param id - The media elements's id.
 	 * @returns the media document, or null if there is no media element with that id.
 	 */
 
-	async getMedia(id: ObjectID) {
+	async getMedia(id: ObjectId) {
 		return MediaModel.findById(id);
 	}
 
@@ -37,22 +37,22 @@ export default class Media {
 	 * @returns an array of media documents.
 	 */
 
-	listMedia = (): Promise<IMedia[]> => MediaModel.find({});
+	listMedia = (): Promise<IMedia[]> => MediaModel.find({}) as any;
 
 
 	/**
 	 * Adds a new media element to the database, or replaces an existing one.
 	 *
-	 * @param {ObjectID} uploader - The user to attribute this media element to.
-	 * @param {UploadedFile} upload - The media file to accept.
-	 * @param {string | undefined} name - The name of the file, if this is undefined and replace is set, the old name will be preserved.
-	 * @param {string | undefined} fileName - The file's fileName, if this is undefined and replace is set, the old fileName will be preserved.
-	 * @param {ObjectID | undefined} replace - If set, this media element will be updated instead of creating a new media element.
+	 * @param uploader - The user to attribute this media element to.
+	 * @param upload - The media file to accept.
+	 * @param name - The name of the file, if this is undefined and replace is set, the old name will be preserved.
+	 * @param fileName - The file's fileName, if this is undefined and replace is set, the old fileName will be preserved.
+	 * @param replace - If set, this media element will be updated instead of creating a new media element.
 	 * @returns a promise to a boolean indicating success.
 	 */
 
-	async addMedia(uploader: ObjectID, upload: UploadedFile, name: string | undefined,
-		fileName: string | undefined, replace?: ObjectID): Promise<boolean> {
+	async addMedia(uploader: ObjectId, upload: UploadedFile, name: string | undefined,
+		fileName: string | undefined, replace?: ObjectId): Promise<boolean> {
 
 		if ((fileName && fileName.length > 32) || (name && name.length > 32)) return false;
 
@@ -65,7 +65,7 @@ export default class Media {
 
 		media.name = name ?? media.name;
 		media.fileName = fileName ?? media.fileName;
-		
+
 		const res = await media.acceptUpload(upload, uploader, path.join(this.dataPath, 'media'));
 		if (res) await media.save();
 		return res;
@@ -75,12 +75,12 @@ export default class Media {
 	/**
 	 * Removes a media element by its id.
 	 *
-	 * @param {ObjectID} id - The id of the media element to remove.
-	 * @param {boolean} deleteFile - Whether or not the file on the hard drive should be deleted as well. Default true.
+	 * @param id - The id of the media element to remove.
+	 * @param deleteFile - Whether or not the file on the hard drive should be deleted as well. Default true.
 	 * @returns the deleted media document, or null if it did not exist.
 	 */
 
-	async removeMedia(id: ObjectID, deleteFile: boolean = true) {
+	async removeMedia(id: ObjectId, deleteFile: boolean = true) {
 		const media = await MediaModel.findByIdAndDelete(id);
 		if (!media) return null;
 		if (deleteFile) {

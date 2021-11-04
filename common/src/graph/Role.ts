@@ -16,7 +16,7 @@ export const Schema = `
 
 		lastModified: Date
 		lastModifier: ID
-		
+
 		name: String!
 		color: Color
 		abilities: [String!]!

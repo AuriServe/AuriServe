@@ -36,10 +36,14 @@ export default function EditorRendererPage() {
 
 	useEffect(() => {
 		if (!themes) return;
+		console.log(themes);
 		themes.map(theme => document.head.innerHTML += theme.head);
 	}, [ themes ]);
 
-	useEffect(() => document.documentElement.classList.remove('AS_APP'));
+	useEffect(() => {
+		document.documentElement.classList.remove('AS_APP');
+		document.querySelector('[href="/admin/script/main.css"]')?.remove();
+	}, []);
 
 	const [ page, setPage ] = useState<Page.PageDocument | undefined>(undefined);
 	const [ includes, setIncludes ] = useState<Record<string, Page.ComponentNode>>({});

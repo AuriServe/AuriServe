@@ -7,7 +7,10 @@
 	.interact-none
 		user-select: none
 		pointer-events: none
-		
+
+	.cursor-resize-ns
+		cursor: ns-resize
+
 html.AS_APP
 	overflow-x: hidden
 
@@ -33,7 +36,7 @@ html.AS_APP
 
 .AS_ROOT
 	font-family: theme(fontFamily.sans)
-	
+
 	*::selection
 		background-color: #74879D66
 

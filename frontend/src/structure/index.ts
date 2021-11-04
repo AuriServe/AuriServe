@@ -5,6 +5,7 @@ export { default as Meter } from './Meter';
 export { default as SectionHeader } from './SectionHeader';
 
 export { default as Button } from './Button';
+export { default as Spinner } from './Spinner';
 export { default as Dropdown } from './Dropdown';
 export { default as SavePopup } from './SavePopup';
 export { default as Selectable } from './Selectable';

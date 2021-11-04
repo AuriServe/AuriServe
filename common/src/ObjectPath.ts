@@ -3,7 +3,7 @@ function descend(seg: string, object: any) {
 		if (!seg.endsWith(']')) throw "Improperly formatted path segment: " + seg;
 		let inner = seg.substr(1, seg.length - 2);
 		if (Number.isNaN(parseInt(inner))) throw "Improperly formatted path segment: " + seg;
-		
+
 		let num = parseInt(inner);
 		if (!Array.isArray(object)) throw "Array specifier on non-array object: " + JSON.stringify(object);
 		if (object.length <= num) throw "Array value " + num + " is too large for object: " + JSON.stringify(object);
@@ -23,5 +23,8 @@ export function traversePath(path: string, object: any) {
 
 export function combinePath(...segs: (string | number)[]): string {
 	return segs.filter(seg => seg !== "")
-		.reduce((p, c) => p.toString() + (Number.isInteger(c) ? '[' + c.toString() + ']' : '.' + (c as string))) as string;
+		.reduce<string>((p, c, i) =>
+			p += (Number.isInteger(c)
+				? '[' + c.toString() + ']'
+				: (i !== 0 ? '.' : '') + (c as string)), '');
 }

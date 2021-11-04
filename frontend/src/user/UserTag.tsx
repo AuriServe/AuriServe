@@ -1,19 +1,23 @@
 import { h } from 'preact';
-import { useState, useRef } from 'preact/hooks';
+import { useRerender } from 'vibin-hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 
 import { User } from 'common/graph/type';
 
 import UserCard from './UserCard';
-import { useImmediateRerender } from '../Hooks';
 
 interface Props {
 	user: User;
 }
 
 export default function UserTag({ user }: Props) {
-	useImmediateRerender();
+	const rerender = useRerender();
+	useEffect(() => rerender, []);
+
 	const ref = useRef(null);
 	const [ active, setActive ] = useState<boolean>(false);
+
+	if (!user) return <span>[Unknown]</span>;
 
 	return (
 		<button ref={ref} onClick={() => setActive(true)}

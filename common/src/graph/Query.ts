@@ -1,5 +1,6 @@
 export { Query as Info } from './Info';
 export { Query as Layout } from './Layout';
+export { Query as Developer } from './Developer';
 export { Query as Media } from './Media';
 export { MetaQuery as PageMeta, PageQuery as Page } from './Page';
 export { Query as Include } from './Include';

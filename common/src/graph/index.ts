@@ -1,4 +1,5 @@
 export * as Root from './Root';
+export * as Developer from './Developer';
 export * as Info from './Info';
 export * as Layout from './Layout';
 export * as Media from './Media';

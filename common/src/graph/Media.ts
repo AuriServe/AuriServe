@@ -40,7 +40,7 @@ export const Query = `
 
 		name
 		description
-		
+
 		bytes
 		extension
 		path

@@ -5,3 +5,5 @@ export * as Format from './Format';
 export * as Graph from './graph/index';
 export * as ObjectPath from './ObjectPath';
 export * as Definition from './definition';
+
+export { AssertError, assert, assertEq, isType } from './assert';

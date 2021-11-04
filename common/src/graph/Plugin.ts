@@ -6,7 +6,7 @@ export interface Interface {
 	identifier: string;
 
 	enabled: boolean;
-	
+
 	name: string;
 	description: string;
 	author: string;

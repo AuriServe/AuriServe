@@ -36,7 +36,7 @@ export default forwardRef(function Button(props: Props, ref?: RefObject<HTMLElem
 			{props.icon && <img src={props.icon} alt='' role='presentation' width={32} height={32}
 				class='w-8 h-8 dark:filter dark:invert dark:brightness-75 dark:contrast-200 dark:hue-rotate-180 pointer-events-none'/>}
 
-			<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-75 rounded bg-gray-500',
+			<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-75 rounded bg-gray-400',
 				'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
 				'group-focus-visible:scale-100', props.highlightClass)}/>
 

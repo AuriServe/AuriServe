@@ -1,13 +1,15 @@
 import HTTP from 'http';
 import HTTPS from 'https';
 import Express from 'express';
+import { server as WebSocketServer } from 'websocket';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
 
+import fss from 'fs';
+import { assert } from 'common';
 import Mongoose from 'mongoose';
 import { graphql } from 'graphql';
-import { promises as fs } from 'fs';
 
 import Logger from './Logger';
 import Media from './data/Media';
@@ -17,8 +19,8 @@ import * as Auth from './data/Auth';
 import Plugins from './data/Plugins';
 import Roles from './data/model/Role';
 import PageBuilder from './PageBuilder';
-import { Schema, Resolver } from './data/Graph';
 import Properties from './data/model/Properties';
+import { Schema as schema, Resolver as rootValue } from './data/Graph';
 
 import resolvePath from './ResolvePath';
 import { Config } from './ServerConfig';
@@ -28,6 +30,7 @@ import createUserPrompt from './CreateUserPrompt';
 
 export default class Server {
 	private app = Express();
+
 	private adminRouter: AdminRouter;
 	private pagesRouter: PagesRouter;
 
@@ -40,24 +43,90 @@ export default class Server {
 	constructor(public readonly conf: Config, public readonly dataPath: string) {
 		this.app.use(compression());
 		this.app.use(cookieParser());
-		this.app.use(Express.json());
+		this.app.use(Express.json() as any);
 		this.app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
+
+		assert(this.conf.db, 'Config is missing a db field.');
 
 		this.pages = new Pages(this.dataPath);
 		this.media = new Media(this.dataPath);
 
-		this.themes = new Themes(this.dataPath);
-		this.plugins = new Plugins(this.dataPath);
+		this.themes = new Themes(this.dataPath, true);
+		this.plugins = new Plugins(this.dataPath, true);
 
 		this.pageBuilder = new PageBuilder(this.dataPath, this.themes, this.plugins);
 
-		const gqlContext = { plugins: this.plugins, pages: this.pages, themes: this.themes, media: this.media };
-		const gql = (q: string, variables: any = undefined) => graphql(Schema, q, Resolver, gqlContext, variables);
+		const contextValue = { plugins: this.plugins, pages: this.pages,
+			themes: this.themes, media: this.media, dataPath: this.dataPath };
+
+		const gql = (query: string, variableValues: any = undefined) => graphql({
+			schema, rootValue, contextValue, variableValues, source: query });
+
+		let awaitListen: Promise<any>;
+		let wsServer: WebSocketServer;
+
+		const httpPort: number | undefined = this.conf.port || 80;
+		const httpsPort: number | undefined = this.conf.https ? this.conf.https?.port || 443 : undefined;
+
+		if (this.conf.https) {
+			assert(this.conf.https.cert && this.conf.https.key,
+				'Config is missing https.cert or https.key fields.');
+
+			let cert: string;
+			let key: string;
+			try {
+				cert = fss.readFileSync(resolvePath(this.conf.https.cert), 'utf8').toString();
+				key = fss.readFileSync(resolvePath(this.conf.https.key), 'utf8').toString();
+			}
+			catch (e) {
+				assert(false, 'Failed to read HTTPS key/certificate files.\n ' + e);
+			}
+
+			const http = HTTP.createServer(this.forwardHttps.bind(this) as any);
+			const https = HTTPS.createServer({ cert: cert, key: key }, this.app);
+			wsServer = new WebSocketServer({ httpServer: https, autoAcceptConnections: false });
+
+			awaitListen = Promise.all([
+				new Promise<void>(resolve => http.listen(httpPort, resolve)),
+				new Promise<void>(resolve => https.listen(httpsPort, resolve))
+			]);
+
+		}
+		else {
+			const http = HTTP.createServer(this.app);
+			wsServer = new WebSocketServer({ httpServer: http, autoAcceptConnections: false });
+			awaitListen = new Promise<void>(resolve => http.listen(httpPort, resolve));
+		}
+
+		wsServer.on('request', request => {
+			if (request.resourceURL.path === '/admin/watch') {
+				const connection = request.accept(undefined, request.origin);
+				this.themes.bind('refresh', () => connection.send('refresh'));
+				this.plugins.bind('refresh', () => connection.send('refresh'));
+			}
+		});
 
 		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.plugins, this.pageBuilder);
 		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.plugins, this.themes, this.media, gql);
 
-		this.init().then(async () => {
+		awaitListen.then(async () => {
+			Logger.debug(httpsPort
+				? `HTTP/HTTPS server listening on ports ${httpPort}/${httpsPort}.`
+				: `HTTP/HTTPS server listening on port ${httpPort}.`);
+
+			await Mongoose.connect(this.conf!.db!);
+			Logger.debug('Connected to MongoDB successfully.');
+
+			if (!await Properties.findOne({})) await Properties.create({ usage: { media_allocated: 1024 * 1024 * 1024 } });
+			if (!(await Auth.listUsers()).length) Logger.warn('No users are registered, run with --super to create one.');
+			if (!await Roles.findOne({})) await Roles.create({
+				creator: (await Auth.listUsers())[0]?.id ?? 'nobody', name: 'Administrator', abilities: [ 'ADMINISTRATOR' ] });
+
+			process.on('SIGINT',  () => this.shutdown());
+			process.on('SIGQUIT', () => this.shutdown());
+			process.on('SIGTERM', () => this.shutdown());
+
+			Logger.info('Initialized AuriServe.');
 			if (conf.verbose || conf.logLevel === 'trace') this.debugRoutes();
 
 			await this.themes.refresh();
@@ -70,78 +139,6 @@ export default class Server {
 			this.pagesRouter.init();
 		});
 	}
-
-
-	/**
-	 * Initializes the server.
-	 * Throws if there are configuration or database errors.
-	 */
-
-	private async init() {
-		// Initialize HTTP / HTTPS server(s).
-
-		await new Promise<void>(async (resolve) => {
-			try {
-				if (this.conf.https) {
-					if (!this.conf.https.cert || !this.conf.https.key)
-						throw 'Config is missing https.cert or https.key fields.';
-
-					let cert: string, key: string;
-					try {
-						cert = await fs.readFile(resolvePath(this.conf.https.cert), 'utf8');
-						key = await fs.readFile(resolvePath(this.conf.https.key), 'utf8');
-					}
-					catch (e) {
-						throw 'Failed to parse HTTPS key / certificate files.\n ' + e;
-					}
-
-					const http = HTTP.createServer(this.forwardHttps.bind(this) as any);
-					const https = HTTPS.createServer({ cert: cert, key: key }, this.app);
-
-					http.listen(this.conf.port || 80, () => {
-						Logger.debug('Redirect server listening on port %s.', this.conf.port || 80);
-						https.listen(this.conf.https!.port || 443, () => {
-							Logger.debug('HTTPS Server listening on port %s.', this.conf.https!.port || 443);
-							resolve();
-						});
-					});
-				}
-				else {
-					const http = HTTP.createServer(this.app);
-					http.listen(this.conf.port || 80, () => {
-						Logger.debug('HTTP Server listening on port %s.', this.conf.port || 80);
-						resolve();
-					});
-				}
-			}
-			catch (e) {
-				Logger.fatal(e);
-				process.exit(1);
-			}
-		});
-
-		if (!this.conf.db) {
-			Logger.fatal('Config is missing a db field.');
-			process.exit(1);
-		}
-
-		await Mongoose.connect(this.conf.db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
-		Logger.debug('Connected to MongoDB successfully.');
-
-		if (!await Properties.findOne({})) await Properties.create({ usage: { media_allocated: 1024 * 1024 * 1024 } });
-
-		if (!(await Auth.listUsers()).length) Logger.warn('No users are registered, run with --super to create one.');
-
-		if (!await Roles.findOne({})) await Roles.create({
-			creator: (await Auth.listUsers())[0]?.id ?? 'nobody', name: 'Administrator', abilities: [ 'ADMINISTRATOR' ] });
-
-		process.on('SIGINT',  () => this.shutdown());
-		process.on('SIGQUIT', () => this.shutdown());
-		process.on('SIGTERM', () => this.shutdown());
-
-		Logger.info('Initialized AuriServe.');
-	}
-
 
 	/**
 	 * Routing function to forward HTTP traffic to HTTPS.

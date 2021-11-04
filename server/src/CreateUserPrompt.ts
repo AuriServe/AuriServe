@@ -42,7 +42,7 @@ export default function createUserPrompt() {
 
 		try {
 			const { _id: id } = await Auth.addUser(result.username, result.password);
-			Auth.addRolesToUser(id, await Role.findOne({ name: 'Administrator' })._id);
+			Auth.addRolesToUser(id, (await Role.findOne({ name: 'Administrator' }))!._id);
 			Logger.info('Created new administrator account %s.', result.username);
 		}
 		catch (e) {

@@ -13,7 +13,7 @@ export interface IRole extends Mongoose.Document {
 }
 
 export const RoleSchema = new Mongoose.Schema<IRole>({
-	creator: { type: String, required: true },
+	creator: { type: {}, required: true },
 	name: { type: String, required: true },
 	color: { type: {} },
 	abilities: { type: [String], required: true }

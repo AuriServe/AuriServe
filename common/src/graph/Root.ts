@@ -3,6 +3,7 @@ import * as Type from './type';
 export interface Interface {
 	info: Type.Info,
 	quotas: Type.Quotas,
+	developer: Type.Developer,
 
 	users: Type.User[],
 	themes: Type.Theme[],
@@ -20,6 +21,7 @@ export const Schema = `
 	type Query {
 		info: Info!
 		quotas: Quotas!
+		developer: Developer!
 
 		users: [User!]!
 		themes: [Theme!]!
@@ -33,13 +35,15 @@ export const Schema = `
 		page(path: String): Page
 		layout(name: String): Layout
 		include(path: String): Include
-		
+
 		theme(identifier: String): Theme
 		plugin(identifier: String): Plugin
 	}
 
 	type Mutation {
 		info(info: InputInfo): Info!
+		developer(developer: InputDeveloper!): Boolean
+
 		delete_media(media: [ID!]!): Boolean
 		enabled_themes(enabled: [String!]!): Boolean
 		enabled_plugins(enabled: [String!]!): Boolean

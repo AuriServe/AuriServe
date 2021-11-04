@@ -66,7 +66,7 @@ export default function App() {
 									<Sidebar/>
 									<Switch>
 										<Route exact path='/' component={MainPage as any}/>
-										<Route exact path='/pages/' component={PagesPage as any}/>
+										<Route exact path={[ '/routes/', '/routes/edit/*' ]} component={PagesPage as any}/>
 										<Route exact path='/media/:id?' component={MediaPage as any}/>
 										<Route path='/settings/' component={SettingsPage as any}/>
 

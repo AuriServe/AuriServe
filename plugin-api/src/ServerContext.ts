@@ -9,7 +9,9 @@ export interface ServerContextData {
 export const ServerContext: Context<ServerContextData> =
 	(global as any)._AS_?.pages_manager_context; // eslint-disable-line
 
-export function useServerContext() {
+export function useServerContext(): ServerContextData {
 	if (ServerContext) return useContext(ServerContext);
-	throw 'Attempted to use the ServerContext in a non-server component.';
+	// console.error('Attempted to use the ServerContext in a non-server component.');
+	return {} as ServerContextData;
+	// throw 'Attempted to use the ServerContext in a non-server component.';
 }

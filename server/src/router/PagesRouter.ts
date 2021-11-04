@@ -5,10 +5,9 @@ import Express from 'express';
 import { promises as fs, constants as fsc } from 'fs';
 
 import Router from './Router';
-import Logger from '../Logger';
 import Plugins from '../data/Plugins';
-import PageBuilder from '../PageBuilder';
 import { OUT_FILE } from '../data/Themes';
+import PageBuilder, { RenderError } from '../PageBuilder';
 
 export default class PagesRouter extends Router {
 	constructor(private dataPath: string, private app: Express.Application,
@@ -75,14 +74,10 @@ export default class PagesRouter extends Router {
 
 		this.router.get('*', async (req, res) => {
 			try { res.send(await this.pages.render(req.params[0], req.cookies)); }
-			catch (e) {
-				if (e.type && e.error) {
-					let [ status, page ] = await this.pages.renderError(e);
-					res.status(status).send(page);
-				}
-				else {
-					Logger.error('Encountered an error assembling file %s.\n %s', req.params[0], e);
-				}
+			catch (e: unknown) {
+				const error = e instanceof RenderError ? e :
+					new RenderError(`Encountered an error assembling file ${req.params[0]}.\n ${e}`, 500);
+				res.status(error.code).send(await this.pages.renderError(error));
 			}
 		});
 

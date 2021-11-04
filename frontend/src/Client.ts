@@ -10,6 +10,11 @@ const onLogout = () => {
 	Preact.render('', document.body, root);
 };
 
+const ws = new WebSocket(`ws://${location.host}/admin/watch`);
+ws.addEventListener('message', (evt) => {
+	if (evt.data === 'refresh') window.location.reload();
+});
+
 const container = document.createElement('div');
 document.body.appendChild(container);
 root = Preact.render(Preact.h(Popout, { onLogout }), container);

@@ -1,5 +1,5 @@
-import Cookie from 'js-cookie';
 import { h } from 'preact';
+import Cookie from 'js-cookie';
 import { NavLink as Link, useLocation } from 'react-router-dom';
 
 import { mergeClasses } from 'common/util';
@@ -57,34 +57,21 @@ function renderLink(name: string, path: string | (() => void), icon: string, exa
 }
 
 export default function Sidebar() {
-	const mobile = !window.matchMedia('(min-width: 600px)').matches;
 	return (
 		<aside class='fixed w-14 h-full inset-0 bg-gradient-to-t from-indigo-600 to-blue-500 z-30'>
-			{!mobile ?
-				<nav class='flex flex-col h-full'>
-					<img width={56} height={56} class='p-2 select-none animate-rocket' role='heading' aria-level='1'
-						src='/admin/asset/icon/serve-light.svg' alt='' aria-label='AuriServe' />
+			<nav class='flex flex-col h-full'>
+				<img width={56} height={56} class='p-2 select-none animate-rocket' role='heading' aria-level='1'
+					src='/admin/asset/icon/serve-light.svg' alt='' aria-label='AuriServe' />
 
-					<div class='w-3/5	h-1 my-2 mx-auto rounded bg-blue-400 dark:bg-blue-400' />
-					{renderLink('Home', '/', HOME_ICON, true)}
-					{renderLink('Pages', '/pages', PAGES_ICON)}
-					{renderLink('Media', '/media', MEDIA_ICON)}
-					{renderLink('Settings', '/settings', SETTINGS_ICON)}
-					<div class='flex-grow'/>
-					{renderLink('Dark Mode', handleDarkMode, THEME_ICON)}
-					{renderLink('Logout', handleLogout, LOGOUT_ICON)}
-				</nav>
-				:
-				<div>
-					<nav>
-						<Link activeClassName='active' to='/pages'><img src='/admin/asset/icon/document-dark.svg' alt='Pages'/></Link>
-						<Link activeClassName='active' to='/media'><img src='/admin/asset/icon/image-dark.svg' alt='Media'/></Link>
-						<Link activeClassName='active' exact to='/'><img src='/admin/asset/icon/serve.svg' alt='Home'/></Link>
-						<Link activeClassName='active' to='/settings'><img src='/admin/asset/icon/settings-dark.svg' alt='Settings'/></Link>
-						<button onClick={handleLogout}><img src='/admin/asset/icon/logout-dark.svg' alt='Log out'/></button>
-					</nav>
-				</div>
-			}
+				<div class='w-3/5	h-1 my-2 mx-auto rounded bg-blue-400 dark:bg-blue-400' />
+				{renderLink('Home', '/', HOME_ICON, true)}
+				{renderLink('Routes', '/routes', PAGES_ICON)}
+				{renderLink('Media', '/media', MEDIA_ICON)}
+				{renderLink('Settings', '/settings', SETTINGS_ICON)}
+				<div class='flex-grow'/>
+				{renderLink('Dark Mode', handleDarkMode, THEME_ICON)}
+				{renderLink('Logout', handleLogout, LOGOUT_ICON)}
+			</nav>
 		</aside>
 	);
 }

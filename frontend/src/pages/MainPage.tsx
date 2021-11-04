@@ -1,10 +1,28 @@
 import { h } from 'preact';
+import { useState } from 'preact/hooks';
 
 import { useData, QUERY_INFO } from '../Graph';
-import { Title, Page, Card, Button, SectionHeader } from '../structure';
+import { Title, Page, Card } from '../structure';
+import TreeView from '../structure/TreeView';
+
+interface Item {
+	key: string;
+	color: string;
+	children?: Item[];
+}
 
 export default function MainPage() {
 	const [ { info } ] = useData([ QUERY_INFO ], []);
+
+	const [ items, setItems ] = useState<Item[]>([
+		{ key: 'red', color: 'red' },
+		{ key: 'green', color: 'green' },
+		{ key: 'blue', color: 'blue', children: [
+			{ key: 'purple', color: 'purple' },
+			{ key: 'yellow', color: 'yellow' }
+		 ] },
+		{ key: 'orange', color: 'orange' }
+	]);
 
 	return (
 		<Page>
@@ -20,17 +38,21 @@ export default function MainPage() {
 			</div>
 			<div class='grid grid-cols-3 gap-4 px-4 mx-auto w-full max-w-screen-xl'>
 				<Card class='w-full'>
-					<SectionHeader icon='/admin/asset/icon/document-dark.svg' title='Pages'/>
-					<Button class='mt-12' to='/pages' label='Pages'/>
+					{/* <SectionHeader icon='/admin/asset/icon/document-dark.svg' title='Pages'/>
+					<Button class='mt-12' to='/pages' label='Pages'/> */}
+					<TreeView items={items} setItems={(items) => setItems(items)} itemHeight={48}
+						renderItem={({ data: { color }, level }) =>
+							<div style={{ height: '44px', backgroundColor: color,
+								marginBottom: '4px', marginLeft: level * 16 + 'px', transition: 'margin-left 75ms' }}/>}/>
 				</Card>
-				<Card class='w-full'>
+				{/* <Card class='w-full'>
 					<SectionHeader icon='/admin/asset/icon/image-dark.svg' title='Media'/>
 					<Button class='mt-12' to='/media' label='Media'/>
 				</Card>
 				<Card class='w-full'>
 					<SectionHeader icon='/admin/asset/icon/settings-dark.svg' title='Options'/>
 					<Button class='mt-12' to='/settings' label='Settings'/>
-				</Card>
+				</Card> */}
 			</div>
 		</Page>
 	);

@@ -170,7 +170,7 @@ export default function MediaPage() {
 							{!media ? 'Loading media...' : 'No media found.'}</h2>}
 				</Card>
 
-				<div class='flex-grow max-w-md'>
+				{/* <div class='flex-grow max-w-md'>
 					<div class='sticky w-full top-8'>
 						<Card class='w-full mx-0 mb-4'>
 							<SectionHeader icon='/admin/asset/icon/element-dark.svg' title='Storage Space'/>
@@ -182,7 +182,7 @@ export default function MediaPage() {
 							<p class='mb-32'>wucky</p>
 						</Card>
 					</div>
-				</div>
+				</div> */}
 			</div>
 
 			<Modal active={viewingItem !== undefined} onClose={() => history.push('..')} defaultAnimation={true}>

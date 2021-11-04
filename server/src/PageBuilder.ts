@@ -1,7 +1,7 @@
 import path from 'path';
-import { Page } from 'common';
 import Preact from 'preact';
 import escapeHtml from 'escape-html';
+import { Page, assert } from 'common';
 import renderToString from 'preact-render-to-string';
 import fss, { promises as fs, constants as fsc } from 'fs';
 
@@ -35,10 +35,19 @@ interface PageBuilderContextData {
 
 export const PageBuilderContext = Preact.createContext<PageBuilderContextData>(undefined as any);
 
+export class RenderError extends Error {
+	readonly code: number;
+	constructor(...params: any[]) {
+		super(...params);
+		if (Error.captureStackTrace) Error.captureStackTrace(this, RenderError);
+		this.name = 'RenderError';
+		this.code = params[1] as number ?? 0;
+	}
+}
+
 export default class PageBuilder {
 	root: string;
 	gql?: GQLQueryFunction;
-
 
 	/**
 	 * Handles generating and expanding pages.
@@ -50,7 +59,6 @@ export default class PageBuilder {
 		this.root = path.join(this.dataPath, 'pages');
 	}
 
-
 	/**
 	 * Initializes the PagesManager,
 	 * creates the pages directory if it doesn't exist already.
@@ -61,7 +69,6 @@ export default class PageBuilder {
 		catch (e) { fs.mkdir(this.root); }
 		this.gql = gql;
 	}
-
 
 	/**
 	 * Attempts to render a page given a URL.
@@ -76,12 +83,13 @@ export default class PageBuilder {
 
 		// Search for an index file if the target doesn't exist.
 		let url = rawUrl;
-		try { await fs.access(path.join(this.root, url + '.json')); }
-		catch {
-			try { await fs.access(path.join(this.root, url, 'index.json')); }
-			catch (error) { Error.captureStackTrace(error); throw { type: 'NOTFOUND', error }; }
+
+		await fs.access(path.join(this.root, url + '.json'))
+		.catch(async () => {
+			await fs.access(path.join(this.root, url, 'index.json'))
+				.catch(() => assert(false, 'Page not found.', RenderError, 404));
 			url = path.join(url, 'index');
-		}
+		});
 
 		const { media } = await this.gql!(`{ media ${Query.Media} }`).then(res => res.data as Int.Root);
 		// Prepare and render the Preact component trees.
@@ -104,7 +112,7 @@ export default class PageBuilder {
 		// Populate the page template with contents.
 		const { name: siteName, description: siteDescription, favicon } = (await Properties.findOne({}))!.info;
 
-		const faviconItem = (media ?? []).filter(media => media.id === favicon)[0];
+		const faviconItem = (media ?? []).filter(media => media.id === favicon as any)[0];
 
 		Logger.perfStart('Forming HTML');
 		let html = (await new Promise<string>((resolve) =>
@@ -159,18 +167,15 @@ export default class PageBuilder {
 	 * @returns the error status code and the error HTML page.
 	 */
 
-	async renderError(error: { type: string; error: any }): Promise<[ number, string ]> {
-		const code = error.type === 'NOTFOUND' ? 404 : 500;
-		const description = error.type === 'NOTFOUND' ?
+	async renderError(error: RenderError): Promise<string> {
+		const description = error.code === 404 ?
 			'The page you have requested could not be found.' : 'Internal server error.';
 
-		const html = (await new Promise<string>((resolve) =>
+		return (await new Promise<string>((resolve) =>
 			fss.readFile(ERROR_TEMPLATE_PATH, (_, res) => resolve(res.toString()))))
-			.replace('$ERROR_CODE$', code.toString())
+			.replace('$ERROR_CODE$', error.code.toString())
 			.replace('$ERROR_DESCRIPTION$', description)
-			.replace('$ERROR_STACK$', `<code><pre>${error.error.stack}</pre></code>`);
-
-		return [ 400, html ];
+			.replace('$ERROR_STACK$', `<code><pre>${error.stack}</pre></code>`);
 	}
 
 
@@ -186,8 +191,8 @@ export default class PageBuilder {
 		const p = path.join(this.root, page + '.json');
 		try { return JSON.parse((await fs.readFile(p)).toString()) as Page.PageDocument; }
 		catch (e) {
-			if (e.code === 'ENOENT') throw { code: 404, description: 'Page not found.' };
-			throw { code: 500, description: 'Internal server error.', stack: e.stack};
+			assert((e as any).code === 'ENOENT', 'Internal server error.', RenderError, 500);
+			assert(false, 'Page not found.', RenderError, 404);
 		}
 	}
 
@@ -216,8 +221,8 @@ export default class PageBuilder {
 			return pageObj;
 		}
 		catch (e) {
-			if (typeof e.code === 'number') throw e;
-			throw { code: 500, description: 'Internal server error.', stack: e.stack };
+			assert(e instanceof Error && e.message === 'Page not found.', 'Internal server error.');
+			assert(false, 'Page not found.');
 		}
 	}
 
@@ -273,11 +278,8 @@ export default class PageBuilder {
 
 	async updatePage(page: string, obj: Page.PageDocument): Promise<void> {
 		const p = path.join(this.root, page + '.json');
-		try { await fs.writeFile(p, JSON.stringify(obj)); }
-		catch (e) {
-			Logger.error('Error updating page file \'%s\'.\n %s', p, e);
-			throw 'Error updating page.';
-		}
+		await fs.writeFile(p, JSON.stringify(obj))
+			.catch(e => assert(false, `Error updating page file '${p}'.\n ${e}`));
 	}
 
 

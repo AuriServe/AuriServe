@@ -154,6 +154,9 @@ export const QUERY_INFO = `info ${Query.Info}`;
 /** Queries site quotas. */
 export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;
 
+/** Queries developer settings. */
+export const QUERY_DEVELOPER = `developer ${Query.Developer}`;
+
 /** Queries all media elements. */
 export const QUERY_MEDIA = `media ${Query.Media}`;
 
@@ -197,6 +200,13 @@ export const QUERY_LAYOUT = `
 export const MUTATE_INFO = `
 	mutation UpdateInfo($info: InputInfo!) {
 		info(info: $info) { domain }
+	}
+`;
+
+/** Mutates developer settings. */
+export const MUTATE_DEVELOPER = `
+	mutation UpdateDeveloper($info: InputDeveloper!) {
+		developer(developer: $developer)
 	}
 `;
 
