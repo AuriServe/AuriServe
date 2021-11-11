@@ -20,8 +20,8 @@ export default function UserPage() {
 							src='/admin/asset/icon/user-color.svg' alt=''/>
 						<div class='flex flex-col pb-2'>
 							<h1 class='text-2xl font-medium'>{user.username}</h1>
-							<h2 class='text-gray-400 dark:text-gray-600'>{user.id}</h2>
-							<p class='text-gray-500'>{user.emails[0] ?? <em>No email address</em>}</p>
+							<h2 class='text-neutral-500 dark:text-neutral-300'>{user.id}</h2>
+							<p class='text-neutral-400'>{user.emails[0] ?? <em>No email address</em>}</p>
 							{/* <UserRolesList user={user} wrap={true} edit={true} />*/}
 						</div>
 					</Fragment>}

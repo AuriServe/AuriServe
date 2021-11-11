@@ -5,7 +5,7 @@ import { NavLink as Link } from 'react-router-dom';
 import { mergeClasses } from 'common/util';
 
 export interface Props {
-	// Any default button properties.
+	// Other attributes to be put on the container.
 	[ key: string ]: any;
 
 	icon?: string;
@@ -25,8 +25,8 @@ export default forwardRef(function Button(props: Props, ref?: RefObject<HTMLElem
 		<Tag ref={ref} {...props}
 			className={mergeClasses(
 				'flex flex-shrink-0 place-items-center group relative p-[0.4375rem] rounded w-auto',
-				'bg-gray-900 dark:bg-gray-200 border border-gray-900 dark:border-gray-200 font-medium',
-				'active:border-gray-500 dark:active:border-gray-500 focus-visible:border-gray-500 dark:focus-visible:border-gray-500',
+				'bg-neutral-50 dark:bg-neutral-700 border border-neutral-50 dark:border-neutral-700 font-medium',
+				'active:border-neutral-400 dark:active:border-neutral-400 focus-visible:border-neutral-400 dark:focus-visible:border-neutral-400',
 				'focus:outline-none transition duration-150 select-none',
 				props.class)}
 			onClick={props.onClick} type={Tag === 'button' && (props.type ?? 'button')}
@@ -36,7 +36,7 @@ export default forwardRef(function Button(props: Props, ref?: RefObject<HTMLElem
 			{props.icon && <img src={props.icon} alt='' role='presentation' width={32} height={32}
 				class='w-8 h-8 dark:filter dark:invert dark:brightness-75 dark:contrast-200 dark:hue-rotate-180 pointer-events-none'/>}
 
-			<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-75 rounded bg-gray-400',
+			<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-75 rounded bg-neutral-500',
 				'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
 				'group-focus-visible:scale-100', props.highlightClass)}/>
 

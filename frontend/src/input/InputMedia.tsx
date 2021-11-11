@@ -66,8 +66,8 @@ export default function InputMedia(props: Props) {
 				disabled={!(props.enabled ?? true)}
 				placeholder={item ? item.name : 'Search Media Item'}
 				class={mergeClasses('flex-grow bg-transparent p-2',
-					'focus:outline-none focus:placeholder-gray-500 dark:focus:placeholder-gray-500',
-					props.value ? 'placeholder-black dark:placeholder-gray-800' : 'placeholder-gray-500')}
+					'focus:outline-none focus:placeholder-neutral-400 dark:focus:placeholder-neutral-400',
+					props.value ? 'placeholder-black dark:placeholder-neutral-100' : 'placeholder-neutral-400')}
 
 				onFocus={handleFocus}
 				onBlur={handleBlur}
@@ -79,17 +79,17 @@ export default function InputMedia(props: Props) {
 				</button>
 			}
 
-			{!item && <img class='w-12 h-12 p-3 -m-px' src='/admin/asset/icon/element-dark.svg' alt='' role='presentation' />}
+			{/* {!item && <img class='w-12 h-12 p-3 -m-px' src='' alt='' role='presentation' />} */}
 
 			<Popup active={!!search && focused} defaultAnimation={true}>
 				<SearchableOptionPicker parent={wrapRef.current} query={search} fields={[ 'name', 'url' ]}
 					options={(media ?? [])} onSelect={selected => handleSet(selected.id)}>
 					{({ option, selected }) =>
 						<div class={mergeClasses('flex flex-row flex-grow text-left items-center gap-2',
-							'hover:bg-gray-800/75 dark:hover:bg-gray-200/75 active:bg-gray-800 dark:active:bg-gray-200',
-							selected && 'bg-gray-800/60 dark:bg-gray-200/50')}>
+							'hover:bg-neutral-100/75 dark:hover:bg-neutral-700/75 active:bg-neutral-100 dark:active:bg-neutral-700',
+							selected && 'bg-neutral-100/60 dark:bg-neutral-700/50')}>
 							<MediaIcon class='w-8 h-8 m-2' path={option.url}/>
-							<p class='flex-grow text-gray-200 dark:text-gray-600'>{option.name}</p>
+							<p class='flex-grow text-neutral-700 dark:text-neutral-300'>{option.name}</p>
 						</div>
 					}
 				</SearchableOptionPicker>

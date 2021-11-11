@@ -44,28 +44,28 @@ export default function MediaUploadItem(props: Props) {
 	};
 
 	return (
-		<li class='flex !w-full gap-1 bg-gray-900 dark:bg-gray-200 p-[0.4375rem] rounded !overflow-visible'>
+		<li class='flex !w-full gap-1 bg-neutral-50 dark:bg-neutral-700 p-[0.4375rem] rounded !overflow-visible'>
 			<Selectable class='!p-0' ind={props.ind} doubleClickSelects={true}>
 				<MediaIcon class='flex-shrink-0 w-20 h-20' path={props.file.file.name} image={props.file.thumbnail} />
 			</Selectable>
 			<div class='pl-1 text-left overflow-hidden'>
 				<Text maxLength={32} enabled={props.enabled}
-					class='font-medium  text-gray-100 dark:text-gray-800 truncate
-						!py-0.5 !px-1 mt-0.5 -mb-0.5 !h-auto !bg-transparent !border-transparent focus:!border-gray-500
-						focus:!bg-gray-800 dark:focus:!bg-gray-100 hover:!border-gray-600 dark:hover:!border-gray-400'
+					class='font-medium  text-neutral-800 dark:text-neutral-100 truncate
+						!py-0.5 !px-1 mt-0.5 -mb-0.5 !h-auto !bg-transparent !border-transparent focus:!border-neutral-400
+						focus:!bg-neutral-100 dark:focus:!bg-neutral-800 hover:!border-neutral-300 dark:hover:!border-neutral-500'
 					value={props.file.name} onValue={props.onNameChange} ref={handleStopPropagation}/>
 
 				<Text maxLength={32} enabled={props.enabled} placeholder={identifier}
-					class='relative font-medium text-sm text-gray-300 dark:text-gray-600 truncate
-						!py-0.5 !px-1 -top-px -mb-0.5 !h-auto !bg-transparent !border-transparent focus:!border-gray-500
-						focus:!bg-gray-800 dark:focus:!bg-gray-100 hover:!border-gray-600 dark:hover:!border-gray-400'
+					class='relative font-medium text-sm text-neutral-600 dark:text-neutral-300 truncate
+						!py-0.5 !px-1 -top-px -mb-0.5 !h-auto !bg-transparent !border-transparent focus:!border-neutral-400
+						focus:!bg-neutral-100 dark:focus:!bg-neutral-800 hover:!border-neutral-300 dark:hover:!border-neutral-500'
 					value={props.file.identifier} onValue={handleFilenameChange}
 					ref={(elem) => {
 						filenameRef.current = elem;
 						handleStopPropagation(elem);
 					}}
 				/>
-				<p class='relative font-medium text-sm text-gray-400 dark:text-gray-500 py-0.5 -top-px pl-1 truncate'>
+				<p class='relative font-medium text-sm text-neutral-500 dark:text-neutral-400 py-0.5 -top-px pl-1 truncate'>
 					{Format.bytes(props.file.file.size)} • Last modified {Format.date(props.file.file.lastModified)}
 				</p>
 			</div>

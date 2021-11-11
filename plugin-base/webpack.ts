@@ -77,7 +77,8 @@ export default function(_: any, argv: { mode: string }) {
 
 		externals: {
 			'preact': 'preact',
-			'preact/hooks': 'preact_hooks'
+			'preact/hooks': 'preact_hooks',
+			'@res': resolve(__dirname, 'res')
 		},
 
 		module: {
@@ -150,8 +151,11 @@ export default function(_: any, argv: { mode: string }) {
 					'postcss-loader'
 				]
 			}, {
-				test: /\.(svg|png|jpg|gif)$/,
-				type: 'asset/inline'
+			test: /\.svg$/i,
+				type: 'asset/source'
+			}, {
+				test: /\.(png|jpg)$/i,
+				type: 'asset/resource'
 			}]
 		}
 	});

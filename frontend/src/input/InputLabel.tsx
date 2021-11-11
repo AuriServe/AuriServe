@@ -14,8 +14,8 @@ interface Props {
 export default forwardRef<HTMLLabelElement, Props>(function InputLabel(props, fRef) {
 	return (
 		<label ref={fRef} class={mergeClasses(props.class, 'block relative overflow-visible user-select-none',
-			'font-medium text-xs text-gray-300 dark:text-gray-600 tracking-widest uppercase pt-3 pb-1.5')} style={props.style}>
-			<p class='truncate select-none pb-1.5'>{props.label}</p>
+			'font-semibold text-xs text-neutral-200 tracking-widest uppercase pt-3 pb-1')} style={props.style}>
+			<p class='truncate select-none -mb-6 relative z-10 w-max ml-3 dark:text-neutral-400'>{props.label}</p>
 			{props.children}
 		</label>
 	);

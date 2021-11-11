@@ -1,10 +1,12 @@
 .Input
-	@apply w-full h-12 p-3 font-normal text-base bg-gray-900 border border-gray-900 rounded
-	@apply outline-none resize-none transition-colors duration-75 placeholder-gray-500
-	@apply disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed
+	/* @apply w-full h-12 p-3 font-normal text-base bg-neutral-50 border border-neutral-50 rounded */
+	@apply w-full h-12 p-3 font-normal text-base border-neutral-50 rounded
+	@apply outline-none resize-none transition-colors duration-75 placeholder-neutral-400
+	@apply disabled:border-neutral-700 disabled:bg-neutral-700 disabled:text-neutral-400 disabled:cursor-not-allowed
+	@apply focus:shadow-inner focus:border-2 focus:border-accent-300
 
 	:global(html.dark) &
-		@apply bg-gray-50 border-gray-50
+		@apply bg-neutral-900/50 pt-7 pb-2 h-auto
 
 	&:-webkit-autofill
 		@apply caret-blue-800
@@ -13,29 +15,29 @@
 			@apply font-sans text-base text-blue-800
 
 		:global(html.dark) &
-			@apply caret-blue-300 p-[calc(0.75rem-3px)] border-4 border-gray-50
+			@apply caret-blue-300 p-[calc(0.75rem-3px)] border-4 border-neutral-900
 
 			&::first-line
 				@apply text-blue-300
 
 			transition: border-color 0s, color 75ms
-			-webkit-box-shadow: 0 0 0px 1000px theme('colors.gray.50') inset
+			-webkit-box-shadow: 0 0 0px 1000px theme('colors.neutral.50') inset
 
 			&:hover, &:focus
 				@apply p-3 !border transition-colors duration-75
 
 	&:not([disabled])
 		&:hover
-			@apply border-gray-800
-		
+			@apply border-neutral-100
+
 			:global(html.dark) &
-				@apply border-gray-300
+				@apply border-neutral-600
 
 		&:focus-visible, &:focus-within
-			@apply border-gray-500
-		
+			@apply border-neutral-400
+
 			:global(html.dark) &
-				@apply border-gray-400
+				@apply border-neutral-500
 
 	&.Mono
 		@apply font-mono

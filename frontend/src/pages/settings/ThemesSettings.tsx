@@ -4,10 +4,17 @@ import { useState, useEffect } from 'preact/hooks';
 
 import { Theme } from 'common/graph/type';
 
-import { Label } from '../../input';
+import Svg from '../../Svg';
+import Card from '../../Card';
 import ThemeItem from './FeatureItem';
 import { SavePopup } from '../../structure';
+import { Tertiary as Button } from '../../Button';
+
 import { useData, useMutation, QUERY_THEMES, MUTATE_THEMES } from '../../Graph';
+
+import icon_theme from '@res/icon/theme.svg';
+import icon_target from '@res/icon/target.svg';
+import icon_browse from '@res/icon/browse.svg';
 
 const sortFn = (a: Theme, b: Theme) => {
 	if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
@@ -20,7 +27,6 @@ export default function ThemesSettings() {
 
 	const [ themes, setThemes ] = useState<Theme[]>((data.themes ?? []).sort(sortFn));
 	useEffect(() => setThemes((data.themes ?? []).sort(sortFn)), [ data.themes ]);
-
 
 	const isDirty = JSON.stringify((data.themes ?? []).map((t: Theme) => t.enabled ? t.identifier : '')) !==
 		JSON.stringify(themes.map(t => t.enabled ? t.identifier : ''));
@@ -36,17 +42,24 @@ export default function ThemesSettings() {
 		updateEnabled({ enabled: themes.filter(t => t.enabled).map(t => t.identifier) }).then(() => refresh());
 
 	return (
-		<div class='w-full max-w-5xl mx-auto'>
-			<Label label='Themes' class='!text-lg dark:!text-gray-800'/>
-			{themes.length !== 0 && <FlipMove className='grid grid-cols-3 gap-3' duration={250} aria-role='list'>
-				{themes.map(theme => <li class='list-none' key={theme.identifier}>
-					<ThemeItem {...theme}
-						onToggle={() => handleToggle(theme.identifier)}
-						onDetails={() => console.log('deets')}/>
-				</li>)}
-			</FlipMove>}
-			{!themes.length && <p>No themes</p>}
-			<SavePopup active={isDirty} onSave={handleSave} onReset={() => setThemes((data.themes ?? []).sort(sortFn))} />
-		</div>
+		<Card>
+			<Card.Header icon={icon_theme} title='Themes' subtitle={'Manage your site\'s appearance.'}>
+				<Button class='absolute bottom-4 right-4' icon={icon_browse} label='Browse Themes' small/>
+			</Card.Header>
+			<Card.Body>
+				{themes.length !== 0 && <FlipMove className='grid grid-cols-3 gap-4' duration={250} aria-role='list'>
+					{themes.map(theme => <li class='list-none' key={theme.identifier}>
+						<ThemeItem {...theme}
+							onToggle={() => handleToggle(theme.identifier)}
+							onDetails={() => console.log('deets')}/>
+					</li>)}
+				</FlipMove>}
+				{!themes.length && <div class='flex py-28 justify-center items-center gap-2'>
+					<Svg src={icon_target} size={6}/>
+					<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>No themes found.</p>
+				</div>}
+				<SavePopup active={isDirty} onSave={handleSave} onReset={() => setThemes((data.themes ?? []).sort(sortFn))} />
+			</Card.Body>
+		</Card>
 	);
 }

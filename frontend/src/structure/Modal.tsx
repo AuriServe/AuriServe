@@ -2,7 +2,7 @@ import { h, ComponentChildren } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { CSSTransition } from 'preact-transitioning';
 
-import Card from './Card';
+import Card from '../Card';
 import Portal from './Portal';
 
 import { mergeClasses } from 'common/util';
@@ -41,7 +41,7 @@ export default function Modal(props: Props) {
 			<CSSTransition in={props.active} duration={props.duration ?? 150} classNames='Animate'>
 				<div style={{ zIndex: props.z ?? 100 }} onClick={props.onClose}
 					className={mergeClasses('fixed flex flex-col w-[calc(100%-56px)] h-full items-center overflow-auto top-0 left-0 ml-14',
-						'justify-around bg-gray-900/80 dark:bg-gray-200/90 ',
+						'justify-around bg-neutral-50/80 dark:bg-neutral-900/90',
 						props.defaultAnimation && style.DefaultAnimation)}>
 					<div class='flex w-full h-auto px-3 py-12 overflow-auto justify-around'>
 						<Card class='h-min !shadow-md' onClick={(e: any) => e.stopPropagation()}>{props.children}</Card>

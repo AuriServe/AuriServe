@@ -1,16 +1,21 @@
 import { h } from 'preact';
+
+import Card from '../../Card';
+import UserItem from '../../user/UserItem';
+
 import { useData, QUERY_USERS } from '../../Graph';
 
-import UserItem from '../../user/UserItem';
-import Label from '../../input/InputLabel';
+import icon_users from '@res/icon/users.svg';
 
-export default function RolesSettings() {
+export default function UsersSettings() {
 	const [ { users } ] = useData(QUERY_USERS, []);
 
 	return (
-		<div class='w-full max-w-3xl mx-auto'>
-			<Label label='Users' />
-			{users && users.map(user => <UserItem key={user.id} user={user} />)}
-		</div>
+		<Card>
+			<Card.Header icon={icon_users} title='Users' subtitle='Manage users and their permissions.'/>
+			<Card.Body class='h-48'>
+				{users && users.map(user => <UserItem key={user.id} user={user} />)}
+			</Card.Body>
+		</Card>
 	);
 }

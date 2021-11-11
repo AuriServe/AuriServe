@@ -87,9 +87,9 @@ export default function LoginPage({ onLogin }: Props) {
 					</div>
 				</Form>
 			</Card>
-			<div class='bg-gradient-to-r from-gray-800 dark:from-gray-100 via-gray-800 dark:via-gray-100
+			<div class='bg-gradient-to-r from-neutral-100 dark:from-neutral-800 via-neutral-100 dark:via-neutral-800
 				to-transparent w-max py-2 pl-4 pr-80 justify-self-start self-end'>
-				<p class='text-gray-300 dark:text-gray-600 mt-0.5'>AuriServe 0.0.1&nbsp; &nbsp;&bull;&nbsp; &nbsp;AS Frontend 0.0.1</p>
+				<p class='text-neutral-600 dark:text-neutral-300 mt-0.5'>AuriServe 0.0.1&nbsp; &nbsp;&bull;&nbsp; &nbsp;AS Frontend 0.0.1</p>
 			</div>
 		</Page>
 	);

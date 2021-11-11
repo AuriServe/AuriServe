@@ -32,17 +32,17 @@ function RouteItem({ route, dragging }: RouteItemProps) {
 	return (
 		<div class='w-full'>
 			<Button to={isActive ? '/routes/' : `/routes/edit${route.path}/`} exact
-				class={mergeClasses('group text-gray-300 dark:text-gray-800 p-[0.25rem] mb-1 gap-2',
-					isActive ? '!bg-gray-700/25 dark:!bg-gray-200 !border-gray-700 dark:!border-gray-100'
-						: '!bg-transparent !border-transparent active:!bg-gray-300/20')}>
+				class={mergeClasses('group text-neutral-600 dark:text-neutral-100 p-[0.25rem] mb-1 gap-2',
+					isActive ? '!bg-neutral-200/25 dark:!bg-neutral-700 !border-neutral-200 dark:!border-neutral-800'
+						: '!bg-transparent !border-transparent active:!bg-neutral-600/20')}>
 
 				<img src='/admin/asset/icon/document-dark.svg' alt='page' width={24} height={24}
 					class={mergeClasses('w-7 h-7 rounded interact-none p-0.5 ml-px transition-colors',
-						isActive ? 'bg-gray-300' : 'bg-gray-300/50 group-active:bg-gray-300')}/>
+						isActive ? 'bg-neutral-600' : 'bg-neutral-600/50 group-active:bg-neutral-600')}/>
 
 				<p class='leading-none text-[15px] flex-grow'>
 					{route.name}<br/>
-					<span class='text-[11px] text-gray-500'>
+					<span class='text-[11px] text-neutral-400'>
 						{route.path === '/index' ? '(root)' : route.path || '(virtual)'}</span>
 				</p>
 
@@ -70,11 +70,11 @@ export default function PagesPage() {
 		location.pathname.substr('/routes/edit'.length) : undefined;
 
 	return (
-		<Page class='flex bg-white dark:bg-gray-50 !pb-0 min-h-screen'>
+		<Page class='flex bg-white dark:bg-neutral-900 !pb-0 min-h-screen'>
 			<Title>Pages</Title>
-			<div class='w-72 p-2.5 h-full bg-gray-100 flex-shrink-0 relative z-10 border-r border-gray-300'>
+			<div class='w-72 p-2.5 h-full bg-neutral-800 flex-shrink-0 relative z-10 border-r border-neutral-600'>
 				{/* <SectionHeader class='p-1' title='Configure Routes' icon='/admin/asset/icon/ext-file-color.svg'/>
-				<div class='border-b border-gray-300 mt-1.5 mb-2.5'/> */}
+				<div class='border-b border-neutral-600 mt-1.5 mb-2.5'/> */}
 				{!pages && <Spinner size={40} class='mt-16 mx-auto animate-fadein-150'/>}
 				{pages && <div class='animate-fadein-150'>
 					<TreeView
@@ -84,11 +84,11 @@ export default function PagesPage() {
 						dragClass='rounded shadow-lg interact-none'
 						renderItem={({ data, dragging }) => <RouteItem route={data as any as GraphPage} dragging={dragging}/>}
 					/>
-					<div class='border-b border-gray-300 mb-1.5 mt-0.5'/>
-					<Button exact class={mergeClasses('!w-full text-left text-gray-300 dark:text-gray-600 p-[0.25rem]',
-						'mb-1 gap-2 !bg-transparent !border-transparent active:!bg-gray-300/20')}>
+					<div class='border-b border-neutral-600 mb-1.5 mt-0.5'/>
+					<Button exact class={mergeClasses('!w-full text-left text-neutral-600 dark:text-neutral-300 p-[0.25rem]',
+						'mb-1 gap-2 !bg-transparent !border-transparent active:!bg-neutral-600/20')}>
 						<img src='/admin/asset/icon/add-dark.svg' alt='new' width={24} height={24}
-							class={mergeClasses('w-7 h-7 rounded interact-none p-0.5 ml-px transition-colors bg-gray-300/50')}/>
+							class={mergeClasses('w-7 h-7 rounded interact-none p-0.5 ml-px transition-colors bg-neutral-600/50')}/>
 						<p class='leading-none font-medium text-sm'>Add Route</p>
 					</Button>
 				</div>}

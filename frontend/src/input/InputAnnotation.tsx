@@ -16,7 +16,7 @@ export default forwardRef<HTMLLabelElement, Props>(function InputAnnotation(prop
 	return (
 		<label ref={fRef} class={mergeClasses(props.class, 'block relative overflow-auto user-select-none')} style={props.style}>
 			<p class='mt-4 mb-1 cursor-pointer'>{props.title}</p>
-			{props.description && <p class='mb-3 text-sm font-normal text-gray-500 dark:text-gray-600'>{props.description}</p>}
+			{props.description && <p class='mb-3 text-sm font-normal text-neutral-400 dark:text-neutral-300'>{props.description}</p>}
 			{props.children}
 		</label>
 	);

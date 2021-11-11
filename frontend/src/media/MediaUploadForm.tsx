@@ -148,11 +148,11 @@ export default function MediaUploadForm(props: Props) {
 		<Form onSubmit={handleUpload}>
 			<div class={mergeClasses(
 				'flex place-items-center group relative rounded w-auto h-40',
-				'bg-gray-900 dark:bg-gray-200 border border-gray-900 dark:border-gray-200 mt-1',
-				'active:border-gray-500 dark:active:border-gray-500 focus-within:border-gray-500 dark:focus-within:border-gray-500',
+				'bg-neutral-50 dark:bg-neutral-700 border border-neutral-50 dark:border-neutral-700 mt-1',
+				'active:border-neutral-400 dark:active:border-neutral-400 focus-within:border-neutral-400 dark:focus-within:border-neutral-400',
 				'focus:outline-none transition duration-150 select-none', state !== MediaUploadState.SELECTING && 'disabled')}>
 
-				<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-90 rounded bg-gray-500',
+				<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-90 rounded bg-neutral-400',
 					'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
 					'group-focus-visible:scale-100')}/>
 
@@ -161,7 +161,7 @@ export default function MediaUploadForm(props: Props) {
 					onChange={handleAddFiles}
 					disabled={state !== MediaUploadState.SELECTING} />
 
-				<h2 class='block w-full text-center text-gray-500 text-xl'>Click or drag files here to upload.</h2>
+				<h2 class='block w-full text-center text-neutral-400 text-xl'>Click or drag files here to upload.</h2>
 			</div>
 
 			{files.length > 0 && <div class='my-3 h-12'>

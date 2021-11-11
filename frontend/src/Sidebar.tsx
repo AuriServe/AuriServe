@@ -1,15 +1,19 @@
 import { h } from 'preact';
 import Cookie from 'js-cookie';
-import { NavLink as Link, useLocation } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
+
+import Svg from './Svg';
+import { UnstyledButton } from './Button';
 
 import { mergeClasses } from 'common/util';
 
-const HOME_ICON = '/admin/asset/icon/home-dark.svg';
-const MEDIA_ICON = '/admin/asset/icon/image-dark.svg';
-const LOGOUT_ICON = '/admin/asset/icon/logout-dark.svg';
-const PAGES_ICON = '/admin/asset/icon/document-dark.svg';
-const SETTINGS_ICON = '/admin/asset/icon/settings-dark.svg';
-const THEME_ICON = '/admin/asset/icon/interface-theme-dark.svg';
+import icon_home from '@res/icon/home.svg';
+import icon_pages from '@res/icon/file.svg';
+import icon_media from '@res/icon/image.svg';
+import icon_theme from '@res/icon/theme.svg';
+import icon_logout from '@res/icon/logout.svg';
+import icon_options from '@res/icon/options.svg';
+import icon_auriserve from '@res/icon/auriserve.svg';
 
 function handleDarkMode() {
 	document.documentElement.classList.add('AS_TRANSITION_THEME');
@@ -22,55 +26,68 @@ function handleLogout() {
 	window.location.href = '/admin';
 }
 
-/** Styles that are repeated among multiple elements. */
-const style = {
-	link: 'group relative w-14 h-14 p-2.5 select-none focus:outline-none',
-	icon: `filter transition brightness-200 pointer-events-none opacity-50
-		group-hover:opacity-75 group-focus-visible:opacity-100`,
-	label: `block absolute z-10 transform transition left-16 top-3 rounded py-1 px-2.5
-		bg-gray-200 opacity-0 translate-x-1 pointer-events-none select-none text-gray-800
-		group-hover:opacity-100 group-hover:translate-x-0 group-hover:delay-700 font-medium shadow-md whitespace-nowrap
-		group-focus-visible:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:delay-0 `,
-	labelArrow: 'block absolute -left-1 top-3 w-2 h-2 transform rotate-45 bg-gray-200'
-};
+interface SidebarLinkProps {
+	label: string;
+	path: string | (() => void);
+	icon: string;
+	exact?: boolean;
+	props?: any;
+}
 
-function renderLink(name: string, path: string | (() => void), icon: string, exact?: boolean, props?: any) {
-	const pathName = useLocation().pathname;
-	const isActive = typeof path === 'string' && (exact ? pathName === path : pathName.startsWith(path));
+function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
+	const active = !!useRouteMatch({ path: typeof path === 'string' ? path : '!', exact});
 
-	return (typeof path === 'string') ? (
-		<Link className={style.link} to={path} {...props}>
-			<img class={mergeClasses(style.icon, isActive && '!opacity-100')}
-				alt='' role='presentation' width={56} height={56} src={icon}/>
-			<span class={style.label}>{name}<div class={style.labelArrow}/></span>
-			<div class={mergeClasses(!isActive && 'scale-0',
-				'absolute transition w-2 h-2 bg-gray-900 dark:bg-gray-50 transform',
-				'rotate-45 top-[calc(50%-0.25rem)] left-[calc(100%-0.25rem+.5px)]')}
-			style={{ clipPath: 'polygon(0 0, 0% 100%, 100% 100%)' }}/>
-		</Link>
-	) : (
-		<button className={style.link} onClick={path} {...props}>
-			<img width={56} height={56} src={icon} class={style.icon} alt='' role='presentation' />
-			<span class={style.label}>{name}<div class={style.labelArrow}/></span>
-		</button>
+	return (
+		<UnstyledButton {...props}
+			to={typeof path === 'string' ? path : undefined}
+			onClick={typeof path === 'function' ? path : undefined}
+			class={mergeClasses(
+				'group relative p-1 m-2 w-10 h-10 rounded bg-transparent transition !outline-none',
+				'hover:bg-accent-400/30 focus-visible:bg-accent-400/30',
+				'after:absolute after:transition after:w-2 after:h-2 after:bg-neutral-50 dark:after:bg-neutral-900',
+				'after:tri after:transform after:rotate-45 after:top-[calc(50%-0.25rem)] after:left-[calc(100%+0.25rem+.5px)]',
+				active ? '!bg-accent-400/50' : 'after:scale-0')}
+		>
+
+			<Svg src={icon} size={8}
+				class={mergeClasses('primary-200 secondary-400',
+					'group-hover:primary-100 group-focus-visible:primary-100',
+					'group-hover:secondary-200 group-focus-visible:secondary-200',
+					active && '!primary-white !secondary-200')}/>
+
+			<span class='block absolute z-10 transform transition left-16 top-1 rounded py-1 px-2.5
+				bg-neutral-700 opacity-0 translate-x-1 pointer-events-none select-none text-neutral-100
+				group-hover:opacity-100 group-hover:translate-x-0 group-hover:delay-700 font-medium shadow-md whitespace-nowrap
+				group-focus-visible:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:delay-0
+
+				after:block after:absolute after:-left-1 after:top-3 after:w-2 after:h-2 after:transform after:rotate-45
+				after:bg-neutral-700'>
+				{label}
+			</span>
+		</UnstyledButton>
 	);
 }
 
 export default function Sidebar() {
 	return (
-		<aside class='fixed w-14 h-full inset-0 bg-gradient-to-t from-indigo-600 to-blue-500 z-30'>
+		<aside class='fixed w-14 h-full inset-0
+			bg-gradient-to-t from-accent-600 to-accent-500 z-30
+			primary-300 secondary-100'>
 			<nav class='flex flex-col h-full'>
-				<img width={56} height={56} class='p-2 select-none animate-rocket' role='heading' aria-level='1'
-					src='/admin/asset/icon/serve-light.svg' alt='' aria-label='AuriServe' />
+				<Svg src={icon_auriserve} size={10} role='heading' aria-level='1' aria-label='AuriServe'
+					class='m-2 animate-rocket primary-200 secondary-300'/>
 
-				<div class='w-3/5	h-1 my-2 mx-auto rounded bg-blue-400 dark:bg-blue-400' />
-				{renderLink('Home', '/', HOME_ICON, true)}
-				{renderLink('Routes', '/routes', PAGES_ICON)}
-				{renderLink('Media', '/media', MEDIA_ICON)}
-				{renderLink('Settings', '/settings', SETTINGS_ICON)}
+				<div class='w-3/5	h-1 my-2 mx-auto rounded bg-accent-400 dark:bg-accent-400' />
+
+				<SidebarLink label='Home' icon={icon_home} path= '/' exact/>
+				<SidebarLink label='Routes' icon={icon_pages} path= '/routes' />
+				<SidebarLink label='Media' icon={icon_media} path= '/media'/>
+				<SidebarLink label='Settings' icon={icon_options} path= '/settings'/>
+
 				<div class='flex-grow'/>
-				{renderLink('Dark Mode', handleDarkMode, THEME_ICON)}
-				{renderLink('Logout', handleLogout, LOGOUT_ICON)}
+
+				<SidebarLink label='Dark' icon={icon_theme} path={handleDarkMode}/>
+				<SidebarLink label='Logout' icon={icon_logout} path={handleLogout} />
 			</nav>
 		</aside>
 	);

@@ -112,7 +112,7 @@ export default class Server {
 		awaitListen.then(async () => {
 			Logger.debug(httpsPort
 				? `HTTP/HTTPS server listening on ports ${httpPort}/${httpsPort}.`
-				: `HTTP/HTTPS server listening on port ${httpPort}.`);
+				: `HTTP server listening on port ${httpPort}.`);
 
 			await Mongoose.connect(this.conf!.db!);
 			Logger.debug('Connected to MongoDB successfully.');

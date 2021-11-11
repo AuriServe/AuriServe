@@ -70,7 +70,7 @@ export default function SearchableOptionPicker(props: Props) {
 
 	return (
 		<Card class='absolute z-10 overflow-auto !my-2 min-h-12 !p-0 max-h-96 pointer-events-auto rounded !shadow-lg' style={style}>
-			{query && <Label class='px-2 bg-gray-900 dark:bg-gray-200' label={`Search results for '${query}'`} />}
+			{query && <Label class='px-2 bg-neutral-50 dark:bg-neutral-700' label={`Search results for '${query}'`} />}
 			{filtered.length > 0 && <ul>
 				{filtered.map((option, ind) => <li>
 					<button class='w-full focus:outline-none' onClick={() => props.onSelect(option)}>
@@ -79,7 +79,7 @@ export default function SearchableOptionPicker(props: Props) {
 				</li>)}
 			</ul>}
 			{filtered.length === 0 && <div class='py-4 px-2 text-center'>
-				<p class='text-gray-500 pt-0.25 text-normal'>No results found.</p>
+				<p class='text-neutral-400 pt-0.25 text-normal'>No results found.</p>
 			</div>}
 		</Card>
 	);

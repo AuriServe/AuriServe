@@ -147,7 +147,7 @@ export default function EditorControlPage() {
 
 	return (
 		<Fragment>
-			{/* <div class={mergeClasses('bg-gray-100 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
+			{/* <div class={mergeClasses('bg-neutral-800 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
 				sidebarOpen ? 'translate-x-0' : '-translate-x-full')}>
 				{editing && <ElementEditor definition={elements[editingElem.elem]!}
 					props={editingElem.props} onChange={props => handleElementSave(props)}/>}

@@ -23,8 +23,8 @@ export const RendererContext = createContext<RendererContextData>({
 
 function UndefinedElement({ elem }: { elem: string }) {
 	return (
-		<div class='m-2 flex place-items-center min-h-[8rem] bg-gray-900 border-2 border-gray-600 rounded-lg'>
-			<p class='w-full text-center text-gray-100'><strong>{elem}</strong> is undefined.</p>
+		<div class='m-2 flex place-items-center min-h-[8rem] bg-neutral-50 border-2 border-neutral-300 rounded-lg'>
+			<p class='w-full text-center text-neutral-800'><strong>{elem}</strong> is undefined.</p>
 		</div>
 	);
 };

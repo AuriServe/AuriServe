@@ -4,14 +4,20 @@ import { useParams, useHistory } from 'react-router-dom';
 
 import { Media } from 'common/graph/type';
 
-import { mergeClasses } from 'common/util';
-
-import { Text } from '../input';
+import Card from '../Card';
+import * as Btn from '../Button';
 import MediaItem from '../media/MediaItem';
 import MediaView from '../media/MediaView';
 import MediaUploadForm from '../media/MediaUploadForm';
-import { Title, Page, SectionHeader, Card, Button, Modal, Dropdown, SelectGroup, SavePopup } from '../structure';
+import { Title, Page, SectionHeader, Modal, SelectGroup, SavePopup } from '../structure';
 import { useData, useMutation, QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS, MUTATE_DELETE_MEDIA } from '../Graph';
+
+import icon_add from '@res/icon/add.svg';
+import icon_view from '@res/icon/view.svg';
+import icon_image from '@res/icon/image.svg';
+import icon_trash from '@res/icon/trash.svg';
+import icon_options from '@res/icon/options.svg';
+import icon_refresh from '@res/icon/refresh.svg';
 
 type SortingMode = 'size' | 'name' | 'uploader' | 'date' | 'type';
 
@@ -23,9 +29,9 @@ const SORTING_FUNCS: {[sorting in SortingMode]: (a: Media, b: Media) => number} 
 	type: () => 0
 };
 
-function titleCase(str: string): string {
-	return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-}
+// function titleCase(str: string): string {
+// 	return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+// }
 
 export default function MediaPage() {
 	const history = useHistory();
@@ -37,9 +43,9 @@ export default function MediaPage() {
 	let [ data, refresh ] = useData([ QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS ], []);
 	const deleteMedia = useMutation(MUTATE_DELETE_MEDIA);
 
-	const [ view, setView ] = useState<'grid' | 'list'>('grid');
-	const [ filter, setFilter ] = useState<string>('');
-	const [ sortDir, setSortDir ] = useState<'ascending' | 'descending'>('descending');
+	// const [ view, setView ] = useState<'grid' | 'list'>('grid');
+	const [ filter ] = useState<string>('');
+	const [ sortDir ] = useState<'ascending' | 'descending'>('descending');
 	const [ sortType ] = useState<SortingMode>('size');
 
 	const [ media, setMedia ] = useState<Media[]>(data.media ?? []);
@@ -96,90 +102,61 @@ export default function MediaPage() {
 	return (
 		<Page>
 			<Title>Media</Title>
-			<div class='flex justify-center gap-4 mx-4'>
-				<Card class='flex-grow max-w-screen-xl mx-0'>
-					<SectionHeader icon='/admin/asset/icon/image-dark.svg' title='Manage Media'
-						subtitle='Upload, edit, and remove user-uploaded media.' class='!pb-0' />
+			<div class='flex justify-center gap-6 mx-6'>
+				<Card class='flex-grow max-w-screen-xl mt-6 max-w-3xl'>
+					<Card.Header icon={icon_image} title='Manage Media' subtitle='Upload, edit, and remove user-uploaded media.'/>
+					<Card.Toolbar>
+						<Btn.Secondary to='/media/upload/' onClick={() => setSelected([])}
+							icon={icon_add} label='Upload Media'/>
 
-					<div class='flex sticky top-0 place-content-between py-3 bg-white dark:bg-gray-100
-						border-b border-gray-800 dark:border-gray-300 z-10 -mx-1.5 px-1.5'>
-						<div class='flex gap-2'>
-							<Button to='/media/upload/' onClick={() => setSelected([])} icon='/admin/asset/icon/add-dark.svg' label='Upload Media'/>
+						{selected.length === 1 && <Btn.Tertiary
+							onClick={() => history.push(media[selected[0]].id + '/')}
+							icon={icon_view} label='View'/>}
 
-							{selected.length === 1 && <Button onClick={() => history.push(media[selected[0]].id + '/')}
-								icon='/admin/asset/icon/view-dark.svg' label='View'/>}
+						{selected.length > 0 && <Btn.Tertiary
+							onClick={() => handleDelete(selected)}
+							icon={icon_trash} label={'Delete ' +
+								(selected.length === 1 ? '' : '(' + selected.length + ')')} />}
 
-							{selected.length > 0 && <Button onClick={() => handleDelete(selected)}
-								icon='/admin/asset/icon/trash-dark.svg' label={'Delete ' +
-									(selected.length === 1 ? '' : '(' + selected.length + ')')} />}
-						</div>
+						<Card.Toolbar.Spacer/>
 
-						<div class='flex gap-2'>
-							<Dropdown
-								button={{ label: 'View Options', iconOnly: true,
-									icon: `/admin/asset/icon/view-${filter ? 'color' : 'dark'}.svg` }}
-								class='grid gap-2 p-2 w-48'>
+						<Btn.Tertiary onClick={refresh} iconOnly icon={icon_view} label='View Options'/>
+						<Btn.Tertiary onClick={refresh} iconOnly icon={icon_refresh} label='Refresh'/>
 
-								<Button label={titleCase(view) + ' View'} icon={`/admin/asset/icon/${view}-view-dark.svg`}
-									onClick={() => setView(view === 'grid' ? 'list' : 'grid')}/>
+						<Btn.Tertiary to='/settings/media/' iconOnly icon={icon_options} label='Media Settings'/>
+					</Card.Toolbar>
 
-								<div class='flex gap-2'>
-									{/* <Select class='flex-shrink flex-grow-0' multi
-										style={{ '--icon': 'url(/admin/asset/icon/sort-dark.svg)' } as any}
-										options={{ name: 'Name', size: 'Size', uploader: 'Uploader', date: 'Upload Date', type: 'File Type' }}
-										placeholder='No filter' value={sortType} setValue={setSortType} />*/}
+					<Card.Body>
+						{media.filter((_, i) => !deleted.includes(i)) &&
+							<SelectGroup selected={selected} setSelected={setSelected} multi={true} enabled={true}
+								class='grid gap-3 grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'>
+								{media.map((item: any, ind: number) => !deleted.includes(ind) ? (
+									<MediaItem ind={ind} user={data.users?.filter(u => u.id === item.user)[0]}
+										media={item} key={item.identifier} onClick={(id) => history.push(id + '/')}/>
+								): null).filter(item => item)}
+							</SelectGroup>
+						}
 
-									<Button label={titleCase(sortDir)} iconOnly
-										icon={`/admin/asset/icon/sort-${sortDir === 'ascending' ? 'desc' : 'asc'}-dark.svg`}
-										onClick={() => setSortDir(sortDir === 'ascending' ? 'descending' : 'ascending')}/>
-
-									<Button label={titleCase(sortDir)} iconOnly
-										onClick={() => setSortDir(sortDir === 'ascending' ? 'descending' : 'ascending')}>
-										<img width={32} height={32} alt='' role='presentation' src='/admin/asset/icon/sort-desc-dark.svg'
-											class={mergeClasses('w-8 h-8 dark:filter dark:invert dark:brightness-75 dark:contrast-200 transform',
-												'dark:hue-rotate-180 pointer-events-none transition-all',
-												sortDir === 'descending' && 'scale-y-[-100%]')}/>
-									</Button>
-
-									<Button label={titleCase(sortDir)} iconOnly
-										icon={`/admin/asset/icon/sort-${sortDir === 'ascending' ? 'desc' : 'asc'}-dark.svg`}
-										onClick={() => setSortDir(sortDir === 'ascending' ? 'descending' : 'ascending')}/>
-								</div>
-
-								<Text placeholder='No filter' value={filter} onValue={setFilter} />
-							</Dropdown>
-
-							<Button onClick={refresh} iconOnly icon='/admin/asset/icon/refresh-dark.svg' label='Refresh'/>
-
-							<Button to='/settings/media/' iconOnly icon='/admin/asset/icon/settings-dark.svg' label='Media Settings'/>
-						</div>
-					</div>
-
-					{media.filter((_, i) => !deleted.includes(i)) &&
-						<SelectGroup selected={selected} setSelected={setSelected} multi={true} enabled={true}
-							class='grid gap-3 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 pt-3'>
-							{media.map((item: any, ind: number) => !deleted.includes(ind) ? (
-								<MediaItem ind={ind} user={data.users?.filter(u => u.id === item.user)[0]}
-									media={item} key={item.identifier} onClick={(id) => history.push(id + '/')}/>
-							): null).filter(item => item)}
-						</SelectGroup>
-					}
-
-					{(!media || !media.filter((_, i) => !deleted.includes(i)).length) &&
-						<h2 class='text-2xl text-center mt-20 mb-16 pb-2 text-gray-400'>
-							{!media ? 'Loading media...' : 'No media found.'}</h2>}
+						{(!media || !media.filter((_, i) => !deleted.includes(i)).length) &&
+							<h2 class='text-2xl text-center mt-20 mb-16 pb-2 text-neutral-500'>
+								{!media ? 'Loading media...' : 'No media found.'}</h2>}
+					</Card.Body>
 				</Card>
 
-				{/* <div class='flex-grow max-w-md'>
-					<div class='sticky w-full top-8'>
-						<Card class='w-full mx-0 mb-4'>
-							<SectionHeader icon='/admin/asset/icon/element-dark.svg' title='Storage Space'/>
-							<p class='mb-48'>fucky</p>
+				{/* <div class='flex-grow max-w-md mt-6'>
+					<div class='sticky w-full top-6'>
+						<Card class='w-full mx-0 mb-6'>
+							<Card.Header icon={icon_image} title='Storage'/>
+							<Card.Body>
+								<p class='mb-48'>WIP</p>
+							</Card.Body>
 						</Card>
 
-						<Card class='w-full mx-0 mt-4'>
-							<SectionHeader icon='/admin/asset/icon/stats-dark.svg' title='Active Tasks'/>
-							<p class='mb-32'>wucky</p>
+						<Card class='w-full mx-0 mt-6'>
+							<Card.Header icon={icon_image} title='Tasks'/>
+							<Card.Body>
+								<p class='mb-48'>WIP</p>
+							</Card.Body>
 						</Card>
 					</div>
 				</div> */}

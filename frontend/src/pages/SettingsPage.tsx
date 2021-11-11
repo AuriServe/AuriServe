@@ -1,85 +1,131 @@
 import { h, Fragment } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
-import { Switch, Route, Redirect, useLocation } from 'react-router-dom';
+import { useEffect, useRef } from 'preact/hooks';
+import { NavLink as Link, useHistory } from 'react-router-dom';
 
-import { Title, Page, Button } from '../structure';
+import Svg from '../Svg';
+import { Title, Page } from '../structure';
 import { MainSettings, ThemesSettings, PluginsSettings,
 	MediaSettings, UsersSettings, RolesSettings, DeveloperSettings } from './settings';
 
-function renderLink(name: string, path: string, icon: string, props?: any) {
+import icon_home from '@res/icon/home.svg';
+import icon_themes from '@res/icon/theme.svg';
+import icon_plugins from '@res/icon/plugin.svg';
+import icon_media from '@res/icon/image.svg';
+import icon_users from '@res/icon/users.svg';
+import icon_roles from '@res/icon/role.svg';
+import icon_updates from '@res/icon/update.svg';
+import icon_developer from '@res/icon/developer.svg';
+
+interface SidebarLinkProps {
+	label: string;
+	path: string;
+	icon: string;
+	notifications?: number | boolean;
+}
+
+function SidebarLink({ label, path, icon, notifications }: SidebarLinkProps) {
 	return (
 		<li>
-			<Button class='!bg-transparent !border-transparent !font-normal'
-				activeClassName='!bg-gray-700 !bg-opacity-25 dark:!bg-gray-100 !font-medium !border-gray-700 dark:!border-gray-300'
-				to={path} {...props}>
-				<img width={24} height={24} src={icon} alt='' role='presentation'
-					class={'dark:filter dark:invert dark:brightness-75 dark:contrast-200 dark:hue-rotate-180 pointer-events-none'}/>
-				<span class='pl-2 text-gray-100 dark:text-gray-800'>{name}</span>
-			</Button>
+			<Link to={path}
+				className='flex gap-3 p-2 items-end rounded-md transition text-neutral-200 hover:bg-neutral-800/50'
+				activeClassName='!bg-neutral-800 shadow-md !text-accent-200 primary-50 secondary-400'>
+				<Svg src={icon} size={6} class='ml-0.5'/>
+				<p class='leading-snug font-medium flex-grow'>{label}</p>
+				{typeof notifications === 'number' &&
+					<div class='block w-4 h-4 bg-accent-400 text-neutral-700 rounded-full
+						text-[13px] font-black text-center leading-none pt-px mb-1 mr-1 ring-4
+						ring-accent-600/25 ring-offset-neutral-900'>{notifications}</div>}
+				{typeof notifications === 'boolean' &&
+					<div class='block w-2.5 h-2.5 bg-accent-500 text-neutral-700 rounded-full
+						text-sm font-black text-center leading-none pt-0.5 mb-1.5 mr-2 ring ring-accent-600/25'/>}
+			</Link>
 		</li>
 	);
 }
 
 export default function SettingsPage() {
-	const [ mobile, setMobile ] = useState<boolean>(window.innerWidth <= 800);
-	const location = useLocation();
+	const history = useHistory();
+	const ignoreScroll = useRef<{ state: boolean; timeout: any }>({ state: false, timeout: 0 });
+	const refs = useRef<Record<string, HTMLDivElement | null>>({});
 
 	useEffect(() => {
-		const query = window.matchMedia('screen and (min-width: 768px)');
-		setMobile(!query.matches);
-		const interval = setInterval(() => setMobile(!query.matches), 250);
-		return () => clearInterval(interval);
+		const section = history.location.pathname.split('/')[2];
+		if (!section) history.replace('/settings/overview/');
+		const ref = refs.current[section];
+		if (ref) setTimeout(() => window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'auto' }), 200);
+
+		return history.listen((evt) => {
+			if ((evt.state as any)?.scrollInitiated) return;
+			const section = evt.pathname.split('/')[2];
+			if (!section && evt.pathname.startsWith('/settings')) history.replace('/settings/overview/');
+			const ref = refs.current[section];
+			if (!ref) return;
+
+			window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'smooth' });
+			ignoreScroll.current.state = true;
+			clearTimeout(ignoreScroll.current.timeout);
+			ignoreScroll.current.timeout = setTimeout(() => ignoreScroll.current.state = false, 750);
+		});
 	}, []);
 
 	useEffect(() => {
-		const app = document.querySelector('.App') as HTMLElement;
-		if (!app) return;
+		let scrolled = false;
+		const onScroll = () => scrolled = true;
+		window.addEventListener('scroll', onScroll);
 
-		app.style.overflowY = 'scroll';
-		return () => app.style.overflowY = '';
+		const interval = setInterval(() => {
+			if (!scrolled || ignoreScroll.current.state) {
+				scrolled = false;
+				return;
+			};
+			scrolled = false;
+
+			let lastSection = '';
+			Object.entries(refs.current).some(([ section, elem ]) => {
+				if (elem!.offsetTop > window.scrollY + 36 * 2) return true;
+
+				lastSection = section;
+				return false;
+			});
+
+			if (lastSection) history.replace(`/settings/${lastSection}/`, { scrollInitiated: true });
+		}, 50);
+
+
+		return () => {
+			window.removeEventListener('scroll', onScroll);
+			clearInterval(interval);
+		};
 	}, []);
-
-	const inPage = location.pathname.replace(/\/settings\/?/, '');
 
 	return (
-		<Page class='flex bg-white dark:bg-gray-100 !pb-0 min-h-screen'>
+		<Page class='flex justify-center !pb-0 min-h-screen'>
 			<Title>Settings</Title>
-			{(!mobile || !inPage) &&
-				<div class='w-full md:w-72 h-full px-4 bg-gray-900 dark:bg-gray-50 flex-shrink-0'>
-					<ul class='sticky top-0 flex flex-col gap-1 py-3.5' role='navigation'>
-						{renderLink('Overview', '/settings/overview', '/admin/asset/icon/home-dark.svg')}
-						<li><hr class='border-gray-700 dark:border-gray-300 my-2' /></li>
-						{renderLink('Themes', '/settings/themes', '/admin/asset/icon/theme-dark.svg')}
-						{renderLink('Plugins', '/settings/plugins', '/admin/asset/icon/element-dark.svg')}
-						<li><hr class='border-gray-700 dark:border-gray-300 m-1' /></li>
-						{renderLink('Users', '/settings/users', '/admin/asset/icon/users-dark.svg')}
-						{renderLink('Media', '/settings/media', '/admin/asset/icon/image-dark.svg')}
-						{renderLink('Roles', '/settings/roles', '/admin/asset/icon/role-dark.svg')}
-						<li><hr class='border-gray-700 dark:border-gray-300 m-1' /></li>
-						{renderLink('Developer', '/settings/developer', '/admin/asset/icon/developer-dark.svg')}
-					</ul>
+			<div class='w-full md:w-64 h-full pl-4 flex-shrink-0'>
+				<ul class='sticky top-6 flex flex-col gap-2 mt-6' role='navigation'>
+					<SidebarLink label='Overview' path='/settings/overview/' icon={icon_home}/>
+					<SidebarLink label='Themes' path='/settings/themes/' icon={icon_themes}/>
+					<SidebarLink label='Plugins' path='/settings/plugins/' icon={icon_plugins}/>
+					<SidebarLink label='Media' path='/settings/media/' icon={icon_media}/>
+					<SidebarLink label='Users' path='/settings/users/' icon={icon_users}/>
+					<SidebarLink label='Roles' path='/settings/roles/' icon={icon_roles}/>
+					<SidebarLink label='Updates' path='/settings/updates/' icon={icon_updates} notifications={1}/>
+					<SidebarLink label='Developer' path='/settings/developer/' icon={icon_developer} notifications/>
+				</ul>
+			</div>
+			<Fragment>
+				<div class='w-full max-w-4xl p-6 pb-16 space-y-12'>
+					<div ref={ref => refs.current.overview = ref}><MainSettings/></div>
+					<div ref={ref => refs.current.themes = ref}><ThemesSettings/></div>
+					<div ref={ref => refs.current.plugins = ref}><PluginsSettings/></div>
+					<div ref={ref => refs.current.media = ref}><MediaSettings/></div>
+					<div ref={ref => refs.current.users = ref}><UsersSettings/></div>
+					<div ref={ref => refs.current.roles = ref}><RolesSettings/></div>
+					<div ref={ref => refs.current.developer = ref}><DeveloperSettings/></div>
+					<div class='h-48'/>
 				</div>
-			}
-			{(!mobile || inPage) &&
-				<Fragment>
-					<div class='w-full p-4 pb-16 text-gray-100 dark:text-gray-800'>
-						<Switch>
-							<Route exact path='/settings/overview' 	component={MainSettings as any} />
-							<Route exact path='/settings/themes' 		component={ThemesSettings as any} />
-							<Route exact path='/settings/plugins' 	component={PluginsSettings as any} />
-							<Route exact path='/settings/media' 		component={MediaSettings as any} />
-
-							<Route exact path='/settings/users' 		component={UsersSettings as any} />
-							<Route exact path='/settings/roles' 		component={RolesSettings as any} />
-
-							<Route exact path='/settings/developer' component={DeveloperSettings as any} />
-
-							{!mobile && <Redirect exact to='/settings/overview'/>}
-						</Switch>
-					</div>
-					<div class='w-72 flex-shrink hidden 2xl:block'/>
-				</Fragment>
-			}
+				<div class='w-48 flex-shrink hidden 2xl:block'/>
+			</Fragment>
 		</Page>
 	);
 }

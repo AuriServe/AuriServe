@@ -3,16 +3,250 @@
 @import 'tailwindcss/components'
 @import 'tailwindcss/utilities'
 
-@layer utilities
-	.interact-none
-		user-select: none
-		pointer-events: none
+@font-face
+	font-weight: 100 900
+	font-family: 'Roboto'
+	src: url('/admin/asset/font_roboto.ttf') format('truetype')
 
-	.cursor-resize-ns
-		cursor: ns-resize
+@property --icon-primary
+	syntax: '<color>'
+
+@property --icon-secondary
+	syntax: '<color>'
+
+@layer utilities
+	@variants
+		.interact-none
+			user-select: none
+			pointer-events: none
+
+		.cursor-resize-ns
+			cursor: ns-resize
+
+		.tri
+			clip-path: polygon(0 0, 0% 100%, 100% 100%)
 
 html.AS_APP
 	overflow-x: hidden
+
+:root
+	--theme-neutral-0:   255, 255, 255
+	--theme-neutral-50:  248, 250, 252
+
+	--theme-neutral-100: 241, 245, 249
+	--theme-neutral-200: 226, 232, 240
+	--theme-neutral-300: 203, 213, 225
+	--theme-neutral-400: 148, 163, 184
+	--theme-neutral-500: 100, 116, 139
+	--theme-neutral-600: 71,  85,  105
+	--theme-neutral-700: 51,  65,  85
+	--theme-neutral-750: 27,  38,  61
+	--theme-neutral-800: 30,  41,  59
+	--theme-neutral-900: 15,  23,  42
+	--theme-neutral-950: 0,   0,   0
+
+.dark
+	--theme-neutral-0:   248, 250, 252
+	--theme-neutral-50:  241, 245, 249
+	--theme-neutral-100: 203, 213, 225
+	--theme-neutral-200: 148, 163, 184
+	--theme-neutral-300: 100, 116, 139
+	--theme-neutral-400: 69,  85,  107
+	--theme-neutral-500: 55,  71,  94
+	--theme-neutral-600: 43,  57,  81
+	--theme-neutral-700: 32,  45,  68
+	--theme-neutral-800: 23,  33,  55
+	--theme-neutral-900: 15,  23,  42
+	--theme-neutral-950: 0,   0,   0
+
+.theme-indigo
+	--theme-accent-50:  238, 242, 255
+	--theme-accent-100: 224, 231, 255
+	--theme-accent-200: 199, 210, 254
+	--theme-accent-300: 165, 180, 252
+	--theme-accent-400: 129, 140, 248
+	--theme-accent-500: 99,  102, 241
+	--theme-accent-600: 79,  70,  229
+	--theme-accent-700: 67,  56,  202
+	--theme-accent-800: 55,  48,  163
+	--theme-accent-900: 47,  42,  139
+
+.theme-blue
+	--theme-accent-50:  239, 246, 255
+	--theme-accent-100: 219, 234, 254
+	--theme-accent-200: 191, 219, 254
+	--theme-accent-300: 147, 197, 253
+	--theme-accent-400: 96,  165, 250
+	--theme-accent-500: 59,  130, 246
+	--theme-accent-600: 37,  99,  235
+	--theme-accent-700: 29,  78,  216
+	--theme-accent-800: 30,  64,  175
+	--theme-accent-900: 30,  58,  138
+
+.theme-cyan
+	--theme-accent-50:  236, 254, 255
+	--theme-accent-100: 207, 250, 254
+	--theme-accent-200: 165, 243, 252
+	--theme-accent-300: 103, 232, 249
+	--theme-accent-400: 34,  211, 238
+	--theme-accent-500: 6,   182, 212
+	--theme-accent-600: 8,   145, 178
+	--theme-accent-700: 14,  116, 144
+	--theme-accent-800: 21,  94,  117
+	--theme-accent-900: 22,  78,  99
+
+.theme-emerald
+	--theme-accent-50:  236, 253, 245
+	--theme-accent-100: 209, 250, 229
+	--theme-accent-200: 167, 243, 208
+	--theme-accent-300: 110, 231, 183
+	--theme-accent-400: 52,  211, 153
+	--theme-accent-500: 16,  185, 129
+	--theme-accent-600: 5,   150, 105
+	--theme-accent-700: 4,   120, 87
+	--theme-accent-800: 6,   95,  70
+	--theme-accent-900: 6,   78,  59
+
+.theme-lime
+	--theme-accent-50:  247, 254, 231
+	--theme-accent-100: 236, 252, 203
+	--theme-accent-200: 217, 249, 157
+	--theme-accent-300: 190, 242, 100
+	--theme-accent-400: 163, 230, 53
+	--theme-accent-500: 132, 204, 22
+	--theme-accent-600: 101, 163, 13
+	--theme-accent-700: 77,  124, 15
+	--theme-accent-800: 63,  98,  18
+	--theme-accent-900: 54,  83,  20
+
+.theme-amber
+	--theme-accent-50:  255, 251, 235
+	--theme-accent-100: 254, 243, 199
+	--theme-accent-200: 253, 230, 138
+	--theme-accent-300: 252, 211, 77
+	--theme-accent-400: 251, 191, 36
+	--theme-accent-500: 245, 158, 11
+	--theme-accent-600: 217, 119, 6
+	--theme-accent-700: 180, 83,  9
+	--theme-accent-800: 146, 64,  14
+	--theme-accent-900: 120, 53,  15
+
+.theme-red
+	--theme-accent-50:  254, 242, 242
+	--theme-accent-100: 254, 226, 226
+	--theme-accent-200: 254, 202, 202
+	--theme-accent-300: 252, 165, 165
+	--theme-accent-400: 248, 113, 113
+	--theme-accent-500: 239, 68,  68
+	--theme-accent-600: 220, 38,  38
+	--theme-accent-700: 185, 28,  28
+	--theme-accent-800: 153, 27,  27
+	--theme-accent-900: 127, 29,  29
+
+.theme-pink
+	--theme-accent-50:  253, 242, 248
+	--theme-accent-100: 252, 231, 243
+	--theme-accent-200: 251, 207, 232
+	--theme-accent-300: 249, 168, 212
+	--theme-accent-400: 244, 114, 182
+	--theme-accent-500: 236, 72,  153
+	--theme-accent-600: 219, 39,  119
+	--theme-accent-700: 190, 24,  93
+	--theme-accent-800: 157, 23,  77
+	--theme-accent-900: 131, 24,  67
+
+@layer utilities
+	.primary-white
+		--icon-primary: rgb(var(--theme-neutral-0))
+	.primary-50
+		--icon-primary: rgb(var(--theme-accent-50))
+	.primary-100
+		--icon-primary: rgb(var(--theme-accent-100))
+	.primary-200
+		--icon-primary: rgb(var(--theme-accent-200))
+	.primary-300
+		--icon-primary: rgb(var(--theme-accent-300))
+	.primary-400
+		--icon-primary: rgb(var(--theme-accent-400))
+	.primary-500
+		--icon-primary: rgb(var(--theme-accent-500))
+	.primary-600
+		--icon-primary: rgb(var(--theme-accent-600))
+	.primary-700
+		--icon-primary: rgb(var(--theme-accent-700))
+	.primary-800
+		--icon-primary: rgb(var(--theme-accent-800))
+	.primary-900
+		--icon-primary: rgb(var(--theme-accent-900))
+	.primary-black
+		--icon-primary: rgb(var(--theme-neutral-950))
+
+	.secondary-white
+		--icon-secondary: rgb(var(--theme-neutral-0))
+	.secondary-50
+		--icon-secondary: rgb(var(--theme-accent-50))
+	.secondary-100
+		--icon-secondary: rgb(var(--theme-accent-100))
+	.secondary-200
+		--icon-secondary: rgb(var(--theme-accent-200))
+	.secondary-300
+		--icon-secondary: rgb(var(--theme-accent-300))
+	.secondary-400
+		--icon-secondary: rgb(var(--theme-accent-400))
+	.secondary-500
+		--icon-secondary: rgb(var(--theme-accent-500))
+	.secondary-600
+		--icon-secondary: rgb(var(--theme-accent-600))
+	.secondary-700
+		--icon-secondary: rgb(var(--theme-accent-700))
+	.secondary-800
+		--icon-secondary: rgb(var(--theme-accent-800))
+	.secondary-900
+		--icon-secondary: rgb(var(--theme-accent-900))
+	.secondary-black
+		--icon-secondary: rgb(var(--theme-neutral-950))
+
+	.primary-neutral-50
+		--icon-primary: rgb(var(--theme-neutral-50))
+	.primary-neutral-100
+		--icon-primary: rgb(var(--theme-neutral-100))
+	.primary-neutral-200
+		--icon-primary: rgb(var(--theme-neutral-200))
+	.primary-neutral-300
+		--icon-primary: rgb(var(--theme-neutral-300))
+	.primary-neutral-400
+		--icon-primary: rgb(var(--theme-neutral-400))
+	.primary-neutral-500
+		--icon-primary: rgb(var(--theme-neutral-500))
+	.primary-neutral-600
+		--icon-primary: rgb(var(--theme-neutral-600))
+	.primary-neutral-700
+		--icon-primary: rgb(var(--theme-neutral-700))
+	.primary-neutral-800
+		--icon-primary: rgb(var(--theme-neutral-800))
+	.primary-neutral-900
+		--icon-primary: rgb(var(--theme-neutral-900))
+
+	.secondary-neutral-50
+		--icon-secondary: rgb(var(--theme-neutral-50))
+	.secondary-neutral-100
+		--icon-secondary: rgb(var(--theme-neutral-100))
+	.secondary-neutral-200
+		--icon-secondary: rgb(var(--theme-neutral-200))
+	.secondary-neutral-300
+		--icon-secondary: rgb(var(--theme-neutral-300))
+	.secondary-neutral-400
+		--icon-secondary: rgb(var(--theme-neutral-400))
+	.secondary-neutral-500
+		--icon-secondary: rgb(var(--theme-neutral-500))
+	.secondary-neutral-600
+		--icon-secondary: rgb(var(--theme-neutral-600))
+	.secondary-neutral-700
+		--icon-secondary: rgb(var(--theme-neutral-700))
+	.secondary-neutral-800
+		--icon-secondary: rgb(var(--theme-neutral-800))
+	.secondary-neutral-900
+		--icon-secondary: rgb(var(--theme-neutral-900))
 
 html.AS_APP
 	overflow-y: scroll
@@ -21,15 +255,16 @@ html.AS_APP
 	body
 		@media (pointer: fine)
 			&::-webkit-scrollbar, *::-webkit-scrollbar
-				width: 8px
-				height: 8px
-				background-color: #171D23
+				width: 14px
+				height: 14px
+				background-color: theme(colors.neutral.900)
 
 			&::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb
-				background-color: rgba(87, 87, 87, .38)
-
+				border-radius: 9999px
+				background-color: theme(colors.neutral.600)
+				border: 4px solid theme(colors.neutral.900)
 				&:hover
-					background-color: rgba(87, 87, 87, .6)
+					background-color: theme(colors.neutral.500)
 
 .AS_TRANSITION_THEME, .AS_TRANSITION_THEME *, .AS_TRANSITION_THEME *::before, .AS_TRANSITION_THEME *::after
 	transition: all 0.25s 0s !important

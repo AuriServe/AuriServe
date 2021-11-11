@@ -9,5 +9,5 @@ interface Props {
 }
 
 export default forwardRef<HTMLHRElement, Props>(function InputLabel(props, fRef) {
-	return <hr ref={fRef} class={mergeClasses(props.class, 'border-b border-gray-700 my-4')} />;
+	return <hr ref={fRef} class={mergeClasses(props.class, 'border-b border-neutral-200 my-4')} />;
 });

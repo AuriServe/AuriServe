@@ -1,13 +1,16 @@
 import { h } from 'preact';
-// import { useState } from 'preact/hooks';
 
-import { Format } from 'common';
+import Card from '../Card';
+import * as Btn from '../Button';
+import MediaIcon from './MediaIcon';
 import { Media, User } from 'common/graph/type';
 
-import { Button, DimensionTransition } from '../structure';
-import UserTag from '../user/UserTag';
-// import MediaReplaceForm from './MediaReplaceForm';
-import MediaIcon, { mediaIsImage } from './MediaIcon';
+import { Format } from 'common';
+
+import icon_code from '@res/icon/code.svg';
+import icon_edit from '@res/icon/edit.svg';
+import icon_trash from '@res/icon/trash.svg';
+import icon_external from '@res/icon/external.svg';
 
 interface Props {
 	user: User;
@@ -15,52 +18,54 @@ interface Props {
 	onDelete?: () => void;
 }
 
-export default function MediaView({ user, media, onDelete }: Props) {
-	// const [ replacing, setReplacing ] = useState<boolean>(false);
+/** Image extensions that should be considered for loading a preview from URL. */
+const IMAGE_EXTS = ['png', 'svg', 'jpg', 'jpeg', 'svg', 'gif'];
 
-	console.log(media.id);
+export default function MediaView({ user, media, onDelete }: Props) {
+	const isImage = IMAGE_EXTS.filter(p => media.extension === p).length > 0;
+
+	const handleCopyID = () => {
+		navigator.clipboard.writeText(media.id);
+	};
 
 	return (
-		<DimensionTransition duration={200} mode='height'>
-			<div class='block overflow-hidden w-screen max-w-3xl'>
-				<div class='flex flex-row gap-4 items-center'>
-					<MediaIcon path={media.url} imageIcon={false} class='w-20 h-20 !bg-gray-900 dark:!bg-gray-200'/>
-					<div>
-						<h1 class='text-gray-100 dark:text-gray-800 font-medium truncate'>{media.name}</h1>
-						<h2 class='text-gray-300 dark:text-gray-600 font-medium text-sm py-0.5 truncate'>
-							{Format.bytes(media.bytes)} • Uploaded by <UserTag user={user} /> {Format.date(media.created)}</h2>
-						<h3 class='text-gray-400 dark:text-gray-500 font-medium text-sm py-0.5 truncate'>{media.url}</h3>
+		<div class='w-screen max-w-3xl'>
+			<Card.Header class='flex flex-row gap-3 items-center'>
+				<MediaIcon path={media.url} iconOnly={true} class='!bg-neutral-100 dark:!bg-neutral-600'/>
+
+				<div class='text-left overflow-hidden flex-grow'>
+					<p class='truncate font-medium text-neutral-100'>
+						{media.name}
+					</p>
+					<p class='text-sm pt-0.5 truncate font-medium text-neutral-200'>
+						Uploaded by {user?.username ?? 'Unknown'} {Format.date(media.created)}.
+					</p>
+					<p class='text-sm pt-1 pb-0.5 truncate font-normal text-neutral-200'>
+						{media.url} • <Btn.Link icon={icon_code} iconOnly label='Copy ID' onClick={handleCopyID}/>
+					</p>
+				</div>
+			</Card.Header>
+
+			<Card.Toolbar>
+				{onDelete && <Btn.Tertiary icon={icon_trash} label='Delete' onClick={onDelete}/>}
+				{onDelete && <Btn.Tertiary icon={icon_edit} label='Edit' onClick={onDelete}/>}
+			</Card.Toolbar>
+
+			<Card.Body class='w-full flex place-items-center text-center'>
+				{isImage
+					? <img width={media.size!.x} height={media.size!.y} src={media.url} alt=''
+						class='w-full h-max min-w-16 max-h-128 object-contain rounded'/>
+					: <div class='py-20 w-full flex flex-col items-center gap-4'>
+						<p class='text-neutral-300 font-medium'>&nbsp;Can't preview this type of file.</p>
+						<Btn.Tertiary icon={icon_external} label='Open in new tab' href={media.url}/>
 					</div>
-				</div>
+				}
+			</Card.Body>
 
-				<div class='mt-4 flex flex-row gap-2'>
-					{onDelete && <Button icon='/admin/asset/icon/trash-dark.svg' label='Delete' onClick={() => onDelete!()}/>}
-					{/* <Button icon='/admin/asset/icon/refresh-dark.svg' label={replacing ? 'Cancel' : 'Replace File'}
-						onClick={() => setReplacing(!replacing)}/>*/}
-
-					<div class='flex-grow'/>
-
-					{mediaIsImage('.' + media.extension) &&
-						<Button icon='/admin/asset/icon/external-dark.svg' label='Open in New Tab'
-							href={media.url} target='_blank' rel='noreferrer noopener'/>}
-
-				</div>
-
-				<div class='w-full flex place-items-center p-4 mt-4 text-center rounded bg-gray-900 dark:bg-gray-200'>
-					{mediaIsImage('.' + media.extension)
-						? <img width={media.size!.x} height={media.size!.y} src={media.url} alt=''
-							class='w-full h-max min-w-16 max-h-128 object-contain'/>
-						: <Button icon='/admin/asset/icon/external-dark.svg' target='_blank' rel='noreferrer noopener' label='View File'
-							href={media.url} class='my-24 mx-auto py-2.5 px-3 !bg-gray-800 dark:!bg-gray-300'></Button>
-					}
-				</div>
-
-				{/* this.state.replacing &&
-					<MediaReplaceForm
-						replace={props.item.id}
-						accept={'.' + props.item.extension}
-						onSubmit={this.handleReplaceSubmit} /> */}
-			</div>
-		</DimensionTransition>
+			<Card.Footer>
+				{(media.size && Format.vector(media.size, 'px') + ' • ')} {Format.bytes(media.bytes)}
+				&nbsp;•&nbsp;<Btn.Link icon={icon_external} label='Open' href={media.url} iconRight/>
+			</Card.Footer>
+		</div>
 	);
 };

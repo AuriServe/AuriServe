@@ -1,57 +1,41 @@
 import { h } from 'preact';
 
+import Svg from '../Svg';
+
 import { mergeClasses } from 'common/util';
+
+import icon_document from '@res/icon/file.svg';
 
 interface Props {
 	path: string;
 	image?: string;
-	imageIcon?: boolean;
+	iconOnly?: boolean;
 
+	style?: any;
 	class?: string;
 }
 
+/** Image extensions that should be considered for loading a preview from URL. */
 const IMAGE_EXTS = ['png', 'svg', 'jpg', 'jpeg', 'svg', 'gif'];
-const ICON_PREFIX = '/admin/asset/icon/ext-';
 
-const ICONS: {[key: string]: string | undefined} = {
-	unknown: ICON_PREFIX + 'unknown-color.svg',
-
-	md:  ICON_PREFIX + 'txt-color.svg',
-	txt: ICON_PREFIX + 'txt-color.svg',
-
-	pdf: ICON_PREFIX + 'pdf-color.svg',
-
-	doc:  ICON_PREFIX + 'document-color.svg',
-	docx: ICON_PREFIX + 'document-color.svg',
-
-	xls:  ICON_PREFIX + 'sheet-color.svg',
-	xlsx: ICON_PREFIX + 'sheet-color.svg',
-
-	ppt:  ICON_PREFIX + 'slideshow-color.svg',
-	pptx: ICON_PREFIX + 'slideshow-color.svg',
-
-	image: ICON_PREFIX + 'image-color.svg'
-};
-
-export function mediaIsImage(path: string) {
-	return IMAGE_EXTS.filter((p) => path.endsWith('.' + p)).length > 0;
-}
+/**
+ * Displays an icon for a media file within a box.
+ * If the file is an image, it will be displayed as such unless `iconOnly` is true.
+ * If `image` is set, that will always be displayed instead of an icon or loaded image.
+ */
 
 export default function MediaIcon(props: Props) {
-	const isImage = props.image ?? mediaIsImage(props.path);
-	const showImage = (props.imageIcon === undefined || props.imageIcon);
-
-	if (isImage && showImage) return (
-		<img width={64} height={64} src={(props.image ? props.image : props.path + '?res=thumbnail')} alt='' loading='lazy'
-			class={mergeClasses('object-cover rounded bg-gray-800 dark:bg-gray-300 select-none overflow-hidden flex-shrink-0', props.class)} />
-	);
-
-	let iconUrl = ICONS.unknown;
-	if (isImage) iconUrl = (showImage ? props.image ?? props.path : ICONS.image);
-	else iconUrl = ICONS[props.path.substr(props.path.lastIndexOf('.') + 1)] ?? iconUrl;
+	const isImage = props.image ?? IMAGE_EXTS.filter((p) => props.path.endsWith('.' + p)).length > 0;
+	const showImage = (!props.iconOnly ?? props.image);
 
 	return (
-		<img width={64} height={64} src={iconUrl} alt=''
-			class={mergeClasses('object-cover rounded bg-gray-800 dark:bg-gray-300 select-none overflow-hidden p-3 flex-shrink-0', props.class)} />
+		<div class={mergeClasses(props.class,
+			'w-18 h-18 bg-neutral-100 dark:bg-neutral-750 primary-neutral-100 secondary-neutral-300',
+			'rounded interact-none grid place-items-center transition')}>
+			{isImage && showImage
+				? <img width={64} height={64} src={props.image ?? props.path} alt='' loading='lazy' role='presentation'
+					class='object-cover rounded w-full h-full'/>
+				: <Svg src={icon_document} size={10}/>}
+		</div>
 	);
 }

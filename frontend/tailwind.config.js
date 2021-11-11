@@ -1,7 +1,14 @@
-const plugin = require('tailwindcss/plugin');
 const colors = require('tailwindcss/colors');
 const defaultTheme = require('tailwindcss/defaultTheme');
-const { transform } = require('typescript');
+
+const varColor = (color) => ({ opacityValue }) => `rgba(var(--theme-${color}), ${opacityValue ?? 1})`;
+
+const varColorSwatch = (color) => {
+	const colors = {};
+	[ 50, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
+		.forEach(weight => colors[weight] = varColor(`${color}-${weight}`));
+	return colors;
+}
 
 module.exports = {
 	mode: 'jit',
@@ -28,27 +35,42 @@ module.exports = {
 			},
 			maxHeight: {
 				'128': '32rem'
+			},
+			fontWeight: {
+				...defaultTheme.fontWeight,
+				normal: 450
+			},
+			spacing: {
+				'18': '4.5rem'
 			}
 		},
 		colors: {
 			transparent: 'transparent',
-			current: 'currentColor',
-			white: colors.white,
-			black: colors.black,
-			gray: {
-				50:  '#171D23',
-				100: '#1d2731',
-				200: '#212f3c',
-				300: '#303D4C',
-				400: '#596A7D',
-				500: '#74879D',
-				600: '#879CB3',
-				700: '#AABCCF',
-				800: '#D0DDEB',
-				900: '#EAF0F6'
-			},
-			blue: colors.blue,
-			indigo: colors.indigo
+			neutral: { ...varColorSwatch('neutral'), 750: varColor('neutral-750') },
+			accent: varColorSwatch('accent'),
+			blue: varColorSwatch('accent'),
+			indigo: varColorSwatch('accent'),
+			white: varColor('neutral-0'),
+			black: varColor('neutral-950'),
+			red: colors.rose
+			// transparent: 'transparent',
+			// current: 'currentColor',
+			// white: colors.white,
+			// black: colors.black,
+			// gray: {
+			// 	50:  '#171D23',
+			// 	100: '#1d2731',
+			// 	200: '#212f3c',
+			// 	300: '#303D4C',
+			// 	400: '#596A7D',
+			// 	500: '#74879D',
+			// 	600: '#879CB3',
+			// 	700: '#AABCCF',
+			// 	800: '#D0DDEB',
+			// 	900: '#EAF0F6'
+			// },
+			// blue: colors.blue,
+			// indigo: colors.indigo
 		},
 		animation: {
 			rocket: 'rocket 0.5s 1',

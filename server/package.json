@@ -23,7 +23,7 @@
     "dev": "nodemon",
     "debug": "node --inspect -r ts-node/register src/Main.ts -- --verbose",
     "lint": "eslint -c .eslintrc.js src/**/*.ts",
-    "build": "npm run lint && tsc --project tsconfig.json && nexe --target linux-x86-12.9.1 --name AuriServe --output dist/AuriServe -r 'src/views/*' -r 'interface/dist/*' -r 'interface/res/**/*' && npm run clean",
+    "build": "npm run lint && tsc --project tsconfig.json && nexe --target linux-x86-14.15.3 --name AuriServe --output dist/AuriServe -r 'src/views/*' -r 'interface/dist/*' -r 'interface/res/**/*' && npm run clean",
     "clean": "find src -name '*.js' -type f -delete"
   },
   "nodemonConfig": {

@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { useEffect, useRef, useContext } from 'preact/hooks';
 
-import Button from './Button';
+import { UnstyledButton } from '../Button';
 import { SelectGroupContext } from './SelectGroup';
 import ClickHandler, { ClickHandlerCallbacks } from '../ClickHandler';
 
@@ -13,8 +13,10 @@ interface Props {
 	callbacks?: ClickHandlerCallbacks;
 
 	style?: any;
+	selectedStyle?: any;
 	class?: string;
-	children?: ComponentChildren;
+	selectedClass?: string;
+	children?: ComponentChildren | ((selected: boolean) => ComponentChildren);
 }
 
 export default function Selectable(props: Props) {
@@ -46,13 +48,11 @@ export default function Selectable(props: Props) {
 	const selected = ctx.selected.indexOf(props.ind) !== -1;
 
 	return (
-		<Button onMouseUp={handler.current.handleMouseUp} style={props.style}
-			class={mergeClasses(props.class,
-				selected && '!bg-blue-300/30 dark:!bg-blue-400/10 !border-blue-400 dark:!border-blue-500/75',
-				selected && 'active:!border-blue-800 focus-visible:!border-blue-800',
-				selected && 'dark:active:!border-blue-300 dark:focus-visible:!border-blue-300')}
-			highlightClass={mergeClasses(selected && '!bg-blue-600')}>
-			{props.children}
-		</Button>
+		<UnstyledButton
+			onMouseUp={handler.current.handleMouseUp}
+			class={mergeClasses(props.class, selected && props.selectedClass)}
+			style={selected ? { ...props.style ?? {}, ...props.selectedStyle ?? {} } : props.style}>
+			{typeof props.children === 'function' ? props.children(selected) : props.children}
+		</UnstyledButton>
 	);
 }

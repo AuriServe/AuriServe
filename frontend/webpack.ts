@@ -94,6 +94,7 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 		context: resolve(__dirname, 'src'),
 		resolve: {
 			alias: {
+				'@res': resolve(__dirname, 'res'),
 				'react': 'preact/compat',
 				'react-dom': 'preact/compat'
 			}
@@ -130,6 +131,12 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 					} } },
 					'postcss-loader'
 				]
+			}, {
+				test: /\.svg$/i,
+				type: 'asset/source'
+			}, {
+				test: /\.(png|jpg)$/i,
+				type: 'asset/resource'
 			}]
 		}
 	});

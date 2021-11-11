@@ -45,7 +45,7 @@ export default function App() {
 	return (
 		<AppContext.Provider value={{ data, mergeData }}>
 			{state === 'LOGIN' ?
-				<div class='AS_ROOT grid min-h-screen bg-gray-900 dark:bg-gray-50'>
+				<div class='AS_ROOT grid min-h-screen bg-neutral-100 dark:bg-neutral-900'>
 					<LoginPage onLogin={() => setState('AUTH')} />
 				</div> :
 				<Router basename='/admin'>
@@ -55,13 +55,15 @@ export default function App() {
 					<Switch>
 						<Route exact path='/renderer' component={EditorRendererPage as any} />
 						<Route strict path='/pages/:page'>
-							<div class='AS_ROOT grid min-h-screen bg-gray-900 dark:bg-gray-50'>
+							<div class='AS_ROOT grid min-h-screen bg-neutral-50 dark:bg-neutral-900'>
 								<EditorControlPage/>
 							</div>
 						</Route>
 
 						<Route>
-							<div class='AS_ROOT grid pl-14 min-h-screen bg-gray-900 dark:bg-gray-50'>
+							<div class='AS_ROOT grid pl-14 min-h-screen bg-neutral-100 dark:bg-neutral-900
+								text-neutral-800 dark:text-neutral-100 font-sans primary-neutral-500 secondary-neutral-400
+								dark:primary-neutral-100 dark:secondary-neutral-300 theme-pink'>
 								<div class='grid animate-fadein'>
 									<Sidebar/>
 									<Switch>

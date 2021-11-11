@@ -4,10 +4,17 @@ import { useState, useEffect } from 'preact/hooks';
 
 import { Plugin } from 'common/graph/type';
 
-import { Label } from '../../input';
+import Svg from '../../Svg';
+import Card from '../../Card';
 import PluginItem from './FeatureItem';
 import { SavePopup } from '../../structure';
+import { Tertiary as Button } from '../../Button';
+
 import { useData, useMutation, QUERY_PLUGINS, MUTATE_PLUGINS } from '../../Graph';
+
+import icon_target from '@res/icon/target.svg';
+import icon_browse from '@res/icon/browse.svg';
+import icon_plugins from '@res/icon/plugin.svg';
 
 const sortFn = (a: Plugin, b: Plugin) => {
 	if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
@@ -34,17 +41,24 @@ export default function PluginsSettings() {
 	const handleSave = async () => updateEnabled({ enabled: plugins.filter(t => t.enabled).map(t => t.identifier) }).then(() => refresh());
 
 	return (
-		<div class='w-full max-w-5xl mx-auto'>
-			<Label label='Plugins' class='!text-lg dark:!text-gray-800'/>
-			{plugins.length !== 0 && <FlipMove className='grid grid-cols-3 gap-3' duration={250} aria-role='list'>
-				{plugins.map(plugin => <li class='list-none' key={plugin.identifier}>
-					<PluginItem {...plugin}
-						onToggle={() => handleToggle(plugin.identifier)}
-						onDetails={() => console.log('deets')}/>
-				</li>)}
-			</FlipMove>}
-			{!plugins.length && <p>No plugins</p>}
-			<SavePopup active={isDirty} onSave={handleSave} onReset={() => setPlugins((data.plugins ?? []).sort(sortFn))} />
-		</div>
+		<Card>
+			<Card.Header icon={icon_plugins} title='Plugins' subtitle='Manage site functionality.'>
+				<Button class='absolute bottom-4 right-4' icon={icon_browse} label='Browse Plugins' small/>
+			</Card.Header>
+			<Card.Body>
+				{plugins.length !== 0 && <FlipMove className='grid grid-cols-3 gap-4' duration={250} aria-role='list'>
+					{plugins.map(plugin => <li class='list-none' key={plugin.identifier}>
+						<PluginItem {...plugin}
+							onToggle={() => handleToggle(plugin.identifier)}
+							onDetails={() => console.log('deets')}/>
+					</li>)}
+				</FlipMove>}
+				{!plugins.length && <div class='flex py-28 justify-center items-center gap-2'>
+					<Svg src={icon_target} size={6}/>
+					<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>No plugins found.</p>
+				</div>}
+				<SavePopup active={isDirty} onSave={handleSave} onReset={() => setPlugins((data.plugins ?? []).sort(sortFn))} />
+			</Card.Body>
+		</Card>
 	);
 }
