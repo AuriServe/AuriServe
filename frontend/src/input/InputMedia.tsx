@@ -9,7 +9,7 @@ import { Popup, Modal } from '../structure';
 import { InputProps, FocusableInputProps } from './index';
 import SearchableOptionPicker from './SearchableOptionPicker';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import style from './Input.sss';
 
@@ -56,7 +56,7 @@ export default function InputMedia(props: Props) {
 	};
 
 	return (
-		<div class={mergeClasses(style.Input, 'flex flex-row-reverse !p-0')} style={props.style} ref={wrapRef}>
+		<div class={merge(style.Input, 'flex flex-row-reverse !p-0')} style={props.style} ref={wrapRef}>
 			<input
 				value={search}
 				onInput={handleSearch}
@@ -65,7 +65,7 @@ export default function InputMedia(props: Props) {
 				type='text'
 				disabled={!(props.enabled ?? true)}
 				placeholder={item ? item.name : 'Search Media Item'}
-				class={mergeClasses('flex-grow bg-transparent p-2',
+				class={merge('flex-grow bg-transparent p-2',
 					'focus:outline-none focus:placeholder-neutral-400 dark:focus:placeholder-neutral-400',
 					props.value ? 'placeholder-black dark:placeholder-neutral-100' : 'placeholder-neutral-400')}
 
@@ -85,7 +85,7 @@ export default function InputMedia(props: Props) {
 				<SearchableOptionPicker parent={wrapRef.current} query={search} fields={[ 'name', 'url' ]}
 					options={(media ?? [])} onSelect={selected => handleSet(selected.id)}>
 					{({ option, selected }) =>
-						<div class={mergeClasses('flex flex-row flex-grow text-left items-center gap-2',
+						<div class={merge('flex flex-row flex-grow text-left items-center gap-2',
 							'hover:bg-neutral-100/75 dark:hover:bg-neutral-700/75 active:bg-neutral-100 dark:active:bg-neutral-700',
 							selected && 'bg-neutral-100/60 dark:bg-neutral-700/50')}>
 							<MediaIcon class='w-8 h-8 m-2' path={option.url}/>

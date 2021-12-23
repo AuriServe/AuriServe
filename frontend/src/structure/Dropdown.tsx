@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'preact/hooks';
 import Card, { Props as CardProps } from './Card';
 import Button, { Props as ButtonProps } from './Button';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import Popup from './Popup';
 
@@ -41,7 +41,7 @@ export default function Dropdown(props: Props) {
 		<Button ref={buttonRef} {...props.button} onClick={() => setDropdownActive(!dropdownActive)}>
 			<Popup defaultAnimation={true} active={dropdownActive} ref={dropdownRef}>
 				<Card ref={dropdownRef} {...props.dropdown} style={style}
-					class={mergeClasses('fixed !p-3 my-0 pointer-events-auto !shadow-lg', props.class)}>
+					class={merge('fixed !p-3 my-0 pointer-events-auto !shadow-lg', props.class)}>
 					{props.children}
 				</Card>
 			</Popup>

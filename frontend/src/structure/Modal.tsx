@@ -5,7 +5,7 @@ import { CSSTransition } from 'preact-transitioning';
 import Card from '../Card';
 import Portal from './Portal';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import style from './DefaultAnimation.sss';
 
@@ -40,7 +40,7 @@ export default function Modal(props: Props) {
 		<Portal class='absolute' to={document.querySelector('.AS_ROOT') ?? document.body}>
 			<CSSTransition in={props.active} duration={props.duration ?? 150} classNames='Animate'>
 				<div style={{ zIndex: props.z ?? 100 }} onClick={props.onClose}
-					className={mergeClasses('fixed flex flex-col w-[calc(100%-56px)] h-full items-center overflow-auto top-0 left-0 ml-14',
+					className={merge('fixed flex flex-col w-[calc(100%-56px)] h-full items-center overflow-auto top-0 left-0 ml-14',
 						'justify-around bg-neutral-50/80 dark:bg-neutral-900/90',
 						props.defaultAnimation && style.DefaultAnimation)}>
 					<div class='flex w-full h-auto px-3 py-12 overflow-auto justify-around'>

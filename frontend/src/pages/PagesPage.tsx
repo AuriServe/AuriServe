@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'preact/hooks';
 import { Page as GraphPage } from 'common/graph/type';
@@ -32,12 +32,12 @@ function RouteItem({ route, dragging }: RouteItemProps) {
 	return (
 		<div class='w-full'>
 			<Button to={isActive ? '/routes/' : `/routes/edit${route.path}/`} exact
-				class={mergeClasses('group text-neutral-600 dark:text-neutral-100 p-[0.25rem] mb-1 gap-2',
+				class={merge('group text-neutral-600 dark:text-neutral-100 p-[0.25rem] mb-1 gap-2',
 					isActive ? '!bg-neutral-200/25 dark:!bg-neutral-700 !border-neutral-200 dark:!border-neutral-800'
 						: '!bg-transparent !border-transparent active:!bg-neutral-600/20')}>
 
 				<img src='/admin/asset/icon/document-dark.svg' alt='page' width={24} height={24}
-					class={mergeClasses('w-7 h-7 rounded interact-none p-0.5 ml-px transition-colors',
+					class={merge('w-7 h-7 rounded interact-none p-0.5 ml-px transition-colors',
 						isActive ? 'bg-neutral-600' : 'bg-neutral-600/50 group-active:bg-neutral-600')}/>
 
 				<p class='leading-none text-[15px] flex-grow'>
@@ -47,7 +47,7 @@ function RouteItem({ route, dragging }: RouteItemProps) {
 				</p>
 
 				<img src='/admin/asset/icon/menu-dark.svg' alt='Options' width={20} height={20}
-					class={mergeClasses('w-6 h-6 p-0.5 transition opacity-0 group-hover:opacity-100',
+					class={merge('w-6 h-6 p-0.5 transition opacity-0 group-hover:opacity-100',
 						'hover:filter hover:brightness-200 hover:saturate-50',
 						isActive && 'opacity-100')}/>
 			</Button>
@@ -85,10 +85,10 @@ export default function PagesPage() {
 						renderItem={({ data, dragging }) => <RouteItem route={data as any as GraphPage} dragging={dragging}/>}
 					/>
 					<div class='border-b border-neutral-600 mb-1.5 mt-0.5'/>
-					<Button exact class={mergeClasses('!w-full text-left text-neutral-600 dark:text-neutral-300 p-[0.25rem]',
+					<Button exact class={merge('!w-full text-left text-neutral-600 dark:text-neutral-300 p-[0.25rem]',
 						'mb-1 gap-2 !bg-transparent !border-transparent active:!bg-neutral-600/20')}>
 						<img src='/admin/asset/icon/add-dark.svg' alt='new' width={24} height={24}
-							class={mergeClasses('w-7 h-7 rounded interact-none p-0.5 ml-px transition-colors bg-neutral-600/50')}/>
+							class={merge('w-7 h-7 rounded interact-none p-0.5 ml-px transition-colors bg-neutral-600/50')}/>
 						<p class='leading-none font-medium text-sm'>Add Route</p>
 					</Button>
 				</div>}

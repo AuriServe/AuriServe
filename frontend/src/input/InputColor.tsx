@@ -11,7 +11,7 @@ import ColorPicker from './ColorPicker';
 import { usePopupCancel } from '../Hooks';
 import { InputProps, FocusableInputProps } from './index';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import style from './Input.sss';
 
@@ -44,7 +44,7 @@ export default forwardRef<HTMLInputElement, Props>(function InputColor(props, fR
 
 	return (
 		<div ref={ref} style={props.style}
-			class={mergeClasses('relative p-0 overflow-hidden',
+			class={merge('relative p-0 overflow-hidden',
 				style.Input, props.class)}
 			onFocusCapture={() => setPickerActive(true)}>
 

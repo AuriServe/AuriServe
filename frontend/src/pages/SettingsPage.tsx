@@ -1,4 +1,5 @@
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
+import { memo } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 import { NavLink as Link, useHistory } from 'react-router-dom';
 
@@ -42,6 +43,22 @@ function SidebarLink({ label, path, icon, notifications }: SidebarLinkProps) {
 		</li>
 	);
 }
+
+const SettingsSections = memo(function SettingsSections(
+	{ refs }: { refs: { current: Record<string, HTMLDivElement | null> }}) {
+	return (
+		<div class='w-full max-w-4xl p-6 pb-16 space-y-12'>
+			<div ref={ref => refs.current.overview = ref}><MainSettings/></div>
+			<div ref={ref => refs.current.themes = ref}><ThemesSettings/></div>
+			<div ref={ref => refs.current.plugins = ref}><PluginsSettings/></div>
+			<div ref={ref => refs.current.media = ref}><MediaSettings/></div>
+			<div ref={ref => refs.current.users = ref}><UsersSettings/></div>
+			<div ref={ref => refs.current.roles = ref}><RolesSettings/></div>
+			<div ref={ref => refs.current.developer = ref}><DeveloperSettings/></div>
+			<div class='h-48'/>
+		</div>
+	);
+});
 
 export default function SettingsPage() {
 	const history = useHistory();
@@ -113,19 +130,8 @@ export default function SettingsPage() {
 					<SidebarLink label='Developer' path='/settings/developer/' icon={icon_developer} notifications/>
 				</ul>
 			</div>
-			<Fragment>
-				<div class='w-full max-w-4xl p-6 pb-16 space-y-12'>
-					<div ref={ref => refs.current.overview = ref}><MainSettings/></div>
-					<div ref={ref => refs.current.themes = ref}><ThemesSettings/></div>
-					<div ref={ref => refs.current.plugins = ref}><PluginsSettings/></div>
-					<div ref={ref => refs.current.media = ref}><MediaSettings/></div>
-					<div ref={ref => refs.current.users = ref}><UsersSettings/></div>
-					<div ref={ref => refs.current.roles = ref}><RolesSettings/></div>
-					<div ref={ref => refs.current.developer = ref}><DeveloperSettings/></div>
-					<div class='h-48'/>
-				</div>
-				<div class='w-48 flex-shrink hidden 2xl:block'/>
-			</Fragment>
+			<SettingsSections refs={refs}/>
+			<div class='w-48 flex-shrink hidden 2xl:block'/>
 		</Page>
 	);
 }

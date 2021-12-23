@@ -5,7 +5,7 @@ import { UnstyledButton } from '../Button';
 import { SelectGroupContext } from './SelectGroup';
 import ClickHandler, { ClickHandlerCallbacks } from '../ClickHandler';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 interface Props {
 	ind: number;
@@ -50,7 +50,7 @@ export default function Selectable(props: Props) {
 	return (
 		<UnstyledButton
 			onMouseUp={handler.current.handleMouseUp}
-			class={mergeClasses(props.class, selected && props.selectedClass)}
+			class={merge(props.class, selected && props.selectedClass)}
 			style={selected ? { ...props.style ?? {}, ...props.selectedStyle ?? {} } : props.style}>
 			{typeof props.children === 'function' ? props.children(selected) : props.children}
 		</UnstyledButton>

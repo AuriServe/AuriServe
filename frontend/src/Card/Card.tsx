@@ -1,6 +1,6 @@
 import { h, ComponentChildren, RefObject } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import CardBody from './CardBody';
 import CardHeader from './CardHeader';
@@ -27,7 +27,7 @@ function Card(props: Props) {
 		<section
 			{...props}
 			ref={props.refObj}
-			class={mergeClasses('block bg-white dark:bg-neutral-800 rounded-lg shadow-md', props.class)}
+			class={merge('block bg-white dark:bg-neutral-800 rounded-lg shadow-md', props.class)}
 		/>
 	);
 };

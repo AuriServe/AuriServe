@@ -3,6 +3,9 @@
 @import 'tailwindcss/components'
 @import 'tailwindcss/utilities'
 
+:root
+	--tw-content: ' '
+
 @font-face
 	font-weight: 100 900
 	font-family: 'Roboto'
@@ -15,16 +18,27 @@
 	syntax: '<color>'
 
 @layer utilities
-	@variants
-		.interact-none
-			user-select: none
-			pointer-events: none
+	.interact-none
+		user-select: none
+		pointer-events: none
 
-		.cursor-resize-ns
-			cursor: ns-resize
+	.cursor-resize-ns
+		cursor: ns-resize
 
-		.tri
-			clip-path: polygon(0 0, 0% 100%, 100% 100%)
+	.tri
+		clip-path: polygon(0 0, 0% 100%, 100% 100%)
+
+	.text-shadow
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.10)
+
+	.text-shadow-md
+		text-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)
+
+	.text-shadow-lg
+		text-shadow: 0 15px 30px rgba(0, 0, 0, 0.11), 0 5px 15px rgba(0, 0, 0, 0.08)
+
+	.text-shadow-none
+		text-shadow: none
 
 html.AS_APP
 	overflow-x: hidden
@@ -44,6 +58,8 @@ html.AS_APP
 	--theme-neutral-800: 30,  41,  59
 	--theme-neutral-900: 15,  23,  42
 	--theme-neutral-950: 0,   0,   0
+
+	--theme-neutral-input: 29, 40, 63
 
 .dark
 	--theme-neutral-0:   248, 250, 252
@@ -265,6 +281,31 @@ html.AS_APP
 				border: 4px solid theme(colors.neutral.900)
 				&:hover
 					background-color: theme(colors.neutral.500)
+
+	.scroll-input
+		@media (pointer: fine)
+			&::-webkit-scrollbar
+				width: 14px
+				height: 14px
+				border-radius: 4px
+				background-color: theme(colors.neutral.input)
+
+			&::-webkit-scrollbar-thumb
+				border-radius: 9999px
+				background-color: theme(colors.neutral.500)
+				border: 4px solid theme(colors.neutral.input)
+
+				&:hover
+					background-color: theme(colors.neutral.400)
+
+			&:focus
+
+				&::-webkit-scrollbar
+					background-color: theme(colors.neutral.700)
+
+				&::-webkit-scrollbar-thumb
+					border: 4px solid theme(colors.neutral.700)
+
 
 .AS_TRANSITION_THEME, .AS_TRANSITION_THEME *, .AS_TRANSITION_THEME *::before, .AS_TRANSITION_THEME *::after
 	transition: all 0.25s 0s !important

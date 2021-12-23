@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 /** The distance the focus ring should be from the component's bounds. */
 const FOCUS_RING_POPOUT = 6;
@@ -42,7 +42,7 @@ export default function FocusRing(props: Props) {
 
 	return (
 		<div style={{ boxShadow: `inset 0 0 4px 0 rgba(0, 0, 0, ${shadowAlpha}), 0 0 4px 0 rgba(0, 0, 0, ${shadowAlpha})`, ...bounds }}
-			class={mergeClasses('box-border absolute rounded-md select-none pointer-events-none border-2 z-50',
+			class={merge('box-border absolute rounded-md select-none pointer-events-none border-2 z-50',
 				props.active ? 'animate-select border-blue-500' : 'animate-fadein-150 border-blue-400 bg-blue-400/10')}/>
 	);
 }

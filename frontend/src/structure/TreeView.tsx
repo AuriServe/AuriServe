@@ -1,4 +1,4 @@
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 import { h, createContext, VNode, ComponentChildren } from 'preact';
 import { useContext, useRef, useState, useEffect, useMemo } from 'preact/hooks';
 
@@ -282,11 +282,11 @@ export default function TreeView(props: TreeViewProps) {
 
 	return (
 		<Context.Provider value={context}>
-			<div ref={ref} class={mergeClasses('grid w-full', props.class)}
+			<div ref={ref} class={merge('grid w-full', props.class)}
 				style={{ ...props.style ?? {}, height: getTreeCount(props.items) * props.itemHeight }}>
 
-				<div class={mergeClasses('grid items-start relative', context.drag && 'cursor-resize-ns')}>
-					<ul class={mergeClasses('grid', context.drag && 'interact-none')}>
+				<div class={merge('grid items-start relative', context.drag && 'cursor-resize-ns')}>
+					<ul class={merge('grid', context.drag && 'interact-none')}>
 						{props.items.map((item, i) => <TreeItem item={item} path={[i]}/>)}
 					</ul>
 

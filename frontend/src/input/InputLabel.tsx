@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 interface Props {
 	label: string;
@@ -13,7 +13,7 @@ interface Props {
 
 export default forwardRef<HTMLLabelElement, Props>(function InputLabel(props, fRef) {
 	return (
-		<label ref={fRef} class={mergeClasses(props.class, 'block relative overflow-visible user-select-none',
+		<label ref={fRef} class={merge(props.class, 'block relative overflow-visible user-select-none',
 			'font-semibold text-xs text-neutral-200 tracking-widest uppercase pt-3 pb-1')} style={props.style}>
 			<p class='truncate select-none -mb-6 relative z-10 w-max ml-3 dark:text-neutral-400'>{props.label}</p>
 			{props.children}

@@ -109,6 +109,8 @@ export default function MediaPage() {
 						<Btn.Secondary to='/media/upload/' onClick={() => setSelected([])}
 							icon={icon_add} label='Upload Media'/>
 
+						{selected.length > 0 && <Card.Toolbar.Divider/>}
+
 						{selected.length === 1 && <Btn.Tertiary
 							onClick={() => history.push(media[selected[0]].id + '/')}
 							icon={icon_view} label='View'/>}

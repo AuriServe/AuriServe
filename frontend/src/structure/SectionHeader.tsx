@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import Svg from '../Svg';
 
@@ -15,8 +15,8 @@ interface Props {
 
 export default function SectionHeader(props: Props) {
 	return (
-		<div class={mergeClasses('flex w-max gap-3 pb-2 primary-neutral-100 secondary-neutral-300', props.class)}>
-			<div class={mergeClasses('relative rounded bg-neutral-100 dark:bg-neutral-600',
+		<div class={merge('flex w-max gap-3 pb-2 primary-neutral-100 secondary-neutral-300', props.class)}>
+			<div class={merge('relative rounded bg-neutral-100 dark:bg-neutral-600',
 				props.subtitle ? 'p-2 w-12 h-12' : 'p-1.5 w-9 h-9')}>
 				<Svg size={props.subtitle ? 8 : 6} src={props.icon}/>
 			</div>

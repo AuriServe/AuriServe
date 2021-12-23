@@ -1,41 +1,49 @@
-import { useContext } from 'preact/hooks';
 import { forwardRef } from 'preact/compat';
 import { ComponentChildren, h } from 'preact';
+import { useState, useContext, useEffect } from 'preact/hooks';
 
 import Svg from '../Svg';
 
-import { ErrorType, FormContext, FormField, FormFieldValidation, InputActivity } from './Type';
+import { FormContext, FormField, FormFieldMeta } from './Type';
 
 import icon_info from '@res/icon/info.svg';
 import icon_error from '@res/icon/error.svg';
 
 interface Props {
-	for?: string;
+	/** The field that this Description is for. */
+	for: string;
+
+	/** Only used by FloatingDescription, if true, will not watch for changes to validity. */
+	_manual?: boolean;
 
 	style?: any;
 	class?: string;
-
-	error?: InputActivity;
-
 	children?: (desc: string) => ComponentChildren;
 }
 
-function getErrorMessage(type: ErrorType, validation: FormFieldValidation): string {
-	switch (type) {
-	case 'required': return 'Please fill in this field.';
-	case 'minValue': return 'Must be at least ' + validation.minValue + '.';
-	case 'maxValue': return 'Must be at most ' + validation.maxValue + '.';
-	case 'minLength': return 'Please enter at least ' + validation.minLength + ' characters.';
-	case 'maxLength': return 'Please enter at most ' + validation.maxLength + ' characters.';
-	case 'pattern': return 'Please match the pattern requested.';
-	default: return 'Unhandled error!';
-	}
-}
+function updateError(meta: FormFieldMeta, last?: { error: string; errorMessage: string | null } | null): {
+	error: string; errorMessage: string | null; } | null {
+	if (!meta) return null;
+	if (meta.error && (!last || meta.error !== last.error || meta.errorMessage !== last.errorMessage))
+		return { error: meta.error, errorMessage: meta.errorMessage };
+	return meta.error ? { error: meta.error, errorMessage: meta.errorMessage } : null;
+};
 
 export default forwardRef<HTMLDivElement, Props>(function Description(props, ref) {
 	const form = useContext(FormContext);
 
-	const schema = form.schema.fields[props.for as string] as FormField | undefined;
+	const [ error, setError ] = useState<{ error: string; errorMessage: string | null } | null>(
+		updateError(form.fields[props.for]));
+
+	useEffect(() => {
+		if (props._manual) return;
+		return form.event.bind('validity', (field: string) => {
+			if (field !== props.for) return;
+			setError(last => updateError(form.fields[props.for], last));
+		});
+	}, [ props.for, props._manual ]);
+
+	const schema = form.schema.fields[props.for] as FormField | undefined;
 
 	if (!schema) throw new Error(`Description: Form does not have field '${props.for}'.`);
 
@@ -43,14 +51,14 @@ export default forwardRef<HTMLDivElement, Props>(function Description(props, ref
 		<div ref={ref} style={props.style} class={props.class}>
 			{props.children ? props.children(schema?.description ?? '') :
 				<div class=''>
-					<div class='flex gap-2 p-2 whitespace-pre-line'>
+					<div class='flex gap-2 p-2 pr-3 whitespace-pre-line'>
 						<Svg src={icon_info} size={6} class='flex-shrink-0 primary-300 secondary-neutral-600 -mt-px'/>
 						{schema?.description ?? ''}
 					</div>
-					{props.error?.error && <div class='p-2 bg-neutral-750 rounded-b'>
+					{error && <div class='p-2 bg-neutral-750 rounded-b'>
 						<div class='flex gap-2 text-accent-300 theme-red whitespace-pre-line'>
 							<Svg src={icon_error} size={6} class='flex-shrink-0 secondary-400 primary-neutral-900 -mt-px'/>
-							{props.error.errorMessage ?? getErrorMessage(props.error.error, schema.validation!)}
+							{error.errorMessage ?? error.error}
 						</div>
 					</div>}
 				</div>

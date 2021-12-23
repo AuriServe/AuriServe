@@ -3,7 +3,7 @@ import { createContext } from 'preact';
 import EventEmitter from '../EventEmitter';
 
 /** The form field type. */
-export type FormFieldType = 'text' | 'media' | 'color' | 'number' | 'toggle';
+export type FormFieldType = 'text' | 'media' | 'color' | 'number' | 'toggle' | 'option';
 
 /** Describes the types of validation to be performed by the form field. */
 export interface FormFieldValidation {
@@ -49,6 +49,12 @@ export interface FormField {
 	/** For text fields, whether or not the text should be able to have multiple lines. */
 	multiline?: boolean;
 
+	/** For multiline text fields, the max height of the textarea. */
+	maxHeight?: number;
+
+	/** For option fields, the options you can select from. */
+	options?: Record<string, string>;
+
 	/** The minimum rows of the multiline input. */
 	minRows?: number;
 
@@ -68,10 +74,17 @@ export interface FormSchema {
 	fields: FormGroup;
 }
 
+export interface FormFieldMeta {
+	ref: HTMLElement | null;
+	error: ErrorType | null;
+	errorMessage: string | null;
+}
+
 /** Form context interface. */
 export interface FormContextData {
 	id: string;
-	fields: any;
+	data: Record<string, any>;
+	fields: Record<string, FormFieldMeta>;
 	schema: FormSchema;
 	event: EventEmitter;
 };
@@ -81,20 +94,3 @@ export const FormContext = createContext<FormContextData>(null as any);
 
 /** Input Error Types */
 export type ErrorType = 'pattern' | 'maxValue' | 'minValue' | 'minLength' | 'maxLength' | 'required';
-
-export function getErrorType(validity: ValidityState): ErrorType | null {
-	if (validity.patternMismatch) return 'pattern';
-	if (validity.rangeOverflow) return 'maxValue';
-	if (validity.rangeUnderflow) return 'minValue';
-	if (validity.tooShort) return 'minLength';
-	if (validity.tooLong) return 'maxLength';
-	if (validity.valueMissing) return 'required';
-	return null;
-}
-
-export interface InputActivity {
-	name: string;
-	target: HTMLElement;
-	error?: ErrorType;
-	errorMessage?: string;
-}

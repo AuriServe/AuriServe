@@ -1,11 +1,10 @@
 module.exports = {
 	parser: "sugarss",
 	plugins: [
+		require('postcss-import'),
+		require('tailwindcss/nesting'),
 		require('tailwindcss'),
-		require('autoprefixer'),
-		require('postcss-nested'),
 		require('postcss-nested-vars'),
-		require('postcss-extend'),
-		require('postcss-import')
+		require('autoprefixer')
 	]
 }

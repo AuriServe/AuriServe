@@ -1,6 +1,6 @@
 import { h, ComponentChildren, RefObject } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	// Any default div properties.
@@ -21,7 +21,7 @@ export default function CardBody(props: Props) {
 		<div
 			{...props}
 			ref={props.refObj}
-			class={mergeClasses('p-4', props.class)}
+			class={merge('p-4', props.class)}
 		/>
 	);
 };

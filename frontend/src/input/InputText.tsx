@@ -4,7 +4,7 @@ import { useRef, useLayoutEffect } from 'preact/hooks';
 
 import { InputProps, FocusableInputProps, TextInputProps } from './index';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import style from './Input.sss';
 
@@ -59,7 +59,7 @@ export default forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(functio
 	const ref = useAutoTextArea(props.maxHeight ?? 420, [ props.value ]);
 
 	const onValue = (evt: any) => props.onValue?.(evt.target.value);
-	const classes = mergeClasses(style.Input, props.mono && style.Mono, props.class);
+	const classes = merge(style.Input, props.mono && style.Mono, props.class);
 
 	const fieldProps = {
 		value: props.value,

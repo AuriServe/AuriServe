@@ -1,6 +1,7 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
-import { CSSTransition } from 'preact-transitioning';
+import { useCallback, useRef, useState } from 'preact/hooks';
+// import { Transition } from '@headlessui/react';
+import Transition from '../../Transition';
 
 import Card from '../../Card';
 import * as Button from '../../Button';
@@ -15,7 +16,7 @@ const FORM_SCHEMA: FormSchema = {
 		name: {
 			type: 'text',
 			description: 'The name of your website.',
-			default: 'The Shinglemill The Shinglemill The Shinglemill',
+			default: 'The Shinglemill',
 			validation: {
 				minLength: 3,
 				maxLength: 32
@@ -42,20 +43,30 @@ const FORM_SCHEMA: FormSchema = {
 			}
 		},
 		favicon: {
-			type: 'media',
+			type: 'text',
 			label: 'Favorite Icon',
 			description: 'A small icon for your website, displays on tabs and next to bookmarks.',
 			validation: {
 				optional: true,
-				type: [ 'png', 'svg', 'jpg', 'jpeg', 'svg', 'gif' ]
+				type: [ 'png', 'svg', 'jpg', 'svg', 'gif' ]
 			}
 		},
 		themeColor: {
-			type: 'color',
+			type: 'text',
 			label: 'Accent Color',
 			description: 'The accent color used for your website, used by some browsers.',
 			validation: {
 				optional: true
+			}
+		},
+		visibility: {
+			type: 'option',
+			label: 'Site Visibility',
+			description: 'The visibility of your site to search engines.',
+			// default: 'visible',
+			options: {
+				visible: 'Visible',
+				hidden: 'Hidden'
 			}
 		}
 	}
@@ -64,11 +75,18 @@ const FORM_SCHEMA: FormSchema = {
 export default function MainSettings() {
 	const [ edited, setEdited ] = useState<boolean>(false);
 
+	const data = useRef<any>({});
+
+	const handleSubmit = useCallback(() => {
+		console.log(data);
+		setEdited(edited => !edited);
+	}, []);
+
 	return (
 		<Card>
 			<Card.Header icon={icon_overview} title='Overview' subtitle='Basic site appearance, search engine optimization.'/>
 			<Card.Body>
-				<Form schema={FORM_SCHEMA} class='relative' onSubmit={() => setEdited(!edited)}>
+				<Form ref={data} schema={FORM_SCHEMA} class='relative' onSubmit={handleSubmit}>
 					<div class='grid grid-cols-[16rem,1fr] gap-8'>
 						<div class='p-4'>
 							<p class='font-medium mb-1'>Site Metadata</p>
@@ -89,26 +107,24 @@ export default function MainSettings() {
 						<div class='p-4 pt-2 flex flex-col gap-4'>
 							<Input for='favicon'/>
 							<Input for='themeColor'/>
+							<Input for='visibility'/>
 						</div>
 					</div>
 
 					<FloatingDescription class='w-80' position='right'/>
 
-					<CSSTransition in={edited} duration={500} classNames={{
-						appear: 'h-0 py-0 opacity-0 translate-y-8',
-						appearActive: '!h-12 !py-2 !opacity-100 !translate-y-0',
-						appearDone: '!h-12 !py-2',
-						enter: 'h-0 py-0 opacity-0 translate-y-8',
-						enterActive: '!h-12 !py-2 !opacity-100 !translate-y-0',
-						enterDone: '!h-12 !py-2',
-						exit: 'h-12 py-2 opacity-100 translate-y-0',
-						exitActive: '!h-0 !py-0 !opacity-0 !translate-y-8'
-					}}>
-						<div className='flex flex-row-reverse gap-2 px-4 items-end transition-all'>
+					<Transition
+						as='div' show={edited} duration={150}
+						class='h-14 overflow-hidden'
+						enter='transition-all duration-150'
+						enterFrom='opacity-0 !h-0 -translate-y-3'
+						invertExit
+					>
+						<div class='flex flex-row-reverse items-end gap-2 px-4 py-2'>
 							<Button.Secondary icon={icon_save} label='Save'/>
 							<Button.Tertiary label='Undo'/>
 						</div>
-					</CSSTransition>
+					</Transition>
 				</Form>
 			</Card.Body>
 		</Card>

@@ -5,7 +5,7 @@ import { useRouteMatch } from 'react-router-dom';
 import Svg from './Svg';
 import { UnstyledButton } from './Button';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import icon_home from '@res/icon/home.svg';
 import icon_pages from '@res/icon/file.svg';
@@ -41,7 +41,7 @@ function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
 		<UnstyledButton {...props}
 			to={typeof path === 'string' ? path : undefined}
 			onClick={typeof path === 'function' ? path : undefined}
-			class={mergeClasses(
+			class={merge(
 				'group relative p-1 m-2 w-10 h-10 rounded bg-transparent transition !outline-none',
 				'hover:bg-accent-400/30 focus-visible:bg-accent-400/30',
 				'after:absolute after:transition after:w-2 after:h-2 after:bg-neutral-50 dark:after:bg-neutral-900',
@@ -50,7 +50,7 @@ function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
 		>
 
 			<Svg src={icon} size={8}
-				class={mergeClasses('primary-200 secondary-400',
+				class={merge('primary-200 secondary-400',
 					'group-hover:primary-100 group-focus-visible:primary-100',
 					'group-hover:secondary-200 group-focus-visible:secondary-200',
 					active && '!primary-white !secondary-200')}/>

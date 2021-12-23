@@ -2,7 +2,7 @@ import { Format } from 'common';
 import { h, VNode } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import { Form } from '../input';
 import MediaUploadItem from './MediaUploadItem';
@@ -146,13 +146,13 @@ export default function MediaUploadForm(props: Props) {
 
 	return (
 		<Form onSubmit={handleUpload}>
-			<div class={mergeClasses(
+			<div class={merge(
 				'flex place-items-center group relative rounded w-auto h-40',
 				'bg-neutral-50 dark:bg-neutral-700 border border-neutral-50 dark:border-neutral-700 mt-1',
 				'active:border-neutral-400 dark:active:border-neutral-400 focus-within:border-neutral-400 dark:focus-within:border-neutral-400',
 				'focus:outline-none transition duration-150 select-none', state !== MediaUploadState.SELECTING && 'disabled')}>
 
-				<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-90 rounded bg-neutral-400',
+				<div class={merge('absolute pointer-events-none -inset-px transform scale-90 rounded bg-neutral-400',
 					'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
 					'group-focus-visible:scale-100')}/>
 

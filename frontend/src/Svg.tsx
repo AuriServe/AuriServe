@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	// Other attributes to be put on the container.
@@ -30,7 +30,7 @@ export default function Svg(props: Props) {
 			{...props}
 			src={undefined}
 			size={undefined}
-			class={mergeClasses('interact-none box-content', props.class)}
+			class={merge('interact-none box-content', props.class)}
 			style={{ ...props.style, width: size, height: size }}
 			dangerouslySetInnerHTML={{ __html: props.src }}
 		/>

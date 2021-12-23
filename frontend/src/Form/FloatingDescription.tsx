@@ -1,9 +1,9 @@
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 import { ComponentChildren, h } from 'preact';
-import { TransitionGroup, CSSTransition } from 'preact-transitioning';
+import { TransitionGroup } from '../Transition';
 import { useContext, useRef, useState, useEffect } from 'preact/hooks';
 
-import { FormContext, FormField, InputActivity } from './Type';
+import { ErrorType, FormContext, FormField } from './Type';
 
 import { Portal } from '../structure';
 import Description from './Description';
@@ -22,65 +22,86 @@ interface Props {
 export default function FloatingDescription(props: Props) {
 	const form = useContext(FormContext);
 	const containerRef = useRef<HTMLDivElement>(null);
-	const descriptionRef = useRef<HTMLDivElement>(null);
 
-	const [ field, setField ] = useState<InputActivity | null>(null);
+	const [ state, setState ] = useState<{ name: string; error: ErrorType | null } | null>(null);
 
 	useEffect(() => {
 		let setNullTimeout: any = 0;
 
-		return form.event.bind('activity', (event: InputActivity) => {
-			if (event === null) {
-				setNullTimeout = setTimeout(() => setField(null), 50);
+
+		const unbindFocus = form.event.bind('focus', (field: string) => {
+			if (field === null) {
+				setNullTimeout = setTimeout(() => setState(null), 50);
 			}
 			else {
 				if (setNullTimeout) {
 					clearTimeout(setNullTimeout);
 					setNullTimeout = 0;
 				}
-				setField(event);
+
+				setState({ name: field, error: form.fields[field].error });
 			}
 		});
+
+		const unbindValidity = form.event.bind('validity', (field: string) => {
+			setState(state => {
+				if (state?.name !== field) return state;
+				return { name: field, error: form.fields[field].error };
+			});
+		});
+
+		return () => {
+			unbindFocus();
+			unbindValidity();
+		};
 	}, []);
 
-	useEffect(() => {
-		containerRef.current.style.height = (descriptionRef.current?.clientHeight ?? 0) + 'px';
-	}, [ field ]);
+	const handleUpdateContainerHeight = (ref: HTMLDivElement) => {
+		if (!ref || !containerRef.current) return;
+		containerRef.current.style.height = ref.clientHeight + 'px';
+	};
 
-	const schema = form.schema.fields[field?.name!] as FormField | undefined;
+	const ref = form.fields[state?.name!]?.ref as HTMLElement | undefined;
+	const schema = form.schema.fields[state?.name!] as FormField | undefined;
 
-	const top = field?.target ? (Math.floor(field.target.getBoundingClientRect().top
-		+ window.scrollY) + 'px') : undefined;
-	const left = field?.target ? (Math.floor(field.target.getBoundingClientRect().right
-		+ window.scrollX) + (props.padding ?? 4) * 4 + 'px') : undefined;
+	const posRef = useRef<{ top: string; left: string }>({ top: '', left: '' });
+
+	if (ref) {
+		posRef.current.top = (Math.floor(ref.getBoundingClientRect().top + window.scrollY) + 'px');
+		posRef.current.left = (Math.floor(ref.getBoundingClientRect().right
+			+ window.scrollX) + (props.padding ?? 4) * 4 + 'px');
+	}
 
 	return (
 		<Portal to={document.querySelector('.AS_ROOT') ?? document.body}>
-			<div ref={containerRef} style={{ ...props.style, top, left }}
-				class={mergeClasses('isolate absolute z-10 w-80 min-h-[2.5rem] bg-neutral-700 shadow-md rounded transition-all',
+			<div ref={containerRef}
+				style={{ ...props.style, top: posRef.current.top, left: posRef.current.left, transformOrigin: 'left center' }}
+				class={merge(
+					'isolate absolute z-10 w-80 min-h-[2.5rem] bg-neutral-700',
+					'shadow-md rounded transition-all',
 					'after:absolute after:-left-1.5 after:top-3.5 after:w-3 after:h-3',
-					'after:bg-neutral-700 after:rotate-45', !top && 'hidden', props.class)}>
+					'after:bg-neutral-700 after:rotate-45',
+					!ref && 'opacity-0 scale-[98%]',
+					props.class)}>
 
-				<div class='overflow-hidden'>
-					<TransitionGroup duration={75}>
-						{(schema && schema.description) ? [
-							<CSSTransition key={(field?.name ?? '-') + field?.error}
-								classNames={{
-									appear: 'delay-75 opacity-0 -translate-y-1',
-									appearActive: 'delay-75 !opacity-100 !translate-y-0',
-									enter: 'delay-75 opacity-0 -translate-y-1',
-									enterActive: 'delay-75 !opacity-100 !translate-y-0',
-									exit: 'opacity-100 translate-y-0',
-									exitActive: '!opacity-0 !translate-y-1'
-								}}
-							>
-								<Description
-									ref={descriptionRef} for={field?.name!} error={field!}
-									class={mergeClasses('absolute top-0 left-0 w-full transition', props.innerClass)}>
-									{props.children}
-								</Description>
-							</CSSTransition>
-						] : []}
+				<div class='overflow-hidden h-full w-full relative'>
+					<TransitionGroup
+						duration={175}
+						enter='transition delay-75 duration-100 z-10'
+						enterFrom='opacity-0 -translate-y-1'
+						exit='transition duration-100'
+						exitTo='opacity-0 translate-y-1'
+					>
+						{(schema && schema.description) &&
+							<Description
+								key={(state?.name ?? '-') + state?.error}
+								ref={handleUpdateContainerHeight}
+								for={state?.name!}
+								_manual={true}
+								class={merge('absolute top-0 left-0 w-full', props.innerClass)}>
+								{props.children}
+							</Description>
+						}
 					</TransitionGroup>
 				</div>
 			</div>

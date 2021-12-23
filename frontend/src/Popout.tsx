@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import style from './Popout.sss';
 
@@ -23,12 +23,12 @@ export default function Popout(props: Props) {
 	};
 
 	return (
-		<div class={mergeClasses(style.Root, visible && style.Visible)}>
+		<div class={merge(style.Root, visible && style.Visible)}>
 			<button class={style.Button} onClick={() => setVisible(v => !v)}>
 				<img class={style.Icon} src='/admin/asset/icon/serve-light.svg' alt='AuriServe Menu' />
 			</button>
 			<div class={style.Inner}>
-				<button class={mergeClasses(style.IconButton, style.Logout)} onClick={handleLogout}>
+				<button class={merge(style.IconButton, style.Logout)} onClick={handleLogout}>
 					<img src='/admin/asset/icon/logout-dark.svg' alt='Logout'/></button>
 
 				<a class={style.IconButton} href={settingsUrl}>

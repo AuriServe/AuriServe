@@ -1,7 +1,7 @@
 import { h, RefObject } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 interface Props {
 	// Any default section properties.
@@ -65,7 +65,7 @@ export default function CardToolbar(props: Props) {
 	delete passedProps.children;
 
 	return (
-		<div {...passedProps} ref={handleSetRef} class={mergeClasses(
+		<div {...passedProps} ref={handleSetRef} class={merge(
 			'flex gap-2 top-0 py-3 -mt-4 px-4 bg-white dark:bg-neutral-750 z-10 transition-shadow',
 			props.sticky !== false ? 'sticky' : '',
 			isSticky && 'shadow-md',
@@ -76,3 +76,5 @@ export default function CardToolbar(props: Props) {
 }
 
 CardToolbar.Spacer = () => <div class='flex-grow'/>;
+
+CardToolbar.Divider = () => <div class='bg-neutral-300 dark:bg-neutral-500 w-0.5 my-2 rounded justify-stretch'/>;

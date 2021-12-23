@@ -14,7 +14,7 @@ import { Button } from '../structure';
 import { useMessaging } from '../Hooks';
 import { query, useData, QUERY_PAGE, QUERY_INCLUDE, QUERY_MEDIA, MUTATE_PAGE } from '../Graph';
 
-// import { mergeClasses } from 'common/util';
+// import { merge } from 'common/util';
 import loadPlugins from '../editor/LoadPlugins';
 
 async function parseProp(prop: any, media: Int.Media[]) {
@@ -147,7 +147,7 @@ export default function EditorControlPage() {
 
 	return (
 		<Fragment>
-			{/* <div class={mergeClasses('bg-neutral-800 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
+			{/* <div class={merge('bg-neutral-800 w-96 p-3 h-full absolute transition-all duration-300 transform z-10 shadow-md',
 				sidebarOpen ? 'translate-x-0' : '-translate-x-full')}>
 				{editing && <ElementEditor definition={elements[editingElem.elem]!}
 					props={editingElem.props} onChange={props => handleElementSave(props)}/>}

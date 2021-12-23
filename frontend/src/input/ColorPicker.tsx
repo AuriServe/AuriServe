@@ -3,7 +3,7 @@ import { forwardRef } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 
 import { Color } from 'common';
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import style from './ColorPicker.sss';
 
@@ -80,10 +80,10 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 	}
 
 	return (
-		<div class={mergeClasses('w-72 h-48 mt-2 select-none flex flex-col pointer-events-auto', props.parent && 'absolute')}
+		<div class={merge('w-72 h-48 mt-2 select-none flex flex-col pointer-events-auto', props.parent && 'absolute')}
 			ref={ref} style={position}>
 
-			<div class={mergeClasses(style.SatVal, 'relative flex-grow cursor-pointer')} ref={satValElem}
+			<div class={merge(style.SatVal, 'relative flex-grow cursor-pointer')} ref={satValElem}
 				onMouseDown={(evt) => handleMouseClick(evt, 'satval')}
 				style={{ backgroundColor: hueHex }}>
 
@@ -94,9 +94,9 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 
 			</div>
 			<div class='h-2 bg-black' />
-			<div class={mergeClasses(style.Hue, 'relative h-6 cursor-pointer')} ref={hueElem}
+			<div class={merge(style.Hue, 'relative h-6 cursor-pointer')} ref={hueElem}
 				onMouseDown={(evt) => handleMouseClick(evt, 'hue')}>
-				<div class={mergeClasses(style.Indicator, 'top-1/2')}
+				<div class={merge(style.Indicator, 'top-1/2')}
 					style={{ left: (color.h * 100) + '%', backgroundColor: hueHex }} />
 			</div>
 			{props.writable && <div class='ColorPicker-Details'>

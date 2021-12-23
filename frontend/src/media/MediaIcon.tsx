@@ -2,7 +2,7 @@ import { h } from 'preact';
 
 import Svg from '../Svg';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import icon_document from '@res/icon/file.svg';
 
@@ -29,7 +29,7 @@ export default function MediaIcon(props: Props) {
 	const showImage = (!props.iconOnly ?? props.image);
 
 	return (
-		<div class={mergeClasses(props.class,
+		<div class={merge(props.class,
 			'w-18 h-18 bg-neutral-100 dark:bg-neutral-750 primary-neutral-100 secondary-neutral-300',
 			'rounded interact-none grid place-items-center transition')}>
 			{isImage && showImage

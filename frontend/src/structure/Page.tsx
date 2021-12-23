@@ -1,6 +1,6 @@
 import { h, ComponentChildren } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 interface Props {
 	class?: string;
@@ -9,7 +9,7 @@ interface Props {
 
 export default function Page(props: Props) {
 	return (
-		<div class={mergeClasses('pb-14', props.class)}>
+		<div class={merge('pb-14', props.class)}>
 			{props.children}
 		</div>
 	);

@@ -2,7 +2,7 @@ import { h, ComponentChildren, RefObject } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { NavLink as Link } from 'react-router-dom';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	// Other attributes to be put on the container.
@@ -23,7 +23,7 @@ export default forwardRef(function Button(props: Props, ref?: RefObject<HTMLElem
 	return (
 		// @ts-ignore - Dynamically setting Link.to makes typescript mad.
 		<Tag ref={ref} {...props}
-			className={mergeClasses(
+			className={merge(
 				'flex flex-shrink-0 place-items-center group relative p-[0.4375rem] rounded w-auto',
 				'bg-neutral-50 dark:bg-neutral-700 border border-neutral-50 dark:border-neutral-700 font-medium',
 				'active:border-neutral-400 dark:active:border-neutral-400 focus-visible:border-neutral-400 dark:focus-visible:border-neutral-400',
@@ -36,7 +36,7 @@ export default forwardRef(function Button(props: Props, ref?: RefObject<HTMLElem
 			{props.icon && <img src={props.icon} alt='' role='presentation' width={32} height={32}
 				class='w-8 h-8 dark:filter dark:invert dark:brightness-75 dark:contrast-200 dark:hue-rotate-180 pointer-events-none'/>}
 
-			<div class={mergeClasses('absolute pointer-events-none -inset-px transform scale-75 rounded bg-neutral-500',
+			<div class={merge('absolute pointer-events-none -inset-px transform scale-75 rounded bg-neutral-500',
 				'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
 				'group-focus-visible:scale-100', props.highlightClass)}/>
 

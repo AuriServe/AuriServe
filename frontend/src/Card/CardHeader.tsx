@@ -1,6 +1,6 @@
 import { h, RefObject } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import Svg from '../Svg';
 
@@ -38,12 +38,12 @@ export default function CardHeader(props: Props) {
 	delete passedProps.children;
 
 	return (
-		<div {...passedProps} ref={props.refObj} class={mergeClasses(
+		<div {...passedProps} ref={props.refObj} class={merge(
 			'rounded-t-lg bg-white dark:bg-neutral-750 p-4 relative', props.class)}>
 			{(props.title !== undefined || props.subtitle !== undefined) &&
 				<div class='flex w-max gap-3 primary-neutral-600 secondary-neutral-400
 					dark:primary-neutral-100 dark:secondary-neutral-300'>
-					{props.icon && <div class={mergeClasses('relative rounded bg-neutral-200 dark:bg-neutral-600',
+					{props.icon && <div class={merge('relative rounded bg-neutral-200 dark:bg-neutral-600',
 						props.subtitle ? 'p-2 w-12 h-12' : 'p-1.5 w-9 h-9')}>
 						<Svg size={props.subtitle ? 8 : 6} src={props.icon}/>
 					</div>}

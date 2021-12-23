@@ -11,8 +11,7 @@ const varColorSwatch = (color) => {
 }
 
 module.exports = {
-	mode: 'jit',
-	purge: [
+	content: [
 		'./src/**/*.sss',
 		'./src/**/*.tsx',
 		'./src/**/*.tw'
@@ -46,7 +45,11 @@ module.exports = {
 		},
 		colors: {
 			transparent: 'transparent',
-			neutral: { ...varColorSwatch('neutral'), 750: varColor('neutral-750') },
+			neutral: {
+				...varColorSwatch('neutral'),
+				750: varColor('neutral-750'),
+				input: varColor('neutral-input')
+			},
 			accent: varColorSwatch('accent'),
 			blue: varColorSwatch('accent'),
 			indigo: varColorSwatch('accent'),
@@ -120,6 +123,6 @@ module.exports = {
 	},
 	plugins: [
 		require('tailwindcss-interaction-variants'),
-		require('@tailwindcss/aspect-ratio')
+		require('@tailwindcss/line-clamp'),
 	],
 }

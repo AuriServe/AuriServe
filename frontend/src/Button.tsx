@@ -3,7 +3,7 @@ import { h, ComponentChildren } from 'preact';
 
 import Svg from './Svg';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 const SIZES = {
 	large: 10,
@@ -70,7 +70,7 @@ function BaseButton(props: Props) {
 		<UnstyledButton
 			{...props}
 			style={style}
-			class={mergeClasses(
+			class={merge(
 				'flex w-max items-center justify-center group font-bold uppercase tracking-widest select-none transition-all',
 				'hover:shadow-md focus-visible:shadow-md active:shadow-none outline-none',
 				'active:ring focus-visible:ring dark:ring-offset-neutral-750',
@@ -79,7 +79,7 @@ function BaseButton(props: Props) {
 
 			{props.children}
 			{props.icon && !props.iconRight && <Svg src={props.icon} size={6}/>}
-			{props.label && <span class={mergeClasses('text-xs mt-px -mb-px', props.iconOnly && 'sr-only')}
+			{props.label && <span class={merge('text-xs mt-px -mb-px', props.iconOnly && 'sr-only')}
 				style={{ paddingLeft: size - paddingThreshold, paddingRight: size < 48 ? 4 : 0 }}>{props.label}</span>}
 			{props.icon && props.iconRight && <Svg src={props.icon} size={6}/>}
 		</UnstyledButton>
@@ -88,7 +88,7 @@ function BaseButton(props: Props) {
 
 export function Primary(props: Props) {
 	return (
-		<BaseButton {...props} class={mergeClasses(
+		<BaseButton {...props} class={merge(
 			'bg-accent-600 hover:bg-accent-700 focus-visible:bg-accent-700 active:bg-accent-900',
 			'text-white hover:text-accent-100 focus-visible:text-accent-100 active:text-accent-200',
 			'primary-white active:primary-300',
@@ -105,7 +105,7 @@ export function Primary(props: Props) {
 
 export function Secondary(props: Props) {
 	return (
-		<BaseButton {...props} class={mergeClasses(
+		<BaseButton {...props} class={merge(
 			'bg-accent-200 hover:bg-accent-600 focus-visible:bg-accent-600 active:bg-accent-900',
 			'text-accent-900 hover:text-accent-100 focus-visible:text-accent-100 active:text-accent-200',
 			'primary-900 hover:primary-100 focus-visible:primary-100 active:primary-200',
@@ -123,7 +123,7 @@ export function Secondary(props: Props) {
 
 export function Tertiary(props: Props) {
 	return (
-		<BaseButton {...props} class={mergeClasses(
+		<BaseButton {...props} class={merge(
 			'bg-neutral-200 hover:bg-neutral-300 focus-visible:bg-neutral-300 active:bg-neutral-500',
 			'text-neutral-600 hover:text-neutral-700 focus-visible:text-neutral-700 active:text-neutral-100',
 			'primary-neutral-600 active:primary-neutral-100',
@@ -142,7 +142,7 @@ export function Tertiary(props: Props) {
 
 export function Link(props: Props) {
 	return (
-		<UnstyledButton {...props} class={mergeClasses(
+		<UnstyledButton {...props} class={merge(
 			'group relative inline !outline-none leading-none isolate',
 			'primary-700 active:primary-white secondary-400 active:secondary-200',
 			'dark:primary-200 dark:hover:primary-white dark:focus-visible:primary-white dark:active:primary-neutral-700',
@@ -162,7 +162,7 @@ export function Link(props: Props) {
 			{props.icon && !props.iconRight &&
 				<Svg src={props.icon} size={5} class='relative z-10 inline-block -mb-1 -mt-1 -mx-0.5'/>}
 
-			<span class={mergeClasses(
+			<span class={merge(
 				'z-10 font-medium',
 				'text-accent-700 group-hover:text-accent-600',
 				'group-focus-visible:text-accent-600 group-active:text-white',
