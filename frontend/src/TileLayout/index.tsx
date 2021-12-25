@@ -34,5 +34,6 @@ TileLayout.Tile = Tile;
 
 export default TileLayout;
 
-export { Context, ContextData } from './Context';
+export { Context } from './Context';
+export type { ContextData } from './Context';
 export { default as TileLayoutGrid } from './Grid';

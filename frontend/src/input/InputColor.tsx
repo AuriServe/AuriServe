@@ -56,7 +56,7 @@ export default forwardRef<HTMLInputElement, Props>(function InputColor(props, fR
 			<div style={{ backgroundColor: Color.convert(value).toHex() }}
 				class='absolute top-2 left-2 -m-px w-8 h-8 rounded pointer-events-none shadow-sm'/>
 
-			<Popup active={pickerActive} defaultAnimation={true}>
+			<Popup active={pickerActive}>
 				<ColorPicker value={value} onValue={props.onValue} parent={ref.current} />
 			</Popup>
 		</div>

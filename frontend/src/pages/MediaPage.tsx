@@ -164,12 +164,12 @@ export default function MediaPage() {
 				</div> */}
 			</div>
 
-			<Modal active={viewingItem !== undefined} onClose={() => history.push('..')} defaultAnimation={true}>
+			<Modal active={viewingItem !== undefined} onClose={() => history.push('..')}>
 				{viewingItem && <MediaView onDelete={() => handleDelete([ media.map(a => a.id).indexOf(viewing!) ])}
 					user={data.users?.filter(u => u.id === viewingItem!.user)[0]!} media={viewingItem}/>}
 			</Modal>
 
-			<Modal active={uploading} defaultAnimation={true}>
+			<Modal active={uploading}>
 				<SectionHeader icon='/admin/asset/icon/document-dark.svg' title='Upload Media'
 					subtitle={`Upload new media assets to ${data.info?.name ?? ''}.`} />
 				<MediaUploadForm onCancel={() => history.push('..')} onUpload={handleUploaded}/>

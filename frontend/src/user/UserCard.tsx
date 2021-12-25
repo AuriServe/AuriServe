@@ -19,7 +19,7 @@ export default function UserCard(props: Props) {
 	usePopupCancel(ref, props.onClose, () => props.visible, [ props.visible ]);
 
 	return (
-		<Popup active={props.visible} defaultAnimation={true}>
+		<Popup active={props.visible}>
 			<Card class='fixed w-56 h-auto !p-0 pointer-events-auto overflow-hidden !shadow-lg !my-2' ref={ref} style={{
 				top: props.parent.getBoundingClientRect().bottom + 'px',
 				left: ((props.parent.getBoundingClientRect().left +

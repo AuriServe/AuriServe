@@ -14,6 +14,8 @@ interface Props extends TransitionClasses {
 
 	class?: string;
 	children?: ComponentChildren;
+
+	[key: string]: any;
 }
 
 export default function Transition(props: Props) {
@@ -56,14 +58,22 @@ export default function Transition(props: Props) {
 
 	if (Tag === Fragment) {
 		const children: any[] = props.children ? Array.isArray(props.children) ? props.children : [ props.children ] : [];
-		return children.map(child => cloneElement(child, { className: merge(
-			child.props.className, child.props.class, classes), class: undefined })) as any;
+		return children.map(child => cloneElement(child, {
+			className: merge(child.props.className, child.props.class, classes),
+			class: undefined
+		})) as any;
 	}
 
+	const renderProps: Partial<Props> & { className?: string } = { ...props };
+	delete renderProps.as;
+	delete renderProps.show;
+	delete renderProps.initial;
+	delete renderProps.class;
+	renderProps.className = merge(props.class, classes);
+	console.log(renderProps.className);
+
 	return (
-		<Tag className={classes}>
-			{props.children}
-		</Tag>
+		<Tag {...renderProps}/>
 	);
 }
 

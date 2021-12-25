@@ -21,8 +21,12 @@ export default function MediaSettings() {
 				<p>This site contains <span class='font-medium'>{(media ?? []).length} </span>
 					media items occupying a total of <span class='font-medium'>{Format.bytes(quotas?.storage.used ?? 0)}</span> of storage.</p>
 
-				<p>Media represents <span class='font-medium'>{Math.round((quotas?.storage.used ?? 0) / (quotas?.storage.allocated ?? 0) * 100)}% </span>
-					of the allocated <span class='font-medium'>{Format.bytes(quotas?.storage.allocated ?? 0)}</span> of storage space.</p>
+				<p>
+					Media represents <span class='font-medium'>
+						{Math.round((quotas?.storage.used ?? 0) / (quotas?.storage.allocated ?? 0) * 100)}% </span>
+					of the allocated <span class='font-medium'>
+						{Format.bytes(quotas?.storage.allocated ?? 0)}</span> of storage space.
+				</p>
 
 				<Annotation class='pr-20' title='Generate Intermediaries' description={
 					'Generates smaller versions of uploaded images to improve page load times. ' +

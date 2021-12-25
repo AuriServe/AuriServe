@@ -81,7 +81,7 @@ export default function InputMedia(props: Props) {
 
 			{/* {!item && <img class='w-12 h-12 p-3 -m-px' src='' alt='' role='presentation' />} */}
 
-			<Popup active={!!search && focused} defaultAnimation={true}>
+			<Popup active={!!search && focused}>
 				<SearchableOptionPicker parent={wrapRef.current} query={search} fields={[ 'name', 'url' ]}
 					options={(media ?? [])} onSelect={selected => handleSet(selected.id)}>
 					{({ option, selected }) =>
@@ -95,7 +95,7 @@ export default function InputMedia(props: Props) {
 				</SearchableOptionPicker>
 			</Popup>
 
-			<Modal active={viewing} onClose={() => setViewing(false)} defaultAnimation={true}>
+			<Modal active={viewing} onClose={() => setViewing(false)}>
 				{item && <MediaView media={item} user={(users ?? []).filter(user => user.id === item.user)[0]}/>}
 			</Modal>
 		</div>

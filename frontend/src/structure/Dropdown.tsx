@@ -39,7 +39,7 @@ export default function Dropdown(props: Props) {
 
 	return (
 		<Button ref={buttonRef} {...props.button} onClick={() => setDropdownActive(!dropdownActive)}>
-			<Popup defaultAnimation={true} active={dropdownActive} ref={dropdownRef}>
+			<Popup active={dropdownActive} ref={dropdownRef}>
 				<Card ref={dropdownRef} {...props.dropdown} style={style}
 					class={merge('fixed !p-3 my-0 pointer-events-auto !shadow-lg', props.class)}>
 					{props.children}

@@ -116,7 +116,7 @@ export default function ShortcutPalette() {
 	return (
 		<Modal active={open} onClose={() => setOpen(false)}
 			class='!bg-transparent dark:!bg-transparent !shadow-none pointer-events-none'>
-			{open && <form class='w-screen max-w-lg h-[32rem] pb-16' onSubmit={(evt) => handleSubmit(evt)}>
+			<form class='w-screen max-w-lg h-[32rem] pb-16' onSubmit={(evt) => handleSubmit(evt)}>
 				<div class='relative'>
 					<label for='shortcut_input' class='sr-only'>Search Shortcuts</label>
 					<input id='shortcut_input' ref={inputRef}
@@ -172,7 +172,7 @@ export default function ShortcutPalette() {
 						</TransitionGroup>
 					</div>
 				</div>
-			</form>}
+			</form>
 		</Modal>
 	);
 }
