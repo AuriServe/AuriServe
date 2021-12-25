@@ -23,19 +23,16 @@ export default function MediaItem({ user, media, ind, onClick }: Props) {
 		<li class='flex place-items-stretch'>
 			<Selectable ind={ind} callbacks={callbacks} doubleClickSelects={true}
 				class='flex !w-full gap-2 p-2 group border-2 rounded-md transition !outline-none
-					hover:bg-neutral-100 focus-visible:bg-neutral-100
-					dark:hover:bg-neutral-750 dark:focus-visible:bg-neutral-750
-					border-neutral-200 hover:border-neutral-300 focus-visible:border-neutral-300
-					dark:border-neutral-700 dark:hover:border-neutral-600 dark:focus-visible:border-neutral-600
-					hover:shadow-md focus-visible:shadow-md'
+					hocus:bg-neutral-100 dark:hocus:bg-neutral-750 hocus:shadow-md
+					border-neutral-200 hocus:border-neutral-300 dark:border-neutral-700 dark:hocus:border-neutral-600'
 				selectedClass='!border-accent-300 !bg-accent-50
 					dark:!border-accent-500/40 dark:!bg-accent-900/20'>
 				{(selected) => <Fragment>
 					<MediaIcon path={media.url}
 						class={merge('flex-shrink-0 group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700',
-							!selected && '!primary-neutral-400 dark:!primary-neutral-200',
-							!selected && '!secondary-neutral-300 dark:!secondary-neutral-500',
-							selected && '!bg-accent-200 dark:!bg-accent-900/50 !primary-600 !secondary-400 dark:!primary-200')}/>
+							!selected && '!icon-p-neutral-400 dark:!icon-p-neutral-200',
+							!selected && '!icon-s-neutral-300 dark:!icon-s-neutral-500',
+							selected && '!bg-accent-200 dark:!bg-accent-900/50 !icon-p-accent-600 !icon-s-accent-400 dark:!icon-p-accent-200')}/>
 
 					<div class='pl-1 text-left overflow-hidden'>
 						<p class={merge('pt-0.5 truncate font-medium',

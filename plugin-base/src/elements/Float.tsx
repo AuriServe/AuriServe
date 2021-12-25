@@ -2,7 +2,7 @@ import { h, ComponentChildren } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { withHydration, Static, ServerDefinition, ClientDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	target?: string;
@@ -48,7 +48,7 @@ export function Float(props: Props) {
 	}, [ props.target, props.threshold ]);
 
 	return (
-		<div class={mergeClasses('Float', floating && 'Floating', props.class)}>
+		<div class={merge('Float', floating && 'Floating', props.class)}>
 			<Static class='Float-Contents'>{props.children}</Static>
 		</div>
 	);

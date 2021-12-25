@@ -1,70 +1,60 @@
 import { h } from 'preact';
+import { useHistory } from 'react-router-dom';
 
-import { Page, Title } from '../structure';
+import Svg from '../Svg';
 import Card from '../Card';
+import TileLayout from '../TileLayout';
+import { Page, Title } from '../structure';
 
-import { Transition, TransitionGroup } from '../Transition';
-import { useEffect, useState } from 'preact/hooks';
+import { getShortcuts } from '../Shortcut';
+import { QUERY_INFO, useData } from '../Graph';
 
 export default function MainPage() {
-
-	const [ visible, setVisible ] = useState<number>(0);
-
-	useEffect(() => {
-		const timeout = setTimeout(() => {
-			setVisible(visible + 1);
-		}, 1000);
-
-		return () => clearTimeout(timeout);
-	}, [ visible ]);
+	const history = useHistory();
+	const [ { info } ] = useData(QUERY_INFO, []);
 
 	return (
 		<Page>
 			<Title>Home</Title>
-			<Card class='mx-auto my-8 max-w-5xl'>
-				<Card.Body>
-					<h1 class='font-bold text-center text-3xl'>Hello World</h1>
-					<div class='flex h-16 mb-2'>
-						<div class='w-32'>
-							<Transition
-								as='div'
-								show={visible % 2 === 0}
-								duration={500}
-								class='bg-neutral-50 w-16 h-16 rounded-lg'
-								enter='transition duration-500'
-								enterFrom='opacity-0 scale-0 -rotate-90'
-								enterTo ='opacity-100 scale-100'
-								invertExit
-							/>
+
+			<div class='text-center flex flex-col-reverse my-12'>
+				<h2 class='text-neutral-100 text-2xl mt-1'>{info?.name}</h2>
+				<h3 class='text-neutral-300 font-medium text-xs tracking-widest uppercase'>{info?.domain}</h3>
+			</div>
+
+			<TileLayout>
+				<TileLayout.Grid class='mx-auto my-6 max-w-5xl' gap={4} columns={3}>
+					<TileLayout.Tile width={3} height={2}>
+						<div class='flex flex-wrap justify-center gap-4'>
+							{getShortcuts().slice(1, 7).map((s, i) =>
+								<Card as='button' key={i} onClick={() => s.action({ history })}
+									class='flex group-c [flex-basis:calc(33%-8px)] text-left gap-5 p-0 transition !outline-none
+									rounded-md hocus:bg-neutral-700 dark:hocus:bg-neutral-750'>
+									{s.icon && <Svg src={s.icon} class='w-8 rounded-l-md transition px-5 py-8 transition
+										dark:bg-neutral-750 dark:group-c-hocus:bg-neutral-700'/>}
+									<div class='flex flex-col self-center'>
+										<p class='truncate leading-4 font-medium dark:group-c-hocus:text-accent-200'>{s.title}</p>
+										{s.description && <p class='truncate leading-4 text-sm pt-2 transition
+											dark:text-neutral-200 dark:group-c-hocus:text-neutral-100'>{s.description}</p>}
+									</div>
+								</Card>
+							)}
 						</div>
-						<div class='w-24'>
-							<Transition
-								show={visible % 2 === 0}
-								duration={500}
-								class={visible ? 'scale-150' : ''}
-								enter='transition-all duration-500'
-								enterFrom='!scale-100 opacity-0'
-								invertExit
-							>
-								<h2>This is text</h2>
-							</Transition>
-						</div>
-					</div>
-					<TransitionGroup
-						as='div'
-						duration={500}
-						class='flex gap-2'
-						enter='transition duration-500'
-						enterFrom='opacity-0 scale-0'
-						enterTo ='opacity-100 scale-100'
-						invertExit
-					>
-						{visible % 6 <= 4 && <div key='a' class='w-8 h-8 bg-accent-300 rounded'/>}
-						{visible % 6 >= 2 && <div key='b' class='w-8 h-8 bg-accent-500 rounded'/>}
-						{(visible % 6 <= 2 || visible % 6 >= 4) && <div key='c' class='w-8 h-8 bg-accent-700 rounded'/>}
-					</TransitionGroup>
-				</Card.Body>
-			</Card>
+					</TileLayout.Tile>
+					<TileLayout.Tile width={1} height={2}>
+						<Card class='h-full'/>
+					</TileLayout.Tile>
+					<TileLayout.Tile width={2} height={1}>
+						<Card class='h-full'/>
+					</TileLayout.Tile>
+					<TileLayout.Tile width={2} height={3}>
+						<Card class='h-full'/>
+					</TileLayout.Tile>
+					<TileLayout.Tile width={1} height={2}>
+						<Card class='h-full'/>
+					</TileLayout.Tile>
+				</TileLayout.Grid>
+			</TileLayout>
 		</Page>
 	);
 }

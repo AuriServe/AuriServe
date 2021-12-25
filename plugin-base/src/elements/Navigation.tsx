@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { ServerDefinition, useServerContext } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export type NavEntry = NavItem | 'separator';
 
@@ -33,7 +33,7 @@ function Entries({ entries }: { entries: NavEntry[] }) {
 						rel='noopener'
 						href={entry.to}
 						target={entry.target === 'new' ? '_blank' : undefined}
-						class={mergeClasses('Navigation-ItemLabel', entry.to === activePath && 'Active')}
+						class={merge('Navigation-ItemLabel', entry.to === activePath && 'Active')}
 					>
 						{entry.label}
 						{entry.target === 'new' && <span class='sr-only'>(Opens in a new tab.)</span>}
@@ -53,7 +53,7 @@ function Entries({ entries }: { entries: NavEntry[] }) {
 
 export function Navigation(props: Props) {
 	return (
-		<nav class={mergeClasses('Navigation', props.class)} style={props.style}>
+		<nav class={merge('Navigation', props.class)} style={props.style}>
 			<label id='Navigation-Toggle' for='Navigation-Open'/>
 			<div class='Navigation-Wrap'>
 				<Entries entries={props.entries ?? []}/>

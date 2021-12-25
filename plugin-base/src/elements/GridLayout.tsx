@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import './GridLayout.sss';
 
@@ -27,7 +27,7 @@ export function GridLayout(props: Props) {
 				${Number.isInteger(props.width) ? props.width : props.width ? props.width : 300}px, 100%), 1fr))`,
 			...props.style
 		}}
-		class={mergeClasses('GridLayout', props.class)}
+		class={merge('GridLayout', props.class)}
 		children={props.children}
 	/>;
 }

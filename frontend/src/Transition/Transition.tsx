@@ -10,6 +10,7 @@ interface Props extends TransitionClasses {
 
 	show: boolean;
 	duration: number;
+	initial?: boolean;
 
 	class?: string;
 	children?: ComponentChildren;
@@ -17,10 +18,16 @@ interface Props extends TransitionClasses {
 
 export default function Transition(props: Props) {
 	const timeoutRef = useRef<any>(null);
+	const initialRef = useRef<boolean>(!(props.initial || false));
 	const [ state, setState ] = useState<State>(props.show ? State.Entered : State.Exited);
 	const classes = useMemo(() => merge(props.class, getClassesForState(state, props)), [ state ]);
 
 	useLayoutEffect(() => {
+		if (initialRef.current) {
+			initialRef.current = false;
+			return;
+		}
+
 		if (timeoutRef.current) {
 			window.clearTimeout(timeoutRef.current);
 			timeoutRef.current = 0;
@@ -50,7 +57,7 @@ export default function Transition(props: Props) {
 	if (Tag === Fragment) {
 		const children: any[] = props.children ? Array.isArray(props.children) ? props.children : [ props.children ] : [];
 		return children.map(child => cloneElement(child, { className: merge(
-			child.props.className, child.props.class, classes) })) as any;
+			child.props.className, child.props.class, classes), class: undefined })) as any;
 	}
 
 	return (

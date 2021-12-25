@@ -153,8 +153,7 @@ export default function MediaUploadForm(props: Props) {
 				'focus:outline-none transition duration-150 select-none', state !== MediaUploadState.SELECTING && 'disabled')}>
 
 				<div class={merge('absolute pointer-events-none -inset-px transform scale-90 rounded bg-neutral-400',
-					'opacity-0 transition duration-150 group-hover:opacity-10 group-hover:scale-100 group-focus-visible:opacity-10',
-					'group-focus-visible:scale-100')}/>
+					'opacity-0 transition duration-150 group-hocus:opacity-10 group-hocus:scale-100')}/>
 
 				<input type='file' multiple autoFocus
 					class='absolute inset-0 w-full h-full opacity-0 cursor-pointer'

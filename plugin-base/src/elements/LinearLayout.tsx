@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import './LinearLayout.sss';
 
@@ -36,7 +36,7 @@ export function LinearLayout(props: Props) {
 					undefined,
 				...props.style ?? {}
 			}}
-			class={mergeClasses('LinearLayout', props.class)}
+			class={merge('LinearLayout', props.class)}
 			children={props.children}
 		/>
 	);

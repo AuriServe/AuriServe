@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
 import { Media } from 'common/graph/type';
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import { HydratedImageView } from './ImageView';
 
@@ -24,7 +24,7 @@ interface Props {
 
 function PersonCard(props: Props) {
 	return (
-		<figure class={mergeClasses('PersonCard', props.class)} key={props.name}>
+		<figure class={merge('PersonCard', props.class)} key={props.name}>
 			<HydratedImageView class='PersonCard-Image' media={props.image} protect aspect={100}/>
 			<figcaption class='PersonCard-Details'>
 				{props.name && <h2 class='PersonCard-Name'>{props.name}</h2>}

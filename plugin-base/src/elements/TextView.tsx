@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	content?: string;
@@ -18,7 +18,7 @@ export interface Props {
 export function TextView(props: Props) {
 	return <div
 		style={props.style}
-		class={mergeClasses('TextView', props.class)}
+		class={merge('TextView', props.class)}
 		dangerouslySetInnerHTML={{ __html: props.content ?? '' }}
 	/>;
 };

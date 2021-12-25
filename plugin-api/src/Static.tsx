@@ -1,6 +1,6 @@
 import { h, ComponentChildren } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 interface Props {
 	style?: any;
@@ -17,6 +17,6 @@ interface Props {
 
 export default function Static(props: Props) {
 	return (typeof window === 'undefined' || 'AS_EDITOR' in window)
-		? <div class={mergeClasses('Static', props.class)} style={props.style}>{props.children}</div>
-		: <div class={mergeClasses('Static', props.class)} style={props.style} dangerouslySetInnerHTML={{ __html: '' }}/>;
+		? <div class={merge('Static', props.class)} style={props.style}>{props.children}</div>
+		: <div class={merge('Static', props.class)} style={props.style} dangerouslySetInnerHTML={{ __html: '' }}/>;
 }

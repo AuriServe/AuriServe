@@ -1,4 +1,4 @@
-import { h, ComponentChildren, RefObject } from 'preact';
+import { h, ComponentChildren, RefObject, ComponentType } from 'preact';
 
 import { merge } from 'common/util';
 
@@ -10,6 +10,8 @@ import CardFooter from './CardFooter';
 export interface Props {
 	// Any default section properties.
 	[ key: string ]: any;
+
+	as?: ComponentType<any> | string;
 
 	style?: any;
 	class?: string;
@@ -23,8 +25,9 @@ export interface Props {
  */
 
 function Card(props: Props) {
+	const Tag = props.as ?? 'section';
 	return (
-		<section
+		<Tag
 			{...props}
 			ref={props.refObj}
 			class={merge('block bg-white dark:bg-neutral-800 rounded-lg shadow-md', props.class)}

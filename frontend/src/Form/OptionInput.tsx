@@ -11,6 +11,7 @@ import { ErrorType } from './Type';
 
 import icon_check from '@res/icon/check.svg';
 import icon_dropdown from '@res/icon/dropdown.svg';
+import InputContainer from './InputContainer';
 
 interface Props {
 	id?: string;
@@ -90,8 +91,17 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 
 	return (
 		<Listbox value={value} onChange={handleChange}>
-			{({ open }) => <div ref={rootRef}
-				class={merge('relative group grid w-full h-max ', props.class)} style={props.style}
+			{({ open }) => <InputContainer
+				ref={rootRef}
+				labelId={id}
+				label={props.label}
+
+				active={open}
+				populated={open || value !== undefined}
+				invalid={showInvalid}
+
+				class={props.class}
+				style={props.style}
 			>
 				<Listbox.Button
 					ref={(elem: any) => { ref.current = elem; if (fRef) fRef.current = elem; }}
@@ -117,41 +127,17 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 							>
 								{({ selected }) => <Fragment>
 									<span class='flex-grow'>{label}</span>
-									{selected && <Svg src={icon_check} size={6} class='primary-200 secondary-neutral-500'/>}
+									{selected && <Svg src={icon_check} size={6} class='icon-p-accent-200 icon-s-neutral-500'/>}
 								</Fragment>}
 							</Listbox.Option>
 						)}
 					</Listbox.Options>
 				</Transition>
 
-				<label for={id}
-					class={merge('absolute transition-all w-full interact-none',
-						'top-[0.9375rem] peer-focus:top-1.5',
-						'left-3 peer-focus:left-2.5',
-						'text-base peer-focus:text-xs',
-						'font-medium peer-focus:font-bold',
-						(open || value !== undefined) && '!top-1.5 !left-2.5 !text-xs !font-bold',
-						!showInvalid && 'text-neutral-500 peer-hover:text-neutral-500 peer-focus:text-accent-600',
-						!showInvalid && 'dark:text-neutral-300 dark:peer-hover:text-neutral-200 dark:peer-focus:text-accent-300',
-						open && !showInvalid && '!text-accent-600 dark:!text-accent-300',
-						showInvalid && 'text-red-900 peer-hover:text-red-800/75 peer-focus:text-red-800',
-						showInvalid && 'dark:text-red-400 dark:peer-hover:text-red-300 dark:peer-focus:text-red-300',
-						open && showInvalid && '!text-accent-800 dark:!text-red-300')}>
-					{props.label}
-				</label>
-
-				<div
-					class={merge('absolute bottom-0 w-full h-0.5 rounded-b transition-all',
-						'[transform-origin:25%] opacity-0 peer-focus:opacity-100 scale-x-75 peer-focus:scale-x-100',
-						open && '!opacity-100 !scale-x-100',
-						!showInvalid && 'bg-accent-500 dark:bg-accent-400',
-						showInvalid && 'bg-red-700/75 dark:bg-red-300')}
-				/>
-
 				<Svg src={icon_dropdown} size={7} class={merge(
-					'absolute top-3 right-2 primary-neutral-200 transition',
+					'absolute top-3 right-2 icon-p-neutral-200 transition',
 					open && 'scale-y-[-100%] translate-y-px')}/>
-			</div>}
+			</InputContainer>}
 		</Listbox>
 	);
 });

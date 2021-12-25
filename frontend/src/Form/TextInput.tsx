@@ -101,10 +101,12 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 
 	return (
 		<InputContainer
-			label={props.label} labelId={id}
-			class={merge('isolate', props.class)}
+			label={props.label}
+			labelId={id}
 			invalid={showInvalid}
+			class={merge('isolate', props.class)}
 			style={props.style}>
+
 			<Tag
 				id={id} type='text' placeholder=' '
 				ref={handleRef} rows={1}

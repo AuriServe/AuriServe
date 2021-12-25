@@ -52,12 +52,12 @@ export default forwardRef<HTMLDivElement, Props>(function Description(props, ref
 			{props.children ? props.children(schema?.description ?? '') :
 				<div class=''>
 					<div class='flex gap-2 p-2 pr-3 whitespace-pre-line'>
-						<Svg src={icon_info} size={6} class='flex-shrink-0 primary-300 secondary-neutral-600 -mt-px'/>
+						<Svg src={icon_info} size={6} class='flex-shrink-0 icon-p-accent-300 icon-s-neutral-600 -mt-px'/>
 						{schema?.description ?? ''}
 					</div>
 					{error && <div class='p-2 bg-neutral-750 rounded-b'>
 						<div class='flex gap-2 text-accent-300 theme-red whitespace-pre-line'>
-							<Svg src={icon_error} size={6} class='flex-shrink-0 secondary-400 primary-neutral-900 -mt-px'/>
+							<Svg src={icon_error} size={6} class='flex-shrink-0 icon-s-accent-400 icon-p-neutral-900 -mt-px'/>
 							{error.errorMessage ?? error.error}
 						</div>
 					</div>}

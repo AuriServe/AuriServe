@@ -2,7 +2,7 @@ import { useRef } from 'preact/hooks';
 import { AdminDefinition, EditProps } from 'plugin-api';
 import { h, Fragment, ComponentChildren } from 'preact';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 import { useActiveState } from 'editor/hooks';
 import { ComponentArea } from 'editor/components';
 
@@ -49,7 +49,7 @@ function EditColumnLayout({ props }: EditProps<Props>) {
 			<div class='EditColumnLayout-Margin' style={{ width: margin }}/>
 			<div class='EditColumnLayout-Margin Right' style={{ width: margin }}/>
 
-			<div class={mergeClasses('EditColumnLayout-Columns', 'Active')}
+			<div class={merge('EditColumnLayout-Columns', 'Active')}
 				style={{
 					maxWidth: props.maxWidth && toCSSUnit(props.maxWidth),
 					gap: props.gap && toCSSUnit(props.gap),

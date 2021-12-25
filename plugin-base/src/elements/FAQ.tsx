@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { withHydration, ServerDefinition, ClientDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import './FAQ.sss';
 
@@ -38,9 +38,9 @@ export function FAQ(props: Props) {
 	}, [ props.entries ]);
 
 	return (
-		<dl class={mergeClasses('FAQ', props.class)} ref={ref}>
+		<dl class={merge('FAQ', props.class)} ref={ref}>
 			{props.entries.map((entry, i) => <div
-				class={mergeClasses('FAQ-Item', (!heights || index === i) && 'Active')}>
+				class={merge('FAQ-Item', (!heights || index === i) && 'Active')}>
 				<dt onClick={() => handleActivate(i)}>{entry.title}</dt>
 				<dd
 					style={{ height: heights ? index === i ? heights[i] : 0 : undefined }}

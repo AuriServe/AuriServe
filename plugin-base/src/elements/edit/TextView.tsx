@@ -3,7 +3,7 @@ import { h, Fragment } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { AdminDefinition, EditProps } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 import { useActiveState } from 'editor/hooks';
 import { ComponentArea } from 'editor/components';
 
@@ -70,7 +70,7 @@ export function EditTextView({ props, setProps }: EditProps<Props>) {
 		<ComponentArea for={refs.current.body} visible={hovered || active} active={active} indicator={true}>
 			<div class='EditTextView-ToolbarWrap'>
 				<div ref={toolbar => refs.current.toolbar = toolbar}
-					class={mergeClasses('EditTextView-Toolbar', active && 'Active')}>
+					class={merge('EditTextView-Toolbar', active && 'Active')}>
 
 					<FormatButton operation='header' value={2}/>
 					<FormatButton operation='header' value={3}/>

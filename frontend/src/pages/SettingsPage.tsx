@@ -29,7 +29,7 @@ function SidebarLink({ label, path, icon, notifications }: SidebarLinkProps) {
 		<li>
 			<Link to={path}
 				className='flex gap-3 p-2 items-end rounded-md transition text-neutral-200 hover:bg-neutral-800/50'
-				activeClassName='!bg-neutral-800 shadow-md !text-accent-200 primary-50 secondary-400'>
+				activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
 				<Svg src={icon} size={6} class='ml-0.5'/>
 				<p class='leading-snug font-medium flex-grow'>{label}</p>
 				{typeof notifications === 'number' &&

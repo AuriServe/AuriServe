@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	html: string;
@@ -14,7 +14,7 @@ export interface Props {
 
 export function HTMLView(props: Props) {
 	return <div
-		class={mergeClasses('HTMLView', props.class)}
+		class={merge('HTMLView', props.class)}
 		dangerouslySetInnerHTML={{ __html: props.html}}
 	/>;
 }

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useLayoutEffect } from 'preact/hooks';
 import { withHydration, ClientDefinition, ServerDefinition } from 'plugin-api';
 
 import { Media } from 'common/graph/type';
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 import './ImageView.sss';
 
@@ -53,7 +53,7 @@ export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(pr
 	const imageStyle = props.protect ? { 'pointer-events': 'none', 'user-select': 'none' } : {};
 
 	return (<Fragment>
-		<div class={mergeClasses('ImageView', props.class)} style={props.style}>
+		<div class={merge('ImageView', props.class)} style={props.style}>
 			<div
 				ref={ref}
 				class={'ImageView-Aspect'}
@@ -65,7 +65,7 @@ export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(pr
 					height={height}
 					style={imageStyle}
 					src={props.media.url}
-					class={mergeClasses('ImageView-Image',
+					class={merge('ImageView-Image',
 						(state !== 'STATIC' && state !== 'LOADED') && 'Hide', state === 'TRANSITIONING' && 'FadeIn')}
 					alt={props.alt ?? ''}
 					loading='lazy'/>
@@ -74,14 +74,14 @@ export const ImageView = forwardRef<HTMLDivElement, Props>(function ImageView(pr
 					height={height}
 					style={imageStyle}
 					src={props.media.url + '?res=preload'}
-					class={mergeClasses('ImageView-Preload', state === 'TRANSITIONING' && 'FadeOut')}
+					class={merge('ImageView-Preload', state === 'TRANSITIONING' && 'FadeOut')}
 					alt=''
 					role='presentation'/>}
 			</div>
 		</div>
 
 		{lightbox && <div onClick={() => setLightbox(false)}
-			class={mergeClasses('ImageView-Modal ', props.class)}>
+			class={merge('ImageView-Modal ', props.class)}>
 			<img style={imageStyle} src={props.media.url} alt={props.alt ?? ''}/>
 		</div>}
 	</Fragment>);

@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	url?: string;
@@ -26,7 +26,7 @@ export function Button(props: Props) {
 		title={props.image && props.label}
 		aria-label={props.image && props.label}
 		target={props.target === 'new' ? '_blank' : undefined}
-		class={mergeClasses('Button', props.class, props.image && 'ImageButton')}
+		class={merge('Button', props.class, props.image && 'ImageButton')}
 	>
 		{!props.image && props.label}
 		{props.image && <img src={props.image.url ?? '/media/' + props.image.fileName + '.' + props.image.extension}

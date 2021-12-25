@@ -75,7 +75,7 @@ export default function TransitionGroup(props: Props) {
 	return (
 		<Tag className={props.class}>
 			{Array.from(ref.current.entries()).map(([ key, child ]) =>
-				<Transition key={key} class={props.childClass}
+				<Transition key={key} initial class={props.childClass}
 					show={child.state !== State.Out} duration={props.duration} invertExit={props.invertExit}
 					enter={props.enter} enterFrom={props.enterFrom} enterTo={props.enterTo}
 					exit={props.exit} exitFrom={props.exitFrom} exitTo={props.exitTo}

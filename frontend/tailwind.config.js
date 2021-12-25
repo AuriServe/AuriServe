@@ -1,4 +1,5 @@
 const colors = require('tailwindcss/colors');
+const plugin = require('tailwindcss/plugin');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 const varColor = (color) => ({ opacityValue }) => `rgba(var(--theme-${color}), ${opacityValue ?? 1})`;
@@ -122,7 +123,110 @@ module.exports = {
 		}
 	},
 	plugins: [
-		require('tailwindcss-interaction-variants'),
 		require('@tailwindcss/line-clamp'),
+
+		/**
+		 * Register icon-p-* and icon-s-* classes for the Svg component.
+		 */
+
+		plugin(function({ theme, matchUtilities }) {
+			const rawColors = theme('colors');
+			const colors = {};
+
+			function addColors(raw, pre = '') {
+				for (let [ k, v ] of Object.entries(raw)) {
+					if (typeof v === 'string') colors[pre + k] = v;
+					else if (typeof v === 'function') colors[pre + k] = v({ opacityValue: 1 });
+					else if (typeof v === 'object') addColors(v, pre + k + '-');
+				}
+			}
+
+			addColors(rawColors);
+
+			matchUtilities({
+				'icon-p': (value) => ({ '--icon-primary': value }),
+				'icon-s': (value) => ({ '--icon-secondary': value })
+			}, { values: colors });
+		}),
+
+		/**
+		 * Variant tweaks to keep me sane.
+		 * Sets the 'focus' variant to use :focus-visible, removes the 'focus-visible' variant,
+		 * creates a 'focus-old' variant that uses regular :focus,
+		 * and adds a 'hocus' variant that matches on both :hover and :focus-visible.
+		 */
+
+		plugin(function({ addVariant }) {
+			addVariant('old-focus', '&:focus');
+			addVariant('group-old-focus', 'group:focus &');
+			addVariant('focus', '&:focus-visible');
+			addVariant('group-focus', 'group:focus-visible &');
+			addVariant('focus-visible', 'DO NOT USE');
+			addVariant('group-focus-visible', 'DO NOT USE');
+			addVariant('hocus', [ '&:hover', '&:focus-visible' ]);
+			addVariant('group-hocus', [ 'group:hover &', 'group:focus-visible &' ]);
+		}),
+
+		/**
+		 * Extra groups and peers plugin.
+		 * Adds more groups and peers so that you can nest selectors.
+		 * By default, registers `group-a` through `group-e`, with the variants
+		 * `hover`, `focus`, `focus-visible`, `focus-within`, and `active`.
+		 * Can be configured with the following options:
+		 *
+		 * - labels: An array of labels to use for group and peer names. Default: ['a', 'b', 'c', 'd', 'e'].
+		 * - groupLabels: An array of labels to use only for groups. Default: `labels`.
+		 * - peerLabels: An array of labels to use only for peers. Default: `labels`.
+		 * - variants: Additional variant -> variant rule pairs to generate for groups and peers.
+		 * - groupVariants: Additional variant -> variant rule pairs to generate for groups. Default: `variants`.
+		 * - peerVariants: Additional variant -> variant rule pairs to generate for peers. Default: `variants`.
+		 */
+
+		plugin.withOptions(function (options = {}) {
+			const groupLabels = options.groupLabels ?? options.labels ?? ['a', 'b', 'c', 'd', 'e'];
+			const peerLabels = options.peerLabels ?? options.labels ?? ['a', 'b', 'c', 'd', 'e'];
+
+			const defaultVariants = {
+				'hover': '&:hover',
+				'focus': '&:focus',
+				'focus-visible': '&:focus-visible',
+				'focus-within': '&:focus-within',
+				'active': '&:active'
+			}
+
+			const groupVariants = { ...defaultVariants, ...options.groupVariants ?? options.variants ?? {} }
+			const peerVariants = { ...defaultVariants, ...options.peerVariants ?? options.variants ?? {} }
+
+			return function({ addVariant, addComponents }) {
+				for (const group of groupLabels) {
+					addComponents({ [`.group-${group}`]: {} });
+					for (let [ name, rule ] of Object.entries(groupVariants)) {
+						if (rule === undefined) continue;
+						rule = typeof rule === 'string'
+							? rule.replace('&', `.group-${group}`) + ' &'
+							: rule.map(rule => rule.replace('&', `.group-${group}`) + ' &');
+						addVariant(`group-${group}-${name}`, rule);
+					}
+				}
+
+				for (const peer of peerLabels) {
+					addComponents({ [`.peer-${peer}`]: {} });
+					for (let [ name, rule ] of Object.entries(peerVariants)) {
+						if (rule === undefined) continue;
+						rule = typeof rule === 'string'
+							? rule.replace('&', `.peer-${peer}`) + ' ~ &'
+							: rule.map(rule => rule.replace('&', `.peer-${peer}`) + ' ~ &');
+						addVariant(`peer-${peer}-${name}`, rule);
+					}
+				}
+			}
+		})({
+			variants: {
+				'hocus': [ '&:hover', '&:focus-visible' ],
+				'focus': '&:focus-visible',
+				'focus-visible': undefined,
+				'focus-old': '&:focus'
+			}
+		})
 	],
 }

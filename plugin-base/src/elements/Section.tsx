@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	role?: 'header' | 'footer' | 'aside' | 'section';
@@ -17,7 +17,7 @@ export interface Props {
 
 export function Section(props: Props) {
 	const Tag = props.role ?? 'section';
-	return <Tag class={mergeClasses('Section', props.class)} children={props.children}/>;
+	return <Tag class={merge('Section', props.class)} children={props.children}/>;
 }
 
 export const server: ServerDefinition = { identifier: 'Section', element: Section };

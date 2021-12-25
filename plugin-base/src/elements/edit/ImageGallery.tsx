@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { Media } from 'common/graph/type';
 import { AdminDefinition, EditProps } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 import { useActiveState } from 'editor/hooks';
 import { useData, QUERY_MEDIA } from 'editor/graph';
 import { useState, useRef, useEffect } from 'preact/hooks';
@@ -96,7 +96,7 @@ export function EditImageGallery({ props, setProps }: EditProps<Props>) {
 	};
 
 	return (
-		<div class={mergeClasses('ImageGallery EditImageGallery', active && 'Active')}
+		<div class={merge('ImageGallery EditImageGallery', active && 'Active')}
 			ref={elem => ref.current = elem?.parentElement as HTMLDivElement}>
 			<div class='ImageGallery-Grid'
 				style={{

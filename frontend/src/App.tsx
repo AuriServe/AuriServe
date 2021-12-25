@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 import Sidebar from './Sidebar';
+import CommandPalette from './ShortcutPalette';
 import { LoginPage, MainPage, PagesPage, MediaPage, UserPage,
 	SettingsPage, EditorControlPage, EditorRendererPage } from './pages';
 
@@ -62,8 +63,8 @@ export default function App() {
 
 						<Route>
 							<div class='AS_ROOT grid pl-14 min-h-screen bg-neutral-100 dark:bg-neutral-900
-								text-neutral-800 dark:text-neutral-100 font-sans primary-neutral-500 secondary-neutral-400
-								dark:primary-neutral-100 dark:secondary-neutral-300 theme-blue'>
+								text-neutral-800 dark:text-neutral-100 font-sans icon-p-neutral-500 icon-s-neutral-400
+								dark:icon-p-neutral-100 dark:icon-s-neutral-300 theme-blue'>
 								<div class='grid animate-fadein'>
 									<Sidebar/>
 									<Switch>
@@ -80,6 +81,8 @@ export default function App() {
 							</div>
 						</Route>
 					</Switch>
+
+					<CommandPalette/>
 				</Router>
 			}
 		</AppContext.Provider>

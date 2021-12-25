@@ -1,7 +1,7 @@
 import { h, ComponentChildren } from 'preact';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 export interface Props {
 	style?: any;
@@ -16,7 +16,7 @@ export interface Props {
 export function Container(props: Props) {
 	return <div
 		style={props.style}
-		class={mergeClasses('Container', props.class)}
+		class={merge('Container', props.class)}
 		children={props.children}
 	/>;
 }

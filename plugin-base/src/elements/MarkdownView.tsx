@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { Converter } from 'showdown';
 import { ServerDefinition } from 'plugin-api';
 
-import { mergeClasses } from 'common/util';
+import { merge } from 'common/util';
 
 interface Props {
 	content?: string;
@@ -24,7 +24,7 @@ function MarkdownView(props: Props) {
 
 	return <div
 		style={props.style}
-		class={mergeClasses('MarkdownView', props.class)}
+		class={merge('MarkdownView', props.class)}
 		dangerouslySetInnerHTML={{ __html: content }}
 	/>;
 };
