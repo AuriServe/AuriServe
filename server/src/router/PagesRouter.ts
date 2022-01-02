@@ -55,8 +55,7 @@ export default class PagesRouter extends Router {
 			try {
 				let plugins = this.plugins.listEnabled().filter(p => p.identifier === req.params.identifier);
 				if (plugins.length === 0) throw `There is no loaded plugin with identifier ${req.params.identifier}.`;
-				Express.static(path.join(this.dataPath, 'plugins', req.params.identifier,
-					plugins[0].sourceRoot ?? '.', req.params.file))(req, res, next);
+				Express.static(path.join(this.dataPath, 'plugins', req.params.identifier, req.params.file))(req, res, next);
 			}
 			catch (e) {
 				res.status(403).send(e);
@@ -68,8 +67,8 @@ export default class PagesRouter extends Router {
 			if (plugins.length !== 1) { res.sendStatus(404); return; }
 			const plugin = plugins[0];
 
-			if (!plugin.sources.styles?.client) { res.sendStatus(404); return; }
-			res.sendFile(path.join(this.dataPath, 'plugins', plugin.identifier, plugin.sources.styles?.client));
+			if (!plugin.entry.client?.style) { res.sendStatus(404); return; }
+			res.sendFile(path.join(this.dataPath, 'plugins', plugin.identifier, plugin.entry.client?.style));
 		});
 
 		this.router.get('*', async (req, res) => {

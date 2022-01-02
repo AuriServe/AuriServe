@@ -1,0 +1,42 @@
+.ImageCarousel
+	height: 0
+	width: 100%
+	overflow: auto
+	background: #eee
+	position: relative
+
+	.ImageCarousel-Image, .ImageCarousel-Images, .ImageCarousel-Children
+		width: 100%
+		height: 100%
+		position: absolute
+
+	.ImageCarousel-Images
+		overflow: hidden
+
+	.ImageCarousel-Image
+		$amp: 32px
+
+		max-width: unset
+		object-fit: cover
+		object-position: center center
+		width: calc(100% + $amp + $amp)
+
+		opacity: 0
+		transform: translateX(0)
+
+		transition: opacity 500ms, transform 500ms
+
+		&.Animate-enter-active, &.Animate-enter-done, &.Animate-appear-active, &.Animate-appear-done
+			opacity: 1
+			transform: translateX(-$amp)
+
+		&.Animate-exit-active, &.Animate-exit-done
+			opacity: 0
+			transform: translateX(calc(-$amp * 2))
+
+		&:global.Animate-appear-active:not(.Animate-appear-done), &:global.Animate-enter-active:not(.Animate-enter-done), &:global.Animate-exit-active:not(.Animate-exit-done)
+			will-change: transform !important
+
+	.ImageCarousel-Children
+		z-index: 1
+		display: block

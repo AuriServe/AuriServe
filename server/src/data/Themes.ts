@@ -177,7 +177,9 @@ export default class Themes {
 		const confPath = path.join(this.dataPath, 'themes', identifier, 'theme.json');
 		const theme: Theme = JSON.parse((await fs.readFile(confPath)).toString());
 
-		assert(isType('string', theme.identifier, theme.name, theme.author, theme.description),
+
+		assert([ theme.identifier, theme.name, theme.author, theme.description ]
+		.map(v => isType(v, 'string')).filter((t: any) => t === false).length === 0,
 			'Theme is missing metadata (identifier, name, author, description).');
 
 		assert(identifier === theme.identifier, 'Theme identifier does not match directory name.');
@@ -185,7 +187,7 @@ export default class Themes {
 		assert(Format.sanitize(theme.identifier) === theme.identifier && theme.identifier.length >= 3,
 			'Theme identifier must be lowercase alphanumeric and at least 3 characters.');
 
-		assert(isType('object', theme.sources), 'Theme must contain a sources object.');
+		assert(isType(theme.sources, 'object'), 'Theme must contain a sources object.');
 
 		// Assert that all theme sources exist.
 		const themeRoot = path.join(path.dirname(confPath), theme.sourceRoot ?? '.');

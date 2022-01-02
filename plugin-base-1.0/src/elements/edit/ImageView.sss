@@ -1,0 +1,26 @@
+.EditImageView-Props
+	$width: 350px
+
+	margin: 0
+	z-index: 60
+	padding: 12px
+	width: $width
+	position: absolute
+	top: calc(100% - 2px)
+	left: calc(50% - $width / 2)
+
+	pointer-events: auto
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.1)
+
+	&::before
+		top: -16px
+		width: 0px
+		height: 0px
+		content: ''
+		font-size: 0
+		display: block
+		position: absolute
+		left: calc(50% - 8px)
+
+		border: 8px solid transparent
+		border-bottom-color: rgb(29, 39, 49)

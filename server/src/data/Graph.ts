@@ -75,7 +75,9 @@ function pluginResolver(plugin: Plugin): Resolved<Int.Plugin> {
 		...plugin,
 		user: undefined,
 		created: undefined,
-		coverPath: plugin.hasCover ? `/admin/plugins/cover/${plugin.identifier}.jpg` : ''
+		name: plugin.name ?? plugin.identifier,
+		description: plugin.description ?? '',
+		coverPath: '/admin/plugins/cover/${plugin.identifier}.jpg'
 	};
 }
 

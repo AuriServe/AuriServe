@@ -1,0 +1,101 @@
+$c-border: #ccc
+$c-background: #fff
+$c-background-unfocused: #eee
+
+.CalendarEvent
+	@extend %center_wrap
+
+	position: fixed
+	z-index: 10
+	top: 0
+	left: 0
+	width: 100%
+	height: 100%
+	background-color: $c-background-unfocused
+
+	.CalendarEvent-Modal
+		width: 100%
+		height: auto
+		display: flex
+		overflow: auto
+		padding: 64px 12px
+		justify-content: space-around
+	
+		.CalendarEvent-Wrap
+			width: Min(100%, 800px)
+			height: min-content
+			border-radius: 4px
+
+			cursor: auto
+			overflow: hidden
+			user-select: text
+			background-color: #fff
+			box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.1)
+
+			.CalendarEvent-Media
+				width: 100%
+				position: relative
+				padding-bottom: 56.25%
+				background-color: $c-background-unfocused
+
+				.ImageView
+					position: absolute
+					width: 100%
+					height: 100%
+					// object-fit: cover
+
+				.CalendarEvent-MediaNav
+					position: absolute
+					top: 50%
+					left: 8px
+					width: 48px
+					height: 48px
+					z-index: 5
+					transform: translateY(-50%) scale(0.95)
+
+					outline: 0
+					opacity: 0.6
+					cursor: pointer
+					border-radius: 50%
+					border: 2px solid transparent
+					background-color: rgba(0, 0, 0, 0.9)
+					box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.3)
+
+					transition: opacity 0.15s, transform 0.15s ease-out, border-color 0.15s
+
+					&.Right
+						left: unset
+						right: 8px
+
+					&:hover
+						border-color: rgba(255, 255, 255, 0.6)
+
+					&:focus-visible, &:active
+						border-color: white !important
+
+					svg
+						width: 100%
+
+				&:hover, &:focus-within
+					.CalendarEvent-MediaNav
+						opacity: 1
+						transform: translateY(-50%)
+						border-color: rgba(255, 255, 255, 0.3)
+
+			.CalendarEvent-Content
+				padding: 16px 24px
+
+				@media screen and (max-width: 600px)
+					padding: 8px 12px
+
+				.CalendarEvent-Title
+					font-size: 24px
+					margin: 8px 0 0 0
+
+				.CalendarEvent-Date
+					font-size: 18px
+					font-family: unset
+					font-weight: normal
+					margin: 4px 0 24px 0
+					opacity: 0.6
+

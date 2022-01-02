@@ -1,6 +1,8 @@
 import path from 'path';
+import { assert, assertSchema } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
-import { Format, assert, assertEq, isType } from 'common';
+
+import yaml from 'js-yaml';
 
 import Logger from '../Logger';
 import Watcher from './Watcher';
@@ -8,28 +10,42 @@ import Elements from '../Elements';
 import Properties from './model/Properties';
 import PluginBindings from './PluginBindings';
 
+interface Manifest {
+	identifier: string;
+	name?: string;
+	description?: string;
+	author: string;
+	version: string;
+
+	entry: {
+		server?: string | { script?: string };
+		client?: string | { script?: string; style?: string };
+	};
+
+	watch?: string[];
+}
+
 /** Represents a plugin. */
 export interface Plugin {
-	name: string;
-	author: string;
 	identifier: string;
-	description: string;
+	name?: string;
+	description?: string;
+	author: string;
 
-	sourceRoot?: string;
-	sources: {
-		scripts: {
-			server?: string;
-			client?: string;
-			editor?: string;
+	version: string;
+
+	entry: {
+		server?: {
+			script?: string;
 		};
-		styles: {
-			client?: string;
-			editor?: string;
+		client?: {
+			script?: string;
+			style?: string;
 		};
 	};
 
+	watch: string[];
 	enabled: boolean;
-	hasCover: boolean;
 }
 
 /** Manages finding, toggling, and loading plugins.*/
@@ -37,6 +53,8 @@ export default class Plugins {
 
 	/** The elements registered by the currently enabled plugins. */
 	readonly elements: Elements = new Elements();
+
+	private pluginsPath: string;
 
 	/** A map of plugins indexed by their identifiers. */
 	private plugins: Map<string, Plugin> = new Map();
@@ -50,10 +68,11 @@ export default class Plugins {
 	/** A map of callback identifiers to callbacks. */
 	private callbacks: Map<string, Function[]> = new Map();
 
-	constructor(private dataPath: string, private watch: boolean) {
+	constructor(dataPath: string, private watch: boolean) {
+		this.pluginsPath = path.join(dataPath, 'plugins');
+
 		// Create plugins directory if it doesn't exist.
-		fs.access(path.join(this.dataPath, 'plugins'), fsc.R_OK).catch(
-			() => fs.mkdir(path.join(this.dataPath, 'plugins')));
+		fs.access(this.pluginsPath, fsc.R_OK).catch(() => fs.mkdir(this.pluginsPath));
 	};
 
 	/**
@@ -89,9 +108,8 @@ export default class Plugins {
 		if (!plugin || plugin.enabled) return;
 
 		plugin.enabled = true;
-		if (!plugin.sources.scripts?.server) return;
-		const indexPath = path.join(this.dataPath, 'plugins', identifier,
-			plugin.sourceRoot ?? '.', plugin.sources.scripts!.server);
+		if (!plugin.entry.server?.script) return;
+		const indexPath = path.join(this.pluginsPath, identifier, plugin.entry.server.script);
 		delete require.cache[indexPath];
 
 		const bindings = new PluginBindings();
@@ -108,7 +126,7 @@ export default class Plugins {
 		if (!plugin?.enabled) return;
 
 		plugin.enabled = false;
-		if (!plugin.sources.scripts?.server) return;
+		if (!plugin.entry.server?.script) return;
 		const bindings = this.bindings.get(identifier);
 		if (!bindings) return;
 		this.elements.removeList(bindings.elements);
@@ -138,7 +156,7 @@ export default class Plugins {
 		this.plugins.clear();
 
 		const enabled = ((await Properties.findOne())?.enabled.plugins ?? []);
-		const pluginDirs = await fs.readdir(path.join(this.dataPath, 'plugins'));
+		const pluginDirs = await fs.readdir(path.join(this.pluginsPath));
 		await Promise.all(pluginDirs.map(async dirName => {
 			try {
 				const plugin = await this.parsePlugin(dirName);
@@ -178,30 +196,54 @@ export default class Plugins {
 
 	/** Reads a plugin directory and returns a Plugin. Throws if the plugin is invalid. */
 	private async parsePlugin(identifier: string): Promise<Plugin> {
-		const confPath = path.join(this.dataPath, 'plugins', identifier, 'plugin.json');
-		const plugin: Plugin = JSON.parse((await fs.readFile(confPath)).toString());
+		let manifestStr = await fs.readFile(path.join(this.pluginsPath, identifier, 'manifest.yaml'), 'utf8')
+			.catch(() => assert(false, 'Missing manifest.yaml.')) as string;
 
-		assert(isType('string', plugin.identifier, plugin.name, plugin.author, plugin.description),
-			'Plugin is missing metadata (identifier, name, author, description).');
+		let manifest: Manifest;
+		try {
+			manifest = yaml.load(manifestStr, { schema: yaml.FAILSAFE_SCHEMA }) as Manifest;
+		}
+		catch (e) {
+			assert(e instanceof yaml.YAMLException, `YAML parsing error: ${e}`);
+			assert(false, `Invalid manifest.yaml: ${e.reason} at ${e.mark.line}:${e.mark.column}`);
+		}
 
-		assertEq(identifier, plugin.identifier, 'Plugin identifier does not match directory name.');
 
-		assert(Format.sanitize(plugin.identifier) === plugin.identifier && plugin.identifier.length >= 3,
-			'Plugin identifier must be lowercase alphanumeric and at least 3 characters.');
+		assertSchema<Manifest>(manifest, {
+			identifier: 'string',
+			name: 'string',
+			description: 'string',
+			version: 'string',
+			author: 'string',
+			entry: {
+				server: [ 'undefined', 'string', { script: [ 'undefined', 'string' ] } ],
+				client: [ 'undefined', 'string', { script: [ 'undefined', 'string' ], style: [ 'undefined', 'string' ] } ]
+			},
+			watch: [ 'undefined', 'string[]' ]
+		}, 'Invalid manifest.yaml');
+		assert(identifier === manifest.identifier, `Folder name must be '${manifest.identifier}'.`)
 
-		assert(isType('object', plugin.sources), 'Plugin must contain a sources object.');
+		let sourcePaths = Object.values(manifest.entry).reduce<string[]>((paths, entry) => {
+			if (typeof entry === 'string') paths.push(path.join(this.pluginsPath, identifier, entry));
+			else paths.push(...(Object.values(entry) as string[]).map(sourcePath =>
+				path.join(this.pluginsPath, identifier, sourcePath)));
+			return paths;
+		}, []);
 
-		// Assert that all plugin sources exist.
-		const pluginRoot = path.join(path.dirname(confPath), plugin.sourceRoot ?? '.');
-		await Promise.all(Object.keys(plugin.sources).map(async (sourceKey: string) => {
-			assert(sourceKey === 'scripts' || sourceKey === 'styles',
-				'Plugin contains invalid key in sources: \'' + sourceKey + '\'.');
+		await Promise.all(sourcePaths.map(async (sourcePath: string) =>
+			await fs.access(sourcePath).catch(_ => assert(false, `Source file '${sourcePath}' not found.`))));
 
-			await Promise.all(Object.entries((plugin.sources as any)[sourceKey] as Record<string, string>)
-				.map(async ([ source, sourcePath ]) =>
-					await fs.access(path.join(pluginRoot, sourcePath!)).catch(_ =>
-						assert(false, `Source file \'${sourcePath}\' not found for source \'${sourceKey}.${source}\'.`))));
-		}));
+		let plugin: Plugin = {
+			identifier: manifest.identifier,
+			name: manifest.name,
+			description: manifest.description,
+			version: manifest.version,
+			author: manifest.author,
+			entry: Object.fromEntries(Object.entries(manifest.entry ?? []).map(([ entry, val ]) =>
+				[ entry, typeof val === 'string' ? { script: val } : val ])),
+			enabled: false,
+			watch: manifest.watch ? manifest.watch.map(end => path.join(this.pluginsPath, identifier, end)) : sourcePaths
+		};
 
 		return plugin;
 	}
@@ -211,16 +253,9 @@ export default class Plugins {
 		this.stopWatch(identifier);
 		const plugin = this.plugins.get(identifier);
 		assert(plugin !== undefined, `Plugin '${identifier}' cannot be watched, as it does not exist.`);
+		assert(plugin.watch.length > 0, `Plugin '${identifier}' has no sources to watch.`);
 
-		const paths = Object.values(plugin.sources).reduce<string[]>((paths, source) => {
-			paths.push(...(Object.values(source) as string[]).map(sourcePath =>
-				path.join(this.dataPath, 'plugins', identifier, plugin.sourceRoot ?? '.', sourcePath)));
-			return paths;
-		}, []);
-
-		assert(paths.length > 0, `Plugin '${identifier}' has no sources to watch.`);
-
-		const watcher = new Watcher(paths);
+		const watcher = new Watcher(plugin.watch);
 		watcher.bind(() => this.watchCallback(identifier));
 		this.watchers.set(identifier, watcher);
 	}
@@ -241,9 +276,8 @@ export default class Plugins {
 		const plugin = this.plugins.get(identifier);
 		assert(plugin && plugin.enabled, 'Shouldn\'t happen! [1]');
 
-		if (plugin.sources.scripts?.server) {
-			const indexPath = await fs.realpath(path.resolve(this.dataPath, 'plugins', identifier,
-				plugin.sourceRoot ?? '.', plugin.sources.scripts!.server));
+		if (plugin.entry.server?.script) {
+			const indexPath = await fs.realpath(path.resolve(this.pluginsPath, identifier, plugin.entry.server.script));
 			assert(require.cache[indexPath], 'Shouldn\'t happen! [2]');
 			delete require.cache[indexPath];
 

@@ -121,10 +121,14 @@ export default class PageBuilder {
 			.replace('$DESCRIPTION$', escapeHtml(json.description || siteDescription))
 			.replace('$FAVICON$', faviconItem?.url ?? '');
 
-		const scripts = this.plugins.listEnabled().filter(p => p.sources.scripts?.client)
-			.map(p => p.identifier + '/' + p.sources.scripts.client);
-		const styles = this.plugins.listEnabled().filter(p => p.sources.styles?.client)
-			.map(p => p.identifier + '/' + p.sources.styles.client);
+		// const scripts = this.plugins.listEnabled().filter(p => p.sources.scripts?.client)
+		// 	.map(p => p.identifier + '/' + p.sources.scripts.client);
+		// const styles = this.plugins.listEnabled().filter(p => p.sources.styles?.client)
+		// 	.map(p => p.identifier + '/' + p.sources.styles.client);
+
+		// TODO: This is bad.
+		const scripts: string[] = [];
+		const styles: string[] = [];
 
 		html = html
 			.replace('$PREACT$', scripts.length ? `

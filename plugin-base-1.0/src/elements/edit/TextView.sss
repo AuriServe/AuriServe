@@ -1,0 +1,84 @@
+.EditTextView
+	.ql-clipboard
+		display: none
+
+	.ql-editor
+		outline: none
+		cursor: auto
+
+.EditTextView-ToolbarWrap
+	top: 0
+	left: 50%
+	z-index: 100
+	display: flex
+	position: absolute
+	width: max-content
+	flex-direction: column
+	justify-content: flex-end
+	height: calc(100% + 64px)
+	transform: translateX(-50%)
+
+	.EditTextView-Toolbar
+		gap: 4px
+		bottom: 16px
+		padding: 8px
+		display: flex
+		position: sticky
+		width: max-content
+		white-space: nowrap
+
+		opacity: 0
+		color: white
+		border-radius: 8px
+		text-align: center
+		background: #1D2731
+		pointer-events: none
+		box-shadow: 0px 2px 12px 0 rgba(0, 0, 0, 0.2)
+		transform: scale(0.95) translateY(8px)
+
+		transition: all 75ms
+
+		&.Active
+			opacity: 1
+			pointer-events: auto
+			transform: none
+
+		.EditTextView-FormatButton
+			outline: 0
+			padding: 4px
+			flex-shrink: 0
+			display: inline-block
+
+			border-radius: 4px
+			background: transparent
+
+			transition: background 75ms
+
+			img
+				width: 24px
+				height: 24px
+
+				opacity: 0.5
+				filter: invert(100%)
+
+				transition: opacity 75ms
+
+			&:hover, &:focus-visible
+				background: rgba(255, 255, 255, 0.05)
+
+				img
+					opacity: 0.75
+
+			&:active, &.ql-active
+				background: rgba(255, 255, 255, 0.1)
+
+				img
+					opacity: 1
+
+		.EditTextView-FormatSeparator
+			height: 24px
+			margin: 0 8px
+			align-self: center
+
+			opacity: 0.3
+			border-right: 1px solid white

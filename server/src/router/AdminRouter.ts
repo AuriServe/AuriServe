@@ -194,10 +194,10 @@ export default class AdminRouter extends Router {
 			const html = (await new Promise<string>((resolve) =>
 				fss.readFile(PAGE_TEMPLATE_PATH, (_, res) => resolve(res.toString()))))
 				.replace('$PLUGINS$', `<script id='plugins' type='application/json'>${JSON.stringify({
-					pluginScripts: this.plugins.listEnabled().filter(p => p.sources.scripts?.editor)
-						.map(p => p.identifier + '/' + p.sources.scripts.editor!),
-					pluginStyles: this.plugins.listEnabled().filter(p => p.sources.styles?.editor)
-						.map(p => p.identifier + '/' + p.sources.styles.editor!) })}</script>`)
+					pluginScripts: this.plugins.listEnabled().filter(p => p.entry.client?.script)
+						.map(p => p.identifier + '/' + p.entry.client!.script!),
+					pluginStyles: this.plugins.listEnabled().filter(p => p.entry.client?.style)
+						.map(p => p.identifier + '/' + p.entry.client!.style!) })}</script>`)
 				.replace('$THEMES$', `<script id='themes' type='application/json'>${
 					JSON.stringify({ themes: this.themes.listEnabled().map(t => t.identifier) })}</script>`)
 				.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');

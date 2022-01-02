@@ -19,8 +19,8 @@ export default function(_: any, argv: { mode: string }) {
 		resolve: {
 			extensions: [ '.ts', '.tsx', '.js', '.jsx' ],
 			alias: {
-				"react": "preact/compat",
-				"react-dom": "preact/compat"
+				'react': 'preact/compat',
+				'react-dom': 'preact/compat'
 			}
 		},
 		devtool: prod ? undefined : 'source-map',
@@ -127,10 +127,10 @@ export default function(_: any, argv: { mode: string }) {
 		}
 	});
 
-	const editorConfig: Webpack.Configuration = merge(webConfig, {
-		name: 'editor',
-		entry: './Editor.ts',
-		output: { filename: 'editor.js' },
+	const clientConfig: Webpack.Configuration = merge(webConfig, {
+		name: 'client',
+		entry: './Client.ts',
+		output: { filename: 'client.js' },
 
 		externals: {
 			'editor/hooks': 'AS_EDITOR.Hooks',
@@ -139,7 +139,7 @@ export default function(_: any, argv: { mode: string }) {
 		},
 
 		plugins: [ new MiniCssExtractPlugin({
-			filename: 'editor.css'
+			filename: 'client.css'
 		}) ],
 
 		module: {
@@ -160,11 +160,11 @@ export default function(_: any, argv: { mode: string }) {
 		}
 	});
 
-	const clientConfig: Webpack.Configuration = merge(webConfig, {
-		name: 'client',
-		entry: './Client.ts',
-		output: { filename: 'client.js' }
+	const viewConfig: Webpack.Configuration = merge(webConfig, {
+		name: 'view',
+		entry: './View.ts',
+		output: { filename: 'view.js' }
 	});
 
-	return [ editorConfig, clientConfig, serverConfig ];
+	return [ viewConfig, clientConfig, serverConfig ];
 }

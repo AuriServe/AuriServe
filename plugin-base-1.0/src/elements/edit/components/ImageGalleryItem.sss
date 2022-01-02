@@ -1,0 +1,126 @@
+.EditImageGalleryItem
+	@extend %material_border
+	display: flex
+	$h: 64px
+	height: $h
+	padding: 8px
+	flex-direction: row
+	box-sizing: content-box
+
+	user-select: none
+	list-style-type: none
+	background: transparent
+	border-color: $neutral-100
+
+	&:not(:first-of-type)
+		margin-top: 8px
+
+	& > *
+		box-sizing: border-box
+
+	&.selected
+		border-color: $accent-400
+		background-color: transparentize($accent-300, 0.7)
+
+		// &:focus::after, &:hover::after
+		// 	background-color: transparentize($accent-300, 0.8)
+
+	.EditImageGalleryItem-Hook
+		width: 0
+		height: 100%
+		cursor: pointer
+		user-select: none
+		object-fit: contain
+		flex-shrink: 0
+
+		opacity: 0
+		transition: opacity $t-fast, width $t-fast, padding $t-fast
+
+	&.draggable
+		.EditImageGalleryItem-Hook
+			width: 20px
+			opacity: 0.2
+			padding: 0 8px 0 2px
+
+		&:hover > .EditImageGalleryItem-Hook
+			opacity: 0.4
+
+		.EditImageGalleryItemHook:hover
+			opacity: 0.8
+
+	.EditImageGalleryItem-Content
+		flex-grow: 1
+		display: grid
+		max-width: calc(100% - 20px)
+
+		grid-gap: 8px
+		overflow: hidden
+		align-items: center
+		grid-template-columns: $h 1fr
+
+		.EditImageGalleryItem-ImageButton
+			@extend %material_button
+			overflow: hidden
+			position: relative
+			width: 100%
+			height: 100%
+
+			padding: 0
+			border-width: 0
+			border-radius: 4px
+
+			&.selected
+				&::before
+					content: ' '
+					display: block
+					position: absolute
+					width: 100%
+					height: 100%
+
+					background-color: transparentize($accent-300, 0.8)
+
+				&:focus::after, &:hover::after
+					background-color: transparentize($accent-300, 0.8)
+
+			img
+				width: 100%
+				height: 100%
+				object-fit: cover
+				user-select: none
+				pointer-events: none
+
+				&.icon
+					background-color: mix($neutral-100, $neutral-000, 20%)
+					padding: 16px
+
+		.EditImageGalleryItem-Description
+			height: 100%
+			overflow: hidden
+			text-align: left
+
+			p
+				margin-top: 0em
+				margin-bottom: 0.3em
+
+				overflow: hidden
+				text-overflow: ellipsis
+
+			p.EditImageGalleryItem-Name
+				font-size: 18px
+				white-space: nowrap
+
+			p.EditImageGalleryItem-Desc
+				opacity: 0.8
+				font-size: 14px
+				font-weight: normal
+				line-height: 1.4em
+
+				// Fallbacks for multiline clamping.
+				max-height: 34px
+				display: block
+		
+				// Webkit specific fancy line clamping.
+				line-clamp: 2
+				display: -webkit-box
+				-webkit-line-clamp: 2
+				-webkit-box-orient: vertical
