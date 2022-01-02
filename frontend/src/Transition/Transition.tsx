@@ -6,6 +6,8 @@ import { cloneElement, ComponentChildren, ComponentType, Fragment, h } from 'pre
 import { State, TransitionClasses, merge, getClassesForState } from './Types';
 
 interface Props extends TransitionClasses {
+	[key: string]: any;
+
 	as?: ComponentType<any> | string;
 
 	show: boolean;
@@ -14,8 +16,6 @@ interface Props extends TransitionClasses {
 
 	class?: string;
 	children?: ComponentChildren;
-
-	[key: string]: any;
 }
 
 export default function Transition(props: Props) {

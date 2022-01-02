@@ -88,23 +88,23 @@ export default function MainSettings() {
 			<Card.Body>
 				<Form ref={data} schema={FORM_SCHEMA} class='relative' onSubmit={handleSubmit}>
 					<div class='grid grid-cols-[16rem,1fr] gap-8'>
-						<div class='p-4'>
+						<div>
 							<p class='font-medium mb-1'>Site Metadata</p>
 							<p class='text-neutral-300 text-sm'>The basic description of your website.</p>
 						</div>
-						<div class='p-4 flex flex-col gap-4'>
+						<div class='pt-1 flex flex-col gap-4'>
 							<Input for='name'/>
 							<Input for='address'/>
 							<Input for='description' class='h-24'/>
 						</div>
 					</div>
 
-					<div class='grid grid-cols-[16rem,1fr] gap-8 border-t-2 border-neutral-700 pt-4 mt-2'>
-						<div class='p-4'>
+					<div class='grid grid-cols-[16rem,1fr] gap-8 border-t-2 border-neutral-700 pt-4 mt-5 mb-1'>
+						<div>
 							<p class='font-medium mb-1'>Site Appearance</p>
 							<p class='text-neutral-300 text-sm'>Settings that determine how browsers display your website.</p>
 						</div>
-						<div class='p-4 pt-2 flex flex-col gap-4'>
+						<div class='pt-1 flex flex-col gap-4'>
 							<Input for='favicon'/>
 							<Input for='themeColor'/>
 							<Input for='visibility'/>

@@ -120,7 +120,7 @@ export default function ShortcutPalette() {
 				<div class='relative'>
 					<label for='shortcut_input' class='sr-only'>Search Shortcuts</label>
 					<input id='shortcut_input' ref={inputRef}
-						class='p-4 w-full bg-neutral-700 rounded-lg mb-4 !outline-none shadow-sm pointer-events-auto pl-14'
+						class='p-4 w-full bg-neutral-700 rounded-lg mb-4 !outline-none shadow-md pointer-events-auto pl-14'
 						type='text' placeholder='' autofocus value={query} onInput={(e: any) => setQuery(e.target.value)}/>
 					<Svg size={7} src={icon_launch} class='absolute top-3.5 left-3.5 interact-none
 						icon-p-neutral-100 icon-s-neutral-300'/>
@@ -148,7 +148,7 @@ export default function ShortcutPalette() {
 					</Transition>
 
 					<div class={merge('relative group h-auto w-full max-h-[calc(7*14*4px+16px)] p-2 pointer-events-auto',
-						'bg-neutral-750 shadow-sm rounded-lg transition-all overflow-hidden [transform-origin:center_-128px]',
+						'bg-neutral-750 shadow-md rounded-lg transition-all overflow-hidden [transform-origin:center_-128px]',
 						results.length === 0 && '!py-0 opacity-0 scale-95')}>
 
 						<TransitionGroup duration={300} invertExit

@@ -64,7 +64,7 @@ export default function App() {
 						<Route>
 							<div class='AS_ROOT grid pl-14 min-h-screen bg-neutral-100 dark:bg-neutral-900
 								text-neutral-800 dark:text-neutral-100 font-sans icon-p-neutral-500 icon-s-neutral-400
-								dark:icon-p-neutral-100 dark:icon-s-neutral-300 theme-blue'>
+								dark:icon-p-neutral-100 dark:icon-s-neutral-300 theme-cyan'>
 								<div class='grid animate-fadein'>
 									<Sidebar/>
 									<Switch>

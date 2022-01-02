@@ -6,12 +6,16 @@ import { FormContext, FormField, ErrorType } from './Type';
 
 import TextInput from './TextInput';
 import OptionInput from './OptionInput';
+import ToggleInput from './ToggleInput';
 
 interface Props {
 	for: string;
 
 	style?: any;
 	class?: string;
+
+	rounded?: boolean;
+	toggleLeft?: boolean;
 
 	onChange?: (value: string) => void;
 }
@@ -69,6 +73,8 @@ export default function Input(props: Props) {
 				onValidity={handleValidity}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
+				class={props.class}
+				style={props.style}
 			/>
 		);
 	case 'option':
@@ -86,6 +92,27 @@ export default function Input(props: Props) {
 				onValidity={handleValidity}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
+				class={props.class}
+				style={props.style}
+			/>
+		);
+	case 'toggle':
+		return (
+			<ToggleInput
+				ref={ref}
+				id={id}
+				for={props.for}
+				rounded={props.rounded}
+				toggleLeft={props.toggleLeft}
+				label={schema.label ?? titleCase(props.for)}
+				value={form.data[props.for]}
+				optional={schema.validation?.optional}
+				onChange={handleChange}
+				onValidity={handleValidity}
+				onFocus={handleFocus}
+				onBlur={handleBlur}
+				class={props.class}
+				style={props.style}
 			/>
 		);
 	default:

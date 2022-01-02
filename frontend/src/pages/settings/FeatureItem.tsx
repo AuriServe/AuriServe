@@ -44,7 +44,7 @@ export default function FeatureItem({ coverPath, name, description, enabled, onD
 						style={{ filter: !enabled ? 'sepia(100%) hue-rotate(180deg) saturate(220%) brightness(60%)' : '' }}/>
 				}
 				<div class={merge('absolute w-full p-3 pt-8 bottom-0 top-auto',
-					'feature-small text-shadow-md font-medium transition-all',
+					'group-not-hocus:!h-[5.25rem] text-shadow-md font-medium transition-all',
 					'bg-gradient-to-b from-transparent via-neutral-800/50 to-neutral-800/50',
 					!enabled && 'opacity-75')} style={{ height: (height + 64) + 'px' }}>
 					<h2 class={merge('text-black dark:text-white')}>{name}</h2>

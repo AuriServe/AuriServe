@@ -112,7 +112,7 @@ export default function EditorRendererPage() {
 		nodes[section] = renderTree(page.elements[section], section, {}));
 	const time = performance.now() - start;
 	if (time > 1) console.log(`%cParsing Page Content took ${time.toLocaleString()} ms`,
-		'color:#ebd834;text-align-center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold');
+		'color:#ebd834;text-align:center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold');
 
 	return (
 		<RendererContext.Provider value={{

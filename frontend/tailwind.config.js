@@ -42,6 +42,9 @@ module.exports = {
 			},
 			spacing: {
 				'18': '4.5rem'
+			},
+			cursor: {
+				'resize-ns': 'ns-resize'
 			}
 		},
 		colors: {
@@ -126,6 +129,37 @@ module.exports = {
 		require('@tailwindcss/line-clamp'),
 
 		/**
+		 * Registers text shadow utilities.
+		 */
+
+		plugin(function({ addUtilities }) {
+			addUtilities({
+				'.text-shadow-sm': { textShadow: '0 2px 4px rgba(0, 0, 0, 0.10)' },
+				'.text-shadow-md': { textShadow: '0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)' },
+				'.text-shadow-lg': { textShadow: '0 15px 30px rgba(0, 0, 0, 0.11), 0 5px 15px rgba(0, 0, 0, 0.08)' },
+				'.text-shadow-none': { textShadow: 'none' },
+			});
+		}),
+
+
+		/**
+		 * Register interact-auto / interact-none shorthands which set both `pointer-events` and `user-select`.
+		 */
+
+		plugin(function({ addUtilities }) {
+			addUtilities({
+				'.interact-none': {
+					userSelect: 'none',
+					pointerEvents: 'none'
+				},
+				'.interact-auto': {
+					userSelect: 'auto',
+					pointerEvents: 'auto'
+				}
+			});
+		}),
+
+		/**
 		 * Register icon-p-* and icon-s-* classes for the Svg component.
 		 */
 
@@ -158,13 +192,24 @@ module.exports = {
 
 		plugin(function({ addVariant }) {
 			addVariant('old-focus', '&:focus');
-			addVariant('group-old-focus', 'group:focus &');
+			addVariant('peer-old-focus', ':merge(.peer):focus ~ &');
+			addVariant('group-old-focus', ':merge(.group):focus &');
+
 			addVariant('focus', '&:focus-visible');
-			addVariant('group-focus', 'group:focus-visible &');
+			addVariant('peer-focus', ':merge(.peer):focus-visible ~ &');
+			addVariant('group-focus', ':merge(.group):focus-visible &');
+
 			addVariant('focus-visible', 'DO NOT USE');
+			addVariant('peer-focus-visible', 'DO NOT USE');
 			addVariant('group-focus-visible', 'DO NOT USE');
+
 			addVariant('hocus', [ '&:hover', '&:focus-visible' ]);
-			addVariant('group-hocus', [ 'group:hover &', 'group:focus-visible &' ]);
+			addVariant('peer-hocus', [ ':merge(.peer):hover ~ &', ':merge(.peer):focus-visible ~ &' ]);
+			addVariant('group-hocus', [ ':merge(.group):hover &', ':merge(.group):focus-visible &' ]);
+
+			addVariant('not-hocus', '&:not(:hover):not(:focus-visible)');
+			addVariant('peer-not-hocus', ':merge(.peer):not(:hover):not(:focus-visible) ~ &');
+			addVariant('group-not-hocus', ':merge(.group):not(:hover):not(:focus-visible) &');
 		}),
 
 		/**

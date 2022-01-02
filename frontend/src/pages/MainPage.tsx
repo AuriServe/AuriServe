@@ -28,14 +28,17 @@ export default function MainPage() {
 						<div class='flex flex-wrap justify-center gap-4'>
 							{getShortcuts().slice(1, 7).map((s, i) =>
 								<Card as='button' key={i} onClick={() => s.action({ history })}
-									class='flex group-c [flex-basis:calc(33%-8px)] text-left gap-5 p-0 transition !outline-none
-									rounded-md hocus:bg-neutral-700 dark:hocus:bg-neutral-750'>
+									class='flex group [flex-basis:calc(33%-8px)] text-left gap-5 p-0 transition !outline-none
+									rounded-md hocus:bg-neutral-700 dark:hocus:bg-neutral-750
+									ring-accent-500/25 ring-offset-neutral-900
+									focus:ring focus:ring-offset-2 active:ring active:ring-offset-2'>
 									{s.icon && <Svg src={s.icon} class='w-8 rounded-l-md transition px-5 py-8 transition
-										dark:bg-neutral-750 dark:group-c-hocus:bg-neutral-700'/>}
+										dark:bg-neutral-750 dark:group-hocus:bg-neutral-700
+										group-hocus:icon-p-accent-50 group-hocus:icon-s-accent-400'/>}
 									<div class='flex flex-col self-center'>
-										<p class='truncate leading-4 font-medium dark:group-c-hocus:text-accent-200'>{s.title}</p>
+										<p class='truncate leading-4 font-medium dark:group-hocus:text-accent-50'>{s.title}</p>
 										{s.description && <p class='truncate leading-4 text-sm pt-2 transition
-											dark:text-neutral-200 dark:group-c-hocus:text-neutral-100'>{s.description}</p>}
+											dark:text-neutral-200 dark:group-hocus:text-accent-200'>{s.description}</p>}
 									</div>
 								</Card>
 							)}

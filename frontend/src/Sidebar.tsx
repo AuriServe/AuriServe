@@ -44,7 +44,8 @@ function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
 				'group relative p-1 m-2 w-10 h-10 transition !outline-none',
 				'bg-transparent hocus:bg-accent-400/30 rounded',
 				'after:absolute after:transition after:w-2 after:h-2 after:bg-neutral-50 dark:after:bg-neutral-900',
-				'after:tri after:transform after:rotate-45 after:top-[calc(50%-0.25rem)] after:left-[calc(100%+0.25rem+.5px)]',
+				'after:[clip-path:polygon(0_0,0%_100%,100%_100%)] after:transform after:rotate-45',
+				'after:top-[calc(50%-0.25rem)] after:left-[calc(100%+0.25rem+.5px)]',
 				active ? '!bg-accent-400/50' : 'after:scale-0')}
 		>
 
