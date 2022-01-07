@@ -23,7 +23,7 @@ export interface AppContextData { data: Partial<Int.Root>; mergeData(data: Parti
 
 /** The App Context containing graph data. */
 export const AppContext = createContext<AppContextData>({
-	data: {}, mergeData: () => { throw 'Accessed default AppContext'; }});
+	data: {}, mergeData: () => { throw 'Accessed default AppContext'; }});;;;
 
 
 /**

@@ -15,15 +15,15 @@ const tiers: string[] = [ 'B', 'KB', 'MB', 'GB' ];
  */
 
 export function bytes(bytes: number): string {
-	bytes = Math.round(bytes);
+  bytes = Math.round(bytes);
 
-	let tier = 0;
-	while (bytes > 800 && tier < tiers.length - 1) {
-		tier++;
-		bytes /= 1024;
-	}
+  let tier = 0;
+  while (bytes > 800 && tier < tiers.length - 1) {
+    tier++;
+    bytes /= 1024;
+  }
 
-	return Math.ceil(bytes) + ' ' + tiers[tier];
+  return `${Math.ceil(bytes)} ${tiers[tier]}`;
 }
 
 /**
@@ -34,8 +34,8 @@ export function bytes(bytes: number): string {
  * @returns the formatted value.
  */
 
-export function vector(vec: { x?: number, y?: number, width?: number, height?: number }): string {
-	return `${vec.x ?? vec.width} × ${vec.y ?? vec.height}`;
+export function vector(vec: { x?: number; y?: number; width?: number; height?: number }): string {
+  return `${vec.x ?? vec.width} × ${vec.y ?? vec.height}`;
 }
 
 /**
@@ -47,10 +47,10 @@ export function vector(vec: { x?: number, y?: number, width?: number, height?: n
  */
 
 export function date(date: Date | number) {
-	let d = typeof date === 'number' ? new Date(date) : date;
-	if (Date.now() - +d < 1000 * 60 * 60 * 24 * 3) return dayjs(date).fromNow();
-	else if (d.getFullYear() == new Date().getFullYear()) return "on " + dayjs(date).format("MMMM Do");
-	else return "on " + dayjs(date).format("MMMM Do, YYYY");
+  const d = typeof date === 'number' ? new Date(date) : date;
+  if (Date.now() - +d < 1000 * 60 * 60 * 24 * 3) return dayjs(date).fromNow();
+  else if (d.getFullYear() === new Date().getFullYear()) return `on ${dayjs(date).format('MMMM Do')}`;
+  return `on ${dayjs(date).format('MMMM Do, YYYY')}`;
 }
 
 // export function fileNameToName(name: string, len?: number) {
@@ -77,16 +77,18 @@ export function date(date: Date | number) {
  * @returns the sanitized string, or null if the string does not meet the constraints provided.
  */
 
-export function identifier(str: string, min: number = 3, max: number = 32, clamp: boolean = true) {
-	const sanitized: string = str
-		.toLowerCase() // lowercase the identifier
-		.replace(/[ -]/g, '_') // replace space-like characters with underscores
-		.replace(/[^a-zA-Z0-9_]/g, '') // remove all other non-alphanumeric characters
-		.split('_').filter(Boolean).join('_'); // trim underscore whitespace
+export function identifier(str: string, min = 3, max = 32, clamp = true) {
+  const sanitized: string = str
+    .toLowerCase() // lowercase the identifier
+    .replace(/[ -]/g, '_') // replace space-like characters with underscores
+    .replace(/[^a-zA-Z0-9_]/g, '') // remove all other non-alphanumeric characters
+    .split('_')
+    .filter(Boolean)
+    .join('_'); // trim underscore whitespace
 
-	if (sanitized.length > max && clamp) return sanitized.substring(0, max);
-	if (sanitized.length < min || sanitized.length > max) return null;
-	return sanitized;
+  if (sanitized.length > max && clamp) return sanitized.substring(0, max);
+  if (sanitized.length < min || sanitized.length > max) return null;
+  return sanitized;
 }
 
 /**
@@ -97,8 +99,8 @@ export function identifier(str: string, min: number = 3, max: number = 32, clamp
  * @returns the title-cased string.
  */
 
-export function titleCase(str: String) {
-	return str
-		.replace(/[_-]/g, ' ')
-		.replace(/\w\S*/g, str => (str.charAt(0)?.toUpperCase() ?? '') + (str.substring(1)?.toLowerCase() ?? ''));
+export function titleCase(str: string) {
+  return str
+    .replace(/[_-]/g, ' ')
+    .replace(/\w\S*/g, (str) => (str.charAt(0)?.toUpperCase() ?? '') + (str.substring(1)?.toLowerCase() ?? ''));
 }

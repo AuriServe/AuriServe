@@ -9,5 +9,16 @@
     "dev": "npm run dev-plugins & npm run dev-core",
     "dev-temp": "cd common; npm run dev & cd ../api; npm run dev & cd ../plugins/routes; npm run dev & cd ../../server; npm run dev",
     "build": "cd common && npm run build && cd ../frontend && npm run build && cd ../server && npm run build"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@typescript-eslint/parser": "^5.9.0",
+    "eslint": "^8.6.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jsdoc": "^37.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1"
   }
 }

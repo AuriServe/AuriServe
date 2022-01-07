@@ -40,7 +40,7 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 				eslint: {
 					files: './**/*.{ts,tsx}',
 					options: {
-						configFile: resolve(__dirname, '.eslintrc.js'),
+						configFile: resolve(__dirname, '..', '.eslintrc-jsx.js'),
 						emitErrors: true,
 						failOnHint: true,
 						typeCheck: true
