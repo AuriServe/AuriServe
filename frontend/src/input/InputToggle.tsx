@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 

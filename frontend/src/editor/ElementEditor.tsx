@@ -23,10 +23,8 @@ function Table({ props, values, path, handleSet }: TableProps) {
 				else if ('entries' in value) {
 					return <p>Array props can't be edited.</p>;
 				}
-				else {
-					return <PropInput key={thisPath} prop={value} value={values[key]}
-						identifier={key} onChange={value => handleSet(key, value)}/>;
-				}
+				return <PropInput key={thisPath} prop={value} value={values[key]}
+					identifier={key} onChange={value => handleSet(key, value)}/>;
 			})}
 		</div>
 	);
@@ -40,8 +38,7 @@ interface Props {
 }
 
 export default function ElementEditor({ props, definition, onChange }: Props) {
-	// @ts-ignore
-	const propDefs = definition.config.props;
+	const propDefs = (definition as any).config.props;
 
 	const handleSet = (key: string, value: any) => onChange({ ...props, [key]: value });
 

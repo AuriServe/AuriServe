@@ -57,18 +57,16 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
 		else classes += ` text-red-900 peer-hover:text-red-800/75 peer-focus:text-red-800
 			dark:text-red-400 dark:peer-hover:text-red-300 dark:peer-focus:text-red-300`;
 	}
-	else {
-		if (!invalid) classes += active
-			? ' text-accent-600 dark:text-accent-300'
-			: ` text-neutral-500 dark:text-neutral-300
-				peer-hover:text-neutral-500 dark:peer-hover:text-neutral-200
-				peer-focus:text-accent-600 dark:peer-focus:text-accent-300`;
-		else classes += active
-			? ' text-red-800 dark:text-red-300'
-			: ` text-red-900 dark:text-red-400
-				peer-hover:text-red-800/75 dark:peer-hover:text-red-300
-				dark:peer-focus:text-red-300 peer-focus:text-red-800`;
-	}
+	else if (!invalid) classes += active
+		? ' text-accent-600 dark:text-accent-300'
+		: ` text-neutral-500 dark:text-neutral-300
+			peer-hover:text-neutral-500 dark:peer-hover:text-neutral-200
+			peer-focus:text-accent-600 dark:peer-focus:text-accent-300`;
+	else classes += active
+		? ' text-red-800 dark:text-red-300'
+		: ` text-red-900 dark:text-red-400
+			peer-hover:text-red-800/75 dark:peer-hover:text-red-300
+			dark:peer-focus:text-red-300 peer-focus:text-red-800`;
 
 	return classes;
 }

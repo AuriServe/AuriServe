@@ -1,4 +1,5 @@
 import { h, render } from 'preact';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { GraphQLProvider } from 'graphql-react';
 

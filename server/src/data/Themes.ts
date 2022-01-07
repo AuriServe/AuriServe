@@ -3,7 +3,7 @@ import { toIdentifier, assert, isType } from 'common';
 import fss, { promises as fs, constants as fsc } from 'fs';
 
 import Logger from '../Logger';
-import Watcher from './Watcher';
+import Watcher from '../Watcher';
 import Properties from './model/Properties';
 
 /** The name that the generated theme CSS file will use. */

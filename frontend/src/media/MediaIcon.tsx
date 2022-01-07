@@ -25,7 +25,7 @@ const IMAGE_EXTS = ['png', 'svg', 'jpg', 'jpeg', 'svg', 'gif'];
  */
 
 export default function MediaIcon(props: Props) {
-	const isImage = props.image ?? IMAGE_EXTS.filter((p) => props.path.endsWith('.' + p)).length > 0;
+	const isImage = props.image ?? IMAGE_EXTS.filter((p) => props.path.endsWith(`.${p}`)).length > 0;
 	const showImage = (!props.iconOnly ?? props.image);
 
 	return (

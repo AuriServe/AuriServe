@@ -6,8 +6,8 @@ import yaml from 'js-yaml';
 
 import Plugin from './Plugin';
 import Logger from '../Logger';
+import Watcher from '../Watcher';
 import Manifest from './Manifest';
-import Watcher from '../data/Watcher';
 import PluginManager from './PluginManager';
 
 /** Manages finding, toggling, and loading plugins.*/

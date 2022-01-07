@@ -19,8 +19,8 @@ export default function Tile(props: Props) {
 
 	return (
 		<div class='relative group-e' style={{
-			gridColumn: 'span ' + props.width,
-			gridRow: 'span ' + props.height
+			gridColumn: `span ${props.width}`,
+			gridRow: `span ${props.height}`
 		}}>
 			{editing && <div class='absolute -inset-2 border-2 border-accent-600 rounded-lg ring-2
 				ring-accent-600/40 transition opacity-0 scale-[99.5%] group-e-hover:will-change-transform

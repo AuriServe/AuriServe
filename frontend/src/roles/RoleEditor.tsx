@@ -1,6 +1,6 @@
 import { h, Fragment } from 'preact';
 
-import { Color } from 'common';
+import { to, HSVA } from 'common';
 import { Role } from 'common/graph/type';
 
 import { Label, Annotation, Text, Color as ColorPicker, Toggle, Divider } from '../input';
@@ -13,8 +13,8 @@ interface Props {
 }
 
 export default function RoleEditor(props: Props) {
-	const handleSetColor = (color: Color.HSVA | undefined) => {
-		let role = Object.assign(JSON.parse(JSON.stringify(props.role)), { color });
+	const handleSetColor = (color: HSVA | undefined) => {
+		const role = Object.assign(JSON.parse(JSON.stringify(props.role)), { color });
 		props.setRole(role);
 	};
 
@@ -25,7 +25,7 @@ export default function RoleEditor(props: Props) {
 	const handleToggleAbility = (ability: string) => {
 		const abilityStr = ability;
 
-		let role = Object.assign(JSON.parse(JSON.stringify(props.role)));
+		const role = Object.assign(JSON.parse(JSON.stringify(props.role)));
 		if (role.abilities.filter((f: string) => f === abilityStr).length)
 			role.abilities = role.abilities.filter((f: string) => f !== abilityStr);
 		else role.abilities.push(abilityStr);
@@ -48,7 +48,7 @@ export default function RoleEditor(props: Props) {
 	return (
 		<div class='RoleEditor'>
 			<Label label='Role Name'>
-				<Text style={props.role.color && { color: Color.convert(props.role.color).toHex() }}
+				<Text style={props.role.color && { color: to(props.role.color, 'hex') }}
 					value={props.role.name} onValue={handleNameChange} />
 			</Label>
 
@@ -63,8 +63,9 @@ export default function RoleEditor(props: Props) {
 				{[ '#e12d39', '#f0b429', '#6cd410', '#17b897', '#0fb5ba', '#2bb0ed', '#0967d2', '#2251cc', '#8719e0', '#e019d0', '#da127d',
 					 '#c52707', '#cb6e17', '#399709', '#048271', '#099aa4', '#127fbf', '#03449e', '#132dad', '#690cb0', '#b30ba3', '#a30664' ]
 					.map(c =>
-						<button style={{backgroundColor: c}} onClick={() => handleSetColor(Color.convert(c).toHSVA())} title={c}>
-							{props.role.color && Color.convert(props.role.color).toHex() === c &&
+						<button key={c} style={{backgroundColor: c}}
+							onClick={() => handleSetColor(to(c, 'hsva'))} title={c}>
+							{props.role.color && to(props.role.color, 'hex') === c &&
 								<img src='/admin/asset/icon/check-light.svg' alt='Selected'/>}
 						</button>
 					)

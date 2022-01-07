@@ -1,12 +1,12 @@
 import { Fragment, h } from 'preact';
 import { useMemo } from 'preact/hooks';
 
-import { Format } from 'common';
 import { User, Media } from 'common/graph/type';
 
 import MediaIcon from './MediaIcon';
 import Selectable from '../structure/Selectable';
-import { merge } from 'common/util';
+
+import { formatBytes, formatDate, formatVector, merge } from 'common';
 
 interface Props {
 	user?: User;
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function MediaItem({ user, media, ind, onClick }: Props) {
-	const callbacks = useMemo(() => ({ onDoubleClick: onClick.bind(undefined, media.id) }), [ media.id ]);
+	const callbacks = useMemo(() => ({ onDoubleClick: onClick.bind(undefined, media.id) }), [ media.id, onClick ]);
 
 	return (
 		<li class='flex place-items-stretch'>
@@ -41,11 +41,11 @@ export default function MediaItem({ user, media, ind, onClick }: Props) {
 						</p>
 						<p class={merge('text-sm pt-0.5 truncate font-medium',
 							selected ? 'text-accent-800/75 dark:text-accent-300' : 'text-neutral-500 dark:text-neutral-200')}>
-							Uploaded by {user?.username ?? '[Unknown]'} {Format.date(media.created)}.
+							Uploaded by {user?.username ?? '[Unknown]'} {formatDate(media.created)}.
 						</p>
 						<p class={merge('text-sm pt-1 truncate font-normal',
 							selected ? 'text-accent-800/75 dark:text-accent-300' : 'text-neutral-500 dark:text-neutral-200')}>
-							{(media.size && Format.vector(media.size, 'px') + ' • ')} {Format.bytes(media.bytes)}
+							{(media.size && `${formatVector(media.size)} px • `)} {formatBytes(media.bytes)}
 						</p>
 					</div>
 				</Fragment>}

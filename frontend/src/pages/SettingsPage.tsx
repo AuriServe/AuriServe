@@ -83,7 +83,7 @@ export default function SettingsPage() {
 			clearTimeout(ignoreScroll.current.timeout);
 			ignoreScroll.current.timeout = setTimeout(() => ignoreScroll.current.state = false, 750);
 		});
-	}, []);
+	}, [ history ]);
 
 	useEffect(() => {
 		let scrolled = false;
@@ -94,7 +94,7 @@ export default function SettingsPage() {
 			if (!scrolled || ignoreScroll.current.state) {
 				scrolled = false;
 				return;
-			};
+			}
 			scrolled = false;
 
 			let lastSection = '';
@@ -113,7 +113,7 @@ export default function SettingsPage() {
 			window.removeEventListener('scroll', onScroll);
 			clearInterval(interval);
 		};
-	}, []);
+	}, [ history ]);
 
 	return (
 		<Page class='flex justify-center !pb-0 min-h-screen'>

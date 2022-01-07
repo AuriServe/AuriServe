@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useRef } from 'preact/hooks';
 
-import { Format } from 'common';
+import { formatBytes, formatDate } from 'common';
 
 import { Text } from '../input';
 import MediaIcon from './MediaIcon';
@@ -26,12 +26,12 @@ export default function MediaUploadItem(props: Props) {
 		elem?.addEventListener('mouseup', (evt: any) => evt.stopPropagation());
 
 	const handleFilenameChange = () => {
-		let elem = filenameRef.current!;
+		const elem = filenameRef.current!;
 
 		let start = elem.selectionStart!;
 		let end = elem.selectionEnd!;
 
-		let oldVal = elem.value;
+		const oldVal = elem.value;
 		elem.value = elem.value.toLowerCase().replace(/[ -]/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 
 		if (oldVal.length > elem.value.length) {
@@ -66,7 +66,7 @@ export default function MediaUploadItem(props: Props) {
 					}}
 				/>
 				<p class='relative font-medium text-sm text-neutral-500 dark:text-neutral-400 py-0.5 -top-px pl-1 truncate'>
-					{Format.bytes(props.file.file.size)} • Last modified {Format.date(props.file.file.lastModified)}
+					{formatBytes(props.file.file.size)} • Last modified {formatDate(props.file.file.lastModified)}
 				</p>
 			</div>
 		</li>

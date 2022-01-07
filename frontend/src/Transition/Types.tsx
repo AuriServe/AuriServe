@@ -6,7 +6,7 @@ export enum State {
 	BeforeExit,
 	Exiting,
 	Exited
-};
+}
 
 /** Merges the provided classes, ignoring falsy or undefined values. */
 export function merge(...classes: (string | undefined | false)[]) {

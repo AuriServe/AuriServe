@@ -16,7 +16,7 @@ export default function Grid(props: Props) {
 		<div class={merge('grid', props.class)} style={{
 			gridAutoRows: '6rem',
 			gridTemplateColumns: `repeat(${props.columns ?? 3}, minmax(0, 1fr))`,
-			gap: ((props.gap ?? 4) / 4) + 'rem',
+			gap: `${(props.gap ?? 4) / 4}rem`,
 			...props.style
 		}}>
 			{props.children}

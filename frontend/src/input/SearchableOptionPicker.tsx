@@ -4,6 +4,8 @@ import { useState, useEffect } from 'preact/hooks';
 import Label from './InputLabel';
 import { Card } from '../structure';
 
+import { sign } from 'common';
+
 interface Props {
 	parent: HTMLElement;
 
@@ -18,10 +20,8 @@ interface Props {
 }
 
 function sort(query: string, a: string, b: string) {
-	let off = a.indexOf(query) - b.indexOf(query);
-	if (off < 0) return -1;
-	if (off > 0) return 1;
-	return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+	return sign(a.indexOf(query) - b.indexOf(query)) ||
+		a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
 }
 
 export default function SearchableOptionPicker(props: Props) {
@@ -31,12 +31,12 @@ export default function SearchableOptionPicker(props: Props) {
 	const fields = Array.isArray(props.fields) ? props.fields : [ props.fields ];
 
 	const filtered = props.options.filter(option => {
-		for (let field of fields)
+		for (const field of fields)
 			if ((option[field] as any)?.toLowerCase().includes(query)) return true;
 		return false;
 	}).sort((a, b) => {
-		for (let fieldA of fields)
-			for (let fieldB of fields)
+		for (const fieldA of fields)
+			for (const fieldB of fields)
 				if ((a[fieldA] as any)?.toLowerCase().includes(query) && (b[fieldB] as any)?.toLowerCase().includes(query))
 					return sort(query, a[fieldA] as any, b[fieldB] as any);
 		return 0;
@@ -63,16 +63,16 @@ export default function SearchableOptionPicker(props: Props) {
 	});
 
 	const style: any = {
-		top: props.parent.getBoundingClientRect().bottom + 'px',
-		left: props.parent.getBoundingClientRect().left + 'px',
-		width: props.parent.getBoundingClientRect().width + 'px'
+		top: `${props.parent.getBoundingClientRect().bottom}px`,
+		left: `${props.parent.getBoundingClientRect().left}px`,
+		width: `${props.parent.getBoundingClientRect().width}px`
 	};
 
 	return (
 		<Card class='absolute z-10 overflow-auto !my-2 min-h-12 !p-0 max-h-96 pointer-events-auto rounded !shadow-lg' style={style}>
 			{query && <Label class='px-2 bg-neutral-50 dark:bg-neutral-700' label={`Search results for '${query}'`} />}
 			{filtered.length > 0 && <ul>
-				{filtered.map((option, ind) => <li>
+				{filtered.map((option, ind) => <li key={ind}>
 					<button class='w-full focus:outline-none' onClick={() => props.onSelect(option)}>
 						{props.children({ option, ind, selected: index === ind })}
 					</button>

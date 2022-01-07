@@ -18,8 +18,9 @@ export default forwardRef<HTMLDivElement, Props>(function Portal(props: Props, r
 	}, [ props.class ]);
 
 	useEffect(() => {
-		props.to.appendChild(root.current);
-		return () => props.to.removeChild(root.current);
+		const elem = root.current;
+		props.to.appendChild(elem);
+		return () => props.to.removeChild(elem);
 	}, [ props.to ]);
 
 	return (

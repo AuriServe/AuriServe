@@ -42,7 +42,7 @@ async function parseProps(prop: any, media: Int.Media[]) {
 		if (Array.isArray(prop)) for (let i = 0; i < prop.length; i++)
 			prop[i] = await parseProps(prop[i], media);
 
-		else if (typeof prop === 'object') for (let iden of Object.keys(prop)) {
+		else if (typeof prop === 'object') for (const iden of Object.keys(prop)) {
 			prop[iden] = await parseProps(prop[iden], media);
 		}
 	}
@@ -71,7 +71,7 @@ Promise<[ Page.PageDocument, Record<string, Page.ComponentNode> ]> {
 
 		if (node.props) node.props = await parseProps(node.props, media);
 		await Promise.all(node.children?.map((child, key) => expandTree(child, ObjectPath.combinePath(path, 'children', key))) ?? []);
-	};
+	}
 
 	await Promise.all(Object.keys(elements).map(key => expandTree(elements[key], key)));
 

@@ -71,7 +71,7 @@ export default function UserRolesList(props: Props) {
 	};
 
 	return (
-		<ul class={'UserRolesList' + (props.wrap ? ' Wrap' : '')}>
+		<ul class={`UserRolesList${props.wrap ? ' Wrap' : ''}`}>
 			{/** props.user.roles?.map(r => renderRole(r, roles?.filter(role => role.id === r)[0])) */}
 			{props.edit && <button class='UserRolesList-Item UserRolesList-Add' onClick={() => setEditing(!editing)}>
 				<img src='/admin/asset/icon/add-dark.svg' alt='Add'/>
@@ -79,4 +79,4 @@ export default function UserRolesList(props: Props) {
 			</button>}
 		</ul>
 	);
-};
+}

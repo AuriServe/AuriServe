@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { Prompt } from 'react-router-dom';
 import { useState, useEffect } from 'preact/hooks';
 
-import { Color } from 'common';
+import { to } from 'common';
 import { Role } from 'common/graph/type';
 
 import RoleEditor from './RoleEditor';
@@ -15,7 +15,7 @@ interface Props {
 }
 
 function validateRoles(roles: Role[]): boolean {
-	for (let role of roles) if (role.abilities.includes('ADMINISTRATOR')) return true;
+	for (const role of roles) if (role.abilities.includes('ADMINISTRATOR')) return true;
 
 	return false;
 }
@@ -31,7 +31,7 @@ export default function RolesEditor(props: Props) {
 	}, [ props.roles ]);
 
 	const handleSetRole = (role: Role) => {
-		let newRoles = [...roles ];
+		const newRoles = [...roles ];
 		newRoles[editing] = role;
 
 		if (!validateRoles(newRoles)) return setRoles([...roles ]);
@@ -59,9 +59,11 @@ export default function RolesEditor(props: Props) {
 			<ul class='RolesEditor-RolesList'>
 				<li><span class='RolesEditor-Label'>Roles</span></li>
 				{roles.map((r, i) => <li key={i}
-					class={'RolesEditor-RolesListRole' + (i === editing ? ' active' : '')}
-					style={{['--color']: (r.color ? Color.convert(r.color).toHex() : '#334E68'),
-						['--bg-color']: (r.color ? Color.convert(r.color).toHex() : '#334E68') + '22'} as any}>
+					class={`RolesEditor-RolesListRole ${i === editing ? 'active' : ''}`}
+					style={{
+						'--color': (r.color ? to(r.color, 'hex') : '#334E68'),
+						'--bg-color': `${r.color ? to(r.color, 'hex') : '#334E68'}22`
+					}}>
 					<button onClick={() => setEditing(i)}><span>{r.name}</span></button>
 				</li>)}
 			</ul>

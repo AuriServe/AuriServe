@@ -21,7 +21,7 @@ export interface Shortcut {
 	action: (ctx: ShortcutContext) => void;
 }
 
-export let registeredShortcuts: Shortcut[] = [{
+export const registeredShortcuts: Shortcut[] = [{
 	title: 'Go Home',
 	aliases: [ 'view home', 'main' ],
 	description: 'Go to the AuriServe home.',
@@ -108,10 +108,10 @@ export function registerShortcut(shortcut: Shortcut) {
 export function getQueryScore(str: string, query: string) {
 	let score = 0;
 	let lastPos = -1;
-	let maxScore = 10 * query.length;
+	const maxScore = 10 * query.length;
 
 	for (let i = 0; i < query.length; i++) {
-		let pos = str.indexOf(query[i], lastPos + 1);
+		const pos = str.indexOf(query[i], lastPos + 1);
 		if (pos === -1) break;
 		if (score === maxScore) break;
 
@@ -125,7 +125,7 @@ export function getQueryScore(str: string, query: string) {
 export function searchShortcuts(query: string): Shortcut[] {
 	return registeredShortcuts
 		.map(s => {
-			let score = Math.max(
+			const score = Math.max(
 				getQueryScore(s.title.toLowerCase(), query),
 				getQueryScore((s.description ?? '').toLowerCase(), query) ,
 				...(s.aliases ?? []).map(a => getQueryScore(a.toLowerCase(), query)));

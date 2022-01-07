@@ -27,11 +27,11 @@ export default function DimensionTransition(props: Props) {
 		return () => observer.disconnect();
 	}, []);
 
-	let appliedOuterStyles: any = {};
+	const appliedOuterStyles: any = {};
 	if (props.mode !== 'height') appliedOuterStyles.width = dimensions?.x;
 	if (props.mode !== 'width') appliedOuterStyles.height = dimensions?.y;
 
-	let appliedInnerStyles: any = { width: 'min-content', height: 'min-content' };
+	const appliedInnerStyles: any = { width: 'min-content', height: 'min-content' };
 	if (props.mode === 'height') appliedInnerStyles.width = 'auto';
 	if (props.mode === 'width') appliedInnerStyles.height = 'auto';
 

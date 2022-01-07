@@ -52,7 +52,7 @@ type UseDataResult = [ Partial<Int.Root>, () => void ];
  */
 
 export function useData(queries: string | string[], dependents?: any[]): UseDataResult {
-	const query = '{' + (typeof queries === 'string' ? queries : queries.join('\n')) + '}';
+	const query = `{${(typeof queries === 'string' ? queries : queries.join('\n'))}}`;
 
 	const { data, mergeData } = useContext<AppContextData>(AppContext);
 
@@ -72,7 +72,7 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
 		});
 
 		return () => valid = false;
-	}, dependents);
+	}, dependents); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return [ data, () => fetchData().then(mergeData) ];
 }

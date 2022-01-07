@@ -68,7 +68,7 @@ export default function TransitionGroup(props: Props) {
 				});
 			}
 		});
-	}, [ props.children ]);
+	}, [ props.children, props.duration, rerender ]);
 
 	const Tag: ComponentType<any> | string = props.as ?? Fragment;
 

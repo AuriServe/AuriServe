@@ -75,6 +75,14 @@ export default function CardToolbar(props: Props) {
 	);
 }
 
-CardToolbar.Spacer = () => <div class='flex-grow'/>;
+CardToolbar.Spacer = function Spacer() {
+	return (
+		<div class='flex-grow'/>
+	);
+	}
 
-CardToolbar.Divider = () => <div class='bg-neutral-300 dark:bg-neutral-500 w-0.5 my-2 rounded justify-stretch'/>;
+CardToolbar.Divider = function Divider() {
+	return (
+		<div class='bg-neutral-300 dark:bg-neutral-500 w-0.5 my-2 rounded justify-stretch'/>
+	);
+	}

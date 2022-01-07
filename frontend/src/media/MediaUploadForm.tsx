@@ -1,6 +1,6 @@
-import { Format } from 'common';
+import { toIdentifier } from 'common';
 import { h, VNode } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useCallback } from 'preact/hooks';
 
 import { merge } from 'common/util';
 
@@ -45,9 +45,9 @@ export default function MediaUploadForm(props: Props) {
 
 		const THREADS = 6;
 
-		let success: string[] = [];
+		const success: string[] = [];
 
-		let promises: Promise<void>[] = [];
+		const promises: Promise<void>[] = [];
 		for (let i = 0; i < THREADS; i++) {
 			let ind = i;
 
@@ -56,7 +56,7 @@ export default function MediaUploadForm(props: Props) {
 					if (ind >= files.length) return resolve();
 					const file = files[ind];
 
-					let data = new FormData();
+					const data = new FormData();
 					data.append('file', file.file);
 					data.append('name', file.name);
 					data.append('identifier', file.identifier);
@@ -64,40 +64,40 @@ export default function MediaUploadForm(props: Props) {
 					fetch('/admin/media/upload', {
 						method: 'POST', cache: 'no-cache', body: data
 					}).then((r) => {
-						if (r.status === 202) success.push(Format.sanitize(file.identifier || file.name));
+						if (r.status === 202) success.push(toIdentifier(file.identifier || file.name)!);
 						ind += THREADS;
 						f();
 					});
 				};
 				f();
 			}));
-		};
+		}
 
 		Promise.all(promises).then(props.onUpload);
 	};
 
-	const handleRemoveFiles = () => {
-		let newFiles = [ ...files ];
+	const handleRemoveFiles = useCallback(() => {
+		const newFiles = [ ...files ];
 		selected.reverse().forEach((ind) => newFiles.splice(ind, 1));
 		setFiles(newFiles);
-	};
+	}, [ files, selected ]);
 
 	const handleAddFiles = async (e: any) => {
-		let newFiles = [ ...files ];
-		let addedFiles = [ ...(e.target.files || [])];
+		const newFiles = [ ...files ];
+		const addedFiles = [ ...(e.target.files || [])];
 		e.target.value = '';
 
 		await Promise.all(addedFiles.map(file => new Promise<void>((resolve) => {
 			const ext = file.name.substr(file.name.lastIndexOf('.') + 1);
 			const isImage = ext === 'png' || ext === 'jpeg' || ext === 'jpg' || ext === 'svg' || ext === 'gif';
 
-			const cleanName = Format.fileNameToName(file.name, 32);
+			const cleanName = toIdentifier(file.name, 32);
 
 			const resolveFile = (image?: string) => {
-				if (!newFiles.map(f => f.name).includes(cleanName)) {
+				if (!newFiles.map(f => f.name).includes(cleanName!)) {
 					newFiles.push({
 						file, ext,
-						name: cleanName,
+						name: cleanName as string,
 						identifier: '',
 						thumbnail: image
 					});
@@ -119,14 +119,14 @@ export default function MediaUploadForm(props: Props) {
 	};
 
 	const handleNameChange = (ind: number, name: string) => {
-		let newFiles = [ ...files ];
+		const newFiles = [ ...files ];
 		newFiles[ind] = { ...newFiles[ind], name };
 		setFiles(newFiles);
 	};
 
 	const handleFilenameChange = (ind: number, name: string) => {
 		const cleanName = name.toLowerCase().replace(/[ -]/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-		let newFiles = [ ...files ];
+		const newFiles = [ ...files ];
 		newFiles[ind] = { ...newFiles[ind], identifier: cleanName };
 		setFiles(newFiles);
 	};
@@ -165,7 +165,7 @@ export default function MediaUploadForm(props: Props) {
 
 			{files.length > 0 && <div class='my-3 h-12'>
 				{selected.length > 0 && <Button onClick={handleRemoveFiles} icon='/admin/asset/icon/trash-dark.svg'
-					label={'Remove' + (selected.length === 1 ? '' : ' (' + selected.length + ')')}/>}
+					label={`Remove${selected.length === 1 ? '' : ` (${selected.length})`}`}/>}
 			</div>}
 
 			<DimensionTransition duration={150}>

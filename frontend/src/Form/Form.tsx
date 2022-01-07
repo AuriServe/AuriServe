@@ -16,13 +16,13 @@ export interface Props {
 }
 
 const DEFAULT_VALUES: Record<FormFieldType, any> = {
-	['text']: '',
-	['number']: 0,
-	['toggle']: false,
-	['option']: undefined,
+	text: '',
+	number: 0,
+	toggle: false,
+	option: undefined,
 
-	['media']: undefined,
-	['color']: undefined
+	media: undefined,
+	color: undefined
 };
 
 function initializeField(data: any, fields: any, name: string, schema: FormField | FormGroup) {
@@ -35,7 +35,7 @@ function initializeField(data: any, fields: any, name: string, schema: FormField
 
 	data[name] = schema.default ?? (schema.validation?.optional ? undefined : DEFAULT_VALUES[schema.type]);
 	fields[name] = { ref: null, error: null };
-};
+}
 
 export default memo(forwardRef<any, Props>(function Form(props, ref) {
 	console.log('render form');
@@ -65,7 +65,7 @@ export default memo(forwardRef<any, Props>(function Form(props, ref) {
 		e.stopPropagation();
 
 		function findAndFocusInvalid(fields: Record<string, { ref: any; error: any }>) {
-			for (let name in fields) {
+			for (const name in fields) {
 				if (Object.prototype.hasOwnProperty.call(fields, name)) {
 					if (fields[name].error) {
 						const elem = fields[name].ref;
@@ -82,7 +82,7 @@ export default memo(forwardRef<any, Props>(function Form(props, ref) {
 
 		if (!findAndFocusInvalid(context.current.fields)) {
 			props.onSubmit?.(context.current.data);
-		};
+		}
 	};
 
 	return (

@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useCallback } from 'preact/hooks';
 import { useParams, useHistory } from 'react-router-dom';
 
 import { Media } from 'common/graph/type';
@@ -40,7 +40,7 @@ export default function MediaPage() {
 	const uploading: boolean = id === 'upload';
 	const viewing: string | null = !uploading ? id : null;
 
-	let [ data, refresh ] = useData([ QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS ], []);
+	const [ data, refresh ] = useData([ QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS ], []);
 	const deleteMedia = useMutation(MUTATE_DELETE_MEDIA);
 
 	// const [ view, setView ] = useState<'grid' | 'list'>('grid');
@@ -57,10 +57,10 @@ export default function MediaPage() {
 		history.push('/media');
 	};
 
-	const handleDelete = (items: number[]) => {
+	const handleDelete = useCallback((items: number[]) => {
 		setDeleted([ ...deleted, ...items ]);
 		if (viewing) history.push('..');
-	};
+	}, [ deleted, history, viewing ]);
 
 	const handleSave = async () => {
 		await deleteMedia({ media: media.filter((_, i) => deleted.includes(i)).map(m => m.id) });
@@ -95,9 +95,9 @@ export default function MediaPage() {
 
 		window.addEventListener('keyup', handleKeyUp);
 		return () => window.removeEventListener('keyup', handleKeyUp);
-	}, [ selected ]);
+	}, [ selected, handleDelete ]);
 
-	let viewingItem = media?.filter(m => m.id === viewing)[0];
+	const viewingItem = media?.filter(m => m.id === viewing)[0];
 
 	return (
 		<Page>
@@ -112,13 +112,13 @@ export default function MediaPage() {
 						{selected.length > 0 && <Card.Toolbar.Divider/>}
 
 						{selected.length === 1 && <Btn.Tertiary
-							onClick={() => history.push(media[selected[0]].id + '/')}
+							onClick={() => history.push(`${media[selected[0]].id}/`)}
 							icon={icon_view} label='View'/>}
 
 						{selected.length > 0 && <Btn.Tertiary
-							onClick={() => handleDelete(selected)}
-							icon={icon_trash} label={'Delete ' +
-								(selected.length === 1 ? '' : '(' + selected.length + ')')} />}
+							icon={icon_trash}
+							label={`Delete ${selected.length === 1 ? '' : `(${selected.length})`}`}
+							onClick={() => handleDelete(selected)}/>}
 
 						<Card.Toolbar.Spacer/>
 
@@ -134,7 +134,7 @@ export default function MediaPage() {
 								class='grid gap-3 grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'>
 								{media.map((item: any, ind: number) => !deleted.includes(ind) ? (
 									<MediaItem ind={ind} user={data.users?.filter(u => u.id === item.user)[0]}
-										media={item} key={item.identifier} onClick={(id) => history.push(id + '/')}/>
+										media={item} key={item.identifier} onClick={(id) => history.push(`${id}/`)}/>
 								): null).filter(item => item)}
 							</SelectGroup>
 						}
@@ -166,7 +166,7 @@ export default function MediaPage() {
 
 			<Modal active={viewingItem !== undefined} onClose={() => history.push('..')}>
 				{viewingItem && <MediaView onDelete={() => handleDelete([ media.map(a => a.id).indexOf(viewing!) ])}
-					user={data.users?.filter(u => u.id === viewingItem!.user)[0]!} media={viewingItem}/>}
+					user={data.users!.filter(u => u.id === viewingItem!.user)[0]!} media={viewingItem}/>}
 			</Modal>
 
 			<Modal active={uploading}>

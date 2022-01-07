@@ -17,10 +17,10 @@ interface Bounds {
  * @param includeMargins - Whether or not to include margins.
  */
 
-export function getElementBounds(elem: HTMLElement, includeMargins: boolean = false): Bounds {
+export function getElementBounds(elem: HTMLElement, includeMargins = false): Bounds {
 	const bounds: Bounds = { top: Infinity, left: Infinity, bottom: 0, right: 0 };
 
-	for (let child of Array.from(elem?.children ?? [])) {
+	for (const child of Array.from(elem?.children ?? [])) {
 		const clientBounds = child.getBoundingClientRect();
 		if (!clientBounds.width) continue;
 

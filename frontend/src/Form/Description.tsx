@@ -27,7 +27,7 @@ function updateError(meta: FormFieldMeta, last?: { error: string; errorMessage: 
 	if (meta.error && (!last || meta.error !== last.error || meta.errorMessage !== last.errorMessage))
 		return { error: meta.error, errorMessage: meta.errorMessage };
 	return meta.error ? { error: meta.error, errorMessage: meta.errorMessage } : null;
-};
+}
 
 export default forwardRef<HTMLDivElement, Props>(function Description(props, ref) {
 	const form = useContext(FormContext);
@@ -41,7 +41,7 @@ export default forwardRef<HTMLDivElement, Props>(function Description(props, ref
 			if (field !== props.for) return;
 			setError(last => updateError(form.fields[props.for], last));
 		});
-	}, [ props.for, props._manual ]);
+	}, [ form, props.for, props._manual ]);
 
 	const schema = form.schema.fields[props.for] as FormField | undefined;
 

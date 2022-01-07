@@ -46,7 +46,7 @@ export default function FeatureItem({ coverPath, name, description, enabled, onD
 				<div class={merge('absolute w-full p-3 pt-8 bottom-0 top-auto',
 					'group-not-hocus:!h-[5.25rem] text-shadow-md font-medium transition-all',
 					'bg-gradient-to-b from-transparent via-neutral-800/50 to-neutral-800/50',
-					!enabled && 'opacity-75')} style={{ height: (height + 64) + 'px' }}>
+					!enabled && 'opacity-75')} style={{ height: `${height + 64}px` }}>
 					<h2 class={merge('text-black dark:text-white')}>{name}</h2>
 					<div class='relative'>
 						<p aria-hidden={true}

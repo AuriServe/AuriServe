@@ -48,17 +48,17 @@ function RouteItem({ route, dragging }: RouteItemProps) {
 			</Button>
 		</div>
 	);
-};
+}
 
 export default function PagesPage() {
-	let [ { pages: rawPages, info } ] = useData([ QUERY_PAGES, QUERY_INFO ], []);
+	const [ { pages: rawPages, info } ] = useData([ QUERY_PAGES, QUERY_INFO ], []);
 
 	const [ pages, setPages ] = useState<any[] | undefined>([]);
 
 	useEffect(() => void(setPages(rawPages ? [ ...rawPages ]
 		.map(page => void(page.name ||= info?.name) || page)
 		.sort((a, b) => a.path === '/index' ? -1 : a.path.localeCompare(b.path))
-		.map(page => ({ ...page, key: page.path })) : undefined)), [ rawPages?.length ]);
+		.map(page => ({ ...page, key: page.path })) : undefined)), [ rawPages, info?.name ]);
 
 	const location = useLocation();
 	const page = location.pathname.startsWith('/routes/edit/') ?

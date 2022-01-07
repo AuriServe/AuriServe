@@ -87,7 +87,7 @@ export interface FormContextData {
 	fields: Record<string, FormFieldMeta>;
 	schema: FormSchema;
 	event: EventEmitter;
-};
+}
 
 /** Context containing form information. */
 export const FormContext = createContext<FormContextData>(null as any);

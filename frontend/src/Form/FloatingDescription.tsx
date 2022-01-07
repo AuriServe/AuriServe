@@ -53,22 +53,22 @@ export default function FloatingDescription(props: Props) {
 			unbindFocus();
 			unbindValidity();
 		};
-	}, []);
+	}, [ form ]);
 
 	const handleUpdateContainerHeight = (ref: HTMLDivElement) => {
 		if (!ref || !containerRef.current) return;
-		containerRef.current.style.height = ref.clientHeight + 'px';
+		containerRef.current.style.height = `${ref.clientHeight}px`;
 	};
 
-	const ref = form.fields[state?.name!]?.ref as HTMLElement | undefined;
-	const schema = form.schema.fields[state?.name!] as FormField | undefined;
+	const ref = form.fields[state!.name]?.ref as HTMLElement | undefined;
+	const schema = form.schema.fields[state!.name] as FormField | undefined;
 
 	const posRef = useRef<{ top: string; left: string }>({ top: '', left: '' });
 
 	if (ref) {
-		posRef.current.top = (Math.floor(ref.getBoundingClientRect().top + window.scrollY) + 'px');
-		posRef.current.left = (Math.floor(ref.getBoundingClientRect().right
-			+ window.scrollX) + (props.padding ?? 4) * 4 + 'px');
+		posRef.current.top = `${Math.floor(ref.getBoundingClientRect().top + window.scrollY)}px`;
+		posRef.current.left = `${Math.floor(ref.getBoundingClientRect().right + window.scrollX) +
+			(props.padding ?? 4) * 4}px`;
 	}
 
 	return (
@@ -95,7 +95,7 @@ export default function FloatingDescription(props: Props) {
 							<Description
 								key={(state?.name ?? '-') + state?.error}
 								ref={handleUpdateContainerHeight}
-								for={state?.name!}
+								for={state!.name}
 								_manual={true}
 								class={merge('absolute top-0 left-0 w-full', props.innerClass)}>
 								{props.children}

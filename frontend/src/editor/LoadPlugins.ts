@@ -1,6 +1,6 @@
 import { AdminDefinition } from 'common/definition';
 
-declare global { interface Window { serve?: any } };
+declare global { interface Window { serve?: any } }
 
 export type PluginElements = { [key: string]: AdminDefinition | undefined };
 
@@ -10,7 +10,7 @@ export default async function loadPlugins({ scripts, styles, themes }:
 	const { pluginScripts, pluginStyles }: { pluginScripts: string[]; pluginStyles: string[] } =
 		JSON.parse((document.getElementById('plugins') as any).innerText);
 
-	let pluginElements: PluginElements = {};
+	const pluginElements: PluginElements = {};
 
 	if (scripts) {
 		window.serve = {
@@ -20,9 +20,9 @@ export default async function loadPlugins({ scripts, styles, themes }:
 		await Promise.all(pluginScripts.map((s: string) => {
 			return new Promise<void>((resolve) => {
 				const script = document.createElement('script');
-				
+
 				script.async = true;
-				script.src = '/plugin/' + s;
+				script.src = `/plugin/${s}`;
 				script.addEventListener('load', () => resolve());
 
 				document.head.appendChild(script);
@@ -61,7 +61,7 @@ export default async function loadPlugins({ scripts, styles, themes }:
 				const style = document.createElement('link');
 
 				style.rel = 'stylesheet';
-				style.href = '/plugin/' + s;
+				style.href = `/plugin/${s}`;
 				style.addEventListener('load', () => resolve());
 
 				document.head.appendChild(style);

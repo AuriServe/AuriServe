@@ -21,10 +21,10 @@ export default function UserCard(props: Props) {
 	return (
 		<Popup active={props.visible}>
 			<Card class='fixed w-56 h-auto !p-0 pointer-events-auto overflow-hidden !shadow-lg !my-2' ref={ref} style={{
-				top: props.parent.getBoundingClientRect().bottom + 'px',
-				left: ((props.parent.getBoundingClientRect().left +
-					props.parent.getBoundingClientRect().right) / 2) - (56 * 2) + 'px'}}>
-
+				top: `${props.parent.getBoundingClientRect().bottom}px`,
+				left: `${((props.parent.getBoundingClientRect().left +
+					props.parent.getBoundingClientRect().right) / 2) - (56 * 2)}px`
+			}}>
 				<div class='px-2 py-4'>
 					<img src='/admin/asset/icon/user-color.svg'
 						class='my-2 mb-1 w-32 h-32 mx-auto rounded-full border-4 bg-blue-600
@@ -35,9 +35,9 @@ export default function UserCard(props: Props) {
 				</div>
 				<div class='bg-neutral-700 p-3'>
 					<UserRolesList user={props.user} wrap={true} edit={true} />
-					<Button class='w-full !bg-neutral-600 text-center' to={'/users/' + props.user.id} label='View Profile'/>
+					<Button class='w-full !bg-neutral-600 text-center' to={`/users/${props.user.id}`} label='View Profile'/>
 				</div>
 			</Card>
 		</Popup>
 	);
-};
+}

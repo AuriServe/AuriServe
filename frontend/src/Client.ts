@@ -3,6 +3,7 @@ import Preact from 'preact';
 
 import Popout from './Popout';
 
+// eslint-disable-next-line
 let root: any;
 
 const onLogout = () => {

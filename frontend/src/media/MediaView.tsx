@@ -5,7 +5,7 @@ import * as Btn from '../Button';
 import MediaIcon from './MediaIcon';
 import { Media, User } from 'common/graph/type';
 
-import { Format } from 'common';
+import { formatVector, formatBytes, formatDate } from 'common';
 
 import icon_code from '@res/icon/code.svg';
 import icon_edit from '@res/icon/edit.svg';
@@ -38,7 +38,7 @@ export default function MediaView({ user, media, onDelete }: Props) {
 						{media.name}
 					</p>
 					<p class='text-sm pt-0.5 truncate font-medium text-neutral-200'>
-						Uploaded by {user?.username ?? 'Unknown'} {Format.date(media.created)}.
+						Uploaded by {user?.username ?? 'Unknown'} {formatDate(media.created)}.
 					</p>
 					<p class='text-sm pt-1 pb-0.5 truncate font-normal text-neutral-200'>
 						{media.url} • <Btn.Link icon={icon_code} iconOnly label='Copy ID' onClick={handleCopyID}/>
@@ -63,9 +63,9 @@ export default function MediaView({ user, media, onDelete }: Props) {
 			</Card.Body>
 
 			<Card.Footer>
-				{(media.size && Format.vector(media.size, 'px') + ' • ')} {Format.bytes(media.bytes)}
+				{(media.size && `${formatVector(media.size)} px • `)} {formatBytes(media.bytes)}
 				&nbsp;•&nbsp;<Btn.Link icon={icon_external} label='Open' href={media.url} iconRight/>
 			</Card.Footer>
 		</div>
 	);
-};
+}

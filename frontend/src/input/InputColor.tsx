@@ -2,8 +2,6 @@ import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useState, useRef } from 'preact/hooks';
 
-import { Color } from 'common';
-
 import Text from './InputText';
 import Popup from '../structure/Popup';
 import ColorPicker from './ColorPicker';
@@ -11,7 +9,7 @@ import ColorPicker from './ColorPicker';
 import { usePopupCancel } from '../Hooks';
 import { InputProps, FocusableInputProps } from './index';
 
-import { merge } from 'common/util';
+import { merge, to, HSVA } from 'common';
 
 import style from './Input.sss';
 
@@ -40,7 +38,7 @@ export default forwardRef<HTMLInputElement, Props>(function InputColor(props, fR
 
 	usePopupCancel(ref, () => setPickerActive(false));
 
-	const value: Color.HSVA = props.value ?? { h: 0.58, s: 0.52, v: 0.41, a: 1 };
+	const value: HSVA = props.value ?? { h: 0.58, s: 0.52, v: 0.41, a: 1 };
 
 	return (
 		<div ref={ref} style={props.style}
@@ -50,10 +48,10 @@ export default forwardRef<HTMLInputElement, Props>(function InputColor(props, fR
 
 			<Text ref={fRef} maxLength={7}
 				class='pl-12 font-mono p-0 border-none bg-transparent'
-				value={Color.convert(value).toHex()}
-				onValue={hex => props.onValue?.(Color.convert(hex).toHSVA())}/>
+				value={to(value, 'hex')}
+				onValue={hex => props.onValue?.(to(hex, 'hsva'))}/>
 
-			<div style={{ backgroundColor: Color.convert(value).toHex() }}
+			<div style={{ backgroundColor: to(value, 'hex') }}
 				class='absolute top-2 left-2 -m-px w-8 h-8 rounded pointer-events-none shadow-sm'/>
 
 			<Popup active={pickerActive}>

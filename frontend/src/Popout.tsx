@@ -12,7 +12,7 @@ interface Props {
 export default function Popout(props: Props) {
 	const [ visible, setVisible ] = useState<boolean>(false);
 
-	const editUrl = '/admin/pages/' + window.location.pathname.substr(1) + (window.location.pathname.endsWith('/') ? 'index' : '');
+	const editUrl = `/admin/pages/${window.location.pathname.substring(1) + (window.location.pathname.endsWith('/') ? 'index' : '')}`;
 	const settingsUrl = '/admin/settings/overview';
 
 	const handleLogout = () => {

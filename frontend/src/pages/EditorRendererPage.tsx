@@ -27,12 +27,11 @@ function UndefinedElement({ elem }: { elem: string }) {
 			<p class='w-full text-center text-neutral-800'><strong>{elem}</strong> is undefined.</p>
 		</div>
 	);
-};
+}
 
 export default function EditorRendererPage() {
 	const [ { themes } ] = useData(QUERY_THEMES, []);
 	const elements = useAsyncMemo(() => loadPlugins({ scripts: true, styles: true, themes: true }), []);
-	if (!elements) return <div/>;
 
 	useEffect(() => {
 		if (!themes) return;
@@ -57,7 +56,9 @@ export default function EditorRendererPage() {
 		else console.warn(`Unknown data recieved, type '${type}', body:`, body);
 	}, [], 'editor');
 
-	useEffect(() => send!('page:req'), []);
+	useEffect(() => send!('page:req'), [ send ]);
+
+	if (!elements) return <div/>;
 
 	const handleSetActive = (path: string) => {
 		setActivePath(path);
@@ -98,7 +99,7 @@ export default function EditorRendererPage() {
 				spreadProps={!InlineEditor}
 				component={ElementComponent}
 				indicator={element.editing?.focusRing ?? true}
-				setProps={handleSetProps.bind(undefined, path)}
+				setProps={props => handleSetProps(path, props)}
 				children={children}
 			/>
 		);

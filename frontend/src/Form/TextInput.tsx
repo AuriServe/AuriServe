@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { merge } from 'common/util';
-import { useRef, useState, useMemo, useEffect } from 'preact/hooks';
+import { useRef, useState, useMemo, useEffect, useCallback } from 'preact/hooks';
 
 import InputContainer from './InputContainer';
 
@@ -37,45 +37,46 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 	const [ shouldShowInvalid, setShouldShowInvalid ] = useState<boolean>(false);
 
 	const Tag = props.multiline ? 'textarea' : 'input';
-	const id = useMemo(() => props.id ?? 'no-form-' + Math.random().toString(36).substr(2, 9), [ props.id ]);
+	const id = useMemo(() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`, [ props.id ]);
 
 	const handleRef = (elem: any) => {
 		ref.current = elem;
 		if (fRef) fRef.current = elem;
 	};
 
-	const handleValidate = () => {
+	const { optional, maxLength, minLength, pattern, patternHint, onValidity } = props;
+	const handleValidate = useCallback(() => {
 		let error: ErrorType | null = null;
 		let errorMessage: string | null = null;
 
-		if (!props.optional && value.current.length === 0) {
+		if (!optional && value.current.length === 0) {
 			error = 'required';
 			errorMessage = 'Please fill in this field.';
 		}
-		else if (props.maxLength && value.current.length > props.maxLength) {
+		else if (maxLength && value.current.length > maxLength) {
 			error = 'maxLength';
-			errorMessage = `Must be at most ${props.maxLength} characters.`;
+			errorMessage = `Must be at most ${maxLength} characters.`;
 		}
-		else if (props.minLength && value.current.length < props.minLength) {
+		else if (minLength && value.current.length < minLength) {
 			error = 'minLength';
-			errorMessage = `Must be at least ${props.minLength} characters.`;
+			errorMessage = `Must be at least ${minLength} characters.`;
 		}
-		else if (props.pattern && !props.pattern.test(value.current)) {
+		else if (pattern && !pattern.test(value.current)) {
 			error = 'pattern';
-			errorMessage = props.patternHint ?? 'Please match the pattern provided';
+			errorMessage = patternHint ?? 'Please match the pattern provided';
 		}
 
 		setInvalid(error !== null);
-		props.onValidity?.(error, errorMessage);
-	};
+		onValidity?.(error, errorMessage);
+	}, [ optional, maxLength, minLength, pattern, patternHint, onValidity ]);
 
 	useEffect(() => {
 		handleValidate();
 		if (props.multiline) {
 			ref.current.style.height = '';
-			ref.current.style.height = Math.min(ref.current.scrollHeight, props.maxHeight ?? 200) + 'px';
+			ref.current.style.height = `${Math.min(ref.current.scrollHeight, props.maxHeight ?? 200)}px`;
 		}
-	}, []);
+	}, [ handleValidate, props.multiline, props.maxHeight ]);
 
 	const handleChange = () => {
 		const newValue = Tag === 'input' ? (ref.current as HTMLInputElement).value : ref.current.innerText;
@@ -84,7 +85,7 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 		handleValidate();
 		if (props.multiline) {
 			ref.current.style.height = '';
-			ref.current.style.height = Math.min(ref.current.scrollHeight, props.maxHeight ?? 200) + 'px';
+			ref.current.style.height = `${Math.min(ref.current.scrollHeight, props.maxHeight ?? 200)}px`;
 		}
 	};
 

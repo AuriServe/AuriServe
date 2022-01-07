@@ -49,7 +49,7 @@ export function usePopupCancel(roots: RefObject<any> | RefObject<any>[],
 			body.removeEventListener('mousedown', handlePointerCancel);
 			body.removeEventListener('touchstart', handlePointerCancel);
 		};
-	}, [ onCancel, condition, ...dependents || [] ]);
+	}, [ onCancel, condition, ...dependents || [] ]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 
@@ -58,7 +58,7 @@ export function usePopupCancel(roots: RefObject<any> | RefObject<any>[],
  */
 
 function sendMessage(key: string, target: { postMessage: any }, type: string, body?: any) {
-	target.postMessage({ _as: key, type: type, body: body });
+	target.postMessage({ _as: key, type, body });
 }
 
 
@@ -88,7 +88,7 @@ function recieveMessage(key: string, onRecieve: (type: string, body?: string) =>
  */
 
 export function useMessaging(target: { postMessage: any } | null | undefined,
-	onRecieve: (type: string, body?: string) => void, dependents: any[], key: string = '!') {
+	onRecieve: (type: string, body?: string) => void, dependents: any[], key = '!') {
 
 	useEffect(() => {
 		if (!target) return;
@@ -96,7 +96,7 @@ export function useMessaging(target: { postMessage: any } | null | undefined,
 
 		window.addEventListener('message', cb);
 		return () => window.removeEventListener('message', cb);
-	}, [ key, target, onRecieve, ...dependents ]);
+	}, [ key, target, onRecieve, ...dependents ]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return target && sendMessage.bind(undefined, key, target);
 }

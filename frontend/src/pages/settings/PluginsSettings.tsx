@@ -18,7 +18,7 @@ import icon_plugins from '@res/icon/plugin.svg';
 
 const sortFn = (a: Plugin, b: Plugin) => {
 	if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
-	else return a.identifier < b.identifier ? -1 : 1;
+	return a.identifier < b.identifier ? -1 : 1;
 };
 
 export default function PluginsSettings() {

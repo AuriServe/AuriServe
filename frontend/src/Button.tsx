@@ -30,7 +30,7 @@ export interface Props {
 	style?: any;
 	class?: string;
 	children?: ComponentChildren;
-};
+}
 
 export function UnstyledButton(props: Props) {
 	const Tag: any = props.to ? NavLink : props.href ? 'a' : 'button';
@@ -164,7 +164,7 @@ export function Link(props: Props) {
 				'text-accent-700 group-hocus:text-accent-600 group-active:text-white',
 
 				'dark:text-accent-300 dark:group-hocus:text-white dark:group-active:text-neutral-800',
-				props.iconOnly ? 'sr-only' : ((props.icon ? props.iconRight ? 'mr-1' : 'ml-1' : '') + ' relative'))}>
+				props.iconOnly ? 'sr-only' : (`${(props.icon ? props.iconRight ? 'mr-1' : 'ml-1' : '')} relative`))}>
 				{props.label}
 			</span>
 

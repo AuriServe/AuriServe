@@ -22,6 +22,8 @@ export default function Transition(props: Props) {
 	const timeoutRef = useRef<any>(null);
 	const initialRef = useRef<boolean>(!(props.initial || false));
 	const [ state, setState ] = useState<State>(props.show ? State.Entered : State.Exited);
+	// TODO: Replace getClassesForState to fix this.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const classes = useMemo(() => merge(props.class, getClassesForState(state, props)), [ state ]);
 
 	useLayoutEffect(() => {
@@ -50,7 +52,7 @@ export default function Transition(props: Props) {
 			else if (state === State.Exiting)
 				timeoutRef.current = setTimeout(() => setState(State.Exited), props.duration);
 		});
-	}, [ state ]);
+	}, [ state, props.duration ]);
 
 	if (state === State.Exited) return null;
 

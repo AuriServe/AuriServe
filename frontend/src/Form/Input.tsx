@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { titleCase } from 'common/Format';
+import { titleCase } from 'common';
 import { useRef, useContext, useEffect } from 'preact/hooks';
 
 import { FormContext, FormField, ErrorType } from './Type';
@@ -24,13 +24,13 @@ export default function Input(props: Props) {
 	const ref = useRef<HTMLInputElement>(null);
 	const form = useContext(FormContext);
 
-	const id = form.id + '-' + props.for;
+	const id = `${form.id}-${props.for}`;
 	const schema = form.schema.fields[props.for] as FormField;
 	if (!schema) throw new Error(`Input: Form does not have field '${props.for}'.`);
 
 	useEffect(() => {
 		form.fields[props.for].ref = ref.current;
-	}, [ ref.current ]);
+	}, [ form.fields, props.for ]);
 
 	const handleValidity = (error: ErrorType | null, message: string | null) => {
 		if (form.fields[props.for].error === error && form.fields[props.for].errorMessage === message) return;
@@ -116,6 +116,6 @@ export default function Input(props: Props) {
 			/>
 		);
 	default:
-		throw 'Input: Unknown form type \'' + schema.type + '\'.';
+		throw `Input: Unknown form type '${schema.type}.`;
 	}
 }

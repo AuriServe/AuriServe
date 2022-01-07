@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useReducer, useEffect } from 'preact/hooks';
+import { useReducer, useEffect, useCallback } from 'preact/hooks';
 
 import Card from '../../Card';
 // import { SavePopup } from '../../structure';
@@ -16,9 +16,10 @@ export default function DeveloperSettings() {
 	const [ developer, setDeveloper ] = useReducer((developer, newDeveloper: any) => ({...developer, ...newDeveloper}),
 		{ watchMode: false });
 
-	const handleReset = () => setDeveloper({ watchMode: data.developer?.watchMode ?? false });
+	const handleReset = useCallback(() => setDeveloper({ watchMode: data.developer?.watchMode ?? false }),
+		[ data.developer?.watchMode ]);
 
-	useEffect(() => handleReset(), [ data ]);
+	useEffect(() => handleReset(), [ data, handleReset ]);
 
 	// const isDirty = developer.watchMode !== data.developer?.watchMode;
 

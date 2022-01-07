@@ -19,9 +19,8 @@ export interface Props {
 }
 
 export default forwardRef(function Button(props: Props, ref?: RefObject<HTMLElement>) {
-	const Tag = props.to ? Link : props.href ? 'a' : 'button';
+	const Tag: any = props.to ? Link : props.href ? 'a' : 'button';
 	return (
-		// @ts-ignore - Dynamically setting Link.to makes typescript mad.
 		<Tag ref={ref} {...props}
 			className={merge(
 				'flex flex-shrink-0 place-items-center group relative p-[0.4375rem] rounded w-auto',

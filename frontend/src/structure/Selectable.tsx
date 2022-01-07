@@ -24,10 +24,10 @@ export default function Selectable(props: Props) {
 	const handler = useRef<ClickHandler>(new ClickHandler());
 
 	useEffect(() => {
-		let callbacks: ClickHandlerCallbacks = { ...props.callbacks };
+		const callbacks: ClickHandlerCallbacks = { ...props.callbacks };
 		if (!callbacks.onClick) callbacks.onClick = () => ctx.onSelect(props.ind);
 		else {
-			let clickCallback = callbacks.onClick;
+			const clickCallback = callbacks.onClick;
 			callbacks.onClick = e => {
 				ctx.onSelect(props.ind);
 				clickCallback(e);
@@ -35,7 +35,7 @@ export default function Selectable(props: Props) {
 		}
 
 		if (callbacks.onDoubleClick && props.doubleClickSelects) {
-			let doubleClickCallback = callbacks.onDoubleClick;
+			const doubleClickCallback = callbacks.onDoubleClick;
 			callbacks.onDoubleClick = e => {
 				ctx.onSelect(props.ind, true);
 				doubleClickCallback(e);
@@ -43,7 +43,7 @@ export default function Selectable(props: Props) {
 		}
 
 		handler.current.setCallbacks(callbacks);
-	}, [ props.callbacks, props.ind, props.doubleClickSelects, props.callbacks, ctx.selected, ctx.onSelect ]);
+	}, [ props.callbacks, props.ind, props.doubleClickSelects, ctx.selected, ctx, ctx.onSelect ]);
 
 	const selected = ctx.selected.indexOf(props.ind) !== -1;
 

@@ -3,7 +3,7 @@ import { h } from 'preact';
 import Card from '../../Card';
 import { Form, FormSchema, Input } from '../../Form';
 
-import { Format } from 'common';
+import { formatBytes } from 'common';
 import { useData, QUERY_MEDIA, QUERY_QUOTAS } from '../../Graph';
 
 import icon_media from '@res/icon/image.svg';
@@ -37,7 +37,7 @@ export default function MediaSettings() {
 				<p class='text-neutral-200'>
 					This site contains <span class='font-medium text-neutral-100'>{(media ?? []).length} </span>
 					media items occupying a total of
-					<span class='font-medium text-neutral-100'> {Format.bytes(quotas?.storage.used ?? 0)} </span>
+					<span class='font-medium text-neutral-100'> {formatBytes(quotas?.storage.used ?? 0)} </span>
 					of storage.
 				</p>
 
@@ -45,7 +45,7 @@ export default function MediaSettings() {
 					Media represents <span class='font-medium text-neutral-100'>
 						{Math.round((quotas?.storage.used ?? 0) / (quotas?.storage.allocated ?? 0) * 100)}% </span>
 					of the allocated <span class='font-medium text-neutral-100'>
-						{Format.bytes(quotas?.storage.allocated ?? 0)}</span> of storage space.
+						{formatBytes(quotas?.storage.allocated ?? 0)}</span> of storage space.
 				</p>
 
 				<Form schema={FORM_SCHEMA} class='space-y-4'>

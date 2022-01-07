@@ -18,7 +18,7 @@ import icon_browse from '@res/icon/browse.svg';
 
 const sortFn = (a: Theme, b: Theme) => {
 	if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
-	else return a.identifier < b.identifier ? -1 : 1;
+	return a.identifier < b.identifier ? -1 : 1;
 };
 
 export default function ThemesSettings() {

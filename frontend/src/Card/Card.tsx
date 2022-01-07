@@ -33,7 +33,7 @@ function Card(props: Props) {
 			class={merge('block bg-white dark:bg-neutral-800 rounded-lg shadow-md', props.class)}
 		/>
 	);
-};
+}
 
 Card.Body = CardBody;
 Card.Header = CardHeader;

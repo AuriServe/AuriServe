@@ -40,20 +40,21 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 	const [ invalid, setInvalid ] = useState<boolean>(false);
 	const [ shouldShowInvalid, setShouldShowInvalid ] = useState<boolean>(false);
 
-	const id = useMemo(() => props.id ?? 'no-form-' + Math.random().toString(36).substr(2, 9), [ props.id ]);
+	const id = useMemo(() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`, [ props.id ]);
+	const { optional, onFocus, onBlur, onValidity } = props;
 
 	useEffect(() => {
 		let error: ErrorType | null = null;
 		let errorMessage: string | null = null;
 
-		if (!props.optional && value === undefined) {
+		if (!optional && value === undefined) {
 			error = 'required';
 			errorMessage = 'Please select an option.';
 		}
 
 		setInvalid(error !== null);
-		props.onValidity?.(error, errorMessage);
-	}, [ value, props.optional ]);
+		onValidity?.(error, errorMessage);
+	}, [ value, optional, onValidity ]);
 
 	const handleChange = (newValue: string) => {
 		setValue(newValue);
@@ -61,31 +62,32 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 	};
 
 	useEffect(() => {
+		const elem = rootRef.current;
 		let blurTimeout = 0;
 
 		const handleFocus = () => {
 			window.clearTimeout(blurTimeout);
 			blurTimeout = 0;
-			props.onFocus?.(ref.current);
+			onFocus?.(ref.current);
 		};
 
 		const handleBlur = () => {
-			props.onBlur?.(ref.current);
+			onBlur?.(ref.current);
 			if (blurTimeout > 0) window.clearTimeout(blurTimeout);
 			blurTimeout = setTimeout(() => {
 				setShouldShowInvalid(invalid);
 			}, 0) as any;
 		};
 
-		rootRef.current.addEventListener('focusin', handleFocus);
-		rootRef.current.addEventListener('focusout', handleBlur);
+		elem.addEventListener('focusin', handleFocus);
+		elem.addEventListener('focusout', handleBlur);
 
 		return () => {
-			rootRef.current.removeEventListener('focusin', handleFocus);
-			rootRef.current.removeEventListener('focusout', handleBlur);
+			elem.removeEventListener('focusin', handleFocus);
+			elem.removeEventListener('focusout', handleBlur);
 			window.clearTimeout(blurTimeout);
 		};
-	}, [ rootRef.current, props.onFocus, props.onBlur ]);
+	}, [ onFocus, onBlur, invalid ]);
 
 	const showInvalid = invalid && shouldShowInvalid;
 

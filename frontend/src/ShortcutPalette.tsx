@@ -28,7 +28,7 @@ function useThrottle(cb: (...values: any[]) => void, rate: number, ...values: an
 				if (changed.current) cb(...valuesRef.current);
 			}, rate) as any;
 		}
-	}, [ ...values, cb ]);
+	}, [ ...values, cb, rate ]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	useEffect(() => {
 		if (timeout.current) clearTimeout(timeout.current);
@@ -74,7 +74,7 @@ export default function ShortcutPalette() {
 			setNoResultsFound(false);
 		}
 		else {
-			let results = searchShortcuts(query.toLowerCase());
+			const results = searchShortcuts(query.toLowerCase());
 			setResults(results);
 			setNoResultsFound(results.length === 0);
 		}
@@ -99,7 +99,7 @@ export default function ShortcutPalette() {
 			window.removeEventListener('keydown', onKeyDown);
 			setActive(0);
 		};
-	}, [ ...results ]);
+	}, [ ...results, results.length ]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const handleTriggerAction = (ind: number) => {
 		results[ind]?.action({ history });
@@ -159,7 +159,7 @@ export default function ShortcutPalette() {
 							invertExit
 						>
 							{results.map((s, i) =>
-								<button key={s.title + '_' + i} type='button' onClick={() => handleTriggerAction(i)}
+								<button key={`${s.title}_${i}`} type='button' onClick={() => handleTriggerAction(i)}
 									class={merge('flex w-full text-left gap-4 p-2 rounded-md',
 										'!outline-none hover:!bg-neutral-600/50 active:!bg-neutral-600',
 										active === i && 'bg-neutral-600/50 group-hover:bg-neutral-600/30')}>

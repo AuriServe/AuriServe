@@ -1,15 +1,16 @@
+/* eslint-disable */
+
 import { h } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 
-import { Color } from 'common';
-import { merge } from 'common/util';
+import { merge, to, HSVA } from 'common';
 
 import style from './ColorPicker.sss';
 
 interface Props {
-	value: Color.HSVA;
-	onValue?: (color: Color.HSVA) => void;
+	value: HSVA;
+	onValue?: (color: HSVA) => void;
 
 	parent?: HTMLElement;
 
@@ -18,7 +19,7 @@ interface Props {
 }
 
 export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref) {
-	const color: Color.HSVA = Color.convert(props.value).toHSVA() as any;
+	const color: HSVA = to(props.value, 'hsva');
 
 	const mouseTarget = useRef<string>('');
 	const satValElem = useRef<HTMLDivElement>(null);
@@ -27,7 +28,7 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 	const inputHex = (evt: any) => {
 		const val = evt.target.value;
 		if (val.length !== 7) return;
-		props.onValue?.(Color.convert(val).toHSVA());
+		props.onValue?.(to(val, 'hsva'));
 	};
 
 	const handleHueMove = (evt: MouseEvent) => {
@@ -69,8 +70,8 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 		};
 	}, [ handleMouseMove ]);
 
-	const hueHex = Color.convert({ h: color.h, s: 1, v: 1, a: 1 }).toHex();
-	const fullHex = Color.convert({ ...color, a: 1 }).toHex();
+	const hueHex = to({ h: color.h, s: 1, v: 1, a: 1 }, 'hex');
+	const fullHex = to({ ...color, a: 1 }, 'hex');
 
 	const position: any = {};
 	if (props.parent) {

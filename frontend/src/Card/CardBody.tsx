@@ -24,5 +24,5 @@ export default function CardBody(props: Props) {
 			class={merge('p-4', props.class)}
 		/>
 	);
-};
+}
 

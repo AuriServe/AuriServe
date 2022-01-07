@@ -39,7 +39,7 @@ export default function LayoutInjector(props: Props) {
 		// root.innerHTML = layout.html.trim().replace(/\<body/g, '<div').replace(/\<\/body/g, '</div');
 		root = root.childNodes[0] as HTMLElement;
 
-		let newLayoutRoots: {[key: string]: HTMLElement} = {};
+		const newLayoutRoots: {[key: string]: HTMLElement} = {};
 		root.querySelectorAll('[data-include]').forEach(e => {
 			const section = e.getAttribute('data-include') ?? '';
 			e.removeAttribute('data-include');
@@ -55,7 +55,7 @@ export default function LayoutInjector(props: Props) {
 		setLayoutRoots(newLayoutRoots);
 
 		return () => root.remove();
-	}, [ layout ]);
+	}, [ layout, props.elements ]);
 
 	return (
 		<Fragment>

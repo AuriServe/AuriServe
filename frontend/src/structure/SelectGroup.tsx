@@ -30,20 +30,22 @@ export default function SelectGroup(props: Props) {
 	const [ lastSelected, setLastSelected ] = useState<number | undefined>(undefined);
 	const [ context, setContext ] = useState<SelectGroupContextData>(undefined as any as SelectGroupContextData);
 
-	const handleSelect = useCallback((n: number, state?: boolean) => {
-		let newSelected = [ ...props.selected ];
+	const { selected, multi, children, setSelected } = props;
 
-		if (!props.multi || !additive) {
+	const handleSelect = useCallback((n: number, state?: boolean) => {
+		let newSelected = [ ...selected ];
+
+		if (!multi || !additive) {
 			state = state ?? newSelected.indexOf(n) === -1;
 			newSelected = state ? [ n ] : [ ];
 		}
 
-		if (props.multi && connect && lastSelected !== undefined) {
-			let a = n < lastSelected ? n : lastSelected;
-			let b = n < lastSelected ? lastSelected : n;
+		if (multi && connect && lastSelected !== undefined) {
+			const a = n < lastSelected ? n : lastSelected;
+			const b = n < lastSelected ? lastSelected : n;
 			for (let i = a; i <= b; i++) if (newSelected.indexOf(i) === -1) newSelected.push(i);
 		}
-		else if (props.multi && additive) {
+		else if (multi && additive) {
 			const currentState = newSelected.indexOf(n) !== -1;
 			if ((state !== undefined && state !== currentState) || !state) {
 				state = state ?? !currentState;
@@ -53,9 +55,9 @@ export default function SelectGroup(props: Props) {
 			}
 		}
 
-		props.setSelected(newSelected);
+		setSelected(newSelected);
 		setLastSelected(n);
-	}, [ props.selected, props.multi, additive, connect, lastSelected ]);
+	}, [ selected, multi, additive, connect, lastSelected, setSelected ]);
 
 	// Keyboard Callbacks
 
@@ -79,28 +81,23 @@ export default function SelectGroup(props: Props) {
 	}, []);
 
 	// Reset Array if children change.
-
 	useEffect(() => {
 		if ((Array.isArray(oldChildren.current) ? oldChildren.current.length : 1) !==
-			(Array.isArray(props.children) ? props.children.length : 1)) {
-			oldChildren.current = props.children;
-			props.setSelected([]);
+			(Array.isArray(children) ? children.length : 1)) {
+			oldChildren.current = children;
+			setSelected([]);
 			setLastSelected(undefined);
 		}
-	}, [ props.children ]);
+	}, [ children, setSelected ]);
 
 	// Update context data
-
 	useEffect(() => {
-		setContext({
-			selected: props.selected,
-			onSelect: handleSelect
-		});
-	}, [ handleSelect ]);
+		setContext({ selected, onSelect: handleSelect });
+	}, [ handleSelect, selected ]);
 
 	return (
 		context ? <SelectGroupContext.Provider value={context}>
-			<ul role='list' class={('SelectGroup ' + (props.class ?? '')).trim()} style={props.style}>{props.children}</ul>
+			<ul role='list' class={props.class} style={props.style}>{children}</ul>
 		</SelectGroupContext.Provider> : null
 	);
 }

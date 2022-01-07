@@ -29,9 +29,10 @@ export default function Dropdown(props: Props) {
 	useEffect(() => {
 		const style: any = {};
 		if (buttonRef.current && dropdownRef.current) {
-			style.top = buttonRef.current.getBoundingClientRect().bottom + 12 + 'px';
-			style.left = buttonRef.current.getBoundingClientRect().left + buttonRef.current.getBoundingClientRect().width / 2 -
-				dropdownRef.current.getBoundingClientRect().width / 2 + 'px';
+			style.top = `${buttonRef.current.getBoundingClientRect().bottom + 12}px`;
+			style.left = `${buttonRef.current.getBoundingClientRect().left
+				+ buttonRef.current.getBoundingClientRect().width / 2
+				- dropdownRef.current.getBoundingClientRect().width / 2}px`;
 		}
 		setStyle(style);
 	}, [ dropdownActive ]);

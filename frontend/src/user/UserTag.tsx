@@ -12,7 +12,7 @@ interface Props {
 
 export default function UserTag({ user }: Props) {
 	const rerender = useRerender();
-	useEffect(() => rerender, []);
+	useEffect(() => rerender, [ rerender ]);
 
 	const ref = useRef(null);
 	const [ active, setActive ] = useState<boolean>(false);

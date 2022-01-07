@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { h, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useState, useEffect } from 'preact/hooks';

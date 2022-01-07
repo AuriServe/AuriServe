@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { h, RefObject } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useRef, useLayoutEffect } from 'preact/hooks';
