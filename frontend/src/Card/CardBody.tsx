@@ -4,7 +4,7 @@ import { merge } from 'common/util';
 
 export interface Props {
 	// Any default div properties.
-	[ key: string ]: any;
+	[key: string]: any;
 
 	style?: any;
 	class?: string;
@@ -17,12 +17,5 @@ export interface Props {
  */
 
 export default function CardBody(props: Props) {
-	return (
-		<div
-			{...props}
-			ref={props.refObj}
-			class={merge('p-4', props.class)}
-		/>
-	);
+	return <div {...props} ref={props.refObj} class={merge('p-4', props.class)} />;
 }
-

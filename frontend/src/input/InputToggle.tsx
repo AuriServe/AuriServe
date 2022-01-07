@@ -22,10 +22,8 @@ const InputCheckbox = forwardRef<HTMLInputElement, Props>((props, fRef) => {
 		<input
 			class={('InputCheckbox ' + (props.alignRight ? 'AlignRight ' : '') + (props.class ?? '')).trim()}
 			style={props.style}
-
 			checked={props.value}
 			onChange={cb}
-
 			ref={fRef as any}
 			type='checkbox'
 		/>

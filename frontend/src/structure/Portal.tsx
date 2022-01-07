@@ -15,18 +15,13 @@ export default forwardRef<HTMLDivElement, Props>(function Portal(props: Props, r
 
 	useEffect(() => {
 		root.current.className = props.class ?? '';
-	}, [ props.class ]);
+	}, [props.class]);
 
 	useEffect(() => {
 		const elem = root.current;
 		props.to.appendChild(elem);
 		return () => props.to.removeChild(elem);
-	}, [ props.to ]);
+	}, [props.to]);
 
-	return (
-		createPortal(
-			<Fragment>{props.children}</Fragment>,
-			root.current
-		)
-	);
+	return createPortal(<Fragment>{props.children}</Fragment>, root.current);
 });

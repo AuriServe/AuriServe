@@ -8,15 +8,15 @@ interface Props {
 }
 
 function TileLayout(props: Props) {
-	const [ editing, setEditing ] = useState(false);
+	const [editing, setEditing] = useState(false);
 
 	const handleSetEditing = (editing?: boolean) => {
-		setEditing(last => editing ?? !last);
+		setEditing((last) => editing ?? !last);
 	};
 
 	const data = {
 		editing,
-		setEditing: handleSetEditing
+		setEditing: handleSetEditing,
 	};
 
 	return (

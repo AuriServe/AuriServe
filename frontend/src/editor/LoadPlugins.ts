@@ -1,33 +1,46 @@
 import { AdminDefinition } from 'common/definition';
 
-declare global { interface Window { serve?: any } }
+declare global {
+	interface Window {
+		serve?: any;
+	}
+}
 
 export type PluginElements = { [key: string]: AdminDefinition | undefined };
 
-export default async function loadPlugins({ scripts, styles, themes }:
-{ scripts: boolean; styles: boolean; themes: boolean }): Promise<PluginElements> {
-
-	const { pluginScripts, pluginStyles }: { pluginScripts: string[]; pluginStyles: string[] } =
-		JSON.parse((document.getElementById('plugins') as any).innerText);
+export default async function loadPlugins({
+	scripts,
+	styles,
+	themes,
+}: {
+	scripts: boolean;
+	styles: boolean;
+	themes: boolean;
+}): Promise<PluginElements> {
+	const { pluginScripts, pluginStyles }: { pluginScripts: string[]; pluginStyles: string[] } = JSON.parse(
+		(document.getElementById('plugins') as any).innerText
+	);
 
 	const pluginElements: PluginElements = {};
 
 	if (scripts) {
 		window.serve = {
-			registerElement: (elem: AdminDefinition) => pluginElements[elem.identifier] = elem
+			registerElement: (elem: AdminDefinition) => (pluginElements[elem.identifier] = elem),
 		};
 
-		await Promise.all(pluginScripts.map((s: string) => {
-			return new Promise<void>((resolve) => {
-				const script = document.createElement('script');
+		await Promise.all(
+			pluginScripts.map((s: string) => {
+				return new Promise<void>((resolve) => {
+					const script = document.createElement('script');
 
-				script.async = true;
-				script.src = `/plugin/${s}`;
-				script.addEventListener('load', () => resolve());
+					script.async = true;
+					script.src = `/plugin/${s}`;
+					script.addEventListener('load', () => resolve());
 
-				document.head.appendChild(script);
-			});
-		}));
+					document.head.appendChild(script);
+				});
+			})
+		);
 	}
 
 	if (themes) {
@@ -54,19 +67,20 @@ export default async function loadPlugins({ scripts, styles, themes }:
 		document.head.appendChild(style);
 	}
 
-
 	if (styles) {
-		await Promise.all(pluginStyles.map((s: string) => {
-			return new Promise<void>((resolve) => {
-				const style = document.createElement('link');
+		await Promise.all(
+			pluginStyles.map((s: string) => {
+				return new Promise<void>((resolve) => {
+					const style = document.createElement('link');
 
-				style.rel = 'stylesheet';
-				style.href = `/plugin/${s}`;
-				style.addEventListener('load', () => resolve());
+					style.rel = 'stylesheet';
+					style.href = `/plugin/${s}`;
+					style.addEventListener('load', () => resolve());
 
-				document.head.appendChild(style);
-			});
-		}));
+					document.head.appendChild(style);
+				});
+			})
+		);
 	}
 
 	return pluginElements;

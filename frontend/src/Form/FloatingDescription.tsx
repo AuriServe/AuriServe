@@ -23,7 +23,7 @@ export default function FloatingDescription(props: Props) {
 	const form = useContext(FormContext);
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const [ state, setState ] = useState<{ name: string; error: ErrorType | null } | null>(null);
+	const [state, setState] = useState<{ name: string; error: ErrorType | null } | null>(null);
 
 	useEffect(() => {
 		let setNullTimeout: any = 0;
@@ -31,8 +31,7 @@ export default function FloatingDescription(props: Props) {
 		const unbindFocus = form.event.bind('focus', (field: string) => {
 			if (field === null) {
 				setNullTimeout = setTimeout(() => setState(null), 50);
-			}
-			else {
+			} else {
 				if (setNullTimeout) {
 					clearTimeout(setNullTimeout);
 					setNullTimeout = 0;
@@ -43,7 +42,7 @@ export default function FloatingDescription(props: Props) {
 		});
 
 		const unbindValidity = form.event.bind('validity', (field: string) => {
-			setState(state => {
+			setState((state) => {
 				if (state?.name !== field) return state;
 				return { name: field, error: form.fields[field].error };
 			});
@@ -53,7 +52,7 @@ export default function FloatingDescription(props: Props) {
 			unbindFocus();
 			unbindValidity();
 		};
-	}, [ form ]);
+	}, [form]);
 
 	const handleUpdateContainerHeight = (ref: HTMLDivElement) => {
 		if (!ref || !containerRef.current) return;
@@ -67,13 +66,15 @@ export default function FloatingDescription(props: Props) {
 
 	if (ref) {
 		posRef.current.top = `${Math.floor(ref.getBoundingClientRect().top + window.scrollY)}px`;
-		posRef.current.left = `${Math.floor(ref.getBoundingClientRect().right + window.scrollX) +
-			(props.padding ?? 4) * 4}px`;
+		posRef.current.left = `${
+			Math.floor(ref.getBoundingClientRect().right + window.scrollX) + (props.padding ?? 4) * 4
+		}px`;
 	}
 
 	return (
 		<Portal to={document.querySelector('.AS_ROOT') ?? document.body}>
-			<div ref={containerRef}
+			<div
+				ref={containerRef}
 				style={{ ...props.style, top: posRef.current.top, left: posRef.current.left, transformOrigin: 'left center' }}
 				class={merge(
 					'isolate absolute z-10 w-80 min-h-[2.5rem] bg-neutral-700',
@@ -81,17 +82,16 @@ export default function FloatingDescription(props: Props) {
 					'after:absolute after:-left-1.5 after:top-3.5 after:w-3 after:h-3',
 					'after:bg-neutral-700 after:rotate-45',
 					!ref && 'opacity-0 scale-[98%]',
-					props.class)}>
-
+					props.class
+				)}>
 				<div class='overflow-hidden h-full w-full relative'>
 					<TransitionGroup
 						duration={175}
 						enter='transition delay-75 duration-100 z-10'
 						enterFrom='opacity-0 -translate-y-1'
 						exit='transition duration-100'
-						exitTo='opacity-0 translate-y-1'
-					>
-						{(schema && schema.description) &&
+						exitTo='opacity-0 translate-y-1'>
+						{schema && schema.description && (
 							<Description
 								key={(state?.name ?? '-') + state?.error}
 								ref={handleUpdateContainerHeight}
@@ -100,7 +100,7 @@ export default function FloatingDescription(props: Props) {
 								class={merge('absolute top-0 left-0 w-full', props.innerClass)}>
 								{props.children}
 							</Description>
-						}
+						)}
 					</TransitionGroup>
 				</div>
 			</div>

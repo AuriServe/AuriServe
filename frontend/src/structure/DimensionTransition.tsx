@@ -12,7 +12,7 @@ interface Props {
 export default function DimensionTransition(props: Props) {
 	const ref = useRef<HTMLDivElement>(null);
 
-	const [ dimensions, setDimensions ] = useState<{ x: number; y: number }>({} as any);
+	const [dimensions, setDimensions] = useState<{ x: number; y: number }>({} as any);
 
 	useEffect(() => {
 		const onChange = () => {
@@ -35,10 +35,15 @@ export default function DimensionTransition(props: Props) {
 	if (props.mode === 'height') appliedInnerStyles.width = 'auto';
 	if (props.mode === 'width') appliedInnerStyles.height = 'auto';
 
-	return <div class='overflow-hidden' style={Object.assign(appliedOuterStyles, props.style, {
-		transition: `width ${(props.duration || 300) / 1000}s, height ${(props.duration || 300) / 1000}s`})}>
-		<div class='overflow-auto' style={appliedInnerStyles} ref={ref}>
-			{props.children}
+	return (
+		<div
+			class='overflow-hidden'
+			style={Object.assign(appliedOuterStyles, props.style, {
+				transition: `width ${(props.duration || 300) / 1000}s, height ${(props.duration || 300) / 1000}s`,
+			})}>
+			<div class='overflow-auto' style={appliedInnerStyles} ref={ref}>
+				{props.children}
+			</div>
 		</div>
-	</div>;
+	);
 }

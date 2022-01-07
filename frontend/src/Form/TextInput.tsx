@@ -33,11 +33,11 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 	const ref = useRef<HTMLElement>(null);
 	const value = useRef<string>(props.value);
 
-	const [ invalid, setInvalid ] = useState<boolean>(false);
-	const [ shouldShowInvalid, setShouldShowInvalid ] = useState<boolean>(false);
+	const [invalid, setInvalid] = useState<boolean>(false);
+	const [shouldShowInvalid, setShouldShowInvalid] = useState<boolean>(false);
 
 	const Tag = props.multiline ? 'textarea' : 'input';
-	const id = useMemo(() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`, [ props.id ]);
+	const id = useMemo(() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`, [props.id]);
 
 	const handleRef = (elem: any) => {
 		ref.current = elem;
@@ -52,23 +52,20 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 		if (!optional && value.current.length === 0) {
 			error = 'required';
 			errorMessage = 'Please fill in this field.';
-		}
-		else if (maxLength && value.current.length > maxLength) {
+		} else if (maxLength && value.current.length > maxLength) {
 			error = 'maxLength';
 			errorMessage = `Must be at most ${maxLength} characters.`;
-		}
-		else if (minLength && value.current.length < minLength) {
+		} else if (minLength && value.current.length < minLength) {
 			error = 'minLength';
 			errorMessage = `Must be at least ${minLength} characters.`;
-		}
-		else if (pattern && !pattern.test(value.current)) {
+		} else if (pattern && !pattern.test(value.current)) {
 			error = 'pattern';
 			errorMessage = patternHint ?? 'Please match the pattern provided';
 		}
 
 		setInvalid(error !== null);
 		onValidity?.(error, errorMessage);
-	}, [ optional, maxLength, minLength, pattern, patternHint, onValidity ]);
+	}, [optional, maxLength, minLength, pattern, patternHint, onValidity]);
 
 	useEffect(() => {
 		handleValidate();
@@ -76,7 +73,7 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 			ref.current.style.height = '';
 			ref.current.style.height = `${Math.min(ref.current.scrollHeight, props.maxHeight ?? 200)}px`;
 		}
-	}, [ handleValidate, props.multiline, props.maxHeight ]);
+	}, [handleValidate, props.multiline, props.maxHeight]);
 
 	const handleChange = () => {
 		const newValue = Tag === 'input' ? (ref.current as HTMLInputElement).value : ref.current.innerText;
@@ -107,25 +104,32 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 			invalid={showInvalid}
 			class={merge('isolate', props.class)}
 			style={props.style}>
-
 			<Tag
-				id={id} type='text' placeholder=' '
-				ref={handleRef} rows={1}
-				class={merge('peer w-full px-2.5 pt-6 pb-1 rounded scroll-input',
+				id={id}
+				type='text'
+				placeholder=' '
+				ref={handleRef}
+				rows={1}
+				class={merge(
+					'peer w-full px-2.5 pt-6 pb-1 rounded scroll-input',
 					'!outline-none resize-none transition focus:shadow-md',
 					'bg-neutral-100 dark:bg-neutral-input dark:focus:bg-neutral-700',
 					showInvalid && 'text-red-800 focus:text-neutral-900',
-					showInvalid && 'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100')}
+					showInvalid && 'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100'
+				)}
 				value={Tag === 'input' ? value.current : undefined}
 				onInput={handleChange}
 				onFocus={handleFocus}
-				onBlur={handleBlur}
-			>
+				onBlur={handleBlur}>
 				{Tag === 'textarea' ? value.current : undefined}
 			</Tag>
 
-			{props.multiline && <div class='absolute top-0 w-[calc(100%-16px)] h-6 rounded-tl
-				transition bg-neutral-input dark:peer-focus:bg-neutral-700 interact-none'/>}
+			{props.multiline && (
+				<div
+					class='absolute top-0 w-[calc(100%-16px)] h-6 rounded-tl
+				transition bg-neutral-input dark:peer-focus:bg-neutral-700 interact-none'
+				/>
+			)}
 		</InputContainer>
 	);
 });

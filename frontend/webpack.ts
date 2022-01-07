@@ -1,15 +1,17 @@
+/* eslint-disable */
+
 import { resolve } from 'path';
 import * as Webpack from 'webpack';
 import { merge } from 'webpack-merge';
 
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
-const CSSMinimizerPlugin   = require('css-minimizer-webpack-plugin');
-const LiveReloadPlugin     = require('webpack-livereload-plugin');
-const ForkTsCheckerPlugin  = require('fork-ts-checker-webpack-plugin');
+const CSSMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const LiveReloadPlugin = require('webpack-livereload-plugin');
+const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-export default function(_: {}, argv: { mode: string, analyze: boolean }) {
-	const mode: 'production' | 'development' = argv.mode as any ?? 'development';
+export default function (_: {}, argv: { mode: string; analyze: boolean }) {
+	const mode: 'production' | 'development' = (argv.mode as any) ?? 'development';
 	const analyze = argv.analyze;
 
 	process.env.NODE_ENV = mode ?? 'development';
@@ -21,15 +23,15 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 
 		context: resolve(__dirname, 'src'),
 		resolve: {
-			extensions: [ '.ts', '.tsx', '.js', '.jsx' ]
+			extensions: ['.ts', '.tsx', '.js', '.jsx'],
 		},
 		output: {
-			path: resolve(__dirname, './dist')
+			path: resolve(__dirname, './dist'),
 		},
 
 		externals: {
 			'preact': 'preact',
-			'preact/hooks': 'preact_hooks'
+			'preact/hooks': 'preact_hooks',
 		},
 
 		plugins: [
@@ -40,54 +42,62 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 				eslint: {
 					files: './**/*.{ts,tsx}',
 					options: {
-						configFile: resolve(__dirname, '..', '.eslintrc-jsx.js'),
 						emitErrors: true,
-						failOnHint: true,
-						typeCheck: true
-					}
-				}
-			})
+						failOnHint: false,
+						typeCheck: true,
+					},
+				},
+			}),
 		],
 		module: {
-			rules: [{
-				test: /\.[t|j]sx?$/,
-				loader: 'babel-loader',
-				options: {
-					babelrc: false,
-					cacheDirectory: true,
-					presets: [
-						['@babel/preset-typescript', {
-							isTSX: true,
-							allExtensions: true,
-							jsxPragma: 'h'
-						}],
-						[ '@babel/preset-env', {
-							targets: { browsers: [ 'Chrome 90' ]},
-						}]
-					],
-					plugins: [
-						['@babel/transform-react-jsx', { pragma: 'h' }],
-						['@babel/plugin-proposal-class-properties', { loose: true }],
-						['@babel/plugin-proposal-private-methods', { loose: true }]
-					]
-				}
-			}]
+			rules: [
+				{
+					test: /\.[t|j]sx?$/,
+					loader: 'babel-loader',
+					options: {
+						babelrc: false,
+						cacheDirectory: true,
+						presets: [
+							[
+								'@babel/preset-typescript',
+								{
+									isTSX: true,
+									allExtensions: true,
+									jsxPragma: 'h',
+								},
+							],
+							[
+								'@babel/preset-env',
+								{
+									targets: { browsers: ['Chrome 90'] },
+								},
+							],
+						],
+						plugins: [
+							['@babel/transform-react-jsx', { pragma: 'h' }],
+							['@babel/plugin-proposal-class-properties', { loose: true }],
+							['@babel/plugin-proposal-private-methods', { loose: true }],
+						],
+					},
+				},
+			],
 		},
 		optimization: {
-			minimizer: [
-				'...',
-				new CSSMinimizerPlugin()
-			]
-		}
+			minimizer: ['...', new CSSMinimizerPlugin()],
+		},
+	};
+
+	if (mode === 'development') {
+		baseConfig = merge(baseConfig, {
+			plugins: [new LiveReloadPlugin({ delay: 500 })],
+		});
 	}
 
-	if (mode === 'development') baseConfig = merge(baseConfig, {
-		plugins: [ new LiveReloadPlugin({ delay: 500 }) ]
-	});
-
-	if (analyze) baseConfig = merge(baseConfig, {
-		plugins: [ new BundleAnalyzerPlugin() ]
-	});
+	if (analyze) {
+		baseConfig = merge(baseConfig, {
+			plugins: [new BundleAnalyzerPlugin()],
+		});
+	}
 
 	const interfaceConfig: Webpack.Configuration = merge(baseConfig, {
 		name: 'as_interface',
@@ -96,49 +106,61 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 			alias: {
 				'@res': resolve(__dirname, 'res'),
 				'react': 'preact/compat',
-				'react-dom': 'preact/compat'
-			}
+				'react-dom': 'preact/compat',
+			},
 		},
 
 		entry: { main: './Main.ts' },
 		output: {
-			library: 'AS_EDITOR'
+			library: 'AS_EDITOR',
 		},
 
-		plugins: [
-			new MiniCSSExtractPlugin()
-		],
+		plugins: [new MiniCSSExtractPlugin()],
 
 		module: {
-			rules: [{
-				test: /\.s[c|a]ss$/,
-				use: [
-					'null-loader'
-				]
-			}, {
-				test: /\.tw$/,
-				use: [
-					MiniCSSExtractPlugin.loader,
-					{ loader: 'css-loader', options: { url: false, importLoaders: 1 } },
-					'postcss-loader'
-				]
-			}, {
-				test: /\.sss$/,
-				use: [
-					MiniCSSExtractPlugin.loader,
-					{ loader: 'css-loader', options: { url: false, importLoaders: 1, modules: {
-						localIdentName: mode === 'development' ? '[local]_[hash:base64:4]' : '[hash:base64:8]'
-					} } },
-					'postcss-loader'
-				]
-			}, {
-				test: /\.svg$/i,
-				type: 'asset/source'
-			}, {
-				test: /\.(png|jpg)$/i,
-				type: 'asset/resource'
-			}]
-		}
+			rules: [
+				{
+					test: /\.s[c|a]ss$/,
+					use: ['null-loader'],
+				},
+				{
+					test: /\.tw$/,
+					use: [
+						MiniCSSExtractPlugin.loader,
+						{ loader: 'css-loader', options: { url: false, importLoaders: 1 } },
+						'postcss-loader',
+					],
+				},
+				{
+					test: /\.sss$/,
+					use: [
+						MiniCSSExtractPlugin.loader,
+						{
+							loader: 'css-loader',
+							options: {
+								url: false,
+								importLoaders: 1,
+								modules: {
+									localIdentName:
+										mode === 'development'
+											? '[local]_[hash:base64:4]'
+											: '[hash:base64:8]',
+								},
+							},
+						},
+						'postcss-loader',
+					],
+				},
+				{
+					test: /\.svg$/i,
+					type: 'asset/source',
+				},
+				{
+					test: /\.(png|jpg)$/i,
+					type: 'asset/resource',
+				},
+			],
+		},
 	});
 
 	const clientConfig: Webpack.Configuration = merge(baseConfig, {
@@ -147,25 +169,37 @@ export default function(_: {}, argv: { mode: string, analyze: boolean }) {
 		resolve: {
 			alias: {
 				'react': 'preact/compat',
-				'react-dom': 'preact/compat'
-			}
+				'react-dom': 'preact/compat',
+			},
 		},
 
 		entry: { client: './Client.ts' },
 
 		module: {
-			rules: [{
-				test: /\.sss$/,
-				use: [
-					'style-loader',
-					{ loader: 'css-loader', options: { url: false, importLoaders: 1, modules: {
-						localIdentName: mode === 'development' ? '[local]_[hash:base64:4]' : '[hash:base64:8]'
-					} } },
-					'postcss-loader'
-				]
-			}]
-		}
+			rules: [
+				{
+					test: /\.sss$/,
+					use: [
+						'style-loader',
+						{
+							loader: 'css-loader',
+							options: {
+								url: false,
+								importLoaders: 1,
+								modules: {
+									localIdentName:
+										mode === 'development'
+											? '[local]_[hash:base64:4]'
+											: '[hash:base64:8]',
+								},
+							},
+						},
+						'postcss-loader',
+					],
+				},
+			],
+		},
 	});
 
-	return [ interfaceConfig, clientConfig ];
+	return [interfaceConfig, clientConfig];
 }

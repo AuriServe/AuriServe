@@ -22,16 +22,13 @@ export { default as Media } from './InputMedia';
 export { default as Color } from './InputColor';
 // export { default as DateTime } from './InputDateTime';
 
-
 /** The base props for an input widget. */
 export interface InputProps {
-
 	/** The current value of the input. */
 	value?: any;
 
 	/** A function to be called when the input is changed. */
 	onValue?: (value: any) => void;
-
 
 	/** Placeholder text to display on the input. */
 	placeholder?: string;
@@ -48,7 +45,6 @@ export interface InputProps {
 	/** Whether or not the input is optional. */
 	optional?: boolean;
 
-
 	/** Styles to apply to the input. */
 	style?: any;
 
@@ -56,10 +52,8 @@ export interface InputProps {
 	class?: string;
 }
 
-
 /** The props for a textual input widget. */
 export interface TextInputProps {
-
 	/** The minimum length of the input. */
 	minLength?: number;
 
@@ -73,12 +67,11 @@ export interface TextInputProps {
 	patternDescription?: string;
 }
 
-
 /** The props for a focusable input widget. */
 export interface FocusableInputProps {
 	/** If true, the input will be focused when the element is firsh mounted. */
 	focusOnMount?: boolean;
-	
+
 	/** A function to be called when the input is focused. */
 	onFocus?: () => void;
 

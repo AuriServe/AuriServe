@@ -13,10 +13,8 @@ import { merge, to, HSVA } from 'common';
 
 import style from './Input.sss';
 
-
 /** Props for the color input element. */
 interface Props extends InputProps, FocusableInputProps {
-
 	/** Whether or not you can directly input a hex value. */
 	writable?: boolean;
 
@@ -27,32 +25,36 @@ interface Props extends InputProps, FocusableInputProps {
 	button?: boolean;
 }
 
-
 /**
  *
  */
 
 export default forwardRef<HTMLInputElement, Props>(function InputColor(props, fRef) {
 	const ref = useRef<HTMLDivElement>(null);
-	const [ pickerActive, setPickerActive ] = useState(false);
+	const [pickerActive, setPickerActive] = useState(false);
 
 	usePopupCancel(ref, () => setPickerActive(false));
 
 	const value: HSVA = props.value ?? { h: 0.58, s: 0.52, v: 0.41, a: 1 };
 
 	return (
-		<div ref={ref} style={props.style}
-			class={merge('relative p-0 overflow-hidden',
-				style.Input, props.class)}
+		<div
+			ref={ref}
+			style={props.style}
+			class={merge('relative p-0 overflow-hidden', style.Input, props.class)}
 			onFocusCapture={() => setPickerActive(true)}>
-
-			<Text ref={fRef} maxLength={7}
+			<Text
+				ref={fRef}
+				maxLength={7}
 				class='pl-12 font-mono p-0 border-none bg-transparent'
 				value={to(value, 'hex')}
-				onValue={hex => props.onValue?.(to(hex, 'hsva'))}/>
+				onValue={(hex) => props.onValue?.(to(hex, 'hsva'))}
+			/>
 
-			<div style={{ backgroundColor: to(value, 'hex') }}
-				class='absolute top-2 left-2 -m-px w-8 h-8 rounded pointer-events-none shadow-sm'/>
+			<div
+				style={{ backgroundColor: to(value, 'hex') }}
+				class='absolute top-2 left-2 -m-px w-8 h-8 rounded pointer-events-none shadow-sm'
+			/>
 
 			<Popup active={pickerActive}>
 				<ColorPicker value={value} onValue={props.onValue} parent={ref.current} />

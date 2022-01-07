@@ -29,8 +29,7 @@ export default class ClickHandler {
 			clearTimeout(this._timeout);
 
 			if (this.callbacks.onDoubleClick) this.callbacks.onDoubleClick(e);
-		}
-		else {
+		} else {
 			this._lastClick = Date.now();
 
 			if (this.callbacks.onFirstClick) this.callbacks.onFirstClick(e);

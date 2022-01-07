@@ -8,7 +8,6 @@ import { usePopupCancel } from '../Hooks';
 
 import './UserRolesList.sass';
 
-
 interface Props {
 	user: User;
 	wrap?: boolean;
@@ -18,9 +17,14 @@ interface Props {
 export default function UserRolesList(props: Props) {
 	// const [ { roles } ] = useQuery(QUERY_ROLES);
 	const ref = useRef<HTMLDivElement>(null);
-	const [ editing, setEditing ] = useState<boolean>(false);
+	const [editing, setEditing] = useState<boolean>(false);
 
-	usePopupCancel(ref, () => setEditing(false), () => editing, [ editing ]);
+	usePopupCancel(
+		ref,
+		() => setEditing(false),
+		() => editing,
+		[editing]
+	);
 
 	// const handleRemoveRole = useCallback((role: string) => {
 	// 	fetch('/admin/users/role/remove', {
@@ -57,7 +61,7 @@ export default function UserRolesList(props: Props) {
 
 	const renderAddRoleForm = () => {
 		return (
-			<div class='UserRolesList-AddRoleForm' ref={ref} onClick={e => e.stopPropagation()}>
+			<div class='UserRolesList-AddRoleForm' ref={ref} onClick={(e) => e.stopPropagation()}>
 				<p class='UserRolesList-AddRoleFormHeader'>Add Role</p>
 				<ul>
 					{/* {(roles ?? []).filter(role => !props.user.roles?.includes(role.id)).map(role => <li>
@@ -73,10 +77,12 @@ export default function UserRolesList(props: Props) {
 	return (
 		<ul class={`UserRolesList${props.wrap ? ' Wrap' : ''}`}>
 			{/** props.user.roles?.map(r => renderRole(r, roles?.filter(role => role.id === r)[0])) */}
-			{props.edit && <button class='UserRolesList-Item UserRolesList-Add' onClick={() => setEditing(!editing)}>
-				<img src='/admin/asset/icon/add-dark.svg' alt='Add'/>
-				{editing && renderAddRoleForm()}
-			</button>}
+			{props.edit && (
+				<button class='UserRolesList-Item UserRolesList-Add' onClick={() => setEditing(!editing)}>
+					<img src='/admin/asset/icon/add-dark.svg' alt='Add' />
+					{editing && renderAddRoleForm()}
+				</button>
+			)}
 		</ul>
 	);
 }

@@ -34,10 +34,11 @@ interface SidebarLinkProps {
 }
 
 function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
-	const active = !!useRouteMatch({ path: typeof path === 'string' ? path : '!', exact});
+	const active = !!useRouteMatch({ path: typeof path === 'string' ? path : '!', exact });
 
 	return (
-		<UnstyledButton {...props}
+		<UnstyledButton
+			{...props}
 			to={typeof path === 'string' ? path : undefined}
 			onClick={typeof path === 'function' ? path : undefined}
 			class={merge(
@@ -46,19 +47,22 @@ function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
 				'after:absolute after:transition after:w-2 after:h-2 after:bg-neutral-50 dark:after:bg-neutral-900',
 				'after:[clip-path:polygon(0_0,0%_100%,100%_100%)] after:transform after:rotate-45',
 				'after:top-[calc(50%-0.25rem)] after:left-[calc(100%+0.25rem+.5px)]',
-				active ? '!bg-accent-400/50' : 'after:scale-0')}
-		>
-
-			<Svg src={icon} size={8}
+				active ? '!bg-accent-400/50' : 'after:scale-0'
+			)}>
+			<Svg
+				src={icon}
+				size={8}
 				class={merge(
 					'icon-p-accent-200 icon-s-accent-400 group-hocus:icon-p-accent-100 group-hocus:icon-s-accent-200',
-					active && '!icon-p-white !icon-s-accent-200')}/>
+					active && '!icon-p-white !icon-s-accent-200'
+				)}
+			/>
 
-			<span class='block absolute z-10 transform transition left-16 top-1 font-medium shadow-md rounded py-1 px-2.5
+			<span
+				class='block absolute z-10 transform transition left-16 top-1 font-medium shadow-md rounded py-1 px-2.5
 				bg-neutral-700 opacity-0 translate-x-1 pointer-events-none select-none text-neutral-100 whitespace-nowrap
 				group-hocus:opacity-100 group-hocus:translate-x-0 group-hover:delay-700 group-focus:delay-0 after:absolute
-				after:block after:-left-1 after:top-3 after:w-2 after:h-2 after:transform after:rotate-45 after:bg-neutral-700'
-			>
+				after:block after:-left-1 after:top-3 after:w-2 after:h-2 after:transform after:rotate-45 after:bg-neutral-700'>
 				{label}
 			</span>
 		</UnstyledButton>
@@ -67,23 +71,30 @@ function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
 
 export default function Sidebar() {
 	return (
-		<aside class='fixed w-14 h-full inset-0
+		<aside
+			class='fixed w-14 h-full inset-0
 			bg-gradient-to-t from-accent-600 to-accent-500 z-30
 			icon-p-accent-300 icon-s-accent-100'>
 			<nav class='flex flex-col h-full'>
-				<Svg src={icon_auriserve} size={10} role='heading' aria-level='1' aria-label='AuriServe'
-					class='m-2 animate-rocket icon-p-accent-200 icon-s-accent-300'/>
+				<Svg
+					src={icon_auriserve}
+					size={10}
+					role='heading'
+					aria-level='1'
+					aria-label='AuriServe'
+					class='m-2 animate-rocket icon-p-accent-200 icon-s-accent-300'
+				/>
 
 				<div class='w-3/5	h-1 my-2 mx-auto rounded bg-accent-400 dark:bg-accent-400' />
 
-				<SidebarLink label='Home' icon={icon_home} path= '/' exact/>
-				<SidebarLink label='Routes' icon={icon_pages} path= '/routes' />
-				<SidebarLink label='Media' icon={icon_media} path= '/media'/>
-				<SidebarLink label='Settings' icon={icon_options} path= '/settings'/>
+				<SidebarLink label='Home' icon={icon_home} path='/' exact />
+				<SidebarLink label='Routes' icon={icon_pages} path='/routes' />
+				<SidebarLink label='Media' icon={icon_media} path='/media' />
+				<SidebarLink label='Settings' icon={icon_options} path='/settings' />
 
-				<div class='flex-grow'/>
+				<div class='flex-grow' />
 
-				<SidebarLink label='Shortcut Palette' icon={icon_launch} path={handleOpenPalette}/>
+				<SidebarLink label='Shortcut Palette' icon={icon_launch} path={handleOpenPalette} />
 				<SidebarLink label='Logout' icon={icon_logout} path={handleLogout} />
 			</nav>
 		</aside>

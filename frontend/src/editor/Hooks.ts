@@ -12,9 +12,10 @@ interface ActiveState {
 export function useActiveState(): ActiveState {
 	const { setActive } = useContext(RendererContext);
 	const { path, active, hovered } = useContext(ComponentContext);
-	
+
 	return {
-		active, hovered,
-		setActive: setActive.bind(undefined, path)
+		active,
+		hovered,
+		setActive: setActive.bind(undefined, path),
 	};
 }

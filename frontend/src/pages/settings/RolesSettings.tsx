@@ -8,14 +8,12 @@ import { useData, QUERY_ROLES } from '../../Graph';
 import icon_roles from '@res/icon/role.svg';
 
 export default function RolesSettings() {
-	const [ { roles } ] = useData(QUERY_ROLES, []);
+	const [{ roles }] = useData(QUERY_ROLES, []);
 
 	return (
 		<Card>
-			<Card.Header icon={icon_roles} title='Roles' subtitle='Manage user roles.'/>
-			<Card.Body class='h-48'>
-				{roles && <RolesEditor roles={roles} />}
-			</Card.Body>
+			<Card.Header icon={icon_roles} title='Roles' subtitle='Manage user roles.' />
+			<Card.Body class='h-48'>{roles && <RolesEditor roles={roles} />}</Card.Body>
 		</Card>
 	);
 }

@@ -36,11 +36,11 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 	const rootRef = useRef<HTMLDivElement>(null);
 	const ref = useRef<HTMLElement>(null);
 
-	const [ value, setValue ] = useState<string | undefined>(props.value);
-	const [ invalid, setInvalid ] = useState<boolean>(false);
-	const [ shouldShowInvalid, setShouldShowInvalid ] = useState<boolean>(false);
+	const [value, setValue] = useState<string | undefined>(props.value);
+	const [invalid, setInvalid] = useState<boolean>(false);
+	const [shouldShowInvalid, setShouldShowInvalid] = useState<boolean>(false);
 
-	const id = useMemo(() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`, [ props.id ]);
+	const id = useMemo(() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`, [props.id]);
 	const { optional, onFocus, onBlur, onValidity } = props;
 
 	useEffect(() => {
@@ -54,7 +54,7 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 
 		setInvalid(error !== null);
 		onValidity?.(error, errorMessage);
-	}, [ value, optional, onValidity ]);
+	}, [value, optional, onValidity]);
 
 	const handleChange = (newValue: string) => {
 		setValue(newValue);
@@ -87,59 +87,79 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 			elem.removeEventListener('focusout', handleBlur);
 			window.clearTimeout(blurTimeout);
 		};
-	}, [ onFocus, onBlur, invalid ]);
+	}, [onFocus, onBlur, invalid]);
 
 	const showInvalid = invalid && shouldShowInvalid;
 
 	return (
 		<Listbox value={value} onChange={handleChange}>
-			{({ open }) => <InputContainer
-				ref={rootRef}
-				labelId={id}
-				label={props.label}
-
-				active={open}
-				populated={open || value !== undefined}
-				invalid={showInvalid}
-
-				class={props.class}
-				style={props.style}
-			>
-				<Listbox.Button
-					ref={(elem: any) => { ref.current = elem; if (fRef) fRef.current = elem; }}
-					className={merge(
-						'peer w-full px-2.5 h-[3.25rem] pt-6 pb-1 pr-10 rounded',
-						'text-left !outline-none resize-none transition focus:shadow-md',
-						'bg-neutral-100 dark:bg-neutral-700/75 dark:focus:bg-neutral-700',
-						open && '!shadow-md dark:!bg-neutral-700',
-						showInvalid && 'text-red-800 focus:text-neutral-900',
-						showInvalid && 'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100')}
-				>
-					{props.options[value!] ?? ''}
-				</Listbox.Button>
-				<Transition show={open} duration={150} invertExit
-					enter='transition duration-150' enterFrom='opacity-0 -translate-y-2'>
-					<Listbox.Options static className='absolute z-50 left-0 top-[calc(100%+0.5rem)] w-full flex-row-reverse
+			{({ open }) => (
+				<InputContainer
+					ref={rootRef}
+					labelId={id}
+					label={props.label}
+					active={open}
+					populated={open || value !== undefined}
+					invalid={showInvalid}
+					class={props.class}
+					style={props.style}>
+					<Listbox.Button
+						ref={(elem: any) => {
+							ref.current = elem;
+							if (fRef) fRef.current = elem;
+						}}
+						className={merge(
+							'peer w-full px-2.5 h-[3.25rem] pt-6 pb-1 pr-10 rounded',
+							'text-left !outline-none resize-none transition focus:shadow-md',
+							'bg-neutral-100 dark:bg-neutral-700/75 dark:focus:bg-neutral-700',
+							open && '!shadow-md dark:!bg-neutral-700',
+							showInvalid && 'text-red-800 focus:text-neutral-900',
+							showInvalid && 'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100'
+						)}>
+						{props.options[value!] ?? ''}
+					</Listbox.Button>
+					<Transition
+						show={open}
+						duration={150}
+						invertExit
+						enter='transition duration-150'
+						enterFrom='opacity-0 -translate-y-2'>
+						<Listbox.Options
+							static
+							className='absolute z-50 left-0 top-[calc(100%+0.5rem)] w-full flex-row-reverse
 						bg-neutral-700 rounded shadow-md outline-none overflow-hidden'>
-						{Object.entries(props.options).map(([ value, label ]) =>
-							<Listbox.Option key={value} value={value} className={({ active, selected }) => merge(
-								'p-2.5 flex transition text-neutral-200 cursor-pointer duration-75',
-								active && 'bg-accent-400/10 !text-accent-200',
-								selected && 'font-medium !text-white')}
-							>
-								{({ selected }) => <Fragment>
-									<span class='flex-grow'>{label}</span>
-									{selected && <Svg src={icon_check} size={6} class='icon-p-accent-200 icon-s-neutral-500'/>}
-								</Fragment>}
-							</Listbox.Option>
-						)}
-					</Listbox.Options>
-				</Transition>
+							{Object.entries(props.options).map(([value, label]) => (
+								<Listbox.Option
+									key={value}
+									value={value}
+									className={({ active, selected }) =>
+										merge(
+											'p-2.5 flex transition text-neutral-200 cursor-pointer duration-75',
+											active && 'bg-accent-400/10 !text-accent-200',
+											selected && 'font-medium !text-white'
+										)
+									}>
+									{({ selected }) => (
+										<Fragment>
+											<span class='flex-grow'>{label}</span>
+											{selected && <Svg src={icon_check} size={6} class='icon-p-accent-200 icon-s-neutral-500' />}
+										</Fragment>
+									)}
+								</Listbox.Option>
+							))}
+						</Listbox.Options>
+					</Transition>
 
-				<Svg src={icon_dropdown} size={7} class={merge(
-					'absolute top-3 right-2 icon-p-neutral-200 transition',
-					open && 'scale-y-[-100%] translate-y-px')}/>
-			</InputContainer>}
+					<Svg
+						src={icon_dropdown}
+						size={7}
+						class={merge(
+							'absolute top-3 right-2 icon-p-neutral-200 transition',
+							open && 'scale-y-[-100%] translate-y-px'
+						)}
+					/>
+				</InputContainer>
+			)}
 		</Listbox>
 	);
 });

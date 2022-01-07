@@ -6,7 +6,7 @@ import { useQuery, QUERY_LAYOUT } from '../Graph';
 
 interface Props {
 	layout: string;
-	elements: {[key: string]: VNode};
+	elements: { [key: string]: VNode };
 }
 
 /**
@@ -19,8 +19,8 @@ interface Props {
  */
 
 export default function LayoutInjector(props: Props) {
-	const [ { layout } ] = useQuery(QUERY_LAYOUT, { loadOnReload: false }, { name: props.layout }) as any;
-	const [ layoutRoots, setLayoutRoots ] = useState<{[key: string]: HTMLElement} | undefined>(undefined);
+	const [{ layout }] = useQuery(QUERY_LAYOUT, { loadOnReload: false }, { name: props.layout }) as any;
+	const [layoutRoots, setLayoutRoots] = useState<{ [key: string]: HTMLElement } | undefined>(undefined);
 
 	/**
 	 * Insert the layout DOM elements into the body, add necessary layout classes to body,
@@ -39,8 +39,8 @@ export default function LayoutInjector(props: Props) {
 		// root.innerHTML = layout.html.trim().replace(/\<body/g, '<div').replace(/\<\/body/g, '</div');
 		root = root.childNodes[0] as HTMLElement;
 
-		const newLayoutRoots: {[key: string]: HTMLElement} = {};
-		root.querySelectorAll('[data-include]').forEach(e => {
+		const newLayoutRoots: { [key: string]: HTMLElement } = {};
+		root.querySelectorAll('[data-include]').forEach((e) => {
 			const section = e.getAttribute('data-include') ?? '';
 			e.removeAttribute('data-include');
 			if (!props.elements[section]) e.remove();
@@ -49,20 +49,23 @@ export default function LayoutInjector(props: Props) {
 
 		document.body.append(root);
 
-		console.log('%cRendering Layout',
-			'color:#ebd834;text-align-center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold');
+		console.log(
+			'%cRendering Layout',
+			'color:#ebd834;text-align-center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold'
+		);
 
 		setLayoutRoots(newLayoutRoots);
 
 		return () => root.remove();
-	}, [ layout, props.elements ]);
+	}, [layout, props.elements]);
 
 	return (
 		<Fragment>
-			{layoutRoots && Object.keys(layoutRoots).map(section => {
-				if (!props.elements[section]) return undefined;
-				return createPortal(props.elements[section], layoutRoots[section]);
-			})}
+			{layoutRoots &&
+				Object.keys(layoutRoots).map((section) => {
+					if (!props.elements[section]) return undefined;
+					return createPortal(props.elements[section], layoutRoots[section]);
+				})}
 		</Fragment>
 	);
 }

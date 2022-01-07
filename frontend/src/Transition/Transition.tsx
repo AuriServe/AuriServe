@@ -21,10 +21,13 @@ interface Props extends TransitionClasses {
 export default function Transition(props: Props) {
 	const timeoutRef = useRef<any>(null);
 	const initialRef = useRef<boolean>(!(props.initial || false));
-	const [ state, setState ] = useState<State>(props.show ? State.Entered : State.Exited);
+	const [state, setState] = useState<State>(props.show ? State.Entered : State.Exited);
 	// TODO: Replace getClassesForState to fix this.
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const classes = useMemo(() => merge(props.class, getClassesForState(state, props)), [ state ]);
+	const classes = useMemo(
+		() => merge(props.class, getClassesForState(state, props)),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[state]
+	);
 
 	useLayoutEffect(() => {
 		if (initialRef.current) {
@@ -39,7 +42,7 @@ export default function Transition(props: Props) {
 
 		if (props.show) setState(State.BeforeEnter);
 		else setState(State.BeforeExit);
-	}, [ props.show ]);
+	}, [props.show]);
 
 	useLayoutEffect(() => {
 		window.requestAnimationFrame(() => {
@@ -52,18 +55,24 @@ export default function Transition(props: Props) {
 			else if (state === State.Exiting)
 				timeoutRef.current = setTimeout(() => setState(State.Exited), props.duration);
 		});
-	}, [ state, props.duration ]);
+	}, [state, props.duration]);
 
 	if (state === State.Exited) return null;
 
 	const Tag: ComponentType<any> | string = props.as ?? Fragment;
 
 	if (Tag === Fragment) {
-		const children: any[] = props.children ? Array.isArray(props.children) ? props.children : [ props.children ] : [];
-		return children.map(child => cloneElement(child, {
-			className: merge(child.props.className, child.props.class, classes),
-			class: undefined
-		})) as any;
+		const children: any[] = props.children
+			? Array.isArray(props.children)
+				? props.children
+				: [props.children]
+			: [];
+		return children.map((child) =>
+			cloneElement(child, {
+				className: merge(child.props.className, child.props.class, classes),
+				class: undefined,
+			})
+		) as any;
 	}
 
 	const renderProps: Partial<Props> & { className?: string } = { ...props };
@@ -74,9 +83,7 @@ export default function Transition(props: Props) {
 	renderProps.className = merge(props.class, classes);
 	console.log(renderProps.className);
 
-	return (
-		<Tag {...renderProps}/>
-	);
+	return <Tag {...renderProps} />;
 }
 
 // Transition.Group = TransitionGroup;

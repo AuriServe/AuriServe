@@ -5,7 +5,6 @@ import ComponentArea from './ComponentArea';
 
 import { RendererContext } from '../pages/EditorRendererPage';
 
-
 interface ComponentContextData {
 	/** The path of the current component. */
 	path: string;
@@ -17,7 +16,6 @@ interface ComponentContextData {
 	hovered: boolean;
 }
 
-
 /**
  * A context wrapped around each component element, contains info
  * needed for the component hooks, which use `useContext`
@@ -27,9 +25,8 @@ interface ComponentContextData {
 export const ComponentContext = createContext<ComponentContextData>({
 	path: '',
 	active: false,
-	hovered: false
+	hovered: false,
 });
-
 
 interface Props {
 	/** The component's path in the document. */
@@ -54,7 +51,6 @@ interface Props {
 	children: ComponentChildren;
 }
 
-
 /**
  * A wrapper function that stops an event's default action and propagation,
  * and then calls the provided callback with it.
@@ -70,7 +66,6 @@ const cancel = (cb: (evt: any) => void) => {
 	};
 };
 
-
 /**
  * Renders a component for the EditorRenderer,
  * wrapping it in a context object and managing the active state.
@@ -80,14 +75,14 @@ export default function Component(props: Props) {
 	const timeout = useRef<number>(0);
 	const ref = useRef<HTMLButtonElement>(null);
 	const ctx = useContext(RendererContext);
-	const [ hovered, setHovered ] = useState<boolean>(false);
+	const [hovered, setHovered] = useState<boolean>(false);
 
 	const handleMouseOver = cancel(() => {
 		window.clearTimeout(timeout.current);
 		setHovered(true);
 	});
 
-	const handleMouseOut = cancel(() => timeout.current = window.setTimeout(() => setHovered(false), 16));
+	const handleMouseOut = cancel(() => (timeout.current = window.setTimeout(() => setHovered(false), 16)));
 
 	const handleClick = cancel(() => ctx.setActive(props.path));
 
@@ -98,18 +93,21 @@ export default function Component(props: Props) {
 	const componentProps = Object.assign({}, props.spreadProps ? props.props : {}, {
 		props: props.spreadProps ? undefined : { ...props.props, children: props.children },
 		setProps: props.setProps,
-		children: props.spreadProps ? props.children : undefined
+		children: props.spreadProps ? props.children : undefined,
 	});
 
 	return (
-		<button ref={ref} style={{ textAlign: 'unset', display: 'contents', cursor: 'pointer' }}
+		<button
+			ref={ref}
+			style={{ textAlign: 'unset', display: 'contents', cursor: 'pointer' }}
 			onClick={handleClick}
 			onMouseOver={handleMouseOver}
 			onMouseOut={handleMouseOut}>
 			<ComponentContext.Provider value={{ path: props.path, active, hovered }}>
-				<Component {...componentProps}/>
-				{(props.indicator && (hovered || active)) &&
-					<ComponentArea for={ref.current!} active={active} indicator={true}/>}
+				<Component {...componentProps} />
+				{props.indicator && (hovered || active) && (
+					<ComponentArea for={ref.current!} active={active} indicator={true} />
+				)}
 			</ComponentContext.Provider>
 		</button>
 	);

@@ -4,11 +4,19 @@ import { useContext, useRef, useState, useEffect, useMemo } from 'preact/hooks';
 
 const DRAG_THRESHOLD = 8;
 
-interface ItemData extends Record<any, any> { key: any }
+interface ItemData extends Record<any, any> {
+	key: any;
+}
 
-interface Item extends ItemData { children?: Item[] }
+interface Item extends ItemData {
+	children?: Item[];
+}
 
-interface RenderItemData { data: ItemData; level: number; dragging: boolean }
+interface RenderItemData {
+	data: ItemData;
+	level: number;
+	dragging: boolean;
+}
 
 interface DragData {
 	pixelPos: number;
@@ -29,13 +37,15 @@ interface ContextData {
 
 const Context = createContext<ContextData>(undefined as any);
 
-function updateContextDataFromProps(props: TreeViewProps,
-	lastData: Omit<ContextData, keyof TreeViewProps>): ContextData {
+function updateContextDataFromProps(
+	props: TreeViewProps,
+	lastData: Omit<ContextData, keyof TreeViewProps>
+): ContextData {
 	return {
 		...lastData,
 		dragClass: props.dragClass,
 		itemHeight: props.itemHeight,
-		renderItem: props.renderItem
+		renderItem: props.renderItem,
 	};
 }
 
@@ -95,12 +105,12 @@ function TreeCapture({ path, children, style }: TreeCaptureProps) {
 
 	useEffect(() => {
 		const elem = ref.current;
-		let dragStartPos: [ number, number ] | null = null;
+		let dragStartPos: [number, number] | null = null;
 
 		const onMouseDown = (evt: MouseEvent) => {
 			evt.preventDefault();
 			evt.stopPropagation();
-			dragStartPos = [ evt.clientX, evt.clientY ];
+			dragStartPos = [evt.clientX, evt.clientY];
 		};
 
 		const cancelDragCheck = () => {
@@ -109,7 +119,7 @@ function TreeCapture({ path, children, style }: TreeCaptureProps) {
 
 		const onMouseMove = (evt: MouseEvent) => {
 			if (!dragStartPos) return;
-			const mouseDelta = [ Math.abs(dragStartPos![0] - evt.clientX), Math.abs(dragStartPos![1] - evt.clientY) ];
+			const mouseDelta = [Math.abs(dragStartPos![0] - evt.clientX), Math.abs(dragStartPos![1] - evt.clientY)];
 			if (mouseDelta[0] > DRAG_THRESHOLD) cancelDragCheck();
 			else if (mouseDelta[1] > DRAG_THRESHOLD) {
 				handleDragStart(path);
@@ -135,9 +145,7 @@ function TreeCapture({ path, children, style }: TreeCaptureProps) {
 		};
 	});
 
-	return (
-		<div style={style} ref={ref} children={children}/>
-	);
+	return <div style={style} ref={ref} children={children} />;
 }
 
 interface TreeItemProps {
@@ -147,27 +155,35 @@ interface TreeItemProps {
 }
 
 function TreeItem({ item, path, dragging = false }: TreeItemProps) {
-	const { renderItem, itemHeight, transitionOffsets, dragClass,
-		drag: { itemPath, toPath, childCount } = {} as DragData } = useContext(Context);
-	const Wrap = dragging ? 'div' : TreeCapture as any;
+	const {
+		renderItem,
+		itemHeight,
+		transitionOffsets,
+		dragClass,
+		drag: { itemPath, toPath, childCount } = {} as DragData,
+	} = useContext(Context);
+	const Wrap = dragging ? 'div' : (TreeCapture as any);
 
 	if (samePath(path, itemPath)) return null;
 
 	const shouldBumpDown = shouldBump(path, toPath);
 
 	const style = {
-		transform: shouldBumpDown ? `translateY(${((childCount + 1) * itemHeight)}px)` : 'none',
+		transform: shouldBumpDown ? `translateY(${(childCount + 1) * itemHeight}px)` : 'none',
 		transition: transitionOffsets ? 'transform 75ms' : '',
-		willChange: transitionOffsets ? 'transform' : ''
+		willChange: transitionOffsets ? 'transform' : '',
 	};
 
 	return (
 		<Wrap path={path} style={style} class={dragging ? dragClass : '' ?? ''}>
 			{renderItem({ data: item, level: path.length - 1, dragging })}
-			{item.children && <ul class='grid'>
-				{item.children.map((item, i) => <TreeItem key={item.key}
-					item={item} path={[ ...path, i ]} dragging={dragging}/>)}
-			</ul>}
+			{item.children && (
+				<ul class='grid'>
+					{item.children.map((item, i) => (
+						<TreeItem key={item.key} item={item} path={[...path, i]} dragging={dragging} />
+					))}
+				</ul>
+			)}
 		</Wrap>
 	);
 }
@@ -188,73 +204,72 @@ export default function TreeView(props: TreeViewProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	const { items, itemHeight, setItems } = props;
 
-	const [ context, setContext ] = useState<ContextData>(
-		updateContextDataFromProps(props, { drag: undefined,
-			transitionOffsets: false, handleDragStart: undefined as any }));
+	const [context, setContext] = useState<ContextData>(
+		updateContextDataFromProps(props, { drag: undefined, transitionOffsets: false, handleDragStart: undefined as any })
+	);
 
 	useMemo(() => {
 		const handleDragStart = (path: number[]) => {
-			setContext(context => ({
+			setContext((context) => ({
 				...context,
 				transitionOffsets: false,
 				drag: {
 					pixelPos: 0,
 					itemPath: path,
 					toPath: path,
-					childCount: getTreeCount(traversePath(items, path).children ?? [])
-				}
+					childCount: getTreeCount(traversePath(items, path).children ?? []),
+				},
 			}));
 
 			window.requestAnimationFrame(() => {
-				setContext(context => ({ ...context, transitionOffsets: true }));
+				setContext((context) => ({ ...context, transitionOffsets: true }));
 			});
 		};
 
-		setContext(context => ({ ...context, handleDragStart }));
-	}, [ items ]);
+		setContext((context) => ({ ...context, handleDragStart }));
+	}, [items]);
 
 	useEffect(() => {
 		const onMouseMove = (evt: MouseEvent) => {
 			setContext((context) => {
 				if (!context.drag) return context;
 
-				const pixelPos = Math.max(Math.min(evt.pageY - ref.current.offsetTop,
-					getTreeCount(items) * itemHeight - itemHeight / 2), itemHeight / 2);
+				const pixelPos = Math.max(
+					Math.min(evt.pageY - ref.current.offsetTop, getTreeCount(items) * itemHeight - itemHeight / 2),
+					itemHeight / 2
+				);
 
 				const itemPos = Math.floor(pixelPos / itemHeight);
 
-				const toPath = (function recurse(
-					tree: Item[], path: number[] = [], offset = 0): number[] {
-
+				const toPath = (function recurse(tree: Item[], path: number[] = [], offset = 0): number[] {
 					for (let i = 0; i < tree.length; i++) {
 						if (path === context.drag.itemPath) continue;
 
-						if (offset === itemPos) return [ ...path, i ];
+						if (offset === itemPos) return [...path, i];
 						else if (tree[i].children) {
 							const size = getTreeCount(tree[i].children!);
-							if (offset + size >= itemPos) return recurse(tree[i].children!, [ ...path, i ], offset + 1);
+							if (offset + size >= itemPos) return recurse(tree[i].children!, [...path, i], offset + 1);
 							offset += size + 1;
-						}
-						else offset++;
+						} else offset++;
 					}
 
-					return [ ...path, tree.length ];
+					return [...path, tree.length];
 				})(items);
 
 				return {
 					...context,
-					drag: { ...context.drag, pixelPos, toPath }
+					drag: { ...context.drag, pixelPos, toPath },
 				} as ContextData;
 			});
 		};
 
 		const onMouseUp = () => {
-			setContext(context => {
+			setContext((context) => {
 				if (context.drag) {
 					const data = JSON.parse(JSON.stringify(items));
 
 					const fromPath = context.drag.itemPath;
-					const toPath = [ ...context.drag.toPath ];
+					const toPath = [...context.drag.toPath];
 
 					// if (fromPath.length <= toPath.length)
 
@@ -281,25 +296,30 @@ export default function TreeView(props: TreeViewProps) {
 			document.body.removeEventListener('mouseup', onMouseUp);
 			document.body.removeEventListener('mousemove', onMouseMove);
 		};
-	}, [ items, itemHeight, setItems ]);
+	}, [items, itemHeight, setItems]);
 
 	return (
 		<Context.Provider value={context}>
-			<div ref={ref} class={merge('grid w-full', props.class)}
-				style={{ ...props.style ?? {}, height: getTreeCount(items) * itemHeight }}>
-
+			<div
+				ref={ref}
+				class={merge('grid w-full', props.class)}
+				style={{ ...(props.style ?? {}), height: getTreeCount(items) * itemHeight }}>
 				<div class={merge('grid items-start relative', context.drag && 'cursor-resize-ns')}>
 					<ul class={merge('grid', context.drag && 'interact-none')}>
-						{items.map((item, i) => <TreeItem key={i} item={item} path={[i]}/>)}
+						{items.map((item, i) => (
+							<TreeItem key={i} item={item} path={[i]} />
+						))}
 					</ul>
 
-					{context.drag && <div class='absolute right-0 left-0'
-						style={{ top: context.drag.pixelPos - itemHeight / 2 }}>
-
-						<TreeItem dragging
-							item={traversePath(items, context.drag.itemPath)}
-							path={context.drag.toPath.map(() => -1)}/>
-					</div>}
+					{context.drag && (
+						<div class='absolute right-0 left-0' style={{ top: context.drag.pixelPos - itemHeight / 2 }}>
+							<TreeItem
+								dragging
+								item={traversePath(items, context.drag.itemPath)}
+								path={context.drag.toPath.map(() => -1)}
+							/>
+						</div>
+					)}
 				</div>
 			</div>
 		</Context.Provider>

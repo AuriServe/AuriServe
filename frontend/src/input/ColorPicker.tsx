@@ -46,9 +46,12 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 
 	const handleMouseMove = (evt: MouseEvent) => {
 		switch (mouseTarget.current) {
-		default: return;
-		case 'hue': return handleHueMove(evt);
-		case 'satval': return handleSatValMove(evt);
+			default:
+				return;
+			case 'hue':
+				return handleHueMove(evt);
+			case 'satval':
+				return handleSatValMove(evt);
 		}
 	};
 
@@ -61,14 +64,14 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 	};
 
 	useEffect(() => {
-		const clearMouse = () => mouseTarget.current = '';
+		const clearMouse = () => (mouseTarget.current = '');
 		document.body.addEventListener('mouseup', clearMouse);
 		document.body.addEventListener('mousemove', handleMouseMove);
 		return () => {
 			document.body.removeEventListener('mouseup', clearMouse);
 			document.body.removeEventListener('mousemove', handleMouseMove);
 		};
-	}, [ handleMouseMove ]);
+	}, [handleMouseMove]);
 
 	const hueHex = to({ h: color.h, s: 1, v: 1, a: 1 }, 'hex');
 	const fullHex = to({ ...color, a: 1 }, 'hex');
@@ -76,34 +79,40 @@ export default forwardRef<HTMLDivElement, Props>(function ColorPicker(props, ref
 	const position: any = {};
 	if (props.parent) {
 		position.top = props.parent.getBoundingClientRect().bottom + 'px';
-		position.left = ((props.parent.getBoundingClientRect().left +
-			props.parent.getBoundingClientRect().right) / 2) - 144 + 'px';
+		position.left =
+			(props.parent.getBoundingClientRect().left + props.parent.getBoundingClientRect().right) / 2 - 144 + 'px';
 	}
 
 	return (
-		<div class={merge('w-72 h-48 mt-2 select-none flex flex-col pointer-events-auto', props.parent && 'absolute')}
-			ref={ref} style={position}>
-
-			<div class={merge(style.SatVal, 'relative flex-grow cursor-pointer')} ref={satValElem}
+		<div
+			class={merge('w-72 h-48 mt-2 select-none flex flex-col pointer-events-auto', props.parent && 'absolute')}
+			ref={ref}
+			style={position}>
+			<div
+				class={merge(style.SatVal, 'relative flex-grow cursor-pointer')}
+				ref={satValElem}
 				onMouseDown={(evt) => handleMouseClick(evt, 'satval')}
 				style={{ backgroundColor: hueHex }}>
-
 				{props.displayHex && <p class=''>{fullHex}</p>}
 
-				<div class={style.Indicator} style={{ left: (color.s * 100) + '%',
-					top: ((1 - color.v) * 100) + '%', backgroundColor: fullHex }} />
-
+				<div
+					class={style.Indicator}
+					style={{ left: color.s * 100 + '%', top: (1 - color.v) * 100 + '%', backgroundColor: fullHex }}
+				/>
 			</div>
 			<div class='h-2 bg-black' />
-			<div class={merge(style.Hue, 'relative h-6 cursor-pointer')} ref={hueElem}
+			<div
+				class={merge(style.Hue, 'relative h-6 cursor-pointer')}
+				ref={hueElem}
 				onMouseDown={(evt) => handleMouseClick(evt, 'hue')}>
-				<div class={merge(style.Indicator, 'top-1/2')}
-					style={{ left: (color.h * 100) + '%', backgroundColor: hueHex }} />
+				<div class={merge(style.Indicator, 'top-1/2')} style={{ left: color.h * 100 + '%', backgroundColor: hueHex }} />
 			</div>
-			{props.writable && <div class='ColorPicker-Details'>
-				<div class='ColorPicker-ColorBlock' style={{ backgroundColor: fullHex }} />
-				<input class='ColorPicker-ColorInput' value={fullHex} onChange={inputHex} onInput={inputHex} maxLength={7} />
-			</div>}
+			{props.writable && (
+				<div class='ColorPicker-Details'>
+					<div class='ColorPicker-ColorBlock' style={{ backgroundColor: fullHex }} />
+					<input class='ColorPicker-ColorInput' value={fullHex} onChange={inputHex} onInput={inputHex} maxLength={7} />
+				</div>
+			)}
 		</div>
 	);
 });

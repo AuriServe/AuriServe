@@ -18,7 +18,8 @@ interface Props extends TransitionClasses {
 }
 
 enum State {
-	In, Out
+	In,
+	Out,
 }
 
 interface Child {
@@ -32,13 +33,13 @@ export default function TransitionGroup(props: Props) {
 	const ref = useRef<Map<string, Child>>(new Map());
 
 	useMemo(() => {
-		const children =
-			(Array.isArray(props.children) ? props.children : props.children ? [ props.children ] : [])
-				.filter((child: any) => child) as VNode[];
+		const children = (Array.isArray(props.children) ? props.children : props.children ? [props.children] : []).filter(
+			(child: any) => child
+		) as VNode[];
 
-		assert(!children.some(child => child.key === undefined), '[TransitionGroup] All children must have a key!');
+		assert(!children.some((child) => child.key === undefined), '[TransitionGroup] All children must have a key!');
 
-		const currentChildren = children.map(child => child.key);
+		const currentChildren = children.map((child) => child.key);
 
 		ref.current.forEach((child, key) => {
 			if (!currentChildren.includes(key)) {
@@ -51,7 +52,7 @@ export default function TransitionGroup(props: Props) {
 			}
 		});
 
-		children.forEach(child => {
+		children.forEach((child) => {
 			const existing = ref.current.get(child.key);
 			if (existing) {
 				if (existing.state === State.Out) {
@@ -59,30 +60,37 @@ export default function TransitionGroup(props: Props) {
 					clearTimeout(existing.timeout);
 				}
 				existing.element = cloneElement(child);
-			}
-			else {
+			} else {
 				ref.current.set(child.key, {
 					state: State.In,
 					timeout: 0,
-					element: cloneElement(child)
+					element: cloneElement(child),
 				});
 			}
 		});
-	}, [ props.children, props.duration, rerender ]);
+	}, [props.children, props.duration, rerender]);
 
 	const Tag: ComponentType<any> | string = props.as ?? Fragment;
 
 	return (
 		<Tag className={props.class}>
-			{Array.from(ref.current.entries()).map(([ key, child ]) =>
-				<Transition key={key} initial class={props.childClass}
-					show={child.state !== State.Out} duration={props.duration} invertExit={props.invertExit}
-					enter={props.enter} enterFrom={props.enterFrom} enterTo={props.enterTo}
-					exit={props.exit} exitFrom={props.exitFrom} exitTo={props.exitTo}
-				>
+			{Array.from(ref.current.entries()).map(([key, child]) => (
+				<Transition
+					key={key}
+					initial
+					class={props.childClass}
+					show={child.state !== State.Out}
+					duration={props.duration}
+					invertExit={props.invertExit}
+					enter={props.enter}
+					enterFrom={props.enterFrom}
+					enterTo={props.enterTo}
+					exit={props.exit}
+					exitFrom={props.exitFrom}
+					exitTo={props.exitTo}>
 					{child.element}
 				</Transition>
-			)}
+			))}
 		</Tag>
 	);
 }

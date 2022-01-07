@@ -10,9 +10,11 @@ interface Props {
 }
 
 export default function Popout(props: Props) {
-	const [ visible, setVisible ] = useState<boolean>(false);
+	const [visible, setVisible] = useState<boolean>(false);
 
-	const editUrl = `/admin/pages/${window.location.pathname.substring(1) + (window.location.pathname.endsWith('/') ? 'index' : '')}`;
+	const editUrl = `/admin/pages/${
+		window.location.pathname.substring(1) + (window.location.pathname.endsWith('/') ? 'index' : '')
+	}`;
 	const settingsUrl = '/admin/settings/overview';
 
 	const handleLogout = () => {
@@ -24,19 +26,23 @@ export default function Popout(props: Props) {
 
 	return (
 		<div class={merge(style.Root, visible && style.Visible)}>
-			<button class={style.Button} onClick={() => setVisible(v => !v)}>
+			<button class={style.Button} onClick={() => setVisible((v) => !v)}>
 				<img class={style.Icon} src='/admin/asset/icon/serve-light.svg' alt='AuriServe Menu' />
 			</button>
 			<div class={style.Inner}>
 				<button class={merge(style.IconButton, style.Logout)} onClick={handleLogout}>
-					<img src='/admin/asset/icon/logout-dark.svg' alt='Logout'/></button>
+					<img src='/admin/asset/icon/logout-dark.svg' alt='Logout' />
+				</button>
 
 				<a class={style.IconButton} href={settingsUrl}>
-					<img src='/admin/asset/icon/settings-dark.svg' alt='Site Settings'/></a>
+					<img src='/admin/asset/icon/settings-dark.svg' alt='Site Settings' />
+				</a>
 				<a class={style.IconButton}>
-					<img src='/admin/asset/icon/stats-dark.svg' alt='Page Performance'/></a>
+					<img src='/admin/asset/icon/stats-dark.svg' alt='Page Performance' />
+				</a>
 				<a class={style.IconButton} href={editUrl}>
-					<img src='/admin/asset/icon/edit-dark.svg' alt='Edit Page'/></a>
+					<img src='/admin/asset/icon/edit-dark.svg' alt='Edit Page' />
+				</a>
 			</div>
 		</div>
 	);

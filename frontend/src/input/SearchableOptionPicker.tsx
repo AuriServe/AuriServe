@@ -20,29 +20,32 @@ interface Props {
 }
 
 function sort(query: string, a: string, b: string) {
-	return sign(a.indexOf(query) - b.indexOf(query)) ||
-		a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+	return (
+		sign(a.indexOf(query) - b.indexOf(query)) || a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+	);
 }
 
 export default function SearchableOptionPicker(props: Props) {
-	const [ index, setIndex ] = useState<number>(0);
+	const [index, setIndex] = useState<number>(0);
 
 	const query = props.query.toLowerCase().trim();
-	const fields = Array.isArray(props.fields) ? props.fields : [ props.fields ];
+	const fields = Array.isArray(props.fields) ? props.fields : [props.fields];
 
-	const filtered = props.options.filter(option => {
-		for (const field of fields)
-			if ((option[field] as any)?.toLowerCase().includes(query)) return true;
-		return false;
-	}).sort((a, b) => {
-		for (const fieldA of fields)
-			for (const fieldB of fields)
-				if ((a[fieldA] as any)?.toLowerCase().includes(query) && (b[fieldB] as any)?.toLowerCase().includes(query))
-					return sort(query, a[fieldA] as any, b[fieldB] as any);
-		return 0;
-	}).slice(0, 5);
+	const filtered = props.options
+		.filter((option) => {
+			for (const field of fields) if ((option[field] as any)?.toLowerCase().includes(query)) return true;
+			return false;
+		})
+		.sort((a, b) => {
+			for (const fieldA of fields)
+				for (const fieldB of fields)
+					if ((a[fieldA] as any)?.toLowerCase().includes(query) && (b[fieldB] as any)?.toLowerCase().includes(query))
+						return sort(query, a[fieldA] as any, b[fieldB] as any);
+			return 0;
+		})
+		.slice(0, 5);
 
-	useEffect(() => setIndex(0), [ query ]);
+	useEffect(() => setIndex(0), [query]);
 
 	// Interactions
 	useEffect(() => {
@@ -65,22 +68,30 @@ export default function SearchableOptionPicker(props: Props) {
 	const style: any = {
 		top: `${props.parent.getBoundingClientRect().bottom}px`,
 		left: `${props.parent.getBoundingClientRect().left}px`,
-		width: `${props.parent.getBoundingClientRect().width}px`
+		width: `${props.parent.getBoundingClientRect().width}px`,
 	};
 
 	return (
-		<Card class='absolute z-10 overflow-auto !my-2 min-h-12 !p-0 max-h-96 pointer-events-auto rounded !shadow-lg' style={style}>
+		<Card
+			class='absolute z-10 overflow-auto !my-2 min-h-12 !p-0 max-h-96 pointer-events-auto rounded !shadow-lg'
+			style={style}>
 			{query && <Label class='px-2 bg-neutral-50 dark:bg-neutral-700' label={`Search results for '${query}'`} />}
-			{filtered.length > 0 && <ul>
-				{filtered.map((option, ind) => <li key={ind}>
-					<button class='w-full focus:outline-none' onClick={() => props.onSelect(option)}>
-						{props.children({ option, ind, selected: index === ind })}
-					</button>
-				</li>)}
-			</ul>}
-			{filtered.length === 0 && <div class='py-4 px-2 text-center'>
-				<p class='text-neutral-400 pt-0.25 text-normal'>No results found.</p>
-			</div>}
+			{filtered.length > 0 && (
+				<ul>
+					{filtered.map((option, ind) => (
+						<li key={ind}>
+							<button class='w-full focus:outline-none' onClick={() => props.onSelect(option)}>
+								{props.children({ option, ind, selected: index === ind })}
+							</button>
+						</li>
+					))}
+				</ul>
+			)}
+			{filtered.length === 0 && (
+				<div class='py-4 px-2 text-center'>
+					<p class='text-neutral-400 pt-0.25 text-normal'>No results found.</p>
+				</div>
+			)}
 		</Card>
 	);
 }

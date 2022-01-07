@@ -20,15 +20,12 @@ const InputNumeric = forwardRef<HTMLInputElement, Props>((props, fRef) => {
 			value={props.value}
 			onInput={cb}
 			onChange={cb}
-
 			class={merge(style.Input, props.class)}
 			style={props.style}
-
 			type='number'
 			ref={fRef as any}
 			placeholder={props.placeholder}
 			disabled={!(props.enabled ?? true)}
-
 			onFocus={props.onFocus}
 			onBlur={props.onBlur}
 		/>

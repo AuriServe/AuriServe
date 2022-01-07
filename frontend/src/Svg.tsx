@@ -4,7 +4,7 @@ import { merge } from 'common/util';
 
 export interface Props {
 	// Other attributes to be put on the container.
-	[ key: string ]: any;
+	[key: string]: any;
 
 	/** The SVG source to render. */
 	src: string;

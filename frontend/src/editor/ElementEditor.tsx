@@ -14,17 +14,24 @@ interface TableProps {
 function Table({ props, values, path, handleSet }: TableProps) {
 	return (
 		<div>
-			{Object.entries(props).map(([ key, value ]) => {
+			{Object.entries(props).map(([key, value]) => {
 				const thisPath = path + (path !== '' ? '.' : '') + key;
 				if ('fields' in value) {
-					return <Table key={thisPath} props={value.fields}
-						values={values[key]} path={thisPath} handleSet={handleSet}/>;
-				}
-				else if ('entries' in value) {
+					return (
+						<Table key={thisPath} props={value.fields} values={values[key]} path={thisPath} handleSet={handleSet} />
+					);
+				} else if ('entries' in value) {
 					return <p>Array props can't be edited.</p>;
 				}
-				return <PropInput key={thisPath} prop={value} value={values[key]}
-					identifier={key} onChange={value => handleSet(key, value)}/>;
+				return (
+					<PropInput
+						key={thisPath}
+						prop={value}
+						value={values[key]}
+						identifier={key}
+						onChange={(value) => handleSet(key, value)}
+					/>
+				);
 			})}
 		</div>
 	);
@@ -44,7 +51,7 @@ export default function ElementEditor({ props, definition, onChange }: Props) {
 
 	return (
 		<Form>
-			<Table props={propDefs} values={props} path='' handleSet={handleSet}/>
+			<Table props={propDefs} values={props} path='' handleSet={handleSet} />
 		</Form>
 	);
 }

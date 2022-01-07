@@ -10,7 +10,6 @@ import { merge } from 'common/util';
 
 import style from './Input.sss';
 
-
 /**
  * Automatically scales an HTML TextArea element to the height of its content,
  * or the specified max-height, whichever is smaller. Returns a ref to attach to
@@ -28,15 +27,13 @@ function useAutoTextArea(maxHeight?: number, dependents?: any[]): RefObject<HTML
 		if (!ref.current) return;
 		ref.current.style.height = '';
 		ref.current.style.height = Math.min(ref.current.scrollHeight + 2, maxHeight ?? Infinity) + 'px';
-	}, [ ref.current, ...dependents || [] ]);
+	}, [ref.current, ...(dependents || [])]);
 
 	return ref;
 }
 
-
 /** Props for the text input element. */
 interface Props extends InputProps, FocusableInputProps, TextInputProps {
-
 	/** Whether or not the text should wrap. */
 	multiline?: boolean;
 
@@ -50,7 +47,6 @@ interface Props extends InputProps, FocusableInputProps, TextInputProps {
 	obscure?: boolean;
 }
 
-
 /**
  * A text input element, that is either a
  * single line field or an autoscaling textarea,
@@ -58,7 +54,7 @@ interface Props extends InputProps, FocusableInputProps, TextInputProps {
  */
 
 export default forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(function InputText(props: Props, fRef) {
-	const ref = useAutoTextArea(props.maxHeight ?? 420, [ props.value ]);
+	const ref = useAutoTextArea(props.maxHeight ?? 420, [props.value]);
 
 	const onValue = (evt: any) => props.onValue?.(evt.target.value);
 	const classes = merge(style.Input, props.mono && style.Mono, props.class);
@@ -77,10 +73,10 @@ export default forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(functio
 		autoComplete: props.completion,
 
 		style: props.style,
-		class: classes
+		class: classes,
 	};
 
-	return (props.multiline ?
+	return props.multiline ? (
 		<textarea
 			ref={(newRef) => {
 				ref.current = newRef;
@@ -88,11 +84,8 @@ export default forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(functio
 			}}
 			rows={1}
 			{...fieldProps}
-		/> :
-		<input
-			ref={fRef as any}
-			type={props.obscure ? 'password' : 'text'}
-			{...fieldProps}
 		/>
+	) : (
+		<input ref={fRef as any} type={props.obscure ? 'password' : 'text'} {...fieldProps} />
 	);
 });

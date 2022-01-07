@@ -22,42 +22,51 @@ const sortFn = (a: Theme, b: Theme) => {
 };
 
 export default function ThemesSettings() {
-	const [ data, refresh ] = useData(QUERY_THEMES, []);
+	const [data, refresh] = useData(QUERY_THEMES, []);
 	const updateEnabled = useMutation(MUTATE_THEMES);
 
-	const [ themes, setThemes ] = useState<Theme[]>((data.themes ?? []).sort(sortFn));
-	useEffect(() => setThemes((data.themes ?? []).sort(sortFn)), [ data.themes ]);
+	const [themes, setThemes] = useState<Theme[]>((data.themes ?? []).sort(sortFn));
+	useEffect(() => setThemes((data.themes ?? []).sort(sortFn)), [data.themes]);
 
-	const isDirty = JSON.stringify((data.themes ?? []).map((t: Theme) => t.enabled ? t.identifier : '')) !==
-		JSON.stringify(themes.map(t => t.enabled ? t.identifier : ''));
+	const isDirty =
+		JSON.stringify((data.themes ?? []).map((t: Theme) => (t.enabled ? t.identifier : ''))) !==
+		JSON.stringify(themes.map((t) => (t.enabled ? t.identifier : '')));
 
 	const handleToggle = (toggle: string) => {
 		const newThemes: Theme[] = JSON.parse(JSON.stringify(themes));
-		const theme = newThemes.filter(t => t.identifier === toggle)[0];
+		const theme = newThemes.filter((t) => t.identifier === toggle)[0];
 		if (theme) theme.enabled = !theme.enabled;
 		setThemes(newThemes);
 	};
 
 	const handleSave = async () =>
-		updateEnabled({ enabled: themes.filter(t => t.enabled).map(t => t.identifier) }).then(() => refresh());
+		updateEnabled({ enabled: themes.filter((t) => t.enabled).map((t) => t.identifier) }).then(() => refresh());
 
 	return (
 		<Card>
-			<Card.Header icon={icon_theme} title='Themes' subtitle={'Manage your site\'s appearance.'}>
-				<Button class='absolute bottom-4 right-4' icon={icon_browse} label='Browse Themes' small/>
+			<Card.Header icon={icon_theme} title='Themes' subtitle={"Manage your site's appearance."}>
+				<Button class='absolute bottom-4 right-4' icon={icon_browse} label='Browse Themes' small />
 			</Card.Header>
 			<Card.Body>
-				{themes.length !== 0 && <FlipMove className='grid grid-cols-3 gap-4' duration={250} aria-role='list'>
-					{themes.map(theme => <li class='list-none' key={theme.identifier}>
-						<ThemeItem {...theme}
-							onToggle={() => handleToggle(theme.identifier)}
-							onDetails={() => console.log('deets')}/>
-					</li>)}
-				</FlipMove>}
-				{!themes.length && <div class='flex py-28 justify-center items-center gap-2'>
-					<Svg src={icon_target} size={6}/>
-					<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>No themes found.</p>
-				</div>}
+				{themes.length !== 0 && (
+					<FlipMove className='grid grid-cols-3 gap-4' duration={250} aria-role='list'>
+						{themes.map((theme) => (
+							<li class='list-none' key={theme.identifier}>
+								<ThemeItem
+									{...theme}
+									onToggle={() => handleToggle(theme.identifier)}
+									onDetails={() => console.log('deets')}
+								/>
+							</li>
+						))}
+					</FlipMove>
+				)}
+				{!themes.length && (
+					<div class='flex py-28 justify-center items-center gap-2'>
+						<Svg src={icon_target} size={6} />
+						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>No themes found.</p>
+					</div>
+				)}
 				<SavePopup active={isDirty} onSave={handleSave} onReset={() => setThemes((data.themes ?? []).sort(sortFn))} />
 			</Card.Body>
 		</Card>

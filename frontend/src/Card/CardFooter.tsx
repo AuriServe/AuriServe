@@ -4,7 +4,7 @@ import { merge } from 'common/util';
 
 export interface Props {
 	// Any default div properties.
-	[ key: string ]: any;
+	[key: string]: any;
 
 	style?: any;
 	class?: string;
@@ -25,4 +25,3 @@ export default function CardFooter(props: Props) {
 		/>
 	);
 }
-

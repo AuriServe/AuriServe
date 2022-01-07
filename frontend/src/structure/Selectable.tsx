@@ -28,7 +28,7 @@ export default function Selectable(props: Props) {
 		if (!callbacks.onClick) callbacks.onClick = () => ctx.onSelect(props.ind);
 		else {
 			const clickCallback = callbacks.onClick;
-			callbacks.onClick = e => {
+			callbacks.onClick = (e) => {
 				ctx.onSelect(props.ind);
 				clickCallback(e);
 			};
@@ -36,14 +36,14 @@ export default function Selectable(props: Props) {
 
 		if (callbacks.onDoubleClick && props.doubleClickSelects) {
 			const doubleClickCallback = callbacks.onDoubleClick;
-			callbacks.onDoubleClick = e => {
+			callbacks.onDoubleClick = (e) => {
 				ctx.onSelect(props.ind, true);
 				doubleClickCallback(e);
 			};
 		}
 
 		handler.current.setCallbacks(callbacks);
-	}, [ props.callbacks, props.ind, props.doubleClickSelects, ctx.selected, ctx, ctx.onSelect ]);
+	}, [props.callbacks, props.ind, props.doubleClickSelects, ctx.selected, ctx, ctx.onSelect]);
 
 	const selected = ctx.selected.indexOf(props.ind) !== -1;
 
@@ -51,7 +51,7 @@ export default function Selectable(props: Props) {
 		<UnstyledButton
 			onMouseUp={handler.current.handleMouseUp}
 			class={merge(props.class, selected && props.selectedClass)}
-			style={selected ? { ...props.style ?? {}, ...props.selectedStyle ?? {} } : props.style}>
+			style={selected ? { ...(props.style ?? {}), ...(props.selectedStyle ?? {}) } : props.style}>
 			{typeof props.children === 'function' ? props.children(selected) : props.children}
 		</UnstyledButton>
 	);

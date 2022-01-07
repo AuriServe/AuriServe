@@ -21,27 +21,31 @@ export default function Dropdown(props: Props) {
 	const buttonRef = useRef<HTMLElement>(null);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
-	const [ style, setStyle ] = useState<any>({});
-	const [ dropdownActive, setDropdownActive ] = useState<boolean>(false);
+	const [style, setStyle] = useState<any>({});
+	const [dropdownActive, setDropdownActive] = useState<boolean>(false);
 
-	usePopupCancel([ buttonRef, dropdownRef ], () => setDropdownActive(false));
+	usePopupCancel([buttonRef, dropdownRef], () => setDropdownActive(false));
 
 	useEffect(() => {
 		const style: any = {};
 		if (buttonRef.current && dropdownRef.current) {
 			style.top = `${buttonRef.current.getBoundingClientRect().bottom + 12}px`;
-			style.left = `${buttonRef.current.getBoundingClientRect().left
-				+ buttonRef.current.getBoundingClientRect().width / 2
-				- dropdownRef.current.getBoundingClientRect().width / 2}px`;
+			style.left = `${
+				buttonRef.current.getBoundingClientRect().left +
+				buttonRef.current.getBoundingClientRect().width / 2 -
+				dropdownRef.current.getBoundingClientRect().width / 2
+			}px`;
 		}
 		setStyle(style);
-	}, [ dropdownActive ]);
-
+	}, [dropdownActive]);
 
 	return (
 		<Button ref={buttonRef} {...props.button} onClick={() => setDropdownActive(!dropdownActive)}>
 			<Popup active={dropdownActive} ref={dropdownRef}>
-				<Card ref={dropdownRef} {...props.dropdown} style={style}
+				<Card
+					ref={dropdownRef}
+					{...props.dropdown}
+					style={style}
 					class={merge('fixed !p-3 my-0 pointer-events-auto !shadow-lg', props.class)}>
 					{props.children}
 				</Card>

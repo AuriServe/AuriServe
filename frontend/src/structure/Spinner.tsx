@@ -14,12 +14,9 @@ interface Props {
 
 export default function Spinner(props: Props) {
 	return (
-		<div class={merge('relative block', props.class)}
-			style={{ width: props.size ?? 48, height: props.size ?? 48 }}>
-			<div class={merge(
-				'absolute inset-0 rounded-full bg-blue-500/25 animate-spinner-1', props.spinnerClass)}/>
-			<div class={merge(
-				'absolute inset-0 rounded-full bg-blue-500/25 animate-spinner-2', props.spinnerClass)}/>
+		<div class={merge('relative block', props.class)} style={{ width: props.size ?? 48, height: props.size ?? 48 }}>
+			<div class={merge('absolute inset-0 rounded-full bg-blue-500/25 animate-spinner-1', props.spinnerClass)} />
+			<div class={merge('absolute inset-0 rounded-full bg-blue-500/25 animate-spinner-2', props.spinnerClass)} />
 		</div>
 	);
 }

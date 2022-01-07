@@ -21,20 +21,20 @@ function validateRoles(roles: Role[]): boolean {
 }
 
 export default function RolesEditor(props: Props) {
-	const [ roles, setRoles ] = useState<Role[]>([]);
-	const [ dirty, setDirty ] = useState<boolean>(false);
-	const [ editing, setEditing ] = useState<number>(0);
+	const [roles, setRoles] = useState<Role[]>([]);
+	const [dirty, setDirty] = useState<boolean>(false);
+	const [editing, setEditing] = useState<number>(0);
 
 	useEffect(() => {
 		setRoles(props.roles);
 		setDirty(false);
-	}, [ props.roles ]);
+	}, [props.roles]);
 
 	const handleSetRole = (role: Role) => {
-		const newRoles = [...roles ];
+		const newRoles = [...roles];
 		newRoles[editing] = role;
 
-		if (!validateRoles(newRoles)) return setRoles([...roles ]);
+		if (!validateRoles(newRoles)) return setRoles([...roles]);
 
 		setRoles(newRoles);
 		setDirty(JSON.stringify(newRoles) !== JSON.stringify(props.roles));
@@ -57,20 +57,27 @@ export default function RolesEditor(props: Props) {
 	return (
 		<div class='RolesEditor'>
 			<ul class='RolesEditor-RolesList'>
-				<li><span class='RolesEditor-Label'>Roles</span></li>
-				{roles.map((r, i) => <li key={i}
-					class={`RolesEditor-RolesListRole ${i === editing ? 'active' : ''}`}
-					style={{
-						'--color': (r.color ? to(r.color, 'hex') : '#334E68'),
-						'--bg-color': `${r.color ? to(r.color, 'hex') : '#334E68'}22`
-					}}>
-					<button onClick={() => setEditing(i)}><span>{r.name}</span></button>
-				</li>)}
+				<li>
+					<span class='RolesEditor-Label'>Roles</span>
+				</li>
+				{roles.map((r, i) => (
+					<li
+						key={i}
+						class={`RolesEditor-RolesListRole ${i === editing ? 'active' : ''}`}
+						style={{
+							'--color': r.color ? to(r.color, 'hex') : '#334E68',
+							'--bg-color': `${r.color ? to(r.color, 'hex') : '#334E68'}22`,
+						}}>
+						<button onClick={() => setEditing(i)}>
+							<span>{r.name}</span>
+						</button>
+					</li>
+				))}
 			</ul>
 
 			{roles[editing] && <RoleEditor role={roles[editing]} setRole={handleSetRole} />}
 			<SavePopup active={dirty} onReset={handleReset} onSave={handleSave} />
-		  <Prompt when={dirty} message='Are you sure you want to leave this page? Unsaved changes will be lost.'/>
+			<Prompt when={dirty} message='Are you sure you want to leave this page? Unsaved changes will be lost.' />
 		</div>
 	);
 }

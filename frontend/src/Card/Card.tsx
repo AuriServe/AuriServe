@@ -9,7 +9,7 @@ import CardFooter from './CardFooter';
 
 export interface Props {
 	// Any default section properties.
-	[ key: string ]: any;
+	[key: string]: any;
 
 	as?: ComponentType<any> | string;
 
@@ -41,4 +41,3 @@ Card.Toolbar = CardToolbar;
 Card.Footer = CardFooter;
 
 export default Card;
-

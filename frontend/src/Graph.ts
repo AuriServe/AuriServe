@@ -10,11 +10,10 @@ const ENDPOINT = '/admin/graphql';
 export const graphql = new GraphQL();
 
 /** Used in graphql-react to target the right endpoint. */
-const fetchOptionsOverride = (options: any) => options.url = ENDPOINT;
+const fetchOptionsOverride = (options: any) => (options.url = ENDPOINT);
 
 import { Query } from 'common/graph';
 import * as Int from 'common/graph/type';
-
 
 /** Specifies various options for useQuery. */
 interface Options {
@@ -25,7 +24,6 @@ interface Options {
 	resetOnLoad?: boolean;
 }
 
-
 /**
  * A result provided by the useData hook.
  * It is an array containing (in the following order):
@@ -33,8 +31,7 @@ interface Options {
  * - and a function that can be called to refresh the cache.
  */
 
-type UseDataResult = [ Partial<Int.Root>, () => void ];
-
+type UseDataResult = [Partial<Int.Root>, () => void];
 
 /**
  * A hook that provides access to the cached App data, and can refresh subsets of data if supplied with queries.
@@ -46,19 +43,22 @@ type UseDataResult = [ Partial<Int.Root>, () => void ];
  * - The currently cached query data,
  * - and a function that can be called to re-execute the passed-in queries.
  *
- * @param {string | string[]} queries - A string or set of strings representing GraphQL queries to operate on the server.
+ * @param {string | string[]} queries - A string or set of strings representing GraphQL queries to operate.
  * @param {Options} dependents - An optional set of varibles that will trigger the query to re-execute.
  * @returns an array containing the hook's result.
  */
 
 export function useData(queries: string | string[], dependents?: any[]): UseDataResult {
-	const query = `{${(typeof queries === 'string' ? queries : queries.join('\n'))}}`;
+	const query = `{${typeof queries === 'string' ? queries : queries.join('\n')}}`;
 
 	const { data, mergeData } = useContext<AppContextData>(AppContext);
 
 	const fetchData = async (): Promise<Partial<Int.Root>> => {
-		const res = await graphql.operate({ operation: { query, variables: {} },
-			fetchOptionsOverride, reloadOnLoad: true }).cacheValuePromise;
+		const res = await graphql.operate({
+			operation: { query, variables: {} },
+			fetchOptionsOverride,
+			reloadOnLoad: true,
+		}).cacheValuePromise;
 		if (res.graphQLErrors) console.error('Data Refresh Error:', res.graphQLErrors);
 		return (res.data ?? {}) as Partial<Int.Root>;
 	};
@@ -66,17 +66,16 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
 	useEffect(() => {
 		let valid = true;
 
-		fetchData().then(data => {
+		fetchData().then((data) => {
 			if (!valid) return;
 			mergeData(data);
 		});
 
-		return () => valid = false;
+		return () => (valid = false);
 	}, dependents); // eslint-disable-line react-hooks/exhaustive-deps
 
-	return [ data, () => fetchData().then(mergeData) ];
+	return [data, () => fetchData().then(mergeData)];
 }
-
 
 /**
  * A result provided by the useQuery hook.
@@ -86,8 +85,7 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
  * - and a function that can be called to refresh the cache.
  */
 
-type UseQueryResult = [ Partial<Int.Root>, boolean, () => void ];
-
+type UseQueryResult = [Partial<Int.Root>, boolean, () => void];
 
 /**
  * A hook that provides access to making cached GraphQL queries.
@@ -105,14 +103,23 @@ type UseQueryResult = [ Partial<Int.Root>, boolean, () => void ];
  * @returns an array containing the hook's result.
  */
 
-export function useQuery(query: string, options: Options = {}, variables: any = {}): UseQueryResult {
-	const res = useGraphQL({ loadOnMount: true, loadOnReload: true,
-		...options, operation: { query, variables }, fetchOptionsOverride });
+export function useQuery(
+	query: string,
+	options: Options = {},
+	variables: any = {}
+): UseQueryResult {
+	const res = useGraphQL({
+		loadOnMount: true,
+		loadOnReload: true,
+		...options,
+		operation: { query, variables },
+		fetchOptionsOverride,
+	});
 
-	if (res.cacheValue?.graphQLErrors) console.error('Query Error:', res.cacheValue?.graphQLErrors);
-	return [ (res.cacheValue?.data ?? {}) as Partial<Int.Root>, res.loading, res.load ];
+	if (res.cacheValue?.graphQLErrors)
+		console.error('Query Error:', res.cacheValue?.graphQLErrors);
+	return [(res.cacheValue?.data ?? {}) as Partial<Int.Root>, res.loading, res.load];
 }
-
 
 /**
  * A function that executes a query.
@@ -123,11 +130,13 @@ export function useQuery(query: string, options: Options = {}, variables: any = 
  */
 
 export async function query<T = any>(query: string, variables: any = {}): Promise<T> {
-	const res = await graphql.operate({ operation: { query, variables }, fetchOptionsOverride }).cacheValuePromise;
+	const res = await graphql.operate({
+		operation: { query, variables },
+		fetchOptionsOverride,
+	}).cacheValuePromise;
 	if (res.graphQLErrors) console.error('Query Error:', res.graphQLErrors);
 	return res.data as T;
 }
-
 
 /**
  * A hook that returns a function to execute the provided GQL query with dynamic variables,
@@ -140,13 +149,15 @@ export async function query<T = any>(query: string, variables: any = {}): Promis
 
 export function useMutation(mutation: string) {
 	return async (variables: any) => {
-		const res = await graphql.operate({ operation: { query: mutation, variables },
-			fetchOptionsOverride, reloadOnLoad: true }).cacheValuePromise;
+		const res = await graphql.operate({
+			operation: { query: mutation, variables },
+			fetchOptionsOverride,
+			reloadOnLoad: true,
+		}).cacheValuePromise;
 
 		if (res.graphQLErrors) console.error('Mutation Error:', res.graphQLErrors);
 	};
 }
-
 
 /** Queries basic site info. */
 export const QUERY_INFO = `info ${Query.Info}`;
@@ -230,7 +241,6 @@ export const MUTATE_PLUGINS = `
 		enabled_plugins(enabled: $enabled)
 	}
 `;
-
 
 /** Mutates a page. */
 export const MUTATE_PAGE = `

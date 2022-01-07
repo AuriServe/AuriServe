@@ -29,8 +29,7 @@ export function getElementBounds(elem: HTMLElement, includeMargins = false): Bou
 			bounds.left = Math.min(bounds.left, clientBounds.left);
 			bounds.right = Math.max(bounds.right, clientBounds.right);
 			bounds.bottom = Math.max(bounds.bottom, clientBounds.bottom);
-		}
-		else {
+		} else {
 			const style = getComputedStyle(child);
 			const marginTop = Number.parseInt(style.marginTop.replace('px', ''), 10);
 			const marginLeft = Number.parseInt(style.marginLeft.replace('px', ''), 10);
@@ -80,7 +79,7 @@ export default function ComponentArea(props: Props) {
 		top: bounds.top,
 		left: bounds.left,
 		width: bounds.right - bounds.left,
-		height: bounds.bottom - bounds.top
+		height: bounds.bottom - bounds.top,
 	};
 
 	return (
@@ -89,7 +88,7 @@ export default function ComponentArea(props: Props) {
 				<div class='absolute pointer-events-none' style={style as any}>
 					{props.children}
 				</div>
-				{props.indicator && (props.visible ?? true) && <IndicatorRing active={props.active} elem={bounds}/>}
+				{props.indicator && (props.visible ?? true) && <IndicatorRing active={props.active} elem={bounds} />}
 			</Fragment>
 		</Portal>
 	);

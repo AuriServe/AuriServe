@@ -5,8 +5,15 @@ import { NavLink as Link, useHistory } from 'react-router-dom';
 
 import Svg from '../Svg';
 import { Title, Page } from '../structure';
-import { MainSettings, ThemesSettings, PluginsSettings,
-	MediaSettings, UsersSettings, RolesSettings, DeveloperSettings } from './settings';
+import {
+	MainSettings,
+	ThemesSettings,
+	PluginsSettings,
+	MediaSettings,
+	UsersSettings,
+	RolesSettings,
+	DeveloperSettings,
+} from './settings';
 
 import icon_home from '@res/icon/home.svg';
 import icon_themes from '@res/icon/theme.svg';
@@ -27,35 +34,60 @@ interface SidebarLinkProps {
 function SidebarLink({ label, path, icon, notifications }: SidebarLinkProps) {
 	return (
 		<li>
-			<Link to={path}
+			<Link
+				to={path}
 				className='flex gap-3 p-2 items-end rounded-md transition text-neutral-200 hover:bg-neutral-800/50'
 				activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
-				<Svg src={icon} size={6} class='ml-0.5'/>
+				<Svg src={icon} size={6} class='ml-0.5' />
 				<p class='leading-snug font-medium flex-grow'>{label}</p>
-				{typeof notifications === 'number' &&
-					<div class='block w-4 h-4 bg-accent-400 text-neutral-700 rounded-full
+				{typeof notifications === 'number' && (
+					<div
+						class='block w-4 h-4 bg-accent-400 text-neutral-700 rounded-full
 						text-[13px] font-black text-center leading-none pt-px mb-1 mr-1 ring-4
-						ring-accent-600/25 ring-offset-neutral-900'>{notifications}</div>}
-				{typeof notifications === 'boolean' &&
-					<div class='block w-2.5 h-2.5 bg-accent-500 text-neutral-700 rounded-full
-						text-sm font-black text-center leading-none pt-0.5 mb-1.5 mr-2 ring ring-accent-600/25'/>}
+						ring-accent-600/25 ring-offset-neutral-900'>
+						{notifications}
+					</div>
+				)}
+				{typeof notifications === 'boolean' && (
+					<div
+						class='block w-2.5 h-2.5 bg-accent-500 text-neutral-700 rounded-full
+						text-sm font-black text-center leading-none pt-0.5 mb-1.5 mr-2 ring ring-accent-600/25'
+					/>
+				)}
 			</Link>
 		</li>
 	);
 }
 
-const SettingsSections = memo(function SettingsSections(
-	{ refs }: { refs: { current: Record<string, HTMLDivElement | null> }}) {
+const SettingsSections = memo(function SettingsSections({
+	refs,
+}: {
+	refs: { current: Record<string, HTMLDivElement | null> };
+}) {
 	return (
 		<div class='w-full max-w-4xl p-6 pb-16 space-y-12'>
-			<div ref={ref => refs.current.overview = ref}><MainSettings/></div>
-			<div ref={ref => refs.current.themes = ref}><ThemesSettings/></div>
-			<div ref={ref => refs.current.plugins = ref}><PluginsSettings/></div>
-			<div ref={ref => refs.current.media = ref}><MediaSettings/></div>
-			<div ref={ref => refs.current.users = ref}><UsersSettings/></div>
-			<div ref={ref => refs.current.roles = ref}><RolesSettings/></div>
-			<div ref={ref => refs.current.developer = ref}><DeveloperSettings/></div>
-			<div class='h-48'/>
+			<div ref={(ref) => (refs.current.overview = ref)}>
+				<MainSettings />
+			</div>
+			<div ref={(ref) => (refs.current.themes = ref)}>
+				<ThemesSettings />
+			</div>
+			<div ref={(ref) => (refs.current.plugins = ref)}>
+				<PluginsSettings />
+			</div>
+			<div ref={(ref) => (refs.current.media = ref)}>
+				<MediaSettings />
+			</div>
+			<div ref={(ref) => (refs.current.users = ref)}>
+				<UsersSettings />
+			</div>
+			<div ref={(ref) => (refs.current.roles = ref)}>
+				<RolesSettings />
+			</div>
+			<div ref={(ref) => (refs.current.developer = ref)}>
+				<DeveloperSettings />
+			</div>
+			<div class='h-48' />
 		</div>
 	);
 });
@@ -81,13 +113,13 @@ export default function SettingsPage() {
 			window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'smooth' });
 			ignoreScroll.current.state = true;
 			clearTimeout(ignoreScroll.current.timeout);
-			ignoreScroll.current.timeout = setTimeout(() => ignoreScroll.current.state = false, 750);
+			ignoreScroll.current.timeout = setTimeout(() => (ignoreScroll.current.state = false), 750);
 		});
-	}, [ history ]);
+	}, [history]);
 
 	useEffect(() => {
 		let scrolled = false;
-		const onScroll = () => scrolled = true;
+		const onScroll = () => (scrolled = true);
 		window.addEventListener('scroll', onScroll);
 
 		const interval = setInterval(() => {
@@ -98,7 +130,7 @@ export default function SettingsPage() {
 			scrolled = false;
 
 			let lastSection = '';
-			Object.entries(refs.current).some(([ section, elem ]) => {
+			Object.entries(refs.current).some(([section, elem]) => {
 				if (elem!.offsetTop > window.scrollY + 36 * 2) return true;
 
 				lastSection = section;
@@ -108,30 +140,29 @@ export default function SettingsPage() {
 			if (lastSection) history.replace(`/settings/${lastSection}/`, { scrollInitiated: true });
 		}, 50);
 
-
 		return () => {
 			window.removeEventListener('scroll', onScroll);
 			clearInterval(interval);
 		};
-	}, [ history ]);
+	}, [history]);
 
 	return (
 		<Page class='flex justify-center !pb-0 min-h-screen'>
 			<Title>Settings</Title>
 			<div class='w-full md:w-64 h-full pl-4 flex-shrink-0'>
 				<ul class='sticky top-6 flex flex-col gap-2 mt-6' role='navigation'>
-					<SidebarLink label='Overview' path='/settings/overview/' icon={icon_home}/>
-					<SidebarLink label='Themes' path='/settings/themes/' icon={icon_themes}/>
-					<SidebarLink label='Plugins' path='/settings/plugins/' icon={icon_plugins}/>
-					<SidebarLink label='Media' path='/settings/media/' icon={icon_media}/>
-					<SidebarLink label='Users' path='/settings/users/' icon={icon_users}/>
-					<SidebarLink label='Roles' path='/settings/roles/' icon={icon_roles}/>
-					<SidebarLink label='Updates' path='/settings/updates/' icon={icon_updates} notifications={1}/>
-					<SidebarLink label='Developer' path='/settings/developer/' icon={icon_developer} notifications/>
+					<SidebarLink label='Overview' path='/settings/overview/' icon={icon_home} />
+					<SidebarLink label='Themes' path='/settings/themes/' icon={icon_themes} />
+					<SidebarLink label='Plugins' path='/settings/plugins/' icon={icon_plugins} />
+					<SidebarLink label='Media' path='/settings/media/' icon={icon_media} />
+					<SidebarLink label='Users' path='/settings/users/' icon={icon_users} />
+					<SidebarLink label='Roles' path='/settings/roles/' icon={icon_roles} />
+					<SidebarLink label='Updates' path='/settings/updates/' icon={icon_updates} notifications={1} />
+					<SidebarLink label='Developer' path='/settings/developer/' icon={icon_developer} notifications />
 				</ul>
 			</div>
-			<SettingsSections refs={refs}/>
-			<div class='w-48 flex-shrink hidden 2xl:block'/>
+			<SettingsSections refs={refs} />
+			<div class='w-48 flex-shrink hidden 2xl:block' />
 		</Page>
 	);
 }

@@ -21,8 +21,13 @@ interface Props {
 	children?: (desc: string) => ComponentChildren;
 }
 
-function updateError(meta: FormFieldMeta, last?: { error: string; errorMessage: string | null } | null): {
-	error: string; errorMessage: string | null; } | null {
+function updateError(
+	meta: FormFieldMeta,
+	last?: { error: string; errorMessage: string | null } | null
+): {
+	error: string;
+	errorMessage: string | null;
+} | null {
 	if (!meta) return null;
 	if (meta.error && (!last || meta.error !== last.error || meta.errorMessage !== last.errorMessage))
 		return { error: meta.error, errorMessage: meta.errorMessage };
@@ -32,16 +37,17 @@ function updateError(meta: FormFieldMeta, last?: { error: string; errorMessage: 
 export default forwardRef<HTMLDivElement, Props>(function Description(props, ref) {
 	const form = useContext(FormContext);
 
-	const [ error, setError ] = useState<{ error: string; errorMessage: string | null } | null>(
-		updateError(form.fields[props.for]));
+	const [error, setError] = useState<{ error: string; errorMessage: string | null } | null>(
+		updateError(form.fields[props.for])
+	);
 
 	useEffect(() => {
 		if (props._manual) return;
 		return form.event.bind('validity', (field: string) => {
 			if (field !== props.for) return;
-			setError(last => updateError(form.fields[props.for], last));
+			setError((last) => updateError(form.fields[props.for], last));
 		});
-	}, [ form, props.for, props._manual ]);
+	}, [form, props.for, props._manual]);
 
 	const schema = form.schema.fields[props.for] as FormField | undefined;
 
@@ -49,20 +55,24 @@ export default forwardRef<HTMLDivElement, Props>(function Description(props, ref
 
 	return (
 		<div ref={ref} style={props.style} class={props.class}>
-			{props.children ? props.children(schema?.description ?? '') :
+			{props.children ? (
+				props.children(schema?.description ?? '')
+			) : (
 				<div class=''>
 					<div class='flex gap-2 p-2 pr-3 whitespace-pre-line'>
-						<Svg src={icon_info} size={6} class='flex-shrink-0 icon-p-accent-300 icon-s-neutral-600 -mt-px'/>
+						<Svg src={icon_info} size={6} class='flex-shrink-0 icon-p-accent-300 icon-s-neutral-600 -mt-px' />
 						{schema?.description ?? ''}
 					</div>
-					{error && <div class='p-2 bg-neutral-750 rounded-b'>
-						<div class='flex gap-2 text-accent-300 theme-red whitespace-pre-line'>
-							<Svg src={icon_error} size={6} class='flex-shrink-0 icon-s-accent-400 icon-p-neutral-900 -mt-px'/>
-							{error.errorMessage ?? error.error}
+					{error && (
+						<div class='p-2 bg-neutral-750 rounded-b'>
+							<div class='flex gap-2 text-accent-300 theme-red whitespace-pre-line'>
+								<Svg src={icon_error} size={6} class='flex-shrink-0 icon-s-accent-400 icon-p-neutral-900 -mt-px' />
+								{error.errorMessage ?? error.error}
+							</div>
 						</div>
-					</div>}
+					)}
 				</div>
-			}
+			)}
 		</div>
 	);
 });

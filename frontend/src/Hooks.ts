@@ -13,13 +13,16 @@ import { useEffect } from 'preact/hooks';
  * @param {any[]} dependents - An array of dependents for the condition function.
  */
 
-export function usePopupCancel(roots: RefObject<any> | RefObject<any>[],
-	onCancel: () => any, condition?: () => boolean, dependents?: any[]) {
-
+export function usePopupCancel(
+	roots: RefObject<any> | RefObject<any>[],
+	onCancel: () => any,
+	condition?: () => boolean,
+	dependents?: any[]
+) {
 	const body = document.getElementsByTagName('body')[0];
 
 	useEffect(() => {
-		const rootsArray = Array.isArray(roots) ? roots : [ roots ];
+		const rootsArray = Array.isArray(roots) ? roots : [roots];
 		if (condition && !condition()) return;
 
 		const handlePointerCancel = (e: MouseEvent | TouchEvent) => {
@@ -49,9 +52,8 @@ export function usePopupCancel(roots: RefObject<any> | RefObject<any>[],
 			body.removeEventListener('mousedown', handlePointerCancel);
 			body.removeEventListener('touchstart', handlePointerCancel);
 		};
-	}, [ onCancel, condition, ...dependents || [] ]); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [onCancel, condition, ...(dependents || [])]); // eslint-disable-line react-hooks/exhaustive-deps
 }
-
 
 /**
  * Sends a message to a host with the requested properties.
@@ -60,7 +62,6 @@ export function usePopupCancel(roots: RefObject<any> | RefObject<any>[],
 function sendMessage(key: string, target: { postMessage: any }, type: string, body?: any) {
 	target.postMessage({ _as: key, type, body });
 }
-
 
 /**
  * Takes a message event, a key, and a recieve callback and
@@ -76,7 +77,6 @@ function recieveMessage(key: string, onRecieve: (type: string, body?: string) =>
 	onRecieve(type, body);
 }
 
-
 /**
  * Provides cross-origin message passing between hosts, with an optional key to mask out other origins.
  * This function works by being defined on both ends, and both are initialized with the same key.
@@ -87,16 +87,19 @@ function recieveMessage(key: string, onRecieve: (type: string, body?: string) =>
  * @returns a function to send messages between origins.
  */
 
-export function useMessaging(target: { postMessage: any } | null | undefined,
-	onRecieve: (type: string, body?: string) => void, dependents: any[], key = '!') {
-
+export function useMessaging(
+	target: { postMessage: any } | null | undefined,
+	onRecieve: (type: string, body?: string) => void,
+	dependents: any[],
+	key = '!'
+) {
 	useEffect(() => {
 		if (!target) return;
 		const cb = recieveMessage.bind(undefined, key, onRecieve);
 
 		window.addEventListener('message', cb);
 		return () => window.removeEventListener('message', cb);
-	}, [ key, target, onRecieve, ...dependents ]); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [key, target, onRecieve, ...dependents]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return target && sendMessage.bind(undefined, key, target);
 }

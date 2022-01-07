@@ -20,10 +20,12 @@ interface Props {
 
 export default function MediaUploadItem(props: Props) {
 	const filenameRef = useRef<HTMLInputElement>(null);
-	const identifier = props.file.name.toLowerCase().replace(/[ -]/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+	const identifier = props.file.name
+		.toLowerCase()
+		.replace(/[ -]/g, '_')
+		.replace(/[^a-zA-Z0-9_]/g, '');
 
-	const handleStopPropagation = (elem: any) =>
-		elem?.addEventListener('mouseup', (evt: any) => evt.stopPropagation());
+	const handleStopPropagation = (elem: any) => elem?.addEventListener('mouseup', (evt: any) => evt.stopPropagation());
 
 	const handleFilenameChange = () => {
 		const elem = filenameRef.current!;
@@ -32,7 +34,10 @@ export default function MediaUploadItem(props: Props) {
 		let end = elem.selectionEnd!;
 
 		const oldVal = elem.value;
-		elem.value = elem.value.toLowerCase().replace(/[ -]/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+		elem.value = elem.value
+			.toLowerCase()
+			.replace(/[ -]/g, '_')
+			.replace(/[^a-zA-Z0-9_]/g, '');
 
 		if (oldVal.length > elem.value.length) {
 			start -= oldVal.length - elem.value.length;
@@ -49,17 +54,26 @@ export default function MediaUploadItem(props: Props) {
 				<MediaIcon class='flex-shrink-0 w-20 h-20' path={props.file.file.name} image={props.file.thumbnail} />
 			</Selectable>
 			<div class='pl-1 text-left overflow-hidden'>
-				<Text maxLength={32} enabled={props.enabled}
+				<Text
+					maxLength={32}
+					enabled={props.enabled}
 					class='font-medium  text-neutral-800 dark:text-neutral-100 truncate
 						!py-0.5 !px-1 mt-0.5 -mb-0.5 !h-auto !bg-transparent !border-transparent focus:!border-neutral-400
 						focus:!bg-neutral-100 dark:focus:!bg-neutral-800 hover:!border-neutral-300 dark:hover:!border-neutral-500'
-					value={props.file.name} onValue={props.onNameChange} ref={handleStopPropagation}/>
+					value={props.file.name}
+					onValue={props.onNameChange}
+					ref={handleStopPropagation}
+				/>
 
-				<Text maxLength={32} enabled={props.enabled} placeholder={identifier}
+				<Text
+					maxLength={32}
+					enabled={props.enabled}
+					placeholder={identifier}
 					class='relative font-medium text-sm text-neutral-600 dark:text-neutral-300 truncate
 						!py-0.5 !px-1 -top-px -mb-0.5 !h-auto !bg-transparent !border-transparent focus:!border-neutral-400
 						focus:!bg-neutral-100 dark:focus:!bg-neutral-800 hover:!border-neutral-300 dark:hover:!border-neutral-500'
-					value={props.file.identifier} onValue={handleFilenameChange}
+					value={props.file.identifier}
+					onValue={handleFilenameChange}
 					ref={(elem) => {
 						filenameRef.current = elem;
 						handleStopPropagation(elem);

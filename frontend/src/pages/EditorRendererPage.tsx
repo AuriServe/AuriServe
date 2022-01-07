@@ -18,47 +18,55 @@ interface RendererContextData {
 
 export const RendererContext = createContext<RendererContextData>({
 	active: '',
-	setActive: () => { /* No default action. */ }
+	setActive: () => {
+		/* No default action. */
+	},
 });
 
 function UndefinedElement({ elem }: { elem: string }) {
 	return (
 		<div class='m-2 flex place-items-center min-h-[8rem] bg-neutral-50 border-2 border-neutral-300 rounded-lg'>
-			<p class='w-full text-center text-neutral-800'><strong>{elem}</strong> is undefined.</p>
+			<p class='w-full text-center text-neutral-800'>
+				<strong>{elem}</strong> is undefined.
+			</p>
 		</div>
 	);
 }
 
 export default function EditorRendererPage() {
-	const [ { themes } ] = useData(QUERY_THEMES, []);
+	const [{ themes }] = useData(QUERY_THEMES, []);
 	const elements = useAsyncMemo(() => loadPlugins({ scripts: true, styles: true, themes: true }), []);
 
 	useEffect(() => {
 		if (!themes) return;
 		console.log(themes);
-		themes.map(theme => document.head.innerHTML += theme.head);
-	}, [ themes ]);
+		themes.map((theme) => (document.head.innerHTML += theme.head));
+	}, [themes]);
 
 	useEffect(() => {
 		document.documentElement.classList.remove('AS_APP');
 		document.querySelector('[href="/admin/script/main.css"]')?.remove();
 	}, []);
 
-	const [ page, setPage ] = useState<Page.PageDocument | undefined>(undefined);
-	const [ includes, setIncludes ] = useState<Record<string, Page.ComponentNode>>({});
-	const [ activePath, setActivePath ] = useState<string | undefined>(undefined);
+	const [page, setPage] = useState<Page.PageDocument | undefined>(undefined);
+	const [includes, setIncludes] = useState<Record<string, Page.ComponentNode>>({});
+	const [activePath, setActivePath] = useState<string | undefined>(undefined);
 
-	const send = useMessaging(window.parent, (type: string, body: any) => {
-		if (type === 'page:res') {
-			setPage(body[0]);
-			setIncludes(body[1]);
-		}
-		else console.warn(`Unknown data recieved, type '${type}', body:`, body);
-	}, [], 'editor');
+	const send = useMessaging(
+		window.parent,
+		(type: string, body: any) => {
+			if (type === 'page:res') {
+				setPage(body[0]);
+				setIncludes(body[1]);
+			} else console.warn(`Unknown data recieved, type '${type}', body:`, body);
+		},
+		[],
+		'editor'
+	);
 
-	useEffect(() => send!('page:req'), [ send ]);
+	useEffect(() => send!('page:req'), [send]);
 
-	if (!elements) return <div/>;
+	if (!elements) return <div />;
 
 	const handleSetActive = (path: string) => {
 		setActivePath(path);
@@ -81,16 +89,17 @@ export default function EditorRendererPage() {
 		}
 
 		const element = elements[root.elem];
-		if (!element?.element) return <UndefinedElement elem={root.elem}/>;
+		if (!element?.element) return <UndefinedElement elem={root.elem} />;
 
 		const InlineEditor = element.editing?.inlineEditor;
 		const ElementComponent = InlineEditor ?? element.element;
 
 		let elemProps = root.props;
-		if (root.exposeAs && overrides[root.exposeAs]) elemProps = { ...elemProps, ...overrides[root.exposeAs ] };
+		if (root.exposeAs && overrides[root.exposeAs]) elemProps = { ...elemProps, ...overrides[root.exposeAs] };
 
 		const children = root.children?.map((child, key) =>
-			renderTree(child, ObjectPath.combinePath(path, 'children', key), overrides));
+			renderTree(child, ObjectPath.combinePath(path, 'children', key), overrides)
+		);
 
 		return (
 			<Component
@@ -99,7 +108,7 @@ export default function EditorRendererPage() {
 				spreadProps={!InlineEditor}
 				component={ElementComponent}
 				indicator={element.editing?.focusRing ?? true}
-				setProps={props => handleSetProps(path, props)}
+				setProps={(props) => handleSetProps(path, props)}
 				children={children}
 			/>
 		);
@@ -108,19 +117,22 @@ export default function EditorRendererPage() {
 	if (!page) return null;
 
 	const start = performance.now();
-	const nodes: {[key: string]: VNode} = {};
-	Object.keys(page.elements).forEach(section =>
-		nodes[section] = renderTree(page.elements[section], section, {}));
+	const nodes: { [key: string]: VNode } = {};
+	Object.keys(page.elements).forEach((section) => (nodes[section] = renderTree(page.elements[section], section, {})));
 	const time = performance.now() - start;
-	if (time > 1) console.log(`%cParsing Page Content took ${time.toLocaleString()} ms`,
-		'color:#ebd834;text-align:center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold');
+	if (time > 1)
+		console.log(
+			`%cParsing Page Content took ${time.toLocaleString()} ms`,
+			'color:#ebd834;text-align:center;background:#7d3000;padding:2px 6px;font-size: 12px;border-radius:100px;font-weight:bold'
+		);
 
 	return (
-		<RendererContext.Provider value={{
-			active: activePath ?? '',
-			setActive: handleSetActive
-		}}>
-			<div class='AS_ROOT'/>
+		<RendererContext.Provider
+			value={{
+				active: activePath ?? '',
+				setActive: handleSetActive,
+			}}>
+			<div class='AS_ROOT' />
 			<LayoutInjector layout={page.layout ?? 'default'} elements={nodes!} />
 		</RendererContext.Provider>
 	);
