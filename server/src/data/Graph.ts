@@ -9,11 +9,11 @@ import fss, { promises as fs } from 'fs';
 import Pages from './Pages';
 import Media from './Media';
 import Themes from './Themes';
-import Plugins from './Plugins';
+import PluginManager from '../plugin/PluginManager';
 
 import * as Auth from './Auth';
 import { Theme } from './Themes';
-import { Plugin } from './Plugins';
+import Plugin from '../plugin/Plugin';
 import { IUser } from './model/User';
 import { IMedia } from './model/Media';
 import Properties from './model/Properties';
@@ -27,7 +27,7 @@ export interface Context {
 	pages: Pages;
 	media: Media;
 	themes: Themes;
-	plugins: Plugins;
+	plugins: PluginManager;
 	dataPath: string;
 }
 
@@ -72,12 +72,14 @@ function themeResolver(theme: Theme, ctx: Context): Resolved<Int.Theme> {
 
 function pluginResolver(plugin: Plugin): Resolved<Int.Plugin> {
 	return {
-		...plugin,
+		identifier: plugin.identifier,
+		name: plugin.manifest.name ?? plugin.identifier,
+		description: plugin.manifest.description ?? '',
+		author: plugin.manifest.author,
+		enabled: plugin.isEnabled(),
 		user: undefined,
 		created: undefined,
-		name: plugin.name ?? plugin.identifier,
-		description: plugin.description ?? '',
-		coverPath: '/admin/plugins/cover/${plugin.identifier}.jpg'
+		coverPath: `/admin/plugins/cover/${plugin.identifier}.jpg`
 	};
 }
 

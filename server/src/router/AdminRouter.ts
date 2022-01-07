@@ -1,14 +1,14 @@
 import fss from 'fs';
 import path from 'path';
 import Express from 'express';
-import { Format } from 'common';
+import { toIdentifier } from 'common';
 import { UploadedFile } from 'express-fileupload';
 
 import Router from './Router';
 import Media from '../data/Media';
 import Themes from '../data/Themes';
 import * as Auth from '../data/Auth';
-import Plugins from '../data/Plugins';
+import { PluginManager } from '../plugin';
 import AuthRoute, { delay } from './AuthRoute';
 
 type GQLQueryFunction = (query: string, variables: any) => Promise<any>;
@@ -18,7 +18,9 @@ const PAGE_TEMPLATE_PATH = path.resolve(path.join('src', 'views', 'admin.html'))
 
 export default class AdminRouter extends Router {
 	constructor(private dataPath: string, private app: Express.Application,
-		private plugins: Plugins, private themes: Themes, private media: Media, private gql: GQLQueryFunction) { super(); }
+		private plugins: PluginManager, private themes: Themes, private media: Media, private gql: GQLQueryFunction) {
+		super();
+	}
 
 	init() {
 		const { rateLimit, authRoute } = AuthRoute({ attempts: 10000 });
@@ -85,7 +87,7 @@ export default class AdminRouter extends Router {
 			if (!file) throw 'Request is missing a file.';
 
 			const name: string = req.body.name;
-			const identifier: string = Format.sanitize(req.body.identifier || req.body.name);
+			const identifier = toIdentifier(req.body.identifier || req.body.name);
 
 			if (typeof(name) != 'string' || typeof(identifier) != 'string')
 				throw 'Request is missing required data.';
@@ -194,10 +196,10 @@ export default class AdminRouter extends Router {
 			const html = (await new Promise<string>((resolve) =>
 				fss.readFile(PAGE_TEMPLATE_PATH, (_, res) => resolve(res.toString()))))
 				.replace('$PLUGINS$', `<script id='plugins' type='application/json'>${JSON.stringify({
-					pluginScripts: this.plugins.listEnabled().filter(p => p.entry.client?.script)
-						.map(p => p.identifier + '/' + p.entry.client!.script!),
-					pluginStyles: this.plugins.listEnabled().filter(p => p.entry.client?.style)
-						.map(p => p.identifier + '/' + p.entry.client!.style!) })}</script>`)
+					pluginScripts: this.plugins.listEnabled().filter(p => p.getEntry('client', 'script'))
+						.map(p => p.identifier + '/' + p.getEntry('client', 'script')),
+					pluginStyles: this.plugins.listEnabled().filter(p => p.getEntry('client', 'style'))
+						.map(p => p.identifier + '/' + p.getEntry('client', 'style')) })}</script>`)
 				.replace('$THEMES$', `<script id='themes' type='application/json'>${
 					JSON.stringify({ themes: this.themes.listEnabled().map(t => t.identifier) })}</script>`)
 				.replace('$DEBUG$', '<script src=\'http://localhost:35729/livereload.js\' async></script>');

@@ -7,6 +7,7 @@
     "dev-core": "cd common; npm run dev & cd ../frontend; npm run dev & cd ../server; npm run dev",
     "dev-plugins": "cd plugin-api; npm run dev & cd ../plugin-base; npm run dev",
     "dev": "npm run dev-plugins & npm run dev-core",
+    "dev-temp": "cd common; npm run dev & cd ../api; npm run dev & cd ../plugins/routes; npm run dev & cd ../../server; npm run dev",
     "build": "cd common && npm run build && cd ../frontend && npm run build && cd ../server && npm run build"
   }
 }

@@ -1,16 +1,15 @@
 {
-  "name": "@auriserve/common",
+  "name": "@auriserve/api",
   "version": "0.0.0",
   "main": "index.js",
   "types": "index.d.ts",
-  "description": "Common definitions shared between the AuriServe core and frontend packages.",
+  "description": "API Runtime Shim for AuriServe",
   "keywords": [
     "auriserve",
     "lib",
     "types",
     "definitions"
   ],
-  "sideEffects": false,
   "author": "Auri <me@auri.xyz>",
   "homepage": "https://github.com/AuriServe",
   "license": "MIT",
@@ -27,8 +26,5 @@
   },
   "bugs": {
     "url": "https://github.com/AuriServe/AuriServe/issues"
-  },
-  "dependencies": {
-    "dayjs": "^1.10.5"
   }
 }

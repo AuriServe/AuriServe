@@ -151,10 +151,13 @@ export default function ShortcutPalette() {
 						'bg-neutral-750 shadow-md rounded-lg transition-all overflow-hidden [transform-origin:center_-128px]',
 						results.length === 0 && '!py-0 opacity-0 scale-95')}>
 
-						<TransitionGroup duration={300} invertExit
+						<TransitionGroup
+							duration={300}
 							enter='transition-all duration-300'
 							enterFrom='opacity-0 -mb-14'
-							enterTo='opacity-100 mb-0'>
+							enterTo='opacity-100 mb-0'
+							invertExit
+						>
 							{results.map((s, i) =>
 								<button key={s.title + '_' + i} type='button' onClick={() => handleTriggerAction(i)}
 									class={merge('flex w-full text-left gap-4 p-2 rounded-md',

@@ -1,5 +1,5 @@
 import path from 'path';
-import { Format, assert, isType } from 'common';
+import { toIdentifier, assert, isType } from 'common';
 import fss, { promises as fs, constants as fsc } from 'fs';
 
 import Logger from '../Logger';
@@ -179,12 +179,12 @@ export default class Themes {
 
 
 		assert([ theme.identifier, theme.name, theme.author, theme.description ]
-		.map(v => isType(v, 'string')).filter((t: any) => t === false).length === 0,
-			'Theme is missing metadata (identifier, name, author, description).');
+			.map(v => isType(v, 'string')).filter((t: any) => t === false).length === 0,
+		'Theme is missing metadata (identifier, name, author, description).');
 
 		assert(identifier === theme.identifier, 'Theme identifier does not match directory name.');
 
-		assert(Format.sanitize(theme.identifier) === theme.identifier && theme.identifier.length >= 3,
+		assert(identifier === toIdentifier(theme.identifier, 3, 32, false),
 			'Theme identifier must be lowercase alphanumeric and at least 3 characters.');
 
 		assert(isType(theme.sources, 'object'), 'Theme must contain a sources object.');

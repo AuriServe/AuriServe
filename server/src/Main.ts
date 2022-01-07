@@ -11,10 +11,10 @@ import { Config, mergeConfig } from './ServerConfig';
 const DEFAULT_DATA_DIR = 'site-data';
 const DEFAULT_CONF_FILENAME = 'conf.json';
 
-// Don't allow unhandled Promise rejections.
-process.on('unhandledRejection', up => {
-	Logger.fatal('Unhandled promise rejection, %s', up);
-	throw up;
+process.on('unhandledRejection', e => {
+	Logger.error(`Unhandled process rejection:\n${(e as Error).stack}`);
+	Logger.error('If the stack trace references a plugin, contact the plugin developer.' +
+		' Otherwise, please report this error.');
 });
 
 // Start AuriServe

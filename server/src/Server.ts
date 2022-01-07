@@ -16,29 +16,29 @@ import Media from './data/Media';
 import Pages from './data/Pages';
 import Themes from './data/Themes';
 import * as Auth from './data/Auth';
-import Plugins from './data/Plugins';
 import Roles from './data/model/Role';
-import PageBuilder from './PageBuilder';
+// import PageBuilder from './PageBuilder';
 import Properties from './data/model/Properties';
+import PluginManager from './plugin/PluginManager';
 import { Schema as schema, Resolver as rootValue } from './data/Graph';
 
 import resolvePath from './ResolvePath';
 import { Config } from './ServerConfig';
 import AdminRouter from './router/AdminRouter';
-import PagesRouter from './router/PagesRouter';
+// import PagesRouter from './router/PagesRouter';
 import createUserPrompt from './CreateUserPrompt';
 
 export default class Server {
 	private app = Express();
 
 	private adminRouter: AdminRouter;
-	private pagesRouter: PagesRouter;
+	// private pagesRouter: PagesRouter;
 
 	private media: Media;
 	private pages: Pages;
 	private themes: Themes;
-	private plugins: Plugins;
-	private pageBuilder: PageBuilder;
+	private plugins: PluginManager;
+	// private pageBuilder: PageBuilder;
 
 	constructor(public readonly conf: Config, public readonly dataPath: string) {
 		this.app.use(compression());
@@ -46,16 +46,22 @@ export default class Server {
 		this.app.use(Express.json() as any);
 		this.app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
+		this.app.set('query parser', (queryString: string): Record<string, string> => {
+			return Object.fromEntries([ ...new URLSearchParams(queryString).entries() ]
+				.map(([ key, value ]) => [ key, Array.isArray(value) ? value[0] : value ]));
+		});
+
 		assert(this.conf.db, 'Config is missing a db field.');
 
 		this.pages = new Pages(this.dataPath);
 		this.media = new Media(this.dataPath);
 
 		this.themes = new Themes(this.dataPath, true);
-		this.plugins = new Plugins(this.dataPath, true);
+		this.plugins = new PluginManager(this.dataPath, true, this.app);
 
-		this.pageBuilder = new PageBuilder(this.dataPath, this.themes, this.plugins);
+		// this.pageBuilder = new PageBuilder(this.dataPath, this.themes, this.plugins);
 
+		// @ts-ignore
 		const contextValue = { plugins: this.plugins, pages: this.pages,
 			themes: this.themes, media: this.media, dataPath: this.dataPath };
 
@@ -106,7 +112,7 @@ export default class Server {
 			}
 		});
 
-		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.plugins, this.pageBuilder);
+		// this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.plugins, this.pageBuilder);
 		this.adminRouter = new AdminRouter(this.dataPath, this.app, this.plugins, this.themes, this.media, gql);
 
 		awaitListen.then(async () => {
@@ -130,13 +136,13 @@ export default class Server {
 			if (conf.verbose || conf.logLevel === 'trace') this.debugRoutes();
 
 			await this.themes.refresh();
-			await this.plugins.refresh();
-			await this.pageBuilder.init(gql);
+			await this.plugins.init();
+			// await this.pageBuilder.init(gql);
 
 			if (this.conf.super) createUserPrompt();
 
 			this.adminRouter.init();
-			this.pagesRouter.init();
+			// this.pagesRouter.init();
 		});
 	}
 

@@ -1,73 +1,48 @@
-
-/**
- * Represents a HSVA Color.
- * All fields are contain numbers ranging from 0-1.
- */
-
+/** A HSVA Color. All fields are in the range 0-1. */
 export type HSVA = { h: number; s: number; v: number; a: number; }
 
-
-/**
- * Represents a RGBA Color.
- * All fields are contain numbers ranging from 0-1.
- */
-
+/** An RGBA Color. All fields are in the range 0-1. */
 export type RGBA = { r: number; g: number; b: number; a: number; }
 
-
-/**
- * Represents a Hexadecimal color string.
- * Though there is no way to validate this, it should be a 6 (or 8) digit hex string prefixed by a #.
- */
-
+/** A Hexidecimal color string. Should be a 6 or 8 hexadecimal-digit string prefixed by a #. */
 export type Hex = string;
 
-
-/**
- * Represents any of the above color types.
- */
-
+/** Any of the above color types. */
 export type Color = HSVA | RGBA | Hex;
 
-
-/**
- * Checks if the color provided is a Hexadecimal color.
- */
-
-function isHex(color: Color): color is Hex {
+/** Checks if the color provided is in Hexadecimal format. */
+export function isHex(color: Color): color is Hex {
 	return typeof color === 'string' && color[0] === '#' && (color.length === 7 || color.length === 9);
 }
 
-
-/**
- * Checks if the color provided is a RGBA color.
- */
-
-function isRGBA(color: Color): color is RGBA {
+/** Checks if the color provided is in RGBA format. */
+export function isRGBA(color: Color): color is RGBA {
 	return typeof color !== 'string' && 'r' in color;
 }
 
+/** Checks if the Color provided is in HSVA format. */
+export function isHSVA(color: Color): color is HSVA {
+	return typeof color !== 'string' && 'h' in color;
+}
 
 /**
- * Checks if the color provided is a HSVA color.
+ * Converts a Color object into a specifick format.
+ *
+ * @param color - The Color to convert.
+ * @param format - The destination format ('hex', 'rgba', or 'hsva').
  */
 
-// function isHSVA(color: Color): color is HSVA {
-// 	return typeof color !== 'string' && 'h' in color;
-// }
+export function to(color: Color, format: 'hex'): Hex;
+export function to(color: Color, format: 'rgba'): RGBA;
+export function to(color: Color, format: 'hsva'): HSVA;
 
-
-/**
- * Converts a color from any format to any other format.
- */
-
-export function convert(color: Color) {
+export function to(color: Color, format: 'hex' | 'rgba' | 'hsva'): Color {
 	const c: HSVA = (isHex(color) ? HexToHSVA(color) : isRGBA(color) ? RGBAtoHSVA(color) : color) as HSVA;
 
-	return {
-		toRGBA: () => HSVAtoRGBA(c),
-		toHSVA: () => c,
-		toHex:  () => HSVAtoHex(c)
+	switch (format) {
+		case 'hex': return HSVAtoHex(c);
+		case 'rgba': return HSVAtoRGBA(c);
+		case 'hsva': return c;
 	};
 }
 
@@ -75,8 +50,8 @@ export function convert(color: Color) {
  * Converts an HSVA Color to RGBA.
  * Source: https://stackoverflow.com/questions/17242144/#comment24984878_17242144
  *
- * @param {HSVA} hsva - The HSVA value to convert.
- * @returns {RGBA} the RGBA representation.
+ * @param hsva - The HSVA value to convert.
+ * @returns the RGBA representation.
  */
 
 function HSVAtoRGBA(hsva: HSVA = { h: 0, s: 0, v: 0, a: 1 }): RGBA {
@@ -106,8 +81,8 @@ function HSVAtoRGBA(hsva: HSVA = { h: 0, s: 0, v: 0, a: 1 }): RGBA {
  * Converts an RGBA Color to HSVA.
  * Source: https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript
  *
- * @param {RGBA} rgba - The RGBA value to convert.
- * @returns {HSVA} the HSVA representation.
+ * @param rgba - The RGBA value to convert.
+ * @returns the HSVA representation.
  */
 
 function RGBAtoHSVA(rgba: RGBA = { r: 0, g: 0, b: 0, a: 1 }): HSVA {
@@ -150,8 +125,8 @@ function componentToHex(c: number) {
  * Converts an RGBA Color to a Hex string.
  * Source: https://stackoverflow.com/a/5624139
  *
- * @param {RGB} rgb - The RGBA value to convert.
- * @returns {string} the hexadecimal string representation.
+ * @param rgb - The RGBA value to convert.
+ * @returns the hexadecimal string representation.
  */
 
 function RGBAtoHex(rgb: RGBA = { r: 0, g: 0, b: 0, a: 1 }): Hex {
@@ -162,8 +137,8 @@ function RGBAtoHex(rgb: RGBA = { r: 0, g: 0, b: 0, a: 1 }): Hex {
 /**
  * Converts a Hex string to an RGBA Color.
  *
- * @param {string} hex - The hexadecimal string to convert.
- * @returns {RGBA} the RGBA representation.
+ * @param hex - The hexadecimal string to convert.
+ * @returns the RGBA representation.
  */
 
 function HexToRGBA(hex: string): RGBA {
@@ -179,20 +154,20 @@ function HexToRGBA(hex: string): RGBA {
 /**
  * Converts an HSVA Color to a Hex string.
  *
- * @param {HSVA} hsv - The HSVA value to convert.
- * @returns {string} the hexadecimal string representation.
+ * @param hsva - The HSVA value to convert.
+ * @returns the hexadecimal string representation.
  */
 
-function HSVAtoHex(hsv: HSVA = { h: 0, s: 0, v: 0, a: 1 }): Hex {
-	return RGBAtoHex(HSVAtoRGBA(hsv));
+function HSVAtoHex(hsva: HSVA = { h: 0, s: 0, v: 0, a: 1 }): Hex {
+	return RGBAtoHex(HSVAtoRGBA(hsva));
 }
 
 
 /**
  * Converts a Hex string to an RGBA Color.
  *
- * @param {string} hex - The hexadecimal string to convert.
- * @returns {RGBA} the RGBA representation.
+ * @param hex - The hexadecimal string to convert.
+ * @returns the RGBA representation.
  */
 
 function HexToHSVA(hex: string): HSVA {

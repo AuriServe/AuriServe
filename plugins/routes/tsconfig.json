@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+
+    "target": "es5",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "lib": [ "dom", "es2015" ],
+
+    "noEmitHelpers": true,
+    "importHelpers": true,
+
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+
+    "baseUrl": ".",
+    "paths": {
+        "*": [ "node_modules/@types" ]
+    },
+
+    "removeComments": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true
+  }
+}

@@ -123,11 +123,11 @@ type Primitive = 'string' | 'number' | 'boolean' | 'object' | 'null' | 'undefine
 
  export function isType(val: any, type: Primitive | Function) {
 	if (typeof type === 'string') {
-		if (type === 'undefined' && typeof val !== undefined) return false;
-		else if (type !== 'undefined' && (typeof val !== type || val === undefined)) return false;
+		if (type === 'undefined') return val === undefined;
+		if (typeof val === type) return true;
 	}
-	else if (!(val instanceof (type as any))) return false;
-	return true
+	else if (val instanceof (type as any)) return true;
+	return false;
 }
 
 type PrimitiveArray = `${Primitive}[]`;

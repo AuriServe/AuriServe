@@ -1,0 +1,110 @@
+import path from 'path';
+import Express from 'express';
+
+import Plugin from './Plugin';
+import RouterApi from './RouterApi';
+import PluginLoader from './PluginLoader';
+import Properties from '../data/model/Properties';
+
+export type PluginEvent = 'refresh';
+
+/** Manages finding, toggling, and loading plugins.*/
+export default class Plugins {
+	/** The path to the plugins folder. */
+	readonly pluginsPath: string;
+
+	/** The core router API. */
+	readonly routerApi: RouterApi;
+
+	/** The plugin API registry. */
+	readonly apiRegistry: Map<string, any> = new Map();
+
+	/** A map of plugins indexed by their identifiers. */
+	readonly plugins: Map<string, Plugin> = new Map();
+
+	/** The plugin loader which discovers and watches the plugins. */
+	private loader: PluginLoader;
+
+	/** A map of callback identifiers to callbacks. */
+	private callbacks: Map<PluginEvent, Function[]> = new Map();
+
+	constructor(dataPath: string, watch: boolean, app: Express.Application) {
+		this.pluginsPath = path.join(dataPath, 'plugins');
+		this.routerApi = new RouterApi(app);
+		this.loader = new PluginLoader(this, watch);
+	};
+
+	async init() {
+		const [ properties ] = await Promise.all([ Properties.findOne({}), this.loader.refresh() ]);
+		this.setEnabled(properties!.enabled.plugins);
+	}
+
+	addPlugin(plugin: Plugin) {
+		this.plugins.set(plugin.identifier, plugin);
+	}
+
+	reloadPlugin(identifier: string) {
+		this.plugins.get(identifier)?.enable(true);
+	}
+
+	/** Enables only the plugins specified. */
+	async setEnabled(identifiers: string[]) {
+		this.plugins.forEach(p => {
+			if (identifiers.includes(p.identifier)) this.enable(p.identifier);
+			else this.disable(p.identifier);
+		});
+	}
+
+	/** Enables the plugin specified. */
+	async enable(identifier: string) {
+		if (await this.plugins.get(identifier)?.enable()) this.loader.pluginEnabled(identifier);
+	}
+
+	/** Disables the plugin specified. */
+	async disable(identifier: string) {
+		if (this.plugins.get(identifier)?.disable()) this.loader.pluginDisabled(identifier);
+	}
+
+	/** Gets the specified plugin. */
+	get(identifier: string) {
+		return this.plugins.get(identifier);
+	}
+
+	/** Gets a list of all themes. */
+	listAll() {
+		return [ ...this.plugins.values() ];
+	}
+
+	/** Gets a list of enabled plugins. */
+	listEnabled() {
+		return this.listAll().filter(p => p.isEnabled());
+	}
+
+	/** Synchronizes with the database and then cleans up all plugins. */
+	async cleanup() {
+		await this.syncToDb();
+		this.plugins.forEach(plugin => plugin.disable(true));
+		this.plugins.clear();
+	}
+
+	bind(event: PluginEvent, cb: Function) {
+		if (!this.callbacks.has(event)) this.callbacks.set(event, []);
+		this.callbacks.get(event)!.push(cb);
+	}
+
+	unbind(event: PluginEvent, cb: Function) {
+		if (!this.callbacks.has(event)) return;
+		this.callbacks.get(event)!.filter(c => c !== cb);
+	}
+
+	emit(event: string, eventObj: any) {
+		this.plugins.forEach(plugin => {
+			plugin.emit(event, eventObj);
+		});
+	}
+
+	/** Saves the current list of enabled plugins to the database. */
+	private async syncToDb() {
+		await Properties.updateOne({}, { $set: { 'enabled.plugins': this.listEnabled().map(p => p.identifier) } });
+	}
+}
