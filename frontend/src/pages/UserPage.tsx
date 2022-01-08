@@ -12,7 +12,7 @@ export default function UserPage() {
 
 	return (
 		<Page>
-			<Title>{id}</Title>
+			<Title>{id!}</Title>
 			<Card class='!max-w-3xl'>
 				<div class='flex items-center gap-4'>
 					{user && (
@@ -25,7 +25,9 @@ export default function UserPage() {
 							<div class='flex flex-col pb-2'>
 								<h1 class='text-2xl font-medium'>{user.username}</h1>
 								<h2 class='text-neutral-500 dark:text-neutral-300'>{user.id}</h2>
-								<p class='text-neutral-400'>{user.emails[0] ?? <em>No email address</em>}</p>
+								<p class='text-neutral-400'>
+									{user.emails[0] ?? <em>No email address</em>}
+								</p>
 								{/* <UserRolesList user={user} wrap={true} edit={true} />*/}
 							</div>
 						</Fragment>

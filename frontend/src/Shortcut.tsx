@@ -1,4 +1,5 @@
 import Cookie from 'js-cookie';
+import { Location } from 'react-router-dom';
 
 import icon_home from '@res/icon/home.svg';
 import icon_file from '@res/icon/file.svg';
@@ -9,7 +10,8 @@ import icon_plugins from '@res/icon/plugin.svg';
 import icon_settings from '@res/icon/options.svg';
 
 export interface ShortcutContext {
-	history: { [key: string]: any };
+	location: Location;
+	navigate(path: string, options?: { replace?: boolean }): void;
 }
 
 export interface Shortcut {
@@ -27,21 +29,21 @@ export const registeredShortcuts: Shortcut[] = [
 		aliases: ['view home', 'main'],
 		description: 'Go to the AuriServe home.',
 		icon: icon_home,
-		action: ({ history }) => history.push('/'),
+		action: ({ navigate }) => navigate('/'),
 	},
 	{
 		title: 'View Routes',
 		aliases: ['go routes', 'pages', 'site', 'website'],
 		description: 'View and manage routes.',
 		icon: icon_file,
-		action: ({ history }) => history.push('/routes/'),
+		action: ({ navigate }) => navigate('/routes/'),
 	},
 	{
 		title: 'View Media',
 		aliases: ['go media', 'media', 'images', 'pictures', 'documents', 'files'],
 		description: 'View and manage media.',
 		icon: icon_media,
-		action: ({ history }) => history.push('/media/'),
+		action: ({ navigate }) => navigate('/media/'),
 	},
 	{
 		title: 'Upload Media',
@@ -58,42 +60,56 @@ export const registeredShortcuts: Shortcut[] = [
 		],
 		description: 'Upload a new media item.',
 		icon: icon_media,
-		action: ({ history }) => history.push('/media/'),
+		action: ({ navigate }) => navigate('/media/'),
 	},
 	{
 		title: 'Settings',
-		aliases: ['go settings', 'view settings', 'view options', 'view configuation', 'options', 'configuration'],
+		aliases: [
+			'go settings',
+			'view settings',
+			'view options',
+			'view configuation',
+			'options',
+			'configuration',
+		],
 		description: 'Manage AuriServe settings.',
 		icon: icon_settings,
-		action: ({ history }) => history.push('/settings/'),
+		action: ({ navigate }) => navigate('/settings/'),
 	},
 	{
 		title: 'Manage Themes',
 		aliases: ['themes settings'],
 		description: 'Find, enable, and disable themes.',
 		icon: icon_themes,
-		action: ({ history }) => history.push('/settings/themes/'),
+		action: ({ navigate }) => navigate('/settings/themes/'),
 	},
 	{
 		title: 'Manage Plugins',
 		aliases: ['plugins settings'],
 		description: 'Find, enable, and disable plugins.',
 		icon: icon_plugins,
-		action: ({ history }) => history.push('/settings/plugins/'),
+		action: ({ navigate }) => navigate('/settings/plugins/'),
 	},
 	{
 		title: 'Manage Overview',
-		aliases: ['overview settings', 'site name', 'name', 'description', 'favicon', 'address'],
+		aliases: [
+			'overview settings',
+			'site name',
+			'name',
+			'description',
+			'favicon',
+			'address',
+		],
 		description: 'Edit basic site appearance settings.',
 		icon: icon_home,
-		action: ({ history }) => history.push('/settings/overview/'),
+		action: ({ navigate }) => navigate('/settings/overview/'),
 	},
 	{
 		title: 'Manage Media',
 		aliases: ['media settings', 'image settings', 'file settings'],
 		description: 'Manage media and upload settings.',
 		icon: icon_media,
-		action: ({ history }) => history.push('/settings/media/'),
+		action: ({ navigate }) => navigate('/settings/media/'),
 	},
 	{
 		title: 'Log out',
@@ -113,7 +129,10 @@ export const registeredShortcuts: Shortcut[] = [
 		action: () => {
 			document.documentElement.classList.add('AS_TRANSITION_THEME');
 			setTimeout(() => document.documentElement.classList.toggle('dark'), 50);
-			setTimeout(() => document.documentElement.classList.remove('AS_TRANSITION_THEME'), 300);
+			setTimeout(
+				() => document.documentElement.classList.remove('AS_TRANSITION_THEME'),
+				300
+			);
 		},
 	},
 ];

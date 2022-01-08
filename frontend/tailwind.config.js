@@ -12,54 +12,50 @@ const varColorSwatch = (color) => {
 }
 
 module.exports = {
-	content: [
-		'./src/**/*.sss',
-		'./src/**/*.tsx',
-		'./src/**/*.tw'
-	],
+	content: ['./src/**/*.sss', './src/**/*.tsx', './src/**/*.tw'],
 	darkMode: 'class',
 	corePlugins: {
-		preflight: false
+		preflight: false,
 	},
 	theme: {
 		extend: {
 			transitionDelay: {
-				'0': '0ms'
+				0: '0ms',
 			},
 			fontFamily: {
-				sans: [ 'Roboto', ...defaultTheme.fontFamily.sans ]
+				sans: ['Roboto', ...defaultTheme.fontFamily.sans],
 			},
 			height: {
 				min: 'min-content',
-				max: 'max-content'
+				max: 'max-content',
 			},
 			maxHeight: {
-				'128': '32rem'
+				128: '32rem',
 			},
 			fontWeight: {
 				...defaultTheme.fontWeight,
-				normal: 450
+				normal: 450,
 			},
 			spacing: {
-				'18': '4.5rem'
+				18: '4.5rem',
 			},
 			cursor: {
-				'resize-ns': 'ns-resize'
-			}
+				'resize-ns': 'ns-resize',
+			},
 		},
 		colors: {
 			transparent: 'transparent',
 			neutral: {
 				...varColorSwatch('neutral'),
 				750: varColor('neutral-750'),
-				input: varColor('neutral-input')
+				input: varColor('neutral-input'),
 			},
 			accent: varColorSwatch('accent'),
 			blue: varColorSwatch('accent'),
 			indigo: varColorSwatch('accent'),
 			white: varColor('neutral-0'),
 			black: varColor('neutral-950'),
-			red: colors.rose
+			red: colors.rose,
 			// transparent: 'transparent',
 			// current: 'currentColor',
 			// white: colors.white,
@@ -80,50 +76,50 @@ module.exports = {
 			// indigo: colors.indigo
 		},
 		animation: {
-			rocket: 'rocket 0.5s 1',
+			'rocket': 'rocket 0.5s 1',
 			'fadein-500': 'fadein 500ms 1',
 			'fadein-150': 'fadein 150ms 1',
 			'select': 'select 150ms 1',
 			'spinner-1': 'spinner 1s ease-in-out alternate infinite',
-			'spinner-2': 'spinner 1s ease-in-out -1s alternate infinite'
+			'spinner-2': 'spinner 1s ease-in-out -1s alternate infinite',
 		},
 		keyframes: {
 			rocket: {
 				from: {
 					opacity: 0,
-					transform: 'scale(0.75) translate(-20px, 20px)'
+					transform: 'scale(0.75) translate(-20px, 20px)',
 				},
 				to: {
 					opacity: 1,
-					transform: 'scale(1)'
-				}
+					transform: 'scale(1)',
+				},
 			},
 			fadein: {
 				from: {
-					opacity: 0
+					opacity: 0,
 				},
 				to: {
-					opacity: 1
-				}
+					opacity: 1,
+				},
 			},
 			select: {
 				from: {
 					opacity: 0,
-					transform: 'scale(1.05)'
+					transform: 'scale(1.05)',
 				},
 				to: {
-					opacity: 1
-				}
+					opacity: 1,
+				},
 			},
 			spinner: {
 				from: {
-					transform: 'scale(0)'
+					transform: 'scale(0)',
 				},
 				to: {
-					transform: 'scale(1)'
-				}
-			}
-		}
+					transform: 'scale(1)',
+				},
+			},
+		},
 	},
 	plugins: [
 		require('@tailwindcss/line-clamp'),
@@ -132,30 +128,33 @@ module.exports = {
 		 * Registers text shadow utilities.
 		 */
 
-		plugin(function({ addUtilities }) {
+		plugin(({ addUtilities }) => {
 			addUtilities({
 				'.text-shadow-sm': { textShadow: '0 2px 4px rgba(0, 0, 0, 0.10)' },
-				'.text-shadow-md': { textShadow: '0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)' },
-				'.text-shadow-lg': { textShadow: '0 15px 30px rgba(0, 0, 0, 0.11), 0 5px 15px rgba(0, 0, 0, 0.08)' },
+				'.text-shadow-md': {
+					textShadow: '0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)',
+				},
+				'.text-shadow-lg': {
+					textShadow: '0 15px 30px rgba(0, 0, 0, 0.11), 0 5px 15px rgba(0, 0, 0, 0.08)',
+				},
 				'.text-shadow-none': { textShadow: 'none' },
 			});
 		}),
-
 
 		/**
 		 * Register interact-auto / interact-none shorthands which set both `pointer-events` and `user-select`.
 		 */
 
-		plugin(function({ addUtilities }) {
+		plugin(({ addUtilities }) => {
 			addUtilities({
 				'.interact-none': {
 					userSelect: 'none',
-					pointerEvents: 'none'
+					pointerEvents: 'none',
 				},
 				'.interact-auto': {
 					userSelect: 'auto',
-					pointerEvents: 'auto'
-				}
+					pointerEvents: 'auto',
+				},
 			});
 		}),
 
@@ -163,24 +162,27 @@ module.exports = {
 		 * Register icon-p-* and icon-s-* classes for the Svg component.
 		 */
 
-		plugin(function({ theme, matchUtilities }) {
+		plugin(({ theme, matchUtilities }) => {
 			const rawColors = theme('colors');
 			const colors = {};
 
 			function addColors(raw, pre = '') {
-				for (let [ k, v ] of Object.entries(raw)) {
+				for (let [k, v] of Object.entries(raw)) {
 					if (typeof v === 'string') colors[pre + k] = v;
 					else if (typeof v === 'function') colors[pre + k] = v({ opacityValue: 1 });
-					else if (typeof v === 'object') addColors(v, pre + k + '-');
+					else if (typeof v === 'object') addColors(v, `${pre + k}-`);
 				}
 			}
 
 			addColors(rawColors);
 
-			matchUtilities({
-				'icon-p': (value) => ({ '--icon-primary': value }),
-				'icon-s': (value) => ({ '--icon-secondary': value })
-			}, { values: colors });
+			matchUtilities(
+				{
+					'icon-p': (value) => ({ '--icon-primary': value }),
+					'icon-s': (value) => ({ '--icon-secondary': value }),
+				},
+				{ values: colors }
+			);
 		}),
 
 		/**
@@ -190,7 +192,7 @@ module.exports = {
 		 * and adds a 'hocus' variant that matches on both :hover and :focus-visible.
 		 */
 
-		plugin(function({ addVariant }) {
+		plugin(({ addVariant }) => {
 			addVariant('old-focus', '&:focus');
 			addVariant('peer-old-focus', ':merge(.peer):focus ~ &');
 			addVariant('group-old-focus', ':merge(.group):focus &');
@@ -203,13 +205,21 @@ module.exports = {
 			addVariant('peer-focus-visible', 'DO NOT USE');
 			addVariant('group-focus-visible', 'DO NOT USE');
 
-			addVariant('hocus', [ '&:hover', '&:focus-visible' ]);
-			addVariant('peer-hocus', [ ':merge(.peer):hover ~ &', ':merge(.peer):focus-visible ~ &' ]);
-			addVariant('group-hocus', [ ':merge(.group):hover &', ':merge(.group):focus-visible &' ]);
+			addVariant('hocus', ['&:hover', '&:focus-visible']);
+			addVariant('peer-hocus', [
+				':merge(.peer):hover ~ &',
+				':merge(.peer):focus-visible ~ &',
+			]);
+			addVariant('group-hocus', [
+				':merge(.group):hover &',
+				':merge(.group):focus-visible &',
+			]);
 
 			addVariant('not-hocus', '&:not(:hover):not(:focus-visible)');
 			addVariant('peer-not-hocus', ':merge(.peer):not(:hover):not(:focus-visible) ~ &');
 			addVariant('group-not-hocus', ':merge(.group):not(:hover):not(:focus-visible) &');
+
+			addVariant('not-autofill', '&:not(:autofill)');
 		}),
 
 		/**
@@ -227,51 +237,61 @@ module.exports = {
 		 * - peerVariants: Additional variant -> variant rule pairs to generate for peers. Default: `variants`.
 		 */
 
-		plugin.withOptions(function (options = {}) {
-			const groupLabels = options.groupLabels ?? options.labels ?? ['a', 'b', 'c', 'd', 'e'];
-			const peerLabels = options.peerLabels ?? options.labels ?? ['a', 'b', 'c', 'd', 'e'];
+		plugin.withOptions((options = {}) => {
+			const groupLabels = options.groupLabels ??
+				options.labels ?? ['a', 'b', 'c', 'd', 'e'];
+			const peerLabels = options.peerLabels ??
+				options.labels ?? ['a', 'b', 'c', 'd', 'e'];
 
 			const defaultVariants = {
 				'hover': '&:hover',
 				'focus': '&:focus',
 				'focus-visible': '&:focus-visible',
 				'focus-within': '&:focus-within',
-				'active': '&:active'
-			}
+				'active': '&:active',
+			};
 
-			const groupVariants = { ...defaultVariants, ...options.groupVariants ?? options.variants ?? {} }
-			const peerVariants = { ...defaultVariants, ...options.peerVariants ?? options.variants ?? {} }
+			const groupVariants = {
+				...defaultVariants,
+				...(options.groupVariants ?? options.variants ?? {}),
+			};
+			const peerVariants = {
+				...defaultVariants,
+				...(options.peerVariants ?? options.variants ?? {}),
+			};
 
-			return function({ addVariant, addComponents }) {
+			return function ({ addVariant, addComponents }) {
 				for (const group of groupLabels) {
 					addComponents({ [`.group-${group}`]: {} });
-					for (let [ name, rule ] of Object.entries(groupVariants)) {
+					for (let [name, rule] of Object.entries(groupVariants)) {
 						if (rule === undefined) continue;
-						rule = typeof rule === 'string'
-							? rule.replace('&', `.group-${group}`) + ' &'
-							: rule.map(rule => rule.replace('&', `.group-${group}`) + ' &');
+						rule =
+							typeof rule === 'string'
+								? `${rule.replace('&', `.group-${group}`)} &`
+								: rule.map((rule) => `${rule.replace('&', `.group-${group}`)} &`);
 						addVariant(`group-${group}-${name}`, rule);
 					}
 				}
 
 				for (const peer of peerLabels) {
 					addComponents({ [`.peer-${peer}`]: {} });
-					for (let [ name, rule ] of Object.entries(peerVariants)) {
+					for (let [name, rule] of Object.entries(peerVariants)) {
 						if (rule === undefined) continue;
-						rule = typeof rule === 'string'
-							? rule.replace('&', `.peer-${peer}`) + ' ~ &'
-							: rule.map(rule => rule.replace('&', `.peer-${peer}`) + ' ~ &');
+						rule =
+							typeof rule === 'string'
+								? `${rule.replace('&', `.peer-${peer}`)} ~ &`
+								: rule.map((rule) => `${rule.replace('&', `.peer-${peer}`)} ~ &`);
 						addVariant(`peer-${peer}-${name}`, rule);
 					}
 				}
-			}
+			};
 		})({
 			variants: {
-				'hocus': [ '&:hover', '&:focus-visible' ],
+				'hocus': ['&:hover', '&:focus-visible'],
 				'focus': '&:focus-visible',
 				'focus-visible': undefined,
-				'focus-old': '&:focus'
-			}
-		})
+				'focus-old': '&:focus',
+			},
+		}),
 	],
-}
+};

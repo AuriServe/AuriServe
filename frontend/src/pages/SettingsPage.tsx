@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { memo } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
-import { NavLink as Link, useHistory } from 'react-router-dom';
+import { NavLink as Link, useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import { Title, Page } from '../structure';
@@ -36,8 +36,8 @@ function SidebarLink({ label, path, icon, notifications }: SidebarLinkProps) {
 		<li>
 			<Link
 				to={path}
-				className='flex gap-3 p-2 items-end rounded-md transition text-neutral-200 hover:bg-neutral-800/50'
-				activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
+				// activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
+				className='flex gap-3 p-2 items-end rounded-md transition text-neutral-200 hover:bg-neutral-800/50'>
 				<Svg src={icon} size={6} class='ml-0.5' />
 				<p class='leading-snug font-medium flex-grow'>{label}</p>
 				{typeof notifications === 'number' && (
@@ -93,29 +93,42 @@ const SettingsSections = memo(function SettingsSections({
 });
 
 export default function SettingsPage() {
-	const history = useHistory();
-	const ignoreScroll = useRef<{ state: boolean; timeout: any }>({ state: false, timeout: 0 });
+	const location = useLocation();
+	const navigate = useNavigate();
+
+	const ignoreScroll = useRef<{ state: boolean; timeout: any }>({
+		state: false,
+		timeout: 0,
+	});
 	const refs = useRef<Record<string, HTMLDivElement | null>>({});
 
 	useEffect(() => {
-		const section = history.location.pathname.split('/')[2];
-		if (!section) history.replace('/settings/overview/');
+		const section = location.pathname.split('/')[2];
+		if (!section) navigate('/settings/overview/', { replace: true });
 		const ref = refs.current[section];
-		if (ref) setTimeout(() => window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'auto' }), 200);
+		if (ref)
+			setTimeout(
+				() => window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'auto' }),
+				200
+			);
+	});
 
-		return history.listen((evt) => {
-			if ((evt.state as any)?.scrollInitiated) return;
-			const section = evt.pathname.split('/')[2];
-			if (!section && evt.pathname.startsWith('/settings')) history.replace('/settings/overview/');
-			const ref = refs.current[section];
-			if (!ref) return;
+	useEffect(() => {
+		if ((location.state as any)?.scrollInitiated) return;
+		const section = location.pathname.split('/')[2];
+		if (!section && location.pathname.startsWith('/settings'))
+			navigate('/settings/overview/', { replace: true });
+		const ref = refs.current[section];
+		if (!ref) return;
 
-			window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'smooth' });
-			ignoreScroll.current.state = true;
-			clearTimeout(ignoreScroll.current.timeout);
-			ignoreScroll.current.timeout = setTimeout(() => (ignoreScroll.current.state = false), 750);
-		});
-	}, [history]);
+		window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'smooth' });
+		ignoreScroll.current.state = true;
+		clearTimeout(ignoreScroll.current.timeout);
+		ignoreScroll.current.timeout = setTimeout(
+			() => (ignoreScroll.current.state = false),
+			750
+		);
+	}, [location, navigate]);
 
 	useEffect(() => {
 		let scrolled = false;
@@ -137,14 +150,18 @@ export default function SettingsPage() {
 				return false;
 			});
 
-			if (lastSection) history.replace(`/settings/${lastSection}/`, { scrollInitiated: true });
+			if (lastSection)
+				navigate(`/settings/${lastSection}/`, {
+					replace: true,
+					state: { scrollInitiated: true },
+				});
 		}, 50);
 
 		return () => {
 			window.removeEventListener('scroll', onScroll);
 			clearInterval(interval);
 		};
-	}, [history]);
+	}, [navigate]);
 
 	return (
 		<Page class='flex justify-center !pb-0 min-h-screen'>
@@ -157,8 +174,18 @@ export default function SettingsPage() {
 					<SidebarLink label='Media' path='/settings/media/' icon={icon_media} />
 					<SidebarLink label='Users' path='/settings/users/' icon={icon_users} />
 					<SidebarLink label='Roles' path='/settings/roles/' icon={icon_roles} />
-					<SidebarLink label='Updates' path='/settings/updates/' icon={icon_updates} notifications={1} />
-					<SidebarLink label='Developer' path='/settings/developer/' icon={icon_developer} notifications />
+					<SidebarLink
+						label='Updates'
+						path='/settings/updates/'
+						icon={icon_updates}
+						notifications={1}
+					/>
+					<SidebarLink
+						label='Developer'
+						path='/settings/developer/'
+						icon={icon_developer}
+						notifications
+					/>
 				</ul>
 			</div>
 			<SettingsSections refs={refs} />

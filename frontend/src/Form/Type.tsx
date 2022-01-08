@@ -3,7 +3,14 @@ import { createContext } from 'preact';
 import EventEmitter from '../EventEmitter';
 
 /** The form field type. */
-export type FormFieldType = 'text' | 'media' | 'color' | 'number' | 'toggle' | 'option';
+export type FormFieldType =
+	| 'text'
+	| 'password'
+	| 'media'
+	| 'color'
+	| 'number'
+	| 'toggle'
+	| 'option';
 
 /** Describes the types of validation to be performed by the form field. */
 export interface FormFieldValidation {
@@ -45,6 +52,9 @@ export interface FormField {
 
 	/** The default value for the field. */
 	default?: any;
+
+	/** An autocomplete label indicating the field's completion type. */
+	completion?: string;
 
 	/** For text fields, whether or not the text should be able to have multiple lines. */
 	multiline?: boolean;

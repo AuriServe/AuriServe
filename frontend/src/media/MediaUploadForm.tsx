@@ -1,10 +1,10 @@
 import { toIdentifier } from 'common';
-import { h, VNode } from 'preact';
+import { Fragment, h, VNode } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
 
 import { merge } from 'common/util';
 
-import { Form } from '../input';
+// import { Form } from '../input';
 import MediaUploadItem from './MediaUploadItem';
 import { Button, SelectGroup, DimensionTransition } from '../structure';
 
@@ -32,53 +32,56 @@ interface Props {
 export default function MediaUploadForm(props: Props) {
 	const [selected, setSelected] = useState<number[]>([]);
 	const [files, setFiles] = useState<UploadItemData[]>([]);
-	const [state, setState] = useState<MediaUploadState>(MediaUploadState.SELECTING);
+	const [state] = useState<MediaUploadState>(MediaUploadState.SELECTING);
 
 	const handleClose = (e: any) => {
 		e.preventDefault();
 		props.onCancel();
 	};
 
-	const handleUpload = () => {
-		setState(MediaUploadState.UPLOADING);
-		setSelected([]);
+	// const handleUpload = () => {
+	// 	setState(MediaUploadState.UPLOADING);
+	// 	setSelected([]);
 
-		const THREADS = 6;
+	// 	const THREADS = 6;
 
-		const success: string[] = [];
+	// 	const success: string[] = [];
 
-		const promises: Promise<void>[] = [];
-		for (let i = 0; i < THREADS; i++) {
-			let ind = i;
+	// 	const promises: Promise<void>[] = [];
+	// 	for (let i = 0; i < THREADS; i++) {
+	// 		let ind = i;
 
-			promises.push(
-				new Promise((resolve) => {
-					const f = () => {
-						if (ind >= files.length) return resolve();
-						const file = files[ind];
+	// 		promises.push(
+	// 			new Promise((resolve) => {
+	// 				const f = () => {
+	// 					if (ind >= files.length) {
+	// 						resolve();
+	// 						return;
+	// 					}
+	// 					const file = files[ind];
 
-						const data = new FormData();
-						data.append('file', file.file);
-						data.append('name', file.name);
-						data.append('identifier', file.identifier);
+	// 					const data = new FormData();
+	// 					data.append('file', file.file);
+	// 					data.append('name', file.name);
+	// 					data.append('identifier', file.identifier);
 
-						fetch('/admin/media/upload', {
-							method: 'POST',
-							cache: 'no-cache',
-							body: data,
-						}).then((r) => {
-							if (r.status === 202) success.push(toIdentifier(file.identifier || file.name)!);
-							ind += THREADS;
-							f();
-						});
-					};
-					f();
-				})
-			);
-		}
+	// 					fetch('/admin/media/upload', {
+	// 						method: 'POST',
+	// 						cache: 'no-cache',
+	// 						body: data,
+	// 					}).then((r) => {
+	// 						if (r.status === 202) success.push(toIdentifier(file.identifier || file.name)!);
+	// 						ind += THREADS;
+	// 						f();
+	// 					});
+	// 				};
+	// 				f();
+	// 			})
+	// 		);
+	// 	}
 
-		Promise.all(promises).then(props.onUpload);
-	};
+	// 	Promise.all(promises).then(props.onUpload);
+	// };
 
 	const handleRemoveFiles = useCallback(() => {
 		const newFiles = [...files];
@@ -96,7 +99,12 @@ export default function MediaUploadForm(props: Props) {
 				(file) =>
 					new Promise<void>((resolve) => {
 						const ext = file.name.substr(file.name.lastIndexOf('.') + 1);
-						const isImage = ext === 'png' || ext === 'jpeg' || ext === 'jpg' || ext === 'svg' || ext === 'gif';
+						const isImage =
+							ext === 'png' ||
+							ext === 'jpeg' ||
+							ext === 'jpg' ||
+							ext === 'svg' ||
+							ext === 'gif';
 
 						const cleanName = toIdentifier(file.name, 32);
 
@@ -164,7 +172,8 @@ export default function MediaUploadForm(props: Props) {
 	));
 
 	return (
-		<Form onSubmit={handleUpload}>
+		// <Form onSubmit={handleUpload}>
+		<Fragment>
 			<div
 				class={merge(
 					'flex place-items-center group relative rounded w-auto h-40',
@@ -189,7 +198,9 @@ export default function MediaUploadForm(props: Props) {
 					disabled={state !== MediaUploadState.SELECTING}
 				/>
 
-				<h2 class='block w-full text-center text-neutral-400 text-xl'>Click or drag files here to upload.</h2>
+				<h2 class='block w-full text-center text-neutral-400 text-xl'>
+					Click or drag files here to upload.
+				</h2>
 			</div>
 
 			{files.length > 0 && (
@@ -221,7 +232,11 @@ export default function MediaUploadForm(props: Props) {
 			</DimensionTransition>
 
 			<div class='flex mt-3 justify-between'>
-				<Button onClick={handleClose} label='Cancel' disabled={state === MediaUploadState.UPLOADING} />
+				<Button
+					onClick={handleClose}
+					label='Cancel'
+					disabled={state === MediaUploadState.UPLOADING}
+				/>
 
 				<Button
 					type='submit'
@@ -229,6 +244,7 @@ export default function MediaUploadForm(props: Props) {
 					disabled={files.length === 0 || state === MediaUploadState.UPLOADING}
 				/>
 			</div>
-		</Form>
+		</Fragment>
+		// </Form>
 	);
 }

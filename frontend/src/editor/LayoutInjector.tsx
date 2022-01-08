@@ -1,8 +1,8 @@
 import { h, VNode, Fragment } from 'preact';
 import { createPortal } from 'preact/compat';
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useMemo } from 'preact/hooks';
 
-import { useQuery, QUERY_LAYOUT } from '../Graph';
+import { executeQuery, QUERY_LAYOUT } from '../Graph';
 
 interface Props {
 	layout: string;
@@ -19,8 +19,14 @@ interface Props {
  */
 
 export default function LayoutInjector(props: Props) {
-	const [{ layout }] = useQuery(QUERY_LAYOUT, { loadOnReload: false }, { name: props.layout }) as any;
-	const [layoutRoots, setLayoutRoots] = useState<{ [key: string]: HTMLElement } | undefined>(undefined);
+	const [{ layout }] = useMemo(
+		() => executeQuery(QUERY_LAYOUT, { name: props.layout }),
+		[props.layout]
+	) as any;
+
+	const [layoutRoots, setLayoutRoots] = useState<
+		{ [key: string]: HTMLElement } | undefined
+	>(undefined);
 
 	/**
 	 * Insert the layout DOM elements into the body, add necessary layout classes to body,
@@ -32,7 +38,7 @@ export default function LayoutInjector(props: Props) {
 	 */
 
 	useEffect(() => {
-		if (!layout || !layout.html) return;
+		if (!layout || !layout.html) return undefined;
 
 		let root: HTMLElement = document.createElement('div');
 		root.innerHTML = layout.html;

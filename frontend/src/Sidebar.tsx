@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import Cookie from 'js-cookie';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 
 import Svg from './Svg';
 import { UnstyledButton } from './Button';
@@ -33,8 +33,8 @@ interface SidebarLinkProps {
 	props?: any;
 }
 
-function SidebarLink({ label, path, icon, exact, props }: SidebarLinkProps) {
-	const active = !!useRouteMatch({ path: typeof path === 'string' ? path : '!', exact });
+function SidebarLink({ label, path, icon, props }: SidebarLinkProps) {
+	const active = !!useMatch(typeof path === 'string' ? path : '!');
 
 	return (
 		<UnstyledButton

@@ -12,6 +12,7 @@ import { ErrorType } from './Type';
 import icon_check from '@res/icon/check.svg';
 import icon_dropdown from '@res/icon/dropdown.svg';
 import InputContainer from './InputContainer';
+import { refs } from '../Util';
 
 interface Props {
 	id?: string;
@@ -32,15 +33,18 @@ interface Props {
 	class?: string;
 }
 
-export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, fRef) {
-	const rootRef = useRef<HTMLDivElement>(null);
+export default forwardRef<HTMLElement, Props>(function OptionInput(props, fRef) {
 	const ref = useRef<HTMLElement>(null);
+	const rootRef = useRef<HTMLDivElement>(null);
 
 	const [value, setValue] = useState<string | undefined>(props.value);
 	const [invalid, setInvalid] = useState<boolean>(false);
 	const [shouldShowInvalid, setShouldShowInvalid] = useState<boolean>(false);
 
-	const id = useMemo(() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`, [props.id]);
+	const id = useMemo(
+		() => props.id ?? `no-form-${Math.random().toString(36).substring(2, 7)}`,
+		[props.id]
+	);
 	const { optional, onFocus, onBlur, onValidity } = props;
 
 	useEffect(() => {
@@ -62,29 +66,31 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 	};
 
 	useEffect(() => {
-		const elem = rootRef.current;
+		const root = rootRef.current;
+		const input = ref.current;
+		if (!root || !input) return undefined;
 		let blurTimeout = 0;
 
 		const handleFocus = () => {
 			window.clearTimeout(blurTimeout);
 			blurTimeout = 0;
-			onFocus?.(ref.current);
+			onFocus?.(input);
 		};
 
 		const handleBlur = () => {
-			onBlur?.(ref.current);
+			onBlur?.(input);
 			if (blurTimeout > 0) window.clearTimeout(blurTimeout);
 			blurTimeout = setTimeout(() => {
 				setShouldShowInvalid(invalid);
 			}, 0) as any;
 		};
 
-		elem.addEventListener('focusin', handleFocus);
-		elem.addEventListener('focusout', handleBlur);
+		root.addEventListener('focusin', handleFocus);
+		root.addEventListener('focusout', handleBlur);
 
 		return () => {
-			elem.removeEventListener('focusin', handleFocus);
-			elem.removeEventListener('focusout', handleBlur);
+			root.removeEventListener('focusin', handleFocus);
+			root.removeEventListener('focusout', handleBlur);
 			window.clearTimeout(blurTimeout);
 		};
 	}, [onFocus, onBlur, invalid]);
@@ -104,17 +110,15 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 					class={props.class}
 					style={props.style}>
 					<Listbox.Button
-						ref={(elem: any) => {
-							ref.current = elem;
-							if (fRef) fRef.current = elem;
-						}}
+						ref={refs(ref, fRef)}
 						className={merge(
 							'peer w-full px-2.5 h-[3.25rem] pt-6 pb-1 pr-10 rounded',
 							'text-left !outline-none resize-none transition focus:shadow-md',
 							'bg-neutral-100 dark:bg-neutral-700/75 dark:focus:bg-neutral-700',
 							open && '!shadow-md dark:!bg-neutral-700',
 							showInvalid && 'text-red-800 focus:text-neutral-900',
-							showInvalid && 'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100'
+							showInvalid &&
+								'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100'
 						)}>
 						{props.options[value!] ?? ''}
 					</Listbox.Button>
@@ -142,7 +146,13 @@ export default forwardRef<HTMLSelectElement, Props>(function OptionInput(props, 
 									{({ selected }) => (
 										<Fragment>
 											<span class='flex-grow'>{label}</span>
-											{selected && <Svg src={icon_check} size={6} class='icon-p-accent-200 icon-s-neutral-500' />}
+											{selected && (
+												<Svg
+													src={icon_check}
+													size={6}
+													class='icon-p-accent-200 icon-s-neutral-500'
+												/>
+											)}
 										</Fragment>
 									)}
 								</Listbox.Option>

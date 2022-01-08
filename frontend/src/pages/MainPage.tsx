@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import Card from '../Card';
@@ -10,7 +10,8 @@ import { getShortcuts } from '../Shortcut';
 import { QUERY_INFO, useData } from '../Graph';
 
 export default function MainPage() {
-	const history = useHistory();
+	const location = useLocation();
+	const navigate = useNavigate();
 	const [{ info }] = useData(QUERY_INFO, []);
 
 	return (
@@ -19,7 +20,9 @@ export default function MainPage() {
 
 			<div class='text-center flex flex-col-reverse my-12'>
 				<h2 class='text-neutral-100 text-2xl mt-1'>{info?.name}</h2>
-				<h3 class='text-neutral-300 font-medium text-xs tracking-widest uppercase'>{info?.domain}</h3>
+				<h3 class='text-neutral-300 font-medium text-xs tracking-widest uppercase'>
+					{info?.domain}
+				</h3>
 			</div>
 
 			<TileLayout>
@@ -32,7 +35,7 @@ export default function MainPage() {
 									<Card
 										as='button'
 										key={i}
-										onClick={() => s.action({ history })}
+										onClick={() => s.action({ location, navigate })}
 										class='flex group [flex-basis:calc(33%-8px)] text-left gap-5 p-0 transition !outline-none
 									rounded-md hocus:bg-neutral-700 dark:hocus:bg-neutral-750
 									ring-accent-500/25 ring-offset-neutral-900
@@ -46,7 +49,9 @@ export default function MainPage() {
 											/>
 										)}
 										<div class='flex flex-col self-center'>
-											<p class='truncate leading-4 font-medium dark:group-hocus:text-accent-50'>{s.title}</p>
+											<p class='truncate leading-4 font-medium dark:group-hocus:text-accent-50'>
+												{s.title}
+											</p>
 											{s.description && (
 												<p
 													class='truncate leading-4 text-sm pt-2 transition

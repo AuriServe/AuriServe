@@ -22,10 +22,10 @@
 		// General Rules
 
 		"@typescript-eslint/explicit-module-boundary-types": 0,
+		"consistent-return": 1,
 		"constructor-super": 2,
 		"no-caller": 2,
 		"no-const-assign": 2,
-		"no-delete-var": 2,
 		"no-dupe-class-members": 2,
 		"no-dupe-keys": 2,
 		"no-duplicate-imports": 2,
@@ -66,8 +66,9 @@
 		"radix": 2,
 		"unicode-bom": 2,
 		"valid-jsdoc": 0,
+		"no-fallthrough": 2,
 		"prefer-arrow-callback": [ 2, { "allowNamedFunctions": true }],
-		"@typescript-eslint/no-unused-vars": [ 2, { "argsIgnorePattern": "^_" } ],
+		"@typescript-eslint/no-unused-vars": [ 1, { "argsIgnorePattern": "^_" } ],
 		"@typescript-eslint/no-non-null-assertion": 0, // TODO: Enable this rule
 		"@typescript-eslint/no-explicit-any": 0, // TODO: Enable this rule
 

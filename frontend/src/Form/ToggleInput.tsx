@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h, Ref } from 'preact';
 import { useContext } from 'preact/hooks';
 import { forwardRef } from 'preact/compat';
 
@@ -26,12 +26,15 @@ interface Props {
 	class?: string;
 }
 
-export default forwardRef<HTMLDivElement, Props>(function ToggleInput(props, fRef) {
+export default forwardRef<HTMLElement, Props>(function ToggleInput(props, fRef) {
 	const form = useContext(FormContext);
 	const description = form.schema.fields[props.for]?.description;
 
 	return (
-		<div ref={fRef} class={merge('flex gap-4 w-full', props.class)} style={props.style}>
+		<div
+			ref={fRef as Ref<HTMLDivElement>}
+			class={merge('flex gap-4 w-full', props.class)}
+			style={props.style}>
 			<div class={merge('grow', description === undefined && 'mt-1.5')}>
 				<label
 					for={props.id}
@@ -39,9 +42,17 @@ export default forwardRef<HTMLDivElement, Props>(function ToggleInput(props, fRe
 					text-neutral-500 dark:text-neutral-200 dark:hover:text-neutral-100'>
 					{props.label}
 				</label>
-				{description && <p class='text-sm leading-5 mt-1.5 mb-1 max-w-xl text-neutral-300'>{description}</p>}
+				{description && (
+					<p class='text-sm leading-5 mt-1.5 mb-1 max-w-xl text-neutral-300'>
+						{description}
+					</p>
+				)}
 			</div>
-			<div class={merge('shrink-0 w-10 h-6 relative group isolate', props.toggleLeft && '-order-1')}>
+			<div
+				class={merge(
+					'shrink-0 w-10 h-6 relative group isolate',
+					props.toggleLeft && '-order-1'
+				)}>
 				<input
 					type='checkbox'
 					id={props.id}

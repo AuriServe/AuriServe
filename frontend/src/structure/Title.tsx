@@ -1,5 +1,4 @@
-import { h } from 'preact';
-import { Helmet } from 'react-helmet';
+import { useEffect } from 'preact/hooks';
 import { useData, QUERY_INFO } from '../Graph';
 
 interface Props {
@@ -12,9 +11,12 @@ export default function Title({ children: title }: Props) {
 	// eslint-disable-next-line no-irregular-whitespace
 	const titleStr = info?.name ? `${title} • ${info.name}` : `${title} • AuriServe`;
 
-	return (
-		<Helmet>
-			<title>{titleStr}</title>
-		</Helmet>
-	);
+	useEffect(() => {
+		const title = document.createElement('title');
+		title.innerText = titleStr;
+		document.head.appendChild(title);
+		return () => document.head.removeChild(title);
+	}, [titleStr]);
+
+	return null;
 }

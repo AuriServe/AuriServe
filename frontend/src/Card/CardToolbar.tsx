@@ -22,7 +22,7 @@ interface Props {
  */
 
 export default function CardToolbar(props: Props) {
-	const ref = useRef<HTMLDivElement>(null);
+	const ref = useRef<HTMLDivElement | null>(null);
 	const staticOffset = useRef<number | null>(null);
 	const [isSticky, setIsSticky] = useState<boolean>(false);
 
@@ -38,7 +38,7 @@ export default function CardToolbar(props: Props) {
 	};
 
 	useEffect(() => {
-		if (props.sticky === false || !ref.current) return;
+		if (props.sticky === false || !ref.current) return undefined;
 
 		let scrolled = false;
 		const onScroll = () => (scrolled = true);
@@ -48,7 +48,7 @@ export default function CardToolbar(props: Props) {
 			if (!scrolled) return;
 			scrolled = false;
 
-			const offset = ref.current.offsetTop;
+			const offset = ref.current!.offsetTop;
 			setIsSticky(offset > staticOffset.current!);
 		}, 100);
 

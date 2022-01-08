@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 
 import Svg from './Svg';
@@ -37,7 +37,8 @@ function useThrottle(cb: (...values: any[]) => void, rate: number, ...values: an
 }
 
 export default function ShortcutPalette() {
-	const history = useHistory();
+	const location = useLocation();
+	const navigate = useNavigate();
 
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -56,7 +57,11 @@ export default function ShortcutPalette() {
 		togglePalette = () => setOpen((open) => !open);
 
 		const onKeyDown = (e: KeyboardEvent) => {
-			if ((e.code === 'KeyK' && e.ctrlKey) || e.code === 'Escape' || (e.code === 'KeyP' && e.ctrlKey && e.shiftKey)) {
+			if (
+				(e.code === 'KeyK' && e.ctrlKey) ||
+				e.code === 'Escape' ||
+				(e.code === 'KeyP' && e.ctrlKey && e.shiftKey)
+			) {
 				e.preventDefault();
 				e.stopPropagation();
 				e.stopImmediatePropagation();
@@ -105,7 +110,7 @@ export default function ShortcutPalette() {
 	}, [...results, results.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const handleTriggerAction = (ind: number) => {
-		results[ind]?.action({ history });
+		results[ind]?.action({ location, navigate });
 		setOpen(false);
 	};
 
@@ -121,7 +126,9 @@ export default function ShortcutPalette() {
 			active={open}
 			onClose={() => setOpen(false)}
 			class='!bg-transparent dark:!bg-transparent !shadow-none pointer-events-none'>
-			<form class='w-screen max-w-lg h-[32rem] pb-16' onSubmit={(evt) => handleSubmit(evt)}>
+			<form
+				class='w-screen max-w-lg h-[32rem] pb-16'
+				onSubmit={(evt) => handleSubmit(evt)}>
 				<div class='relative'>
 					<label for='shortcut_input' class='sr-only'>
 						Search Shortcuts
@@ -156,7 +163,9 @@ export default function ShortcutPalette() {
 						enterFrom='opacity-0 scale-90'
 						enterTo='opacity-100'>
 						<Svg src={icon_target} size={6} />
-						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>Search to get started.</p>
+						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>
+							Search to get started.
+						</p>
 					</Transition>
 
 					<Transition
@@ -170,7 +179,9 @@ export default function ShortcutPalette() {
 						enterFrom='opacity-0 scale-90'
 						enterTo='opacity-100'>
 						<Svg src={icon_target} size={6} />
-						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>No results found.</p>
+						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>
+							No results found.
+						</p>
 					</Transition>
 
 					<div
@@ -195,11 +206,15 @@ export default function ShortcutPalette() {
 										'!outline-none hover:!bg-neutral-600/50 active:!bg-neutral-600',
 										active === i && 'bg-neutral-600/50 group-hover:bg-neutral-600/30'
 									)}>
-									{s.icon && <Svg class='w-6 h-6 rounded bg-neutral-600 p-2' src={s.icon} />}
+									{s.icon && (
+										<Svg class='w-6 h-6 rounded bg-neutral-600 p-2' src={s.icon} />
+									)}
 									<div class='flex flex-col self-center'>
 										<p class='truncate leading-none font-medium'>{s.title}</p>
 										{s.description && (
-											<p class='truncate leading-none text-neutral-200 text-sm pt-1'>{s.description}</p>
+											<p class='truncate leading-none text-neutral-200 text-sm pt-1'>
+												{s.description}
+											</p>
 										)}
 									</div>
 								</button>

@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"alwaysStrict": true,
+
+		"target": "es6",
+		"lib": [ "es2020" ],
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+
+		"importHelpers": true,
+		"noEmitHelpers": true,
+		"removeComments": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+
+    "jsx": "react",
+    "jsxFactory": "h"
+	}
+}

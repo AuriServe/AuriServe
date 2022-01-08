@@ -1,9 +1,17 @@
-import { h, ComponentChildren } from 'preact';
 import { forwardRef, memo } from 'preact/compat';
+import { h, ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef } from 'preact/hooks';
 
 import EventEmitter from '../EventEmitter';
-import { FormSchema, FormContext, FormContextData, FormFieldType, FormField, FormGroup, isGroup } from './Type';
+import {
+	FormSchema,
+	FormContext,
+	FormContextData,
+	FormFieldType,
+	FormField,
+	FormGroup,
+	isGroup,
+} from './Type';
 
 export interface Props {
 	schema: FormSchema;
@@ -17,6 +25,7 @@ export interface Props {
 
 const DEFAULT_VALUES: Record<FormFieldType, any> = {
 	text: '',
+	password: '',
 	number: 0,
 	toggle: false,
 	option: undefined,
@@ -25,15 +34,24 @@ const DEFAULT_VALUES: Record<FormFieldType, any> = {
 	color: undefined,
 };
 
-function initializeField(data: any, fields: any, name: string, schema: FormField | FormGroup) {
+function initializeField(
+	data: any,
+	fields: any,
+	name: string,
+	schema: FormField | FormGroup
+) {
 	if (isGroup(schema)) {
 		data[name] = {};
 		fields[name] = {};
-		Object.entries(schema).forEach(([cName, schema]) => initializeField(data[name], fields[name], cName, schema));
+		Object.entries(schema).forEach(([cName, schema]) =>
+			initializeField(data[name], fields[name], cName, schema)
+		);
 		return;
 	}
 
-	data[name] = schema.default ?? (schema.validation?.optional ? undefined : DEFAULT_VALUES[schema.type]);
+	data[name] =
+		schema.default ??
+		(schema.validation?.optional ? undefined : DEFAULT_VALUES[schema.type]);
 	fields[name] = { ref: null, error: null };
 }
 
@@ -59,7 +77,7 @@ export default memo(
 
 		useEffect(() => {
 			if (!ref) return;
-			ref.current = context.current.data;
+			(ref as any).current = context.current.data;
 		}, [ref]);
 
 		const handleSubmit = (e: Event) => {
@@ -76,7 +94,8 @@ export default memo(
 							elem.focus();
 							return true;
 						}
-						if (fields[name].ref === undefined && findAndFocusInvalid(fields[name])) return true;
+						if (fields[name].ref === undefined && findAndFocusInvalid(fields[name]))
+							return true;
 					}
 				}
 				return false;

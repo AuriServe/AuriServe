@@ -54,7 +54,7 @@ export default function FloatingDescription(props: Props) {
 		};
 	}, [form]);
 
-	const handleUpdateContainerHeight = (ref: HTMLDivElement) => {
+	const handleUpdateContainerHeight = (ref: HTMLDivElement | null) => {
 		if (!ref || !containerRef.current) return;
 		containerRef.current.style.height = `${ref.clientHeight}px`;
 	};

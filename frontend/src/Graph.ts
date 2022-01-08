@@ -1,28 +1,12 @@
-import { GraphQL, useGraphQL } from 'graphql-react';
 import { useEffect, useContext } from 'preact/hooks';
 
 import { AppContext, AppContextData } from './App';
 
-/** The GQL endpoint to query. */
-const ENDPOINT = '/admin/graphql';
-
-/** The main GQL instance. */
-export const graphql = new GraphQL();
-
-/** Used in graphql-react to target the right endpoint. */
-const fetchOptionsOverride = (options: any) => (options.url = ENDPOINT);
-
 import { Query } from 'common/graph';
 import * as Int from 'common/graph/type';
 
-/** Specifies various options for useQuery. */
-interface Options {
-	loadOnMount?: boolean;
-	loadOnReload?: boolean;
-	loadOnReset?: boolean;
-	reloadOnLoad?: boolean;
-	resetOnLoad?: boolean;
-}
+/** The GQL endpoint to query. */
+const ENDPOINT = '/admin/graphql';
 
 /**
  * A result provided by the useData hook.
@@ -53,28 +37,18 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
 
 	const { data, mergeData } = useContext<AppContextData>(AppContext);
 
-	const fetchData = async (): Promise<Partial<Int.Root>> => {
-		const res = await graphql.operate({
-			operation: { query, variables: {} },
-			fetchOptionsOverride,
-			reloadOnLoad: true,
-		}).cacheValuePromise;
-		if (res.graphQLErrors) console.error('Data Refresh Error:', res.graphQLErrors);
-		return (res.data ?? {}) as Partial<Int.Root>;
+	const refreshData = async (abort?: AbortSignal) => {
+		const data = await executeQuery(query);
+		if (!abort?.aborted) mergeData(data);
 	};
 
 	useEffect(() => {
-		let valid = true;
-
-		fetchData().then((data) => {
-			if (!valid) return;
-			mergeData(data);
-		});
-
-		return () => (valid = false);
+		const controller = new AbortController();
+		refreshData(controller.signal);
+		return () => controller.abort();
 	}, dependents); // eslint-disable-line react-hooks/exhaustive-deps
 
-	return [data, () => fetchData().then(mergeData)];
+	return [data, (abort?: AbortSignal) => refreshData(abort)];
 }
 
 /**
@@ -85,41 +59,52 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
  * - and a function that can be called to refresh the cache.
  */
 
-type UseQueryResult = [Partial<Int.Root>, boolean, () => void];
+// type UseQueryResult = [Partial<Int.Root>, boolean, () => void];
 
-/**
- * A hook that provides access to making cached GraphQL queries.
- * Accepts a query string which will be interpreted *as is*.
- * It is recommended to use the constant queries defined below this function.
- *
- * Returns an array containing (in the following order):
- * - The currently cached query data,
- * - A boolean indicating load state,
- * - and a function that can be called to refresh the cache.
- *
- * @param {string} queries - A GraphQL query to operate on the server.
- * @param {Options} options - An optional set of options to alter the caching behavior of the queries.
- * @param {Object} variables - An optional set of variables to send with the query.
- * @returns an array containing the hook's result.
- */
+// /**
+//  * A hook that provides access to making cached GraphQL queries.
+//  * Accepts a query string which will be interpreted *as is*.
+//  * It is recommended to use the constant queries defined below this function.
+//  *
+//  * Returns an array containing (in the following order):
+//  * - The currently cached query data,
+//  * - A boolean indicating load state,
+//  * - and a function that can be called to refresh the cache.
+//  *
+//  * @param {string} queries - A GraphQL query to operate on the server.
+//  * @param {Options} options - An optional set of options to alter the caching behavior of the queries.
+//  * @param {Object} variables - An optional set of variables to send with the query.
+//  * @returns an array containing the hook's result.
+//  */
 
-export function useQuery(
-	query: string,
-	options: Options = {},
-	variables: any = {}
-): UseQueryResult {
-	const res = useGraphQL({
-		loadOnMount: true,
-		loadOnReload: true,
-		...options,
-		operation: { query, variables },
-		fetchOptionsOverride,
-	});
+// export function useQuery(query: string, variables: any = {}): UseQueryResult {
+// 	// const dataRef = useRef<Partial<Int.Root>>({});
+// 	// const fetchRef = useRef<AbortController>(new AbortController());
 
-	if (res.cacheValue?.graphQLErrors)
-		console.error('Query Error:', res.cacheValue?.graphQLErrors);
-	return [(res.cacheValue?.data ?? {}) as Partial<Int.Root>, res.loading, res.load];
-}
+// 	// useEffect(() => {
+
+// 	// }, [])
+
+// 	// const res = useGraphQL({
+// 	// 	loadOnMount: true,
+// 	// 	loadOnReload: true,
+// 	// 	...options,
+// 	// 	operation: { query, variables },
+// 	// 	fetchOptionsOverride,
+// 	// });
+
+// 	// if (res.cacheValue?.graphQLErrors)
+// 	// 	console.error('Query Error:', res.cacheValue?.graphQLErrors);
+// 	// return [(res.cacheValue?.data ?? {}) as Partial<Int.Root>, res.loading, res.load];
+
+// 	return [
+// 		{},
+// 		false,
+// 		() => {
+// 			/* TODO */
+// 		},
+// 	];
+// }
 
 /**
  * A function that executes a query.
@@ -129,35 +114,35 @@ export function useQuery(
  * @returns a promise to the result.
  */
 
-export async function query<T = any>(query: string, variables: any = {}): Promise<T> {
-	const res = await graphql.operate({
-		operation: { query, variables },
-		fetchOptionsOverride,
-	}).cacheValuePromise;
-	if (res.graphQLErrors) console.error('Query Error:', res.graphQLErrors);
-	return res.data as T;
+export async function executeQuery<T = any>(
+	query: string,
+	variables: any = {}
+): Promise<T> {
+	const res = (await fetch(ENDPOINT, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		cache: 'no-cache',
+		body: JSON.stringify({ query, variables }),
+	}).then((res) => res.json())) as { data?: T; graphQLErrors?: string[] };
+
+	if (res.graphQLErrors) console.error('GraphQL Error:', res.graphQLErrors);
+	return res.data ?? ({} as T);
 }
 
-/**
- * A hook that returns a function to execute the provided GQL query with dynamic variables,
- * which is useful for mutations. Triggers a refresh when the query completes.
- * It is recommended to use the constant queries defined below this function.
- *
- * @param {string} mutation - A GraphQL query to operate on the server.
- * @returns an function that will execute the specified query with the provided variables.
- */
+// /**
+//  * A hook that returns a function to execute the provided GQL query with dynamic variables,
+//  * which is useful for mutations. Triggers a refresh when the query completes.
+//  * It is recommended to use the constant queries defined below this function.
+//  *
+//  * @param {string} mutation - A GraphQL query to operate on the server.
+//  * @returns an function that will execute the specified query with the provided variables.
+//  */
 
-export function useMutation(mutation: string) {
-	return async (variables: any) => {
-		const res = await graphql.operate({
-			operation: { query: mutation, variables },
-			fetchOptionsOverride,
-			reloadOnLoad: true,
-		}).cacheValuePromise;
-
-		if (res.graphQLErrors) console.error('Mutation Error:', res.graphQLErrors);
-	};
-}
+// export function useMutation(mutation: string) {
+// 	return async (variables: any) => {
+// 		return await executeQuery(mutation, variables);;
+// 	};
+// }
 
 /** Queries basic site info. */
 export const QUERY_INFO = `info ${Query.Info}`;

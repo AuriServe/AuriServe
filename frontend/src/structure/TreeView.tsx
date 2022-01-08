@@ -104,7 +104,7 @@ function TreeCapture({ path, children, style }: TreeCaptureProps) {
 	const ref = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		const elem = ref.current;
+		const elem = ref.current!;
 		let dragStartPos: [number, number] | null = null;
 
 		const onMouseDown = (evt: MouseEvent) => {
@@ -119,7 +119,10 @@ function TreeCapture({ path, children, style }: TreeCaptureProps) {
 
 		const onMouseMove = (evt: MouseEvent) => {
 			if (!dragStartPos) return;
-			const mouseDelta = [Math.abs(dragStartPos![0] - evt.clientX), Math.abs(dragStartPos![1] - evt.clientY)];
+			const mouseDelta = [
+				Math.abs(dragStartPos![0] - evt.clientX),
+				Math.abs(dragStartPos![1] - evt.clientY),
+			];
 			if (mouseDelta[0] > DRAG_THRESHOLD) cancelDragCheck();
 			else if (mouseDelta[1] > DRAG_THRESHOLD) {
 				handleDragStart(path);
@@ -180,7 +183,12 @@ function TreeItem({ item, path, dragging = false }: TreeItemProps) {
 			{item.children && (
 				<ul class='grid'>
 					{item.children.map((item, i) => (
-						<TreeItem key={item.key} item={item} path={[...path, i]} dragging={dragging} />
+						<TreeItem
+							key={item.key}
+							item={item}
+							path={[...path, i]}
+							dragging={dragging}
+						/>
 					))}
 				</ul>
 			)}
@@ -205,7 +213,11 @@ export default function TreeView(props: TreeViewProps) {
 	const { items, itemHeight, setItems } = props;
 
 	const [context, setContext] = useState<ContextData>(
-		updateContextDataFromProps(props, { drag: undefined, transitionOffsets: false, handleDragStart: undefined as any })
+		updateContextDataFromProps(props, {
+			drag: undefined,
+			transitionOffsets: false,
+			handleDragStart: undefined as any,
+		})
 	);
 
 	useMemo(() => {
@@ -235,20 +247,28 @@ export default function TreeView(props: TreeViewProps) {
 				if (!context.drag) return context;
 
 				const pixelPos = Math.max(
-					Math.min(evt.pageY - ref.current.offsetTop, getTreeCount(items) * itemHeight - itemHeight / 2),
+					Math.min(
+						evt.pageY - ref.current!.offsetTop,
+						getTreeCount(items) * itemHeight - itemHeight / 2
+					),
 					itemHeight / 2
 				);
 
 				const itemPos = Math.floor(pixelPos / itemHeight);
 
-				const toPath = (function recurse(tree: Item[], path: number[] = [], offset = 0): number[] {
+				const toPath = (function recurse(
+					tree: Item[],
+					path: number[] = [],
+					offset = 0
+				): number[] {
 					for (let i = 0; i < tree.length; i++) {
 						if (path === context.drag.itemPath) continue;
 
 						if (offset === itemPos) return [...path, i];
 						else if (tree[i].children) {
 							const size = getTreeCount(tree[i].children!);
-							if (offset + size >= itemPos) return recurse(tree[i].children!, [...path, i], offset + 1);
+							if (offset + size >= itemPos)
+								return recurse(tree[i].children!, [...path, i], offset + 1);
 							offset += size + 1;
 						} else offset++;
 					}
@@ -276,8 +296,12 @@ export default function TreeView(props: TreeViewProps) {
 					// for (let i = 0; i < Math.min(fromPath.length, toPath.length); i++)
 					// 	if (toPath[i] > fromPath[i]) toPath[i]--;
 
-					const from = fromPath.length > 1 ? traversePath(data, fromPath.slice(0, -1)).children : data;
-					const to = toPath.length > 1 ? traversePath(data, fromPath.slice(0, -1)).children : data;
+					const from =
+						fromPath.length > 1
+							? traversePath(data, fromPath.slice(0, -1)).children
+							: data;
+					const to =
+						toPath.length > 1 ? traversePath(data, fromPath.slice(0, -1)).children : data;
 
 					const item = from.splice(fromPath.slice(-1)[0], 1);
 					to.splice(toPath.slice(-1)[0], 0, item[0]);
@@ -304,7 +328,8 @@ export default function TreeView(props: TreeViewProps) {
 				ref={ref}
 				class={merge('grid w-full', props.class)}
 				style={{ ...(props.style ?? {}), height: getTreeCount(items) * itemHeight }}>
-				<div class={merge('grid items-start relative', context.drag && 'cursor-resize-ns')}>
+				<div
+					class={merge('grid items-start relative', context.drag && 'cursor-resize-ns')}>
 					<ul class={merge('grid', context.drag && 'interact-none')}>
 						{items.map((item, i) => (
 							<TreeItem key={i} item={item} path={[i]} />
@@ -312,7 +337,9 @@ export default function TreeView(props: TreeViewProps) {
 					</ul>
 
 					{context.drag && (
-						<div class='absolute right-0 left-0' style={{ top: context.drag.pixelPos - itemHeight / 2 }}>
+						<div
+							class='absolute right-0 left-0'
+							style={{ top: context.drag.pixelPos - itemHeight / 2 }}>
 							<TreeItem
 								dragging
 								item={traversePath(items, context.drag.itemPath)}

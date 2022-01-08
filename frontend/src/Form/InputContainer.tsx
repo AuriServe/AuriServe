@@ -42,10 +42,10 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
 
 	if (populated === undefined)
 		classes += `
-		top-1.5 peer-focus:top-1.5 peer-placeholder-shown:top-[0.9375rem]
-		left-2.5 peer-focus:left-2.5 peer-placeholder-shown:left-3
-		text-xs peer-focus:text-xs peer-placeholder-shown:text-base
-		font-bold peer-focus:font-bold peer-placeholder-shown:font-medium`;
+		top-1.5 peer-focus:top-1.5 peer-placeholder-shown:not-autofill:top-[0.9375rem]
+		left-2.5 peer-focus:left-2.5 peer-placeholder-shown:not-autofill:left-3
+		text-xs peer-focus:text-xs peer-placeholder-shown:not-autofill:text-base
+		font-bold peer-focus:font-bold peer-placeholder-shown:not-autofill:font-medium`;
 	else
 		classes += populated
 			? ' !top-1.5 !left-2.5 !text-xs !font-bold'

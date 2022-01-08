@@ -1,9 +1,7 @@
 import { h } from 'preact';
-import { useRef } from 'preact/hooks';
 
 import { formatBytes, formatDate } from 'common';
 
-import { Text } from '../input';
 import MediaIcon from './MediaIcon';
 import Selectable from '../structure/Selectable';
 import { UploadItemData } from './MediaUploadForm';
@@ -19,42 +17,47 @@ interface Props {
 }
 
 export default function MediaUploadItem(props: Props) {
-	const filenameRef = useRef<HTMLInputElement>(null);
-	const identifier = props.file.name
-		.toLowerCase()
-		.replace(/[ -]/g, '_')
-		.replace(/[^a-zA-Z0-9_]/g, '');
+	// const filenameRef = useRef<HTMLInputElement | null>(null);
+	// const identifier = props.file.name
+	// 	.toLowerCase()
+	// 	.replace(/[ -]/g, '_')
+	// 	.replace(/[^a-zA-Z0-9_]/g, '');
 
-	const handleStopPropagation = (elem: any) => elem?.addEventListener('mouseup', (evt: any) => evt.stopPropagation());
+	// const handleStopPropagation = (elem: any) =>
+	// 	elem?.addEventListener('mouseup', (evt: any) => evt.stopPropagation());
 
-	const handleFilenameChange = () => {
-		const elem = filenameRef.current!;
+	// const handleFilenameChange = () => {
+	// 	const elem = filenameRef.current!;
 
-		let start = elem.selectionStart!;
-		let end = elem.selectionEnd!;
+	// 	let start = elem.selectionStart!;
+	// 	let end = elem.selectionEnd!;
 
-		const oldVal = elem.value;
-		elem.value = elem.value
-			.toLowerCase()
-			.replace(/[ -]/g, '_')
-			.replace(/[^a-zA-Z0-9_]/g, '');
+	// 	const oldVal = elem.value;
+	// 	elem.value = elem.value
+	// 		.toLowerCase()
+	// 		.replace(/[ -]/g, '_')
+	// 		.replace(/[^a-zA-Z0-9_]/g, '');
 
-		if (oldVal.length > elem.value.length) {
-			start -= oldVal.length - elem.value.length;
-			end -= oldVal.length - elem.value.length;
-		}
+	// 	if (oldVal.length > elem.value.length) {
+	// 		start -= oldVal.length - elem.value.length;
+	// 		end -= oldVal.length - elem.value.length;
+	// 	}
 
-		elem.setSelectionRange(start, end);
-		props.onFilenameChange(elem.value);
-	};
+	// 	elem.setSelectionRange(start, end);
+	// 	props.onFilenameChange(elem.value);
+	// };
 
 	return (
 		<li class='flex !w-full gap-1 bg-neutral-50 dark:bg-neutral-700 p-[0.4375rem] rounded !overflow-visible'>
 			<Selectable class='!p-0' ind={props.ind} doubleClickSelects={true}>
-				<MediaIcon class='flex-shrink-0 w-20 h-20' path={props.file.file.name} image={props.file.thumbnail} />
+				<MediaIcon
+					class='flex-shrink-0 w-20 h-20'
+					path={props.file.file.name}
+					image={props.file.thumbnail}
+				/>
 			</Selectable>
 			<div class='pl-1 text-left overflow-hidden'>
-				<Text
+				{/* <Text
 					maxLength={32}
 					enabled={props.enabled}
 					class='font-medium  text-neutral-800 dark:text-neutral-100 truncate
@@ -74,13 +77,14 @@ export default function MediaUploadItem(props: Props) {
 						focus:!bg-neutral-100 dark:focus:!bg-neutral-800 hover:!border-neutral-300 dark:hover:!border-neutral-500'
 					value={props.file.identifier}
 					onValue={handleFilenameChange}
-					ref={(elem) => {
+					ref={(elem: any) => {
 						filenameRef.current = elem;
 						handleStopPropagation(elem);
 					}}
-				/>
+				/> */}
 				<p class='relative font-medium text-sm text-neutral-500 dark:text-neutral-400 py-0.5 -top-px pl-1 truncate'>
-					{formatBytes(props.file.file.size)} • Last modified {formatDate(props.file.file.lastModified)}
+					{formatBytes(props.file.file.size)} • Last modified{' '}
+					{formatDate(props.file.file.lastModified)}
 				</p>
 			</div>
 		</li>

@@ -7,6 +7,7 @@ import { FormContext, FormField, ErrorType } from './Type';
 import TextInput from './TextInput';
 import OptionInput from './OptionInput';
 import ToggleInput from './ToggleInput';
+import PasswordInput from './PasswordInput';
 
 interface Props {
 	for: string;
@@ -21,7 +22,7 @@ interface Props {
 }
 
 export default function Input(props: Props) {
-	const ref = useRef<HTMLInputElement>(null);
+	const ref = useRef<HTMLElement>(null);
 	const form = useContext(FormContext);
 
 	const id = `${form.id}-${props.for}`;
@@ -33,7 +34,11 @@ export default function Input(props: Props) {
 	}, [form.fields, props.for]);
 
 	const handleValidity = (error: ErrorType | null, message: string | null) => {
-		if (form.fields[props.for].error === error && form.fields[props.for].errorMessage === message) return;
+		if (
+			form.fields[props.for].error === error &&
+			form.fields[props.for].errorMessage === message
+		)
+			return;
 
 		form.fields[props.for].error = error;
 		form.fields[props.for].errorMessage = message;
@@ -61,22 +66,51 @@ export default function Input(props: Props) {
 					ref={ref}
 					id={id}
 					label={schema.label ?? titleCase(props.for)}
+					value={form.data[props.for]}
+					completion={schema.completion}
+
 					multiline={schema.multiline}
 					maxHeight={schema.maxHeight}
-					value={form.data[props.for]}
+
 					optional={schema.validation?.optional}
 					minLength={schema.validation?.minLength}
 					maxLength={schema.validation?.maxLength}
 					pattern={schema.validation?.pattern}
 					patternHint={schema.validation?.patternHint}
+
 					onChange={handleChange}
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
+
 					class={props.class}
 					style={props.style}
 				/>
 			);
+		case 'password':
+			return (
+				<PasswordInput
+					ref={ref}
+					id={id}
+					label={schema.label ?? titleCase(props.for)}
+					value={form.data[props.for]}
+					completion={schema.completion}
+
+					optional={schema.validation?.optional}
+					minLength={schema.validation?.minLength}
+					maxLength={schema.validation?.maxLength}
+					pattern={schema.validation?.pattern}
+					patternHint={schema.validation?.patternHint}
+
+					onChange={handleChange}
+					onValidity={handleValidity}
+					onFocus={handleFocus}
+					onBlur={handleBlur}
+
+					class={props.class}
+					style={props.style}
+				/>
+			)
 		case 'option':
 			return (
 				<OptionInput
@@ -85,13 +119,16 @@ export default function Input(props: Props) {
 					label={schema.label ?? titleCase(props.for)}
 					value={form.data[props.for]}
 					options={schema.options!}
+
 					optional={schema.validation?.optional}
 					pattern={schema.validation?.pattern}
 					patternHint={schema.validation?.patternHint}
+
 					onChange={handleChange}
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
+
 					class={props.class}
 					style={props.style}
 				/>
@@ -102,15 +139,19 @@ export default function Input(props: Props) {
 					ref={ref}
 					id={id}
 					for={props.for}
-					rounded={props.rounded}
-					toggleLeft={props.toggleLeft}
 					label={schema.label ?? titleCase(props.for)}
 					value={form.data[props.for]}
+
+					rounded={props.rounded}
+					toggleLeft={props.toggleLeft}
+
 					optional={schema.validation?.optional}
+
 					onChange={handleChange}
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
+
 					class={props.class}
 					style={props.style}
 				/>

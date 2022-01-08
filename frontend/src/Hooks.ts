@@ -23,7 +23,7 @@ export function usePopupCancel(
 
 	useEffect(() => {
 		const rootsArray = Array.isArray(roots) ? roots : [roots];
-		if (condition && !condition()) return;
+		if (condition && !condition()) return undefined;
 
 		const handlePointerCancel = (e: MouseEvent | TouchEvent) => {
 			let x = e.target as HTMLElement;
@@ -59,7 +59,12 @@ export function usePopupCancel(
  * Sends a message to a host with the requested properties.
  */
 
-function sendMessage(key: string, target: { postMessage: any }, type: string, body?: any) {
+function sendMessage(
+	key: string,
+	target: { postMessage: any },
+	type: string,
+	body?: any
+) {
 	target.postMessage({ _as: key, type, body });
 }
 
@@ -68,8 +73,13 @@ function sendMessage(key: string, target: { postMessage: any }, type: string, bo
  * executes the callback if it meets the required parameters.
  */
 
-function recieveMessage(key: string, onRecieve: (type: string, body?: string) => void, evt: MessageEvent) {
-	if (evt.origin !== window.location.origin || !evt.data._as || evt.data._as !== key) return;
+function recieveMessage(
+	key: string,
+	onRecieve: (type: string, body?: string) => void,
+	evt: MessageEvent
+) {
+	if (evt.origin !== window.location.origin || !evt.data._as || evt.data._as !== key)
+		return;
 
 	const type = evt.data.type as string;
 	const body = evt.data.body as any;
@@ -94,7 +104,7 @@ export function useMessaging(
 	key = '!'
 ) {
 	useEffect(() => {
-		if (!target) return;
+		if (!target) return undefined;
 		const cb = recieveMessage.bind(undefined, key, onRecieve);
 
 		window.addEventListener('message', cb);

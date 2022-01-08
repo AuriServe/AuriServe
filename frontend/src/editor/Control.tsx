@@ -8,7 +8,14 @@ import { Page, ObjectPath } from 'common';
 import { Button } from '../structure';
 
 import { useMessaging } from '../Hooks';
-import { query, useData, QUERY_PAGE, QUERY_INCLUDE, QUERY_MEDIA, MUTATE_PAGE } from '../Graph';
+import {
+	executeQuery,
+	useData,
+	QUERY_PAGE,
+	QUERY_INCLUDE,
+	QUERY_MEDIA,
+	MUTATE_PAGE,
+} from '../Graph';
 
 import loadPlugins from './LoadPlugins';
 
@@ -33,7 +40,8 @@ async function parseProps(prop: any, media: Int.Media[]) {
 	prop = newProp;
 
 	if (!wasValue && typeof prop === 'object') {
-		if (Array.isArray(prop)) for (let i = 0; i < prop.length; i++) prop[i] = await parseProps(prop[i], media);
+		if (Array.isArray(prop))
+			for (let i = 0; i < prop.length; i++) prop[i] = await parseProps(prop[i], media);
 		else if (typeof prop === 'object')
 			for (const iden of Object.keys(prop)) {
 				prop[iden] = await parseProps(prop[iden], media);
@@ -47,7 +55,7 @@ async function fetchPage(
 	path: string,
 	media: Int.Media[]
 ): Promise<[Page.PageDocument, Record<string, Page.ComponentNode>]> {
-	const { page: raw } = await query<{ page: Int.Page }>(QUERY_PAGE, { path });
+	const { page: raw } = await executeQuery<{ page: Int.Page }>(QUERY_PAGE, { path });
 	const rawIncludes: Record<string, string> = {};
 
 	const elements: Record<string, Page.Node> = JSON.parse(raw.content ?? '');
@@ -58,7 +66,9 @@ async function fetchPage(
 		if (Page.isIncludeNode(root)) {
 			if (!rawIncludes[root.include])
 				rawIncludes[root.include] = (
-					await query<{ include: Int.Include }>(QUERY_INCLUDE, { path: root.include })
+					await executeQuery<{ include: Int.Include }>(QUERY_INCLUDE, {
+						path: root.include,
+					})
 				).include.content!;
 			includes[path] = JSON.parse(rawIncludes[root.include]);
 			node = includes[path];
@@ -66,7 +76,9 @@ async function fetchPage(
 
 		if (node.props) node.props = await parseProps(node.props, media);
 		await Promise.all(
-			node.children?.map((child, key) => expandTree(child, ObjectPath.combinePath(path, 'children', key))) ?? []
+			node.children?.map((child, key) =>
+				expandTree(child, ObjectPath.combinePath(path, 'children', key))
+			) ?? []
 		);
 	}
 
@@ -97,7 +109,10 @@ export default function EditorControlPage({ path }: { path: string }) {
 	const [page, setPage] = useState<Page.PageDocument | undefined>(undefined);
 	const [includes, setIncludes] = useState<Record<string, Page.ComponentNode>>({});
 
-	const elements = useAsyncMemo(() => loadPlugins({ scripts: true, styles: true, themes: false }), []);
+	const elements = useAsyncMemo(
+		() => loadPlugins({ scripts: true, styles: true, themes: false }),
+		[]
+	);
 	useEffect(() => {
 		if (!media || !path) return;
 		fetchPage(path, media).then(([page, includes]) => {
@@ -119,14 +134,19 @@ export default function EditorControlPage({ path }: { path: string }) {
 
 	const handleSave = () => {
 		console.log('Attempting to save.');
-		query(MUTATE_PAGE, { path, content: JSON.stringify(page?.elements) });
+		executeQuery(MUTATE_PAGE, { path, content: JSON.stringify(page?.elements) });
 	};
 
 	if (!page || !elements) return <p>Loading...</p>;
 
 	return (
 		<div class='w-full grid'>
-			<iframe key={path} ref={setFrame} src='/admin/renderer/' class='place-self-stretch bg-white h-full border-0' />
+			<iframe
+				key={path}
+				ref={setFrame}
+				src='/admin/renderer/'
+				class='place-self-stretch bg-white h-full border-0'
+			/>
 			<div class='fixed bottom-8 right-8 z-10'>
 				<Button label='Save' onClick={handleSave} />
 			</div>

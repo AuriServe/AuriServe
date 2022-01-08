@@ -84,7 +84,11 @@ function BaseButton(props: Props) {
 			{props.label && (
 				<span
 					class={merge('text-xs mt-px -mb-px', props.iconOnly && 'sr-only')}
-					style={{ paddingLeft: size - paddingThreshold, paddingRight: size < 48 ? 4 : 0 }}>
+					style={
+						props.icon
+							? { paddingLeft: size - paddingThreshold, paddingRight: size < 48 ? 4 : 0 }
+							: {}
+					}>
 					{props.label}
 				</span>
 			)}

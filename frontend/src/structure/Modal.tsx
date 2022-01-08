@@ -24,7 +24,7 @@ export default function Modal(props: Props) {
 	useEffect(() => {
 		const body = document.documentElement;
 		const root = document.querySelector('.AS_ROOT') as HTMLElement;
-		if (!body || !root || !props.active) return;
+		if (!body || !root || !props.active) return undefined;
 
 		if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
 		body.style.overflow = 'hidden';

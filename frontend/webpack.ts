@@ -41,11 +41,6 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 				},
 				eslint: {
 					files: './**/*.{ts,tsx}',
-					options: {
-						emitErrors: true,
-						failOnHint: false,
-						typeCheck: true,
-					},
 				},
 			}),
 		],
@@ -75,8 +70,8 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 						],
 						plugins: [
 							['@babel/transform-react-jsx', { pragma: 'h' }],
-							['@babel/plugin-proposal-class-properties', { loose: true }],
-							['@babel/plugin-proposal-private-methods', { loose: true }],
+							'@babel/plugin-proposal-class-properties',
+							'@babel/plugin-proposal-private-methods',
 						],
 					},
 				},
@@ -110,7 +105,7 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 			},
 		},
 
-		entry: { main: './Main.ts' },
+		entry: { main: './Main.tsx' },
 		output: {
 			library: 'AS_EDITOR',
 		},

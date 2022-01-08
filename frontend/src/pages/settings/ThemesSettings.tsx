@@ -10,7 +10,7 @@ import ThemeItem from './FeatureItem';
 import { SavePopup } from '../../structure';
 import { Tertiary as Button } from '../../Button';
 
-import { useData, useMutation, QUERY_THEMES, MUTATE_THEMES } from '../../Graph';
+import { useData, executeQuery, QUERY_THEMES, MUTATE_THEMES } from '../../Graph';
 
 import icon_theme from '@res/icon/theme.svg';
 import icon_target from '@res/icon/target.svg';
@@ -23,14 +23,14 @@ const sortFn = (a: Theme, b: Theme) => {
 
 export default function ThemesSettings() {
 	const [data, refresh] = useData(QUERY_THEMES, []);
-	const updateEnabled = useMutation(MUTATE_THEMES);
 
 	const [themes, setThemes] = useState<Theme[]>((data.themes ?? []).sort(sortFn));
 	useEffect(() => setThemes((data.themes ?? []).sort(sortFn)), [data.themes]);
 
 	const isDirty =
-		JSON.stringify((data.themes ?? []).map((t: Theme) => (t.enabled ? t.identifier : ''))) !==
-		JSON.stringify(themes.map((t) => (t.enabled ? t.identifier : '')));
+		JSON.stringify(
+			(data.themes ?? []).map((t: Theme) => (t.enabled ? t.identifier : ''))
+		) !== JSON.stringify(themes.map((t) => (t.enabled ? t.identifier : '')));
 
 	const handleToggle = (toggle: string) => {
 		const newThemes: Theme[] = JSON.parse(JSON.stringify(themes));
@@ -39,13 +39,24 @@ export default function ThemesSettings() {
 		setThemes(newThemes);
 	};
 
-	const handleSave = async () =>
-		updateEnabled({ enabled: themes.filter((t) => t.enabled).map((t) => t.identifier) }).then(() => refresh());
+	const handleSave = async () => {
+		executeQuery(MUTATE_THEMES, {
+			enabled: themes.filter((t) => t.enabled).map((t) => t.identifier),
+		}).then(() => refresh());
+	};
 
 	return (
 		<Card>
-			<Card.Header icon={icon_theme} title='Themes' subtitle={"Manage your site's appearance."}>
-				<Button class='absolute bottom-4 right-4' icon={icon_browse} label='Browse Themes' small />
+			<Card.Header
+				icon={icon_theme}
+				title='Themes'
+				subtitle={"Manage your site's appearance."}>
+				<Button
+					class='absolute bottom-4 right-4'
+					icon={icon_browse}
+					label='Browse Themes'
+					small
+				/>
 			</Card.Header>
 			<Card.Body>
 				{themes.length !== 0 && (
@@ -64,10 +75,16 @@ export default function ThemesSettings() {
 				{!themes.length && (
 					<div class='flex py-28 justify-center items-center gap-2'>
 						<Svg src={icon_target} size={6} />
-						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>No themes found.</p>
+						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>
+							No themes found.
+						</p>
 					</div>
 				)}
-				<SavePopup active={isDirty} onSave={handleSave} onReset={() => setThemes((data.themes ?? []).sort(sortFn))} />
+				<SavePopup
+					active={isDirty}
+					onSave={handleSave}
+					onReset={() => setThemes((data.themes ?? []).sort(sortFn))}
+				/>
 			</Card.Body>
 		</Card>
 	);

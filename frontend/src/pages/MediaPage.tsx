@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import { Media } from 'common/graph/type';
 
@@ -12,7 +12,7 @@ import MediaUploadForm from '../media/MediaUploadForm';
 import { Title, Page, SectionHeader, Modal, SelectGroup, SavePopup } from '../structure';
 import {
 	useData,
-	useMutation,
+	executeQuery,
 	QUERY_INFO,
 	QUERY_MEDIA,
 	QUERY_QUOTAS,
@@ -31,8 +31,10 @@ type SortingMode = 'size' | 'name' | 'uploader' | 'date' | 'type';
 
 const SORTING_FUNCS: { [sorting in SortingMode]: (a: Media, b: Media) => number } = {
 	size: (a: Media, b: Media) => a.bytes - b.bytes,
-	name: (a: Media, b: Media) => a.name.localeCompare(b.name, undefined, { numeric: true }),
-	uploader: (a: Media, b: Media) => a.user!.localeCompare(b.user!, undefined, { numeric: true }),
+	name: (a: Media, b: Media) =>
+		a.name.localeCompare(b.name, undefined, { numeric: true }),
+	uploader: (a: Media, b: Media) =>
+		a.user!.localeCompare(b.user!, undefined, { numeric: true }),
 	date: (a: Media, b: Media) => a.created - b.created,
 	type: () => 0,
 };
@@ -42,14 +44,16 @@ const SORTING_FUNCS: { [sorting in SortingMode]: (a: Media, b: Media) => number 
 // }
 
 export default function MediaPage() {
-	const history = useHistory();
+	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 
 	const uploading: boolean = id === 'upload';
-	const viewing: string | null = !uploading ? id : null;
+	const viewing: string | null = !uploading ? id! : null;
 
-	const [data, refresh] = useData([QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS], []);
-	const deleteMedia = useMutation(MUTATE_DELETE_MEDIA);
+	const [data, refresh] = useData(
+		[QUERY_INFO, QUERY_MEDIA, QUERY_QUOTAS, QUERY_USERS],
+		[]
+	);
 
 	// const [ view, setView ] = useState<'grid' | 'list'>('grid');
 	const [filter] = useState<string>('');
@@ -62,21 +66,23 @@ export default function MediaPage() {
 
 	const handleUploaded = () => {
 		refresh();
-		history.push('/media');
+		navigate('/media');
 	};
 
 	const handleDelete = useCallback(
 		(items: number[]) => {
 			setDeleted([...deleted, ...items]);
-			if (viewing) history.push('..');
+			if (viewing) navigate('..');
 		},
-		[deleted, history, viewing]
+		[deleted, viewing, navigate]
 	);
 
 	const handleSave = async () => {
-		await deleteMedia({ media: media.filter((_, i) => deleted.includes(i)).map((m) => m.id) });
-		await refresh();
-		if (viewing) history.push('..');
+		await executeQuery(MUTATE_DELETE_MEDIA, {
+			media: media.filter((_, i) => deleted.includes(i)).map((m) => m.id),
+		});
+		refresh();
+		if (viewing) navigate('..');
 		setDeleted([]);
 	};
 
@@ -88,7 +94,9 @@ export default function MediaPage() {
 		query = query.replace(/#\w*\/?\w* */g, '');
 
 		if (filter)
-			newMedia = newMedia.filter((m) => m.url.toLowerCase().includes(query) || m.name.toLowerCase().includes(query));
+			newMedia = newMedia.filter(
+				(m) => m.url.toLowerCase().includes(query) || m.name.toLowerCase().includes(query)
+			);
 
 		// if (mimes.length) newMedia = newMedia.filter(({ path: p }) =>
 		// 	mimes.filter(m => mime.getType(p)?.startsWith(m)).length);
@@ -121,12 +129,21 @@ export default function MediaPage() {
 						subtitle='Upload, edit, and remove user-uploaded media.'
 					/>
 					<Card.Toolbar>
-						<Btn.Secondary to='/media/upload/' onClick={() => setSelected([])} icon={icon_add} label='Upload Media' />
+						<Btn.Secondary
+							to='/media/upload/'
+							onClick={() => setSelected([])}
+							icon={icon_add}
+							label='Upload Media'
+						/>
 
 						{selected.length > 0 && <Card.Toolbar.Divider />}
 
 						{selected.length === 1 && (
-							<Btn.Tertiary onClick={() => history.push(`${media[selected[0]].id}/`)} icon={icon_view} label='View' />
+							<Btn.Tertiary
+								onClick={() => navigate(`${media[selected[0]].id}/`)}
+								icon={icon_view}
+								label='View'
+							/>
 						)}
 
 						{selected.length > 0 && (
@@ -139,10 +156,25 @@ export default function MediaPage() {
 
 						<Card.Toolbar.Spacer />
 
-						<Btn.Tertiary onClick={refresh} iconOnly icon={icon_view} label='View Options' />
-						<Btn.Tertiary onClick={refresh} iconOnly icon={icon_refresh} label='Refresh' />
+						<Btn.Tertiary
+							onClick={refresh}
+							iconOnly
+							icon={icon_view}
+							label='View Options'
+						/>
+						<Btn.Tertiary
+							onClick={refresh}
+							iconOnly
+							icon={icon_refresh}
+							label='Refresh'
+						/>
 
-						<Btn.Tertiary to='/settings/media/' iconOnly icon={icon_options} label='Media Settings' />
+						<Btn.Tertiary
+							to='/settings/media/'
+							iconOnly
+							icon={icon_options}
+							label='Media Settings'
+						/>
 					</Card.Toolbar>
 
 					<Card.Body>
@@ -161,7 +193,7 @@ export default function MediaPage() {
 												user={data.users?.filter((u) => u.id === item.user)[0]}
 												media={item}
 												key={item.identifier}
-												onClick={(id) => history.push(`${id}/`)}
+												onClick={(id) => navigate(`${id}/`)}
 											/>
 										) : null
 									)
@@ -196,7 +228,7 @@ export default function MediaPage() {
 				</div> */}
 			</div>
 
-			<Modal active={viewingItem !== undefined} onClose={() => history.push('..')}>
+			<Modal active={viewingItem !== undefined} onClose={() => navigate('..')}>
 				{viewingItem && (
 					<MediaView
 						onDelete={() => handleDelete([media.map((a) => a.id).indexOf(viewing!)])}
@@ -212,10 +244,14 @@ export default function MediaPage() {
 					title='Upload Media'
 					subtitle={`Upload new media assets to ${data.info?.name ?? ''}.`}
 				/>
-				<MediaUploadForm onCancel={() => history.push('..')} onUpload={handleUploaded} />
+				<MediaUploadForm onCancel={() => navigate('..')} onUpload={handleUploaded} />
 			</Modal>
 
-			<SavePopup active={deleted.length !== 0} onSave={handleSave} onReset={() => setDeleted([])} />
+			<SavePopup
+				active={deleted.length !== 0}
+				onSave={handleSave}
+				onReset={() => setDeleted([])}
+			/>
 		</Page>
 	);
 }

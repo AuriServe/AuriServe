@@ -42,7 +42,7 @@ export default forwardRef<HTMLDivElement, Props>(function Description(props, ref
 	);
 
 	useEffect(() => {
-		if (props._manual) return;
+		if (props._manual) return undefined;
 		return form.event.bind('validity', (field: string) => {
 			if (field !== props.for) return;
 			setError((last) => updateError(form.fields[props.for], last));

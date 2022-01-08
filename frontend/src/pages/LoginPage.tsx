@@ -1,25 +1,54 @@
-import Cookie from 'js-cookie';
 import { h } from 'preact';
+import Cookie from 'js-cookie';
 import { useState, useRef } from 'preact/hooks';
 
-import { Form, Text, Label } from '../input';
-import { Title, Page, Card, Button } from '../structure';
+import Svg from '../Svg';
+import { Secondary as Button } from '../Button';
+import { Title, Page, Card } from '../structure';
+import { Form, FormSchema, Input } from '../Form';
 
-import { merge } from 'common/util';
+import { assert, merge } from 'common';
+
+import icon_user from '@res/icon/users.svg';
+import icon_rocket from '@res/icon/launch.svg';
 
 interface Props {
 	onLogin: () => void;
 }
 
+const FORM_SCHEMA: FormSchema = {
+	fields: {
+		username: {
+			type: 'text',
+			completion: 'username',
+			validation: {
+				minLength: 3,
+				maxLength: 32,
+			},
+		},
+		password: {
+			type: 'password',
+			completion: 'current-password',
+			validation: {
+				minLength: 8,
+			},
+		},
+	},
+};
+
 export default function LoginPage({ onLogin }: Props) {
-	const userInputRef = useRef<HTMLInputElement>();
-	const [username, setUsername] = useState<string>('');
-	const [password, setPassword] = useState<string>('');
+	const userInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
 	const [state, setState] = useState<'input' | 'pending' | 'auth'>('input');
 	const [warning, setWarning] = useState<string>('');
 
-	const handleSubmit = async () => {
+	const handleSubmit = async ({
+		username,
+		password,
+	}: {
+		username: string;
+		password: string;
+	}) => {
 		try {
 			if (state === 'pending') throw 'Attempt to send request while already logging in.';
 
@@ -44,10 +73,9 @@ export default function LoginPage({ onLogin }: Props) {
 			setState('auth');
 			setTimeout(() => onLogin(), 450);
 		} catch (err) {
+			assert(typeof err === 'string', 'Error message must be a string.');
 			setState('input');
 			setWarning(err);
-			setUsername('');
-			setPassword('');
 			window.requestAnimationFrame(() => userInputRef.current!.select());
 		}
 	};
@@ -57,68 +85,62 @@ export default function LoginPage({ onLogin }: Props) {
 			<Title>Login</Title>
 			<Card
 				class={merge(
-					'w-72 mb-16 transition-all duration-200',
+					'w-72 mb-16 !p-0 transition-all duration-200',
 					state !== 'input' && '!bg-transparent !border-transparent shadow-none px-0'
 				)}>
-				<Form onSubmit={handleSubmit}>
-					<h1 class='sr-only'>AuriServe</h1>
-					<div
-						role='heading'
-						aria-level='2'
-						aria-label='Log In'
+				<h1 class='sr-only'>AuriServe</h1>
+				<div
+					role='heading'
+					aria-level='2'
+					aria-label='Log In'
+					class={merge(
+						'relative transition-all mt-10 mb-6 mx-auto rounded-full bg-gradient-to-tl from-indigo-600 to-blue-500',
+						'ring-8 ring-blue-500/50 dark:ring-blue-600/30 select-none duration-300 transition-all transform',
+						state === 'input' ? 'w-3/5 pb-[calc(3/5*100%)]' : 'w-4/5 pb-[calc(4/5*100%)]',
+						state === 'auth' && 'opacity-0 scale-90 duration-300'
+					)}>
+					<Svg
+						src={icon_user}
 						class={merge(
-							'relative transition-all my-4 mx-auto rounded-full bg-gradient-to-tl from-indigo-600 to-blue-500',
-							'ring-8 ring-blue-500/50 dark:ring-blue-600/30 select-none duration-300 transition transform',
-							state === 'input' ? 'w-2/3 pb-[66.67%]' : 'w-3/4 pb-[75%]',
-							state === 'auth' && 'opacity-0 scale-90 duration-300'
-						)}>
-						<img
-							src='/admin/asset/icon/account-light.svg'
-							alt=''
-							class={merge(
-								'absolute w-full h-full p-8 transition duration-300 transform',
-								state === 'input' ? 'opacity-1' : 'opacity-0 scale-75'
-							)}
-						/>
-						<img
-							src='/admin/asset/icon/serve-light.svg'
-							alt=''
-							class={merge(
-								'absolute w-full h-full p-8 transition-all duration-300 transform',
-								state === 'input' ? 'opacity-0 scale-75' : 'opacity-1',
-								state === 'auth' ? 'left-8 bottom-8 scale-75 delay-75' : 'left-0 bottom-0'
-							)}
-						/>
-					</div>
-					<div
-						class={merge('flex flex-col overflow-hidden', state === 'input' ? 'max-h-80' : 'max-h-0 opacity-0')}
-						style={{ transition: 'max-height 300ms, opacity 200ms' }}>
-						<Label label='Username'>
-							<Text
-								value={username}
-								onValue={setUsername}
-								enabled={state !== 'pending'}
-								completion='username'
-								ref={userInputRef}
-								minLength={3}
-								maxLength={32}
-							/>
-						</Label>
-						<Label label='Password' class='mb-4'>
-							<Text
-								value={password}
-								onValue={setPassword}
-								enabled={state !== 'pending'}
-								completion='current-password'
-								minLength={8}
-								obscure
-							/>
-						</Label>
+							'absolute w-[calc(100%-4rem)] h-[calc(100%-4rem)] icon-p-accent-200 icon-s-accent-400 p-8',
+							'transition-all duration-300 transform',
+							state !== 'input' && 'opacity-0 scale-50'
+						)}
+					/>
+					<Svg
+						src={icon_rocket}
+						alt=''
+						class={merge(
+							'absolute w-[calc(100%-4rem)] h-[calc(100%-4rem)] icon-p-accent-200 icon-s-accent-400 p-8',
+							'transition-all duration-300 transform',
+							state === 'input' && 'opacity-0 scale-50',
+							state === 'auth' ? 'left-8 bottom-8 scale-75 delay-75' : 'left-0 bottom-0'
+						)}
+					/>
+				</div>
+				<div
+					class={merge(
+						'flex flex-col overflow-hidden p-4',
+						state === 'input' ? 'max-h-80' : 'max-h-0 opacity-0'
+					)}
+					style={{ transition: 'max-height 300ms, opacity 200ms' }}>
+					<Form
+						class='flex flex-col gap-y-4'
+						schema={FORM_SCHEMA}
+						onSubmit={handleSubmit}>
+						<Input for='username' />
+						<Input for='password' />
 
-						<p class='text-center text-blue-600 -mt-1 mb-3'>{warning}</p>
-						<Button type='submit' disabled={state === 'pending'} label='Log In' />
-					</div>
-				</Form>
+						{/* <p class='text-center text-blue-600 -mt-1 mb-3'>{warning}</p> */}
+						<Button
+							size={12}
+							class='w-full mt-4'
+							type='submit'
+							disabled={state === 'pending'}
+							label='Log In'
+						/>
+					</Form>
+				</div>
 			</Card>
 			<div
 				class='bg-gradient-to-r from-neutral-100 dark:from-neutral-800 via-neutral-100 dark:via-neutral-800
