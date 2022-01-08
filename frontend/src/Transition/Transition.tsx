@@ -9,6 +9,7 @@ interface Props extends TransitionClasses {
 	[key: string]: any;
 
 	as?: ComponentType<any> | string;
+	useClassName?: boolean;
 
 	show: boolean;
 	duration: number;
@@ -69,8 +70,12 @@ export default function Transition(props: Props) {
 			: [];
 		return children.map((child) =>
 			cloneElement(child, {
-				className: merge(child.props.className, child.props.class, classes),
-				class: undefined,
+				[props.useClassName ? 'className' : 'class']: merge(
+					child.props.className,
+					child.props.class,
+					classes
+				),
+				[props.useClassName ? 'class' : 'className']: undefined,
 			})
 		) as any;
 	}
@@ -81,7 +86,6 @@ export default function Transition(props: Props) {
 	delete renderProps.initial;
 	delete renderProps.class;
 	renderProps.className = merge(props.class, classes);
-	console.log(renderProps.className);
 
 	return <Tag {...renderProps} />;
 }

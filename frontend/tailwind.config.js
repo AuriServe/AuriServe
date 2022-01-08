@@ -220,6 +220,8 @@ module.exports = {
 			addVariant('group-not-hocus', ':merge(.group):not(:hover):not(:focus-visible) &');
 
 			addVariant('not-autofill', '&:not(:autofill)');
+			addVariant('group-active', ':merge(.group):active &');
+			addVariant('active', '&:active');
 		}),
 
 		/**

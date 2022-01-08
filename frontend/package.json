@@ -60,6 +60,7 @@
 		"preact": "^10.6.4",
 		"react-flip-move": "^3.0.4",
 		"react-router-dom": "^6.2.1",
+		"twind": "^0.16.16",
 		"vibin-hooks": "^0.2.0"
 	}
 }

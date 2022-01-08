@@ -40,7 +40,7 @@ export default function LoginPage({ onLogin }: Props) {
 	const userInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
 	const [state, setState] = useState<'input' | 'pending' | 'auth'>('input');
-	const [warning, setWarning] = useState<string>('');
+	const [, setWarning] = useState<string>('');
 
 	const handleSubmit = async ({
 		username,

@@ -228,7 +228,7 @@ export default function MediaPage() {
 				</div> */}
 			</div>
 
-			<Modal active={viewingItem !== undefined} onClose={() => navigate('..')}>
+			<Modal active={viewingItem !== undefined} onClose={() => navigate('/media/')}>
 				{viewingItem && (
 					<MediaView
 						onDelete={() => handleDelete([media.map((a) => a.id).indexOf(viewing!)])}

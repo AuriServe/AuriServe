@@ -32,8 +32,8 @@ export default function MediaIcon(props: Props) {
 		<div
 			class={merge(
 				props.class,
-				'w-18 h-18 bg-neutral-100 dark:bg-neutral-750 icon-p-neutral-100 icon-s-neutral-300',
-				'rounded interact-none grid place-items-center transition'
+				'flex w-18 h-18 bg-neutral-100 dark:bg-neutral-750 icon-p-neutral-100 icon-s-neutral-300',
+				'rounded interact-none place-items-center transition items-center justify-center'
 			)}>
 			{isImage && showImage ? (
 				<img
