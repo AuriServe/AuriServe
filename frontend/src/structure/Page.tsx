@@ -1,6 +1,6 @@
 import { h, ComponentChildren } from 'preact';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 interface Props {
 	class?: string;
@@ -8,5 +8,5 @@ interface Props {
 }
 
 export default function Page(props: Props) {
-	return <div class={merge('pb-14', props.class)}>{props.children}</div>;
+	return <div class={merge(tw`pb-14`, props.class)}>{props.children}</div>;
 }

@@ -26,6 +26,7 @@ import icon_image from '@res/icon/image.svg';
 import icon_trash from '@res/icon/trash.svg';
 import icon_options from '@res/icon/options.svg';
 import icon_refresh from '@res/icon/refresh.svg';
+import { tw } from '../twind';
 
 type SortingMode = 'size' | 'name' | 'uploader' | 'date' | 'type';
 
@@ -38,10 +39,6 @@ const SORTING_FUNCS: { [sorting in SortingMode]: (a: Media, b: Media) => number 
 	date: (a: Media, b: Media) => a.created - b.created,
 	type: () => 0,
 };
-
-// function titleCase(str: string): string {
-// 	return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-// }
 
 export default function MediaPage() {
 	const navigate = useNavigate();
@@ -121,8 +118,8 @@ export default function MediaPage() {
 	return (
 		<Page>
 			<Title>Media</Title>
-			<div class='flex justify-center gap-6 mx-6'>
-				<Card class='flex-grow max-w-screen-xl mt-6 max-w-3xl'>
+			<div class={tw`flex justify-center gap-6 mx-6`}>
+				<Card class={tw`flex-grow max-w-screen-xl mt-6 max-w-3xl`}>
 					<Card.Header
 						icon={icon_image}
 						title='Manage Media'
@@ -184,7 +181,7 @@ export default function MediaPage() {
 								setSelected={setSelected}
 								multi={true}
 								enabled={true}
-								class='grid gap-3 grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'>
+								class={tw`grid-{& cols-[repeat(auto-fit,minmax(350px,1fr))]} gap-3`}>
 								{media
 									.map((item: any, ind: number) =>
 										!deleted.includes(ind) ? (
@@ -202,7 +199,7 @@ export default function MediaPage() {
 						)}
 
 						{(!media || !media.filter((_, i) => !deleted.includes(i)).length) && (
-							<h2 class='text-2xl text-center mt-20 mb-16 pb-2 text-neutral-500'>
+							<h2 class={`text-{2xl center gray-500} mt-20 mb-16 pb-2`}>
 								{!media ? 'Loading media...' : 'No media found.'}
 							</h2>
 						)}

@@ -1,6 +1,6 @@
 import { h, RefObject } from 'preact';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 import Svg from '../Svg';
 
@@ -41,23 +41,24 @@ export default function CardHeader(props: Props) {
 		<div
 			{...passedProps}
 			ref={props.refObj}
-			class={merge('rounded-t-lg bg-white dark:bg-neutral-750 p-4 relative', props.class)}>
+			class={merge(tw`relative p-4 rounded-t-lg bg-{white, dark:gray-750}`, props.class)}>
 			{(props.title !== undefined || props.subtitle !== undefined) && (
 				<div
-					class='flex w-max gap-3 icon-p-neutral-600 icon-s-neutral-400
-					dark:icon-p-neutral-100 dark:icon-s-neutral-300'>
+					class={tw`flex w-max gap-3 icon-p-gray-{600 dark:100} icon-s-gray-{400 dark:300}`}>
 					{props.icon && (
 						<div
-							class={merge(
-								'relative rounded bg-neutral-200 dark:bg-neutral-600',
-								props.subtitle ? 'p-2 w-12 h-12' : 'p-1.5 w-9 h-9'
-							)}>
+							class={tw`relative rounded bg-gray-{200 dark:600}
+							${props.subtitle ? 'p-2 w-12 h-12' : 'p-1.5 w-9 h-9'}`}>
 							<Svg size={props.subtitle ? 8 : 6} src={props.icon} />
 						</div>
 					)}
-					<div class='flex flex-col justify-center'>
-						<h2 class='font-bold uppercase tracking-widest text-neutral-800 dark:text-neutral-100'>{props.title}</h2>
-						{props.subtitle && <p class='text-sm text-neutral-600 dark:text-neutral-200'>{props.subtitle}</p>}
+					<div class={tw`flex-{&, col} justify-center`}>
+						<h2 class={tw`font-bold uppercase tracking-widest text-gray-{800 dark:100}`}>
+							{props.title}
+						</h2>
+						{props.subtitle && (
+							<p class={tw`text-{sm gray-{600 dark:200}}`}>{props.subtitle}</p>
+						)}
 					</div>
 				</div>
 			)}

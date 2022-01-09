@@ -1,6 +1,6 @@
 import { h, ComponentChildren, RefObject } from 'preact';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 export interface Props {
 	// Any default div properties.
@@ -21,7 +21,10 @@ export default function CardFooter(props: Props) {
 		<div
 			{...props}
 			ref={props.refObj}
-			class={merge('p-4 pt-0 text-neutral-300 text-sm font-medium leading-none text-right', props.class)}
+			class={merge(
+				tw`p-4 pt-0 text-{grey-300 sm right} font-medium leading-none`,
+				props.class
+			)}
 		/>
 	);
 }

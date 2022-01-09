@@ -1,12 +1,12 @@
 import { h } from 'preact';
-import { merge } from 'common/util';
 import { forwardRef } from 'preact/compat';
 import { useRef, useState, useMemo, useEffect, useCallback } from 'preact/hooks';
 
 import InputContainer from './InputContainer';
 
-import { ErrorType } from './Type';
+import { tw } from '../twind';
 import { refs } from '../Util';
+import { ErrorType } from './Type';
 
 interface Props {
 	id?: string;
@@ -109,30 +109,12 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 
 	const showInvalid = invalid && shouldShowInvalid;
 
-	// &:-webkit-autofill
-	// 	@apply caret-blue-800
-
-	// 	&::first-line
-	// 		@apply font-sans text-base text-blue-800
-
-	// 	:global(html.dark) &
-	// 		@apply caret-blue-300 p-[calc(0.75rem-3px)] border-4 border-neutral-900
-
-	// 		&::first-line
-	// 			@apply text-blue-300
-
-	// 		transition: border-color 0s, color 75ms
-	// 		-webkit-box-shadow: 0 0 0px 1000px theme('colors.neutral.50') inset
-
-	// 		&:hover, &:focus
-	// 			@apply p-3 !border transition-colors duration-75
-
 	return (
 		<InputContainer
 			label={props.label}
 			labelId={id}
 			invalid={showInvalid}
-			class={merge('isolate', props.class)}
+			class={tw`isolate ${props.class}`}
 			style={props.style}>
 			<Tag
 				ref={refs(ref, fRef)}
@@ -141,20 +123,17 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 				placeholder=' '
 				autocomplete={props.completion}
 				rows={1}
-				class={merge(
-					'peer w-full px-1.5 pt-5 pb-0 rounded scroll-input',
-					'!outline-none resize-none focus:shadow-md',
-					'border-4 border-neutral-input dark:focus:border-neutral-700',
-					'bg-neutral-100 dark:bg-neutral-input dark:focus:bg-neutral-700',
-					'autofill:![-webkit-box-shadow:0_0_0px_1000px_theme(colors.neutral.input)_inset]',
-					'dark:focus:autofill:![-webkit-box-shadow:0_0_0px_1000px_theme(colors.neutral.700)_inset]',
-					'autofill:first-line:!font-sans autofill:first-line:!text-accent-100 autofill:first-line:!text-base',
-					'autofill:![-webkit-text-fill-color:theme(colors.accent.100)] autofill:caret-accent-50',
-					'[transition:color_75ms,border-color_75ms,background-color_75ms,box_shadow_0ms]',
-					showInvalid && 'text-red-800 focus:text-neutral-900',
-					showInvalid &&
-						'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100'
-				)}
+				class={tw`
+					peer w-full px-1.5 pt-5 pb-0 rounded scroll-input !outline-none resize-none focus:shadow-md
+					border-{4,gray-{input,dark:focus:700}} bg-gray-{100,dark:input,dark:focus:700}
+					autofill:![-webkit-box-shadow:0_0_0px_1000px_theme(colors.neutral.input)_inset]
+					dark:focus:autofill:![-webkit-box-shadow:0_0_0px_1000px_theme(colors.neutral.700)_inset]
+					autofill:first-line:{!font-sans,!text-accent-100,!text-base}
+					autofill:{![-webkit-text-fill-color:theme(colors.accent.100)],caret-accent-50}
+					[transition:color_75ms,border-color_75ms,background-color_75ms,box_shadow_0ms]
+					${showInvalid && 'text-{red-{800,dark:200},hover:red-{800,dark:50}}'}
+					${showInvalid && 'text-{focus:gray-{900,dark:100}'}
+				`}
 				value={Tag === 'input' ? value.current : undefined}
 				onInput={handleChange}
 				onFocus={handleFocus}
@@ -164,8 +143,8 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 
 			{props.multiline && (
 				<div
-					class='absolute top-0 w-[calc(100%-16px)] h-6 rounded-tl
-				transition bg-neutral-input dark:peer-focus:bg-neutral-700 interact-none'
+					class={tw`absolute top-0 w-[calc(100%-16px)] h-6 rounded-tl
+					transition bg-neutral-input dark:peer-focus:bg-neutral-700 interact-none`}
 				/>
 			)}
 		</InputContainer>

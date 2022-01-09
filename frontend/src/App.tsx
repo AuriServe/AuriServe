@@ -1,3 +1,4 @@
+import { tw } from './twind';
 import Cookie from 'js-cookie';
 import { h, createContext } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
@@ -66,8 +67,9 @@ export default function App() {
 		<AppContext.Provider value={{ data, mergeData }}>
 			{state === 'LOGIN' ? (
 				<div
-					class='AS_ROOT grid min-h-screen bg-neutral-100 dark:bg-neutral-900
-						icon-p-neutral-500 icon-s-neutral-400 dark:icon-p-neutral-100 dark:icon-s-neutral-300 theme-blue'>
+					class={tw`AS_ROOT grid min-h-screen theme-blue
+						bg-gray-{100,dark:900} text-gray-{800,dark:100}
+						icon-p-gray-{500,dark:100} icon-s-gray-{400,dark:300}`}>
 					<LoginPage onLogin={() => setState('AUTH')} />
 				</div>
 			) : (
@@ -83,7 +85,7 @@ export default function App() {
 						<Route
 							path='/pages/:page'
 							element={
-								<div class='AS_ROOT grid min-h-screen bg-neutral-50 dark:bg-neutral-900'>
+								<div class={tw`AS_ROOT grid min-h-screen bg-gray-{50,dark:900}`}>
 									<EditorControlPage />
 								</div>
 							}
@@ -92,10 +94,10 @@ export default function App() {
 							path='*'
 							element={
 								<div
-									class='AS_ROOT grid pl-14 min-h-screen bg-neutral-100 dark:bg-neutral-900
-										text-neutral-800 dark:text-neutral-100 font-sans icon-p-neutral-500 icon-s-neutral-400
-										dark:icon-p-neutral-100 dark:icon-s-neutral-300 theme-blue'>
-									<div class='grid animate-fadein'>
+									class={tw`AS_ROOT grid min-h-screen font-sans pl-14 theme-blue
+										bg-gray-{100,dark:900} text-gray-{800,dark:100}
+										icon-p-gray-{500,dark:100} icon-s-gray-{400,dark:300}`}>
+									<div class={tw`grid animate-fadein`}>
 										<Sidebar />
 										<Routes>
 											<Route path='/' element={<MainPage />} />

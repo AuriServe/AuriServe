@@ -1,7 +1,7 @@
 import { forwardRef, useMemo } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
 
-import { merge } from 'common/util';
+import { tw } from '../twind';
 
 interface Props {
 	/** The input's label. */
@@ -54,16 +54,16 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
 
 	if (active === undefined) {
 		if (!invalid)
-			classes += ` text-neutral-500 peer-hover:text-neutral-500 peer-focus:text-accent-600
-			dark:text-neutral-300 dark:peer-hover:text-neutral-200 dark:peer-focus:text-accent-300`;
+			classes += ` text-gray-500 peer-hover:text-gray-500 peer-focus:text-accent-600
+			dark:text-gray-300 dark:peer-hover:text-gray-200 dark:peer-focus:text-accent-300`;
 		else
 			classes += ` text-red-900 peer-hover:text-red-800/75 peer-focus:text-red-800
 			dark:text-red-400 dark:peer-hover:text-red-300 dark:peer-focus:text-red-300`;
 	} else if (!invalid)
 		classes += active
 			? ' text-accent-600 dark:text-accent-300'
-			: ` text-neutral-500 dark:text-neutral-300
-			peer-hover:text-neutral-500 dark:peer-hover:text-neutral-200
+			: ` text-gray-500 dark:text-gray-300
+			peer-hover:text-gray-500 dark:peer-hover:text-gray-200
 			peer-focus:text-accent-600 dark:peer-focus:text-accent-300`;
 	else
 		classes += active
@@ -88,18 +88,20 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 	);
 
 	return (
-		<div ref={ref} class={merge('relative group grid w-full h-max ', props.class)} style={props.style}>
+		<div
+			ref={ref}
+			class={tw`relative group grid w-full h-max ${props.class}`}
+			style={props.style}>
 			{props.children}
-			<label for={props.labelId} class={labelStyles}>
+			<label for={props.labelId} class={tw`${labelStyles}`}>
 				{props.label}
 			</label>
 			<div
-				class={merge(
-					'absolute bottom-0 w-full h-0.5 rounded-b transition-all [transform-origin:25%]',
-					'opacity-0 peer-focus:opacity-100 scale-x-75 peer-focus:scale-x-100',
-					props.active && '!opacity-100 !scale-x-100',
-					props.invalid ? 'bg-red-700/75 dark:bg-red-300' : 'bg-accent-500 dark:bg-accent-400'
-				)}
+				class={tw`
+					absolute bottom-0 w-full h-0.5 rounded-b transition-all [transform-origin:25%]
+					opacity-0 peer-focus:opacity-100 scale-x-75 peer-focus:scale-x-100
+					${props.active && '!opacity-100 !scale-x-100'}
+					${props.invalid ? 'bg-red-700/75 dark:bg-red-300' : 'bg-accent-500 dark:bg-accent-400'}`}
 			/>
 		</div>
 	);

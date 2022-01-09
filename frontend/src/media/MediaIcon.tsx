@@ -2,7 +2,7 @@ import { h } from 'preact';
 
 import Svg from '../Svg';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 import icon_document from '@res/icon/file.svg';
 
@@ -25,15 +25,16 @@ const IMAGE_EXTS = ['png', 'svg', 'jpg', 'jpeg', 'svg', 'gif'];
  */
 
 export default function MediaIcon(props: Props) {
-	const isImage = props.image ?? IMAGE_EXTS.filter((p) => props.path.endsWith(`.${p}`)).length > 0;
+	const isImage =
+		props.image ?? IMAGE_EXTS.filter((p) => props.path.endsWith(`.${p}`)).length > 0;
 	const showImage = !props.iconOnly ?? props.image;
 
 	return (
 		<div
 			class={merge(
-				props.class,
-				'flex w-18 h-18 bg-neutral-100 dark:bg-neutral-750 icon-p-neutral-100 icon-s-neutral-300',
-				'rounded interact-none place-items-center transition items-center justify-center'
+				tw`flex w-18 h-18 bg-gray-{100 dark:750} icon-p-gray-100 icon-s-gray-300
+				rounded interact-none place-items-center items-center justify-center transition`,
+				props.class
 			)}>
 			{isImage && showImage ? (
 				<img
@@ -43,7 +44,7 @@ export default function MediaIcon(props: Props) {
 					alt=''
 					loading='lazy'
 					role='presentation'
-					class='object-cover rounded w-full h-full'
+					class={tw`w-full h-full rounded object-cover`}
 				/>
 			) : (
 				<Svg src={icon_document} size={10} />

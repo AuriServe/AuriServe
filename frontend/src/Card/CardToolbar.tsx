@@ -1,7 +1,7 @@
 import { h, RefObject } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 interface Props {
 	// Any default section properties.
@@ -68,9 +68,8 @@ export default function CardToolbar(props: Props) {
 			{...passedProps}
 			ref={handleSetRef}
 			class={merge(
-				'flex gap-2 top-0 py-3 -mt-4 px-4 bg-white dark:bg-neutral-750 z-10 transition-shadow',
-				props.sticky !== false ? 'sticky' : '',
-				isSticky && 'shadow-md',
+				tw`z-10 flex gap-2 top-0 px-4 py-3 -mt-4 bg-{white dark:gray-750} transition-shadow
+				${props.sticky !== false ? 'sticky' : ''} ${isSticky && 'shadow-md'}`,
 				props.class
 			)}>
 			{props.children}
@@ -79,9 +78,9 @@ export default function CardToolbar(props: Props) {
 }
 
 CardToolbar.Spacer = function Spacer() {
-	return <div class='flex-grow' />;
+	return <div class={tw`flex-grow`} />;
 };
 
 CardToolbar.Divider = function Divider() {
-	return <div class='bg-neutral-300 dark:bg-neutral-500 w-0.5 my-2 rounded justify-stretch' />;
+	return <div class={tw`w-0.5 my-2 justify-stretch rounded bg-gray-{300 dark:500}`} />;
 };

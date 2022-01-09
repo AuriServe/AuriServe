@@ -1,6 +1,6 @@
 import { h, ComponentChildren, RefObject } from 'preact';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 export interface Props {
 	// Any default div properties.
@@ -17,5 +17,5 @@ export interface Props {
  */
 
 export default function CardBody(props: Props) {
-	return <div {...props} ref={props.refObj} class={merge('p-4', props.class)} />;
+	return <div {...props} ref={props.refObj} class={merge(tw`p-4`, props.class)} />;
 }

@@ -1,6 +1,8 @@
-import { forwardRef, memo } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
+import { forwardRef, memo } from 'preact/compat';
 import { useEffect, useMemo, useRef } from 'preact/hooks';
+
+import { tw } from '../twind';
 
 import EventEmitter from '../EventEmitter';
 import {
@@ -110,7 +112,7 @@ export default memo(
 			<FormContext.Provider value={context.current}>
 				<form onSubmit={handleSubmit} class={props.class} style={props.style}>
 					{props.children}
-					<input type='submit' class='sr-only' tabIndex={-1} />
+					<input type='submit' class={tw`sr-only`} tabIndex={-1} />
 				</form>
 			</FormContext.Provider>
 		);

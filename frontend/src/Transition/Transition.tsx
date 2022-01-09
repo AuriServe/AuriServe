@@ -85,7 +85,16 @@ export default function Transition(props: Props) {
 	delete renderProps.show;
 	delete renderProps.initial;
 	delete renderProps.class;
-	renderProps.className = merge(props.class, classes);
+	delete renderProps.duration;
+	delete renderProps.enter;
+	delete renderProps.enterFrom;
+	delete renderProps.enterTo;
+	delete renderProps.exit;
+	delete renderProps.exitFrom;
+	delete renderProps.exitTo;
+	delete renderProps.invertExit;
+
+	renderProps[props.useClassName ? 'className' : 'class'] = merge(classes);
 
 	return <Tag {...renderProps} />;
 }

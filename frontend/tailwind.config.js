@@ -50,6 +50,11 @@ module.exports = {
 				750: varColor('neutral-750'),
 				input: varColor('neutral-input'),
 			},
+			gray: {
+				...varColorSwatch('gray'),
+				750: varColor('gray-750'),
+				input: varColor('gray-input'),
+			},
 			accent: varColorSwatch('accent'),
 			blue: varColorSwatch('accent'),
 			indigo: varColorSwatch('accent'),

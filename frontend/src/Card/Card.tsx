@@ -1,6 +1,6 @@
 import { h, ComponentChildren, RefObject, ComponentType } from 'preact';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 import CardBody from './CardBody';
 import CardHeader from './CardHeader';
@@ -30,7 +30,7 @@ function Card(props: Props) {
 		<Tag
 			{...props}
 			ref={props.refObj}
-			class={merge('block bg-white dark:bg-neutral-800 rounded-lg shadow-md', props.class)}
+			class={merge(tw`block bg-{white,dark:gray-800} rounded-lg shadow-md`, props.class)}
 		/>
 	);
 }
