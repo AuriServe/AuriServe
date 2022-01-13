@@ -1,17 +1,8 @@
-identifier: routes
 name: Routes
+identifier: routes
 description: Adds routing functionality to AuriServe.
-author: Auri
 
 version: 0.0.1
+author: Auri
 
-entry:
-  server: dist/server.js
-  # client:
-  #   script: dist/client.js
-  #   style: dist/client.css
-
-watch:
-- dist/server.js
-# - dist/client.js
-# - dist/view.js
+entry: dist/server.js

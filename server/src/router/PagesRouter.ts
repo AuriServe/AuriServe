@@ -22,20 +22,25 @@ export default class PagesRouter extends Router {
 			const validImageExtensions = ['png', 'jpg'];
 			const validResolutions = { preload: 32, thumbnail: 128 };
 
-			let resolution: string = Object.keys(validResolutions).filter(
+			const resolution: string = Object.keys(validResolutions).filter(
 				(res) => (req.query.res || '') === res
 			)[0];
-			let matched: string = validImageExtensions.filter((ext) =>
-				req.params.asset.endsWith('.' + ext)
+
+			const matched: string = validImageExtensions.filter((ext) =>
+				req.params.asset.endsWith(`.${ext}`)
 			)[0];
-			if (!resolution || !matched) return next();
+
+			if (!resolution || !matched) {
+				next();
+				return;
+			}
 
 			const p = path.join(this.dataPath, 'media', req.params.asset);
 			const destP = path.join(
 				this.dataPath,
 				'media',
 				'.cache',
-				req.params.asset + '.' + req.query.res
+				`${req.params.asset}.${req.query.res}`
 			);
 
 			try {
@@ -44,7 +49,8 @@ export default class PagesRouter extends Router {
 				try {
 					await fs.access(p, fsc.R_OK);
 				} catch {
-					return next();
+					next();
+					return;
 				}
 
 				const image = await jimp.read(

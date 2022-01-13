@@ -5,7 +5,6 @@ import { promises as fs, constants as fsc } from 'fs';
 
 import MediaModel, { IMedia } from './model/Media';
 
-
 /**
  * Handles media elements, including image optimization and file uploading.
  */
@@ -13,11 +12,14 @@ import MediaModel, { IMedia } from './model/Media';
 export default class Media {
 	constructor(private dataPath: string) {
 		// Create media folder
-		fs.access(path.join(this.dataPath, 'media'), fsc.R_OK).catch(_ => fs.mkdir(path.join(this.dataPath, 'media')));
+		fs.access(path.join(this.dataPath, 'media'), fsc.R_OK).catch((_) =>
+			fs.mkdir(path.join(this.dataPath, 'media'))
+		);
 		// Create media cache folder
-		fs.access(path.join(this.dataPath, 'media', '.cache'), fsc.R_OK).catch(_ => fs.mkdir(path.join(this.dataPath, 'media', '.cache')));
-	};
-
+		fs.access(path.join(this.dataPath, 'media', '.cache'), fsc.R_OK).catch((_) =>
+			fs.mkdir(path.join(this.dataPath, 'media', '.cache'))
+		);
+	}
 
 	/**
 	 * Gets a media document from its id.
@@ -30,7 +32,6 @@ export default class Media {
 		return MediaModel.findById(id);
 	}
 
-
 	/**
 	 * Lists all media documents.
 	 *
@@ -38,7 +39,6 @@ export default class Media {
 	 */
 
 	listMedia = (): Promise<IMedia[]> => MediaModel.find({}) as any;
-
 
 	/**
 	 * Adds a new media element to the database, or replaces an existing one.
@@ -51,26 +51,34 @@ export default class Media {
 	 * @returns a promise to a boolean indicating success.
 	 */
 
-	async addMedia(uploader: ObjectId, upload: UploadedFile, name: string | undefined,
-		fileName: string | undefined, replace?: ObjectId): Promise<boolean> {
-
+	async addMedia(
+		uploader: ObjectId,
+		upload: UploadedFile,
+		name: string | undefined,
+		fileName: string | undefined,
+		replace?: ObjectId
+	): Promise<boolean> {
 		if ((fileName && fileName.length > 32) || (name && name.length > 32)) return false;
 
 		// TODO: Implement fullness check.
 		const full = false;
 		if (full) return false;
 
-		const media: IMedia = (replace ? await MediaModel.findById(replace) : null) ?? new MediaModel({});
+		const media: IMedia =
+			(replace ? await MediaModel.findById(replace) : null) ?? new MediaModel({});
 		if (media.isNew && (!fileName || !name)) return false;
 
 		media.name = name ?? media.name;
 		media.fileName = fileName ?? media.fileName;
 
-		const res = await media.acceptUpload(upload, uploader, path.join(this.dataPath, 'media'));
+		const res = await media.acceptUpload(
+			upload,
+			uploader,
+			path.join(this.dataPath, 'media')
+		);
 		if (res) await media.save();
 		return res;
 	}
-
 
 	/**
 	 * Removes a media element by its id.
@@ -80,12 +88,17 @@ export default class Media {
 	 * @returns the deleted media document, or null if it did not exist.
 	 */
 
-	async removeMedia(id: ObjectId, deleteFile: boolean = true) {
+	async removeMedia(id: ObjectId, deleteFile = true) {
 		const media = await MediaModel.findByIdAndDelete(id);
 		if (!media) return null;
 		if (deleteFile) {
-			try { await fs.unlink(path.join(this.dataPath, 'media', media.fileName + '.' + media.extension)); }
-			catch (e) { /** The file doesn't exist. This is safe to ignore. */ }
+			try {
+				await fs.unlink(
+					path.join(this.dataPath, 'media', `${media.fileName  }.${  media.extension}`)
+				);
+			} catch (e) {
+				/** The file doesn't exist. This is safe to ignore. */
+			}
 		}
 		return media;
 	}

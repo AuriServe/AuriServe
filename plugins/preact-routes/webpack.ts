@@ -10,10 +10,10 @@ export default function (_: any, argv: { mode: string }) {
 	 */
 
 	return {
-		name: 'main',
+		name: 'server',
 		target: 'node',
 		context: resolve(__dirname, 'src'),
-		entry: './Main.ts',
+		entry: './Server.ts',
 
 		output: {
 			path: resolve(__dirname, 'dist'),

@@ -104,11 +104,11 @@ export default class Server {
 				cert = fss.readFileSync(resolvePath(this.conf.https.cert), 'utf8').toString();
 				key = fss.readFileSync(resolvePath(this.conf.https.key), 'utf8').toString();
 			} catch (e) {
-				assert(false, 'Failed to read HTTPS key/certificate files.\n ' + e);
+				assert(false, `Failed to read HTTPS key/certificate files.\n ${  e}`);
 			}
 
 			const http = HTTP.createServer(this.forwardHttps.bind(this) as any);
-			const https = HTTPS.createServer({ cert: cert, key: key }, this.app);
+			const https = HTTPS.createServer({ cert, key }, this.app);
 			wsServer = new WebSocketServer({ httpServer: https, autoAcceptConnections: false });
 
 			awaitListen = Promise.all([
@@ -190,12 +190,12 @@ export default class Server {
 		}
 
 		const loc =
-			'https://' +
+			`https://${ 
 			host.replace(
 				(this.conf.port || 80).toString(),
 				(this.conf.https!.port || 443).toString()
-			) +
-			req.url;
+			) 
+			}${req.url}`;
 		res.writeHead(301, { Location: loc });
 		res.end();
 	}

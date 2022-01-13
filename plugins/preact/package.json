@@ -1,12 +1,13 @@
 {
-	"name": "@auriserve/plugin-routes",
-	"version": "0.0.1",
-	"description": "Routing Plugin for AuriServe",
+	"name": "@auriserve/plugin-preact",
+	"version": "1.0.0",
+	"description": "Exposes a Preact instance to plugins",
 	"author": "Auri <me@auri.xyz>",
-	"license": "UNLICENSED",
+	"types": "src/Main.d.ts",
+	"license": "MIT",
 	"scripts": {
-		"dist": "webpack --mode=production --progress --config ./webpack.ts",
-		"dev": "webpack --mode=development --watch --progress --config ./webpack.ts"
+		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=production --progress --config ./webpack.ts",
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=development --watch --progress --config ./webpack.ts"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -32,6 +33,8 @@
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/dist",
-		"common": "file:../../common/dist"
+		"common": "file:../../common/dist",
+		"preact": "^10.6.4",
+		"preact-render-to-string": "^5.1.19"
 	}
 }

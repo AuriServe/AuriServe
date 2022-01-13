@@ -7,19 +7,20 @@ import yaml from 'js-yaml';
 import Plugin from './Plugin';
 import Logger from '../Logger';
 import Watcher from '../Watcher';
-import Manifest from './Manifest';
+import { Manifest } from './Manifest';
 import PluginManager from './PluginManager';
 
 /** Manages finding, toggling, and loading plugins.*/
 export default class PluginLoader {
-
 	/** A map of plugin source watchers indexed by their identifiers. */
 	private watchers: Map<string, Watcher> = new Map();
 
 	constructor(private manager: PluginManager, private watch: boolean) {
 		// Create plugins directory if it doesn't exist.
-		fs.access(this.manager.pluginsPath, fsc.R_OK).catch(() => fs.mkdir(this.manager.pluginsPath));
-	};
+		fs.access(this.manager.pluginsPath, fsc.R_OK).catch(() =>
+			fs.mkdir(this.manager.pluginsPath)
+		);
+	}
 
 	/**
 	 * If watching is enabled, enabled plugins' source files will be watched,
@@ -32,14 +33,17 @@ export default class PluginLoader {
 		if (this.watch === watch) return;
 		this.watch = watch;
 
-		if (this.watch) this.manager.listEnabled().forEach(plugin => this.startWatch(plugin.identifier));
-		else for(let p of this.watchers.keys()) this.stopWatch(p);
+		if (this.watch)
+			this.manager
+				.listEnabled()
+				.forEach((plugin) => this.startWatch(plugin.manifest.identifier));
+		else for (const p of this.watchers.keys()) this.stopWatch(p);
 	}
 
 	/** Discover all plugins in the directory and updates the plugins list. */
 	async refresh() {
 		const pluginDirs = await fs.readdir(this.manager.pluginsPath);
-		await Promise.all(pluginDirs.map(async dirName => await this.loadPlugin(dirName)));
+		await Promise.all(pluginDirs.map(async (dirName) => await this.loadPlugin(dirName)));
 	}
 
 	pluginEnabled(identifier: string) {
@@ -53,46 +57,102 @@ export default class PluginLoader {
 	/** Reads a plugin directory and returns a Plugin. Throws if the plugin is invalid. */
 	private async loadPlugin(dirName: string) {
 		try {
-			let manifestStr = await fs.readFile(path.join(this.manager.pluginsPath, dirName, 'manifest.yaml'), 'utf8')
-				.catch(() => assert(false, 'Missing manifest.yaml.')) as string;
+			const manifestStr = (await fs
+				.readFile(path.join(this.manager.pluginsPath, dirName, 'manifest.yaml'), 'utf8')
+				.catch(() => assert(false, 'Missing manifest.yaml.'))) as string;
 
 			let manifest: Manifest;
 			try {
 				manifest = yaml.load(manifestStr, { schema: yaml.FAILSAFE_SCHEMA }) as Manifest;
-			}
-			catch (e) {
+			} catch (e) {
 				assert(e instanceof yaml.YAMLException, `YAML parsing error: ${e}`);
-				assert(false, `Invalid manifest.yaml: ${e.reason} at ${e.mark.line}:${e.mark.column}`);
+				assert(
+					false,
+					`Invalid manifest.yaml: ${e.reason} at ${e.mark.line}:${e.mark.column}`
+				);
 			}
 
-			assertSchema<Manifest>(manifest, {
-				identifier: 'string',
-				name: 'string',
-				description: 'string',
-				version: 'string',
-				author: 'string',
-				entry: {
-					server: [ 'undefined', 'string', { script: [ 'undefined', 'string' ] } ],
-					client: [ 'undefined', 'string', { script: [ 'undefined', 'string' ], style: [ 'undefined', 'string' ] } ]
+			assertSchema<Manifest>(
+				manifest,
+				{
+					name: 'string',
+					identifier: 'string',
+					description: 'string',
+
+					author: 'string',
+					version: 'string',
+					depends: ['undefined', 'string[]'],
+
+					entry: [
+						'string',
+						{
+							server: ['undefined', 'string', { script: ['undefined', 'string'] }],
+							client: [
+								'undefined',
+								'string',
+								{ script: ['undefined', 'string'], style: ['undefined', 'string'] },
+							],
+						},
+					],
+					watch: ['undefined', 'string[]'],
 				},
-				watch: [ 'undefined', 'string[]' ]
-			}, 'Invalid manifest.yaml');
+				'Invalid manifest.yaml'
+			);
 
-			assert(dirName === manifest.identifier, `Folder name must be '${manifest.identifier}'.`);
+			assert(
+				dirName === manifest.identifier,
+				`Folder name must be '${manifest.identifier}'.`
+			);
 
-			let sourcePaths = Object.values(manifest.entry).reduce<string[]>((paths, entry) => {
-				if (typeof entry === 'string') paths.push(path.join(this.manager.pluginsPath, dirName, entry));
-				else paths.push(...(Object.values(entry) as string[]).map(sourcePath =>
-					path.join(this.manager.pluginsPath, dirName, sourcePath)));
-				return paths;
-			}, []);
+			const entry = {
+				server:
+					typeof manifest.entry === 'string'
+						? { script: manifest.entry }
+						: typeof manifest.entry.server === 'string'
+						? { script: manifest.entry.server }
+						: manifest.entry.server ?? {},
+				client:
+					typeof manifest.entry.client === 'string'
+						? { script: manifest.entry.client }
+						: manifest.entry.client ?? {},
+			};
 
-			await Promise.all(sourcePaths.map(async (sourcePath: string) =>
-				await fs.access(sourcePath).catch(_ => assert(false, `Source file '${sourcePath}' not found.`))));
+			const watch = [
+				...new Set([
+					...(manifest.watch ?? []),
+					...Object.values(entry).reduce<string[]>((paths, entry) => {
+						paths.push(...Object.values(entry).filter(Boolean));
+						return paths;
+					}, []),
+				]),
+			];
 
-			this.manager.addPlugin(new Plugin(this.manager, manifest));
-		}
-		catch (e) {
+			await Promise.all(
+				watch.map((sourcePath: string) =>
+					fs
+						.access(path.join(this.manager.pluginsPath, manifest.identifier, sourcePath))
+						.catch((_) =>
+							assert(
+								false,
+								`Source/watch file '${path.join(
+									'plugins',
+									manifest.identifier,
+									sourcePath
+								)}' not found.`
+							)
+						)
+				)
+			);
+
+			const depends = (manifest.depends ?? []).map((str) => {
+				const [identifier, version] = str.split(' ');
+				return { identifier, version };
+			});
+
+			this.manager.addPlugin(
+				new Plugin(this.manager, { ...manifest, depends, entry, watch })
+			);
+		} catch (e) {
 			Logger.error('Encountered an error parsing plugin %s:\n %s', dirName, e);
 		}
 	}
@@ -101,12 +161,20 @@ export default class PluginLoader {
 	private startWatch(identifier: string) {
 		this.stopWatch(identifier);
 		const plugin = this.manager.get(identifier);
-		assert(plugin !== undefined, `Plugin '${identifier}' cannot be watched, as it does not exist.`);
-		assert(plugin.manifest.watch && plugin.manifest.watch.length > 0,
-			`Plugin '${identifier}' has no sources to watch.`);
+		assert(
+			plugin !== undefined,
+			`Plugin '${identifier}' cannot be watched, as it does not exist.`
+		);
+		assert(
+			plugin.manifest.watch && plugin.manifest.watch.length > 0,
+			`Plugin '${identifier}' has no sources to watch.`
+		);
 
-		const watcher = new Watcher(plugin.manifest.watch
-			.map(file => path.join(this.manager.pluginsPath, identifier, file)));
+		const watcher = new Watcher(
+			plugin.manifest.watch.map((file) =>
+				path.join(this.manager.pluginsPath, identifier, file)
+			)
+		);
 
 		watcher.bind(async () => {
 			Logger.debug(`Plugin '${identifier}' source files changed, reloading.`);

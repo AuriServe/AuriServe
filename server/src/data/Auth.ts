@@ -13,7 +13,6 @@ export const PURGE_INTERVAL = 1000 * 60 * 15;
 /** The time of last token purge. */
 let lastPurge = 0;
 
-
 /**
  * Accepts a username and password and, if they are valid, creates or renews an access token.
  *
@@ -24,17 +23,21 @@ let lastPurge = 0;
 
 export const getToken = async (username: string, password: string) => {
 	const user = await User.findOne({ username });
-	if (!user || !await user.passwordEquals(password)) throw 'Incorrect username or password';
+	if (!user || !(await user.passwordEquals(password)))
+		throw 'Incorrect username or password';
 
-	return (await AuthToken.findOneAndUpdate({ user: user._id }, {
-		$set: { until: Date.now() + TOKEN_TIMEOUT },
-		$setOnInsert: {
-			user: user._id,
-			token: (await crypto.randomBytes(48)).toString()
-		}
-	}, { upsert: true, new: true }))!.token;
+	return (await AuthToken.findOneAndUpdate(
+		{ user: user._id },
+		{
+			$set: { until: Date.now() + TOKEN_TIMEOUT },
+			$setOnInsert: {
+				user: user._id,
+				token: (await crypto.randomBytes(48)).toString(),
+			},
+		},
+		{ upsert: true, new: true }
+	))!.token;
 };
-
 
 /**
  * Purges authentication tokens that are expired, or that no longer belong to a user.
@@ -47,9 +50,10 @@ export const purgeExpiredTokens = async () => {
 	const now = Date.now();
 	lastPurge = now;
 	const users = (await User.find({}, '_id')).map((u: IUser) => u._id);
-	await AuthToken.deleteMany({ $or: [ { until: { $lt: now } }, { _id: { $nin: users } } ] });
+	await AuthToken.deleteMany({
+		$or: [{ until: { $lt: now } }, { _id: { $nin: users } }],
+	});
 };
-
 
 /**
  * Tests a token against the database and, if valid, returns the user associated with it.
@@ -65,7 +69,6 @@ export const testToken = async (token: string) => {
 	return User.findById(id);
 };
 
-
 /**
  * Removes all authentication tokens for the specified user, effectively logging them out.
  *
@@ -73,8 +76,8 @@ export const testToken = async (token: string) => {
  * @returns a boolean indicating if any tokens were removed.
  */
 
-export const removeTokensForUser = async (id: ObjectId) => (await AuthToken.deleteMany({ user: id } as any)).deletedCount > 0;
-
+export const removeTokensForUser = async (id: ObjectId) =>
+	(await AuthToken.deleteMany({ user: id } as any)).deletedCount > 0;
 
 /**
  * Gets a user document from its id.
@@ -84,7 +87,6 @@ export const removeTokensForUser = async (id: ObjectId) => (await AuthToken.dele
  */
 
 export const getUser = async (id: ObjectId) => User.findById(id);
-
 
 /**
  * Adds a new user to the database.
@@ -99,7 +101,7 @@ export const addUser = async (username: string, password: string) => {
 		username,
 		password,
 		emails: [],
-		roles: []
+		roles: [],
 	});
 };
 
@@ -114,7 +116,6 @@ export const addRolesToUser = async (id: ObjectId, roles: ObjectId[]) => {
 	await User.updateOne({ id }, { $addToSet: { roles } });
 };
 
-
 /**
  * Removes a user from the database by its id.
  *
@@ -126,7 +127,6 @@ export const removeUser = async (id: ObjectId) => {
 	removeTokensForUser(id);
 	return User.findByIdAndDelete(id);
 };
-
 
 /**
  * Gets a list of all user documents.

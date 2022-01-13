@@ -12,9 +12,9 @@ export default class Elements {
 	}
 
 	getAllElements(): Map<string, ServerDefinition> {
-		let map: Map<string, ServerDefinition> = new Map();
-		for (let m of this.lists) {
-			for (let [k, v] of m) map.set(k, v);
+		const map: Map<string, ServerDefinition> = new Map();
+		for (const m of this.lists) {
+			for (const [k, v] of m) map.set(k, v);
 		}
 		return map;
 	}

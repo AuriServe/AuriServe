@@ -9,16 +9,13 @@ const style = {
 
 	'background-color': 'white',
 	'border': '2px solid #ccc',
-	'border-radius': '8px'
+	'border-radius': '8px',
 };
 
 export default function UndefinedElement(props: any) {
-	return (
-		h('div', { class: 'UndefinedElement', style: style },
-			h('p', null,
-				h('strong', null, props.elem),
-				' is undefined.'
-			)
-		)
+	return h(
+		'div',
+		{ class: 'UndefinedElement', style },
+		h('p', null, h('strong', null, props.elem), ' is undefined.')
 	);
 }

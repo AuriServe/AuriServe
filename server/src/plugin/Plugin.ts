@@ -1,36 +1,23 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
-import Manifest from './Manifest';
+import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
 
 type EventFn = (event: any) => void;
 type EventProps = { once: boolean };
 
 export default class Plugin {
-	readonly identifier: string;
-	readonly watch: string[];
-
-	private enabled: boolean = false;
-
+	private enabled = false;
 	private events: Map<string, Map<EventFn, EventProps>> = new Map();
 
-	constructor(private manager: PluginManager, readonly manifest: Manifest) {
-		this.identifier = manifest.identifier;
-
-		this.watch = manifest.watch ?? Object.values(manifest.entry).reduce<string[]>((paths, entry) => {
-			if (typeof entry === 'string') paths.push(path.join(this.manager.pluginsPath, this.identifier, entry));
-			else paths.push(...(Object.values(entry) as string[]).map(sourcePath =>
-				path.join(this.manager.pluginsPath, this.identifier, sourcePath)));
-			return paths;
-		}, []);
-	}
+	constructor(private manager: PluginManager, readonly manifest: ParsedManifest) {}
 
 	isEnabled(): boolean {
 		return this.enabled;
 	}
 
-	async enable(forceReload: boolean = false): Promise<boolean> {
+	async enable(forceReload = false): Promise<boolean> {
 		if (this.enabled) {
 			if (forceReload) this.disable();
 			else return false;
@@ -38,11 +25,16 @@ export default class Plugin {
 
 		this.enabled = true;
 
-		const serverEntry = this.getEntry('server', 'script');
-		if (serverEntry) {
-			const entryPath = await fs.realpath(path.resolve(this.manager.pluginsPath, this.identifier, serverEntry));
-			delete require.cache[entryPath];
+		if (this.manifest.entry.server.script) {
+			const entryPath = await fs.realpath(
+				path.resolve(
+					this.manager.pluginsPath,
+					this.manifest.identifier,
+					this.manifest.entry.server.script
+				)
+			);
 
+			delete require.cache[entryPath];
 			(global as any)._CONTEXT = this.createContext();
 			require(entryPath);
 			delete (global as any)._CONTEXT;
@@ -51,23 +43,12 @@ export default class Plugin {
 		return true;
 	}
 
-	disable(shutdown: boolean = false) {
+	disable(shutdown = false) {
 		if (!this.enabled) return false;
 		this.emit('cleanup', { shutdown });
 		this.events.clear();
 		this.enabled = false;
 		return true;
-	}
-
-	getEntry(context: 'server' | 'client', type: 'script' | 'style'): string | null {
-		const entry = this.manifest.entry[context];
-		if (!entry) return null;
-		if (typeof entry === 'string') {
-			if (type === 'script') return entry;
-			else return null;
-		}
-		if ((entry as any)[type]) return (entry as any)[type];
-		return null;
 	}
 
 	on(event: string, fn: EventFn) {
@@ -86,10 +67,10 @@ export default class Plugin {
 	}
 
 	emit(event: string, eventObj: any) {
-		let map = this.events.get(event);
+		const map = this.events.get(event);
 		if (!map) return;
 
-		for (let [ fn, props ] of map) {
+		for (const [fn, props] of map) {
 			fn(eventObj);
 			if (props.once) map.delete(fn);
 		}
@@ -102,29 +83,39 @@ export default class Plugin {
 			once: this.once.bind(this),
 			off: this.off.bind(this),
 			emit: this.manager.emit.bind(this.manager),
-			api: new Proxy({}, {
-				get: (_, req) => {
-					switch(req) {
-					case 'core': return core;
-					case 'has': return (identifier: string) => this.manager.apiRegistry.has(identifier);
-					case 'export': return (identifier: string, api: any) => this.manager.apiRegistry.set(identifier, api);
-					case 'unexport': return (identifier: string) => {
-						if (!this.manager.apiRegistry.has(identifier)) return false;
-						this.manager.apiRegistry.delete(identifier);
+			api: new Proxy(
+				{},
+				{
+					get: (_, req) => {
+						switch (req) {
+							case 'core':
+								return core;
+							case 'has':
+								return (identifier: string) => this.manager.apiRegistry.has(identifier);
+							case 'export':
+								return (identifier: string, api: any) =>
+									this.manager.apiRegistry.set(identifier, api);
+							case 'unexport':
+								return (identifier: string) => {
+									if (!this.manager.apiRegistry.has(identifier)) return false;
+									this.manager.apiRegistry.delete(identifier);
+									return true;
+								};
+							default: {
+								if (!this.manager.apiRegistry.has(req.toString()))
+									throw new Error(
+										`Required API '${req.toString()}' has not been exported.`
+									);
+								return this.manager.apiRegistry.get(req.toString());
+							}
+						}
+					},
+					set: (_, identifier, api) => {
+						this.manager.apiRegistry.set(identifier.toString(), api);
 						return true;
-					};
-					default: {
-						if (!this.manager.apiRegistry.has(req.toString()))
-							throw new Error(`Required API '${req.toString()}' has not been exported.`);
-						return this.manager.apiRegistry.get(req.toString());
-					}
-					}
-				},
-				set: (_, identifier, api) => {
-					this.manager.apiRegistry.set(identifier.toString(), api);
-					return true;
+					},
 				}
-			})
+			),
 		};
 
 		return core.api;

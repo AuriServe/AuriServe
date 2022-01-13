@@ -35,7 +35,6 @@ export interface Theme {
 
 /** Manages finding, toggling, and loading themes.*/
 export default class Themes {
-
 	/** A map of themes indexed by their identifiers. */
 	private themes: Map<string, Theme> = new Map();
 
@@ -46,13 +45,14 @@ export default class Themes {
 	private watchers: Map<string, Watcher> = new Map();
 
 	/** A map of callback identifiers to callbacks. */
-	private callbacks: Map<string, Function[]> = new Map();
+	private callbacks: Map<string, ((event?: any) => void)[]> = new Map();
 
 	constructor(private dataPath: string, private watch: boolean) {
 		// Create themes directory if it doesn't exist.
-		fs.access(path.join(this.dataPath, 'themes'), fsc.R_OK).catch(
-			_ => fs.mkdir(path.join(this.dataPath, 'themes')));
-	};
+		fs.access(path.join(this.dataPath, 'themes'), fsc.R_OK).catch((_) =>
+			fs.mkdir(path.join(this.dataPath, 'themes'))
+		);
+	}
 
 	/**
 	 * If watching is enabled, enabled themes' source files will be watched,
@@ -61,21 +61,22 @@ export default class Themes {
 	 * @param watch - Whether watching should be enabled.
 	 */
 
-	 setWatch(watch: boolean) {
+	setWatch(watch: boolean) {
 		if (this.watch === watch) return;
 		this.watch = watch;
 
 		if (this.watch) {
-			this.themes.forEach(p => {	if (p.enabled) this.startWatch(p.identifier); });
-		}
-		else {
-			for(let p of this.watchers.keys()) this.stopWatch(p);
+			this.themes.forEach((p) => {
+				if (p.enabled) this.startWatch(p.identifier);
+			});
+		} else {
+			for (const p of this.watchers.keys()) this.stopWatch(p);
 		}
 	}
 
 	/** Enables only the themes specified. */
 	async setEnabled(identifiers: string[]) {
-		this.themes.forEach(t => {
+		this.themes.forEach((t) => {
 			const enabled = identifiers.includes(t.identifier);
 			if (t.enabled === enabled) return;
 
@@ -113,12 +114,12 @@ export default class Themes {
 
 	/** Gets a list of enabled themes. */
 	listEnabled() {
-		return [ ...this.themes.values() ].filter(t => t.enabled);
+		return [...this.themes.values()].filter((t) => t.enabled);
 	}
 
 	/** Gets a list of all themes. */
 	listAll() {
-		return [ ...this.themes.values() ];
+		return [...this.themes.values()];
 	}
 
 	/** Gets all enabled layouts. */
@@ -128,24 +129,25 @@ export default class Themes {
 
 	/** Discover all themes in the directory and updates the themes list. */
 	async refresh() {
-		this.themes.forEach(t => t.enabled = false);
+		this.themes.forEach((t) => (t.enabled = false));
 		this.themes.clear();
 
-		const enabled = ((await Properties.findOne())?.enabled.themes ?? []);
+		const enabled = (await Properties.findOne())?.enabled.themes ?? [];
 		const themeDirs = await fs.readdir(path.join(this.dataPath, 'themes'));
-		await Promise.all(themeDirs.map(async dirName => {
-			if (dirName === OUT_FILE) return;
+		await Promise.all(
+			themeDirs.map(async (dirName) => {
+				if (dirName === OUT_FILE) return;
 
-			try {
-				const theme = await this.parseTheme(dirName);
-				theme.enabled = enabled.includes(theme.identifier);
-				this.themes.set(theme.identifier, theme);
-				if (this.watch && theme.enabled) this.startWatch(theme.identifier);
-			}
-			catch (e) {
-				Logger.error('Encountered an error parsing theme %s:\n %s', dirName, e);
-			}
-		}));
+				try {
+					const theme = await this.parseTheme(dirName);
+					theme.enabled = enabled.includes(theme.identifier);
+					this.themes.set(theme.identifier, theme);
+					if (this.watch && theme.enabled) this.startWatch(theme.identifier);
+				} catch (e) {
+					Logger.error('Encountered an error parsing theme %s:\n %s', dirName, e);
+				}
+			})
+		);
 
 		this.buildThemes();
 	}
@@ -156,20 +158,28 @@ export default class Themes {
 		this.themes.clear();
 	}
 
-	bind(event: string, cb: Function) {
+	bind(event: string, cb: (event?: any) => void) {
 		if (!this.callbacks.has(event)) this.callbacks.set(event, []);
 		this.callbacks.get(event)!.push(cb);
 	}
 
-	unbind(event: string, cb: Function) {
+	unbind(event: string, cb: (event?: any) => void) {
 		if (!this.callbacks.has(event)) return;
-		this.callbacks.get(event)!.filter(c => c !== cb);
+		this.callbacks.get(event)!.filter((c) => c !== cb);
 	}
 
 	/** Saves the current list of enabled themes to the database. */
 	private async syncToDb() {
-		await Properties.updateOne({}, { $set: { 'enabled.themes':
-			[ ...this.themes.values() ].filter(t => t.enabled).map(t => t.identifier) } });
+		await Properties.updateOne(
+			{},
+			{
+				$set: {
+					'enabled.themes': [...this.themes.values()]
+						.filter((t) => t.enabled)
+						.map((t) => t.identifier),
+				},
+			}
+		);
 	}
 
 	/** Reads a theme directory and returns a Theme. Throws if the theme is invalid. */
@@ -177,23 +187,40 @@ export default class Themes {
 		const confPath = path.join(this.dataPath, 'themes', identifier, 'theme.json');
 		const theme: Theme = JSON.parse((await fs.readFile(confPath)).toString());
 
+		assert(
+			[theme.identifier, theme.name, theme.author, theme.description]
+				.map((v) => isType(v, 'string'))
+				.filter((t: any) => t === false).length === 0,
+			'Theme is missing metadata (identifier, name, author, description).'
+		);
 
-		assert([ theme.identifier, theme.name, theme.author, theme.description ]
-			.map(v => isType(v, 'string')).filter((t: any) => t === false).length === 0,
-		'Theme is missing metadata (identifier, name, author, description).');
+		assert(
+			identifier === theme.identifier,
+			'Theme identifier does not match directory name.'
+		);
 
-		assert(identifier === theme.identifier, 'Theme identifier does not match directory name.');
-
-		assert(identifier === toIdentifier(theme.identifier, 3, 32, false),
-			'Theme identifier must be lowercase alphanumeric and at least 3 characters.');
+		assert(
+			identifier === toIdentifier(theme.identifier, 3, 32, false),
+			'Theme identifier must be lowercase alphanumeric and at least 3 characters.'
+		);
 
 		assert(isType(theme.sources, 'object'), 'Theme must contain a sources object.');
 
 		// Assert that all theme sources exist.
 		const themeRoot = path.join(path.dirname(confPath), theme.sourceRoot ?? '.');
-		await Promise.all(Object.entries(theme.sources).map(async ([ source, sourcePath ]) =>
-			await fs.access(path.join(themeRoot, sourcePath!)).catch(_ =>
-				assert(false, `Source file \'${sourcePath}\' not found for source \'${source}\'.`))));
+		await Promise.all(
+			Object.entries(theme.sources).map(
+				async ([source, sourcePath]) =>
+					await fs
+						.access(path.join(themeRoot, sourcePath!))
+						.catch((_) =>
+							assert(
+								false,
+								`Source file '${sourcePath}' not found for source '${source}'.`
+							)
+						)
+			)
+		);
 
 		return theme;
 	}
@@ -201,38 +228,74 @@ export default class Themes {
 	/** Combines all theme styles into a single CSS document and writes it to OUT_FILE, loads layouts. */
 	private async buildThemes() {
 		const resetPromise = new Promise<string>((resolve) =>
-			fss.readFile(CSS_RESET_PATH, (_, res) => resolve(res.toString())));
+			fss.readFile(CSS_RESET_PATH, (_, res) => resolve(res.toString()))
+		);
 
-		const themesPromise = Promise.all([ ...this.themes.values() ]
-			.filter(t => t.enabled && t.sources.style)
-			.map(theme => fs.readFile(path.join(this.dataPath, 'themes', theme.identifier,
-				theme.sourceRoot ?? '.', theme.sources.style!))));
+		const themesPromise = Promise.all(
+			[...this.themes.values()]
+				.filter((t) => t.enabled && t.sources.style)
+				.map((theme) =>
+					fs.readFile(
+						path.join(
+							this.dataPath,
+							'themes',
+							theme.identifier,
+							theme.sourceRoot ?? '.',
+							theme.sources.style!
+						)
+					)
+				)
+		);
 
-		await fs.writeFile(path.join(this.dataPath, 'themes', OUT_FILE),
-			[ (await resetPromise).toString(), ...await themesPromise ].join('\n'), { flag: 'w' });
+		await fs.writeFile(
+			path.join(this.dataPath, 'themes', OUT_FILE),
+			[(await resetPromise).toString(), ...(await themesPromise)].join('\n'),
+			{ flag: 'w' }
+		);
 
 		this.layouts.clear();
 		this.layouts.set('default', DEFAULT_LAYOUT_PATH);
-		await Promise.all([ ...this.themes.values() ].map(async theme => {
-			if (!theme.enabled || !theme.sources.layout) return;
+		await Promise.all(
+			[...this.themes.values()].map(async (theme) => {
+				if (!theme.enabled || !theme.sources.layout) return;
 
-			const layoutRoot = path.join(this.dataPath, 'themes', theme.identifier,
-				theme.sourceRoot ?? '.', theme.sources.layout);
-			(await fs.readdir(layoutRoot)).map(layoutName => {
-				if (layoutName.endsWith('.html')) this.layouts.set(
-					layoutName.replace(/\.html$/, ''), path.join(layoutRoot, layoutName));
-			});
-		}));
+				const layoutRoot = path.join(
+					this.dataPath,
+					'themes',
+					theme.identifier,
+					theme.sourceRoot ?? '.',
+					theme.sources.layout
+				);
+				(await fs.readdir(layoutRoot)).map((layoutName) => {
+					if (layoutName.endsWith('.html'))
+						this.layouts.set(
+							layoutName.replace(/\.html$/, ''),
+							path.join(layoutRoot, layoutName)
+						);
+				});
+			})
+		);
 	}
 
 	/** Begins watching a theme's source files for changes. */
 	private startWatch(identifier: string) {
 		this.stopWatch(identifier);
 		const theme = this.themes.get(identifier);
-		assert(theme !== undefined, `Theme '${identifier}' cannot be watched, as it does not exist.`);
+		assert(
+			theme !== undefined,
+			`Theme '${identifier}' cannot be watched, as it does not exist.`
+		);
 
 		const paths = Object.values(theme.sources).reduce<string[]>((paths, sourcePath) => {
-			paths.push(path.join(this.dataPath, 'themes', identifier, theme.sourceRoot ?? '.', sourcePath));
+			paths.push(
+				path.join(
+					this.dataPath,
+					'themes',
+					identifier,
+					theme.sourceRoot ?? '.',
+					sourcePath
+				)
+			);
 			return paths;
 		}, []);
 
@@ -255,6 +318,6 @@ export default class Themes {
 	/** Triggers a CSS rebuild when a theme changes. */
 	private async watchCallback(identifier: string) {
 		Logger.debug(`Theme '${identifier}' source files changed, reloading.`);
-		this.buildThemes().then(() => this.callbacks.get('refresh')?.forEach(cb => cb()));
+		this.buildThemes().then(() => this.callbacks.get('refresh')?.forEach((cb) => cb()));
 	}
 }

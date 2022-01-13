@@ -5,7 +5,6 @@ import { ObjectId } from 'mongodb';
 import { UploadedFile } from 'express-fileupload';
 import { promises as fs, constants as fsc } from 'fs';
 
-
 /**
  * A temporary authentication token for a single user.
  */
@@ -44,10 +43,9 @@ export const MediaSchema = new Mongoose.Schema<IMedia>({
 
 	size: {
 		width: { type: Number },
-		height: { type: Number }
-	}
+		height: { type: Number },
+	},
 });
-
 
 /**
  * Accepts an uploaded file, updates this document to refer to it,
@@ -59,27 +57,42 @@ export const MediaSchema = new Mongoose.Schema<IMedia>({
  * @returns a promise to a boolean indicating success.
  */
 
-MediaSchema.method('acceptUpload', async function(this: IMedia, upload: UploadedFile, uploader: ObjectId, destPath: string) {
-	const extension = upload.name.substr(upload.name.lastIndexOf('.') + 1);
-	const fullPath = path.join(destPath, this.fileName + '.' + extension);
+MediaSchema.method(
+	'acceptUpload',
+	async function (
+		this: IMedia,
+		upload: UploadedFile,
+		uploader: ObjectId,
+		destPath: string
+	) {
+		const extension = upload.name.substring(upload.name.lastIndexOf('.') + 1);
+		const fullPath = path.join(destPath, `${this.fileName  }.${  extension}`);
 
-	try { await fs.access(fullPath, fsc.R_OK); return false; }
-	catch (e) { /* An exception here indicates that no file has this file's path. */ }
+		try {
+			await fs.access(fullPath, fsc.R_OK);
+			return false;
+		} catch (e) {
+			/* An exception here indicates that no file has this file's path. */
+		}
 
-	await upload.mv(fullPath);
+		await upload.mv(fullPath);
 
-	this.bytes = upload.size;
-	this.extension = extension;
+		this.bytes = upload.size;
+		this.extension = extension;
 
-	try { this.size = await sizeOf(fullPath); }
-	catch (e) { this.size = {}; }
-	this.markModified('size');
+		try {
+			this.size = await sizeOf(fullPath);
+		} catch (e) {
+			this.size = {};
+		}
+		this.markModified('size');
 
-	this.uploader = uploader;
-	this.lastModifier = uploader;
-	this.lastModified = Date.now();
+		this.uploader = uploader;
+		this.lastModifier = uploader;
+		this.lastModified = Date.now();
 
-	return true;
-});
+		return true;
+	}
+);
 
 export default Mongoose.model('Media', MediaSchema);

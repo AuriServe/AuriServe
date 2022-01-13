@@ -16,14 +16,16 @@ export default class Watcher {
 	}
 
 	unbind(cb: () => void) {
-		this.callbacks = this.callbacks.filter(c => c !== cb);
+		this.callbacks = this.callbacks.filter((c) => c !== cb);
 	}
 
 	start() {
 		this.stop();
 		this.controller = new AbortController();
-		this.paths.forEach(async path => {
-			fs.watch(path, { persistent: false, signal: this.controller.signal }, () => this.onChangeDebounced());
+		this.paths.forEach(async (path) => {
+			fs.watch(path, { persistent: false, signal: this.controller.signal }, () =>
+				this.onChangeDebounced()
+			);
 		});
 	}
 
@@ -33,6 +35,6 @@ export default class Watcher {
 	}
 
 	private onChange() {
-		this.callbacks.forEach(cb => cb());
+		this.callbacks.forEach((cb) => cb());
 	}
 }

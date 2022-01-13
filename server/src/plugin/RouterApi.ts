@@ -1,11 +1,12 @@
 import Express from 'express';
 
-const METHODS = [ 'get', 'post', 'put', 'delete', 'patch', 'all' ] as const;
+const METHODS = ['get', 'post', 'put', 'delete', 'patch', 'all'] as const;
 type Method = typeof METHODS[number];
 
 export default class RouterApi {
 	private router = Express.Router();
-	private handlers: Map<Express.RequestHandler, { path: string; method: Method }> = new Map();
+	private handlers: Map<Express.RequestHandler, { path: string; method: Method }> =
+		new Map();
 
 	constructor(app: Express.Application) {
 		app.use((req, res, next) => this.router(req, res, next));
@@ -59,7 +60,7 @@ export default class RouterApi {
 
 	private refreshRouter() {
 		this.router = Express.Router();
-		for (let [ handler, { path, method } ] of this.handlers) {
+		for (const [handler, { path, method }] of this.handlers) {
 			this.router[method](path, handler);
 		}
 	}

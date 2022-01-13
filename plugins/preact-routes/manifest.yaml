@@ -1,0 +1,13 @@
+name: Preact Routse
+identifier: preact-routes
+description: Adds preact routes that can be used with the routes plugin.
+
+version: 0.0.1
+author: Auri
+depends:
+- routes ^0.0.1
+- preact ^1.0.0
+
+entry:
+  server: dist/server.js
+

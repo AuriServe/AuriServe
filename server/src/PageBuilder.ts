@@ -163,7 +163,6 @@
 // 		return html;
 // 	}
 
-
 // 	/**
 // 	 * Renders an error page, returning an error code and an HTML document.
 // 	 *
@@ -182,7 +181,6 @@
 // 			.replace('$ERROR_STACK$', `<code><pre>${error.stack}</pre></code>`);
 // 	}
 
-
 // 	/**
 // 	 * Returns a raw page document, not ready for use.
 // 	 * Throws if there is no page at the requested path.
@@ -199,7 +197,6 @@
 // 			assert(false, 'Page not found.', RenderError, 404);
 // 		}
 // 	}
-
 
 // 	/**
 // 	 * Returns a page that has been prepared for use.
@@ -229,7 +226,6 @@
 // 			assert(false, 'Page not found.');
 // 		}
 // 	}
-
 
 // 	/**
 // 	 * Returns a map of PageMetadata objects for each page.
@@ -271,7 +267,6 @@
 // 		return pages;
 // 	}
 
-
 // 	/**
 // 	 * Writes new data to a page.
 // 	 * Throws if the requested page doesn't exist or it isn't updateable.
@@ -285,7 +280,6 @@
 // 		await fs.writeFile(p, JSON.stringify(obj))
 // 			.catch(e => assert(false, `Error updating page file '${p}'.\n ${e}`));
 // 	}
-
 
 // 	/**
 // 	 * Renders an element tree into HTML.
@@ -305,7 +299,6 @@
 // 		Logger.perfEnd('Rendering tree ' + identifier);
 // 		return res;
 // 	}
-
 
 // 	/**
 // 	 * Creates Preact elements recursively, starting at the provided element.
@@ -329,7 +322,6 @@
 // 		return Preact.h(render.element, { ...elem.props, children: children });
 // 	}
 
-
 // 	/**
 // 	 * Recursively expands includes in a tree.
 // 	 * Directly manipulates the passed-in object, does not return anything.
@@ -350,7 +342,6 @@
 // 		for (let child of element.children || []) await this.includeTree(child, pathRoot);
 // 	}
 
-
 // 	/**
 // 	 * Recursively exposes a page, storing named references to all elements containing
 // 	 * an 'exposeAs' key. Returns a key-value map of the elements organized by tree.
@@ -365,7 +356,6 @@
 // 		});
 // 		return exposedMap;
 // 	}
-
 
 // 	/**
 // 	 * Recursively exposes a tree, storing named references to all elements containing
@@ -385,7 +375,6 @@
 // 		return exposedTree;
 // 	}
 
-
 // 	/**
 // 	 * Recursively parses the properties of an element tree.
 // 	 * Directly manipulates the passed-in object, does not return anything.
@@ -402,7 +391,6 @@
 
 // 		for (let child of parse.children || []) await this.parseTree(tree, child, media, exposed);
 // 	}
-
 
 // 	/**
 // 	 * Expands an include into a tree, overriding exposed properties with include props.
@@ -421,7 +409,6 @@
 // 		return element;
 // 	}
 
-
 // 	/**
 // 	 * Recursively overrides template children exposed props with include override props.
 // 	 * Manipulates the passed in elemDef, does not return anything.
@@ -437,7 +424,6 @@
 // 		for (let child of (elemDef as Page.ComponentNode).children ?? [])
 // 			if (Page.isComponentNode(child)) await this.overrideTree(child, includeOverrides);
 // 	}
-
 
 // 	/**
 // 	 * Reads a Prop Ref and returns a list of keys.
@@ -468,7 +454,6 @@
 
 // 		return { page, tree, exposed };
 // 	}
-
 
 // 	/**
 // 	 * Applies transformations to a non-trivial property,

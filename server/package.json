@@ -1,89 +1,82 @@
 {
-  "name": "@auriserve/server",
-  "version": "0.0.0",
-  "description": "Core Server for AuriServe",
-  "main": "src/Main.js",
-  "bin": "src/Main.js",
-  "keywords": [
-    "auriserve",
-    "server",
-    "express"
-  ],
-  "author": "Auri <me@auri.xyz>",
-  "homepage": "https://github.com/AuriServe",
-  "license": "AGPL-3.0-only",
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AuriServe/AuriServe.git"
-  },
-  "scripts": {
-    "dev": "nodemon",
-    "debug": "node --inspect -r ts-node/register src/Main.ts -- --verbose",
-    "lint": "eslint -c .eslintrc.js src/**/*.ts",
-    "build": "npm run lint && tsc --project tsconfig.json && nexe --target linux-x86-14.15.3 --name AuriServe --output dist/AuriServe -r 'src/views/*' -r 'interface/dist/*' -r 'interface/res/**/*' && npm run clean",
-    "clean": "find src -name '*.js' -type f -delete"
-  },
-  "nodemonConfig": {
-    "watch": [
-      "src"
-    ],
-    "ext": ".ts,.js,.tsx,.json",
-    "exec": "npm run lint & ts-node --project tsconfig.json src/Main.ts -- --verbose",
-    "quiet": true
-  },
-  "bugs": {
-    "url": "https://github.com/AuriServe/AuriServe/issues"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.2",
-    "@types/compression": "^1.7.2",
-    "@types/cookie-parser": "^1.4.2",
-    "@types/debounce": "^1.2.1",
-    "@types/escape-html": "^1.0.1",
-    "@types/express-fileupload": "^1.1.7",
-    "@types/js-yaml": "^4.0.5",
-    "@types/jsdom": "^16.2.13",
-    "@types/mime": "^2.0.3",
-    "@types/minimist": "^1.2.2",
-    "@types/node": "^16.11.6",
-    "@types/prompt": "^1.1.1",
-    "@types/websocket": "^1.0.4",
-    "@typescript-eslint/eslint-plugin": "^5.3.0",
-    "@typescript-eslint/parser": "^5.3.0",
-    "eslint": "^8.1.0",
-    "eslint-plugin-jsdoc": "^37.0.3",
-    "frontend": "file:../frontend",
-    "nodemon": "^2.0.14",
-    "pkg": "^5.4.1",
-    "typescript": "^4.4.4"
-  },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "common": "file:../common/dist",
-    "compression": "^1.7.4",
-    "cookie-parser": "^1.4.5",
-    "debounce": "^1.2.1",
-    "escape-html": "^1.0.3",
-    "express": "^4.17.1",
-    "express-fileupload": "^1.2.1",
-    "graphql": "^16.0.1",
-    "image-size": "^1.0.0",
-    "jimp": "^0.16.1",
-    "js-yaml": "^4.1.0",
-    "log4js": "^6.3.0",
-    "mime": "^2.6.0",
-    "minimist": "^1.2.5",
-    "mongodb": "^4.1.3",
-    "mongoose": "^6.0.12",
-    "preact": "^10.5.15",
-    "preact-render-to-string": "^5.1.19",
-    "prompt": "^1.2.0",
-    "rate-limiter-flexible": "^2.3.3",
-    "ts-node": "^10.4.0",
-    "tslib": "^2.3.1",
-    "websocket": "^1.0.34"
-  }
+	"name": "@auriserve/server",
+	"version": "0.0.0",
+	"description": "Core Server for AuriServe",
+	"main": "src/Main.js",
+	"bin": "src/Main.js",
+	"keywords": [
+		"auriserve",
+		"server",
+		"express"
+	],
+	"author": "Auri <me@auri.xyz>",
+	"homepage": "https://github.com/AuriServe",
+	"license": "AGPL-3.0-only",
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AuriServe/AuriServe.git"
+	},
+	"scripts": {
+		"dev": "nodemon",
+		"debug": "node --inspect -r ts-node/register src/Main.ts -- --verbose",
+		"build": "eslint src/**/*.ts & tsc --project tsconfig.json && nexe --target linux-x86-14.15.3 --name AuriServe --output dist/AuriServe -r 'src/views/*' -r 'interface/dist/*' -r 'interface/res/**/*' && npm run clean",
+		"clean": "find src -name '*.js' -type f -delete"
+	},
+	"nodemonConfig": {
+		"watch": [
+			"src"
+		],
+		"ext": ".ts,.js,.tsx,.json,.yaml",
+		"exec": "eslint src/**/*.ts & ts-node --project tsconfig.json src/Main.ts -- --verbose",
+		"quiet": true
+	},
+	"bugs": {
+		"url": "https://github.com/AuriServe/AuriServe/issues"
+	},
+	"devDependencies": {
+		"@types/bcryptjs": "^2.4.2",
+		"@types/compression": "^1.7.2",
+		"@types/cookie-parser": "^1.4.2",
+		"@types/debounce": "^1.2.1",
+		"@types/escape-html": "^1.0.1",
+		"@types/express-fileupload": "^1.1.7",
+		"@types/js-yaml": "^4.0.5",
+		"@types/jsdom": "^16.2.13",
+		"@types/mime": "^2.0.3",
+		"@types/minimist": "^1.2.2",
+		"@types/prompt": "^1.1.1",
+		"@types/websocket": "^1.0.4",
+		"eslint": "^8.1.0",
+		"eslint-plugin-jsdoc": "^37.0.3",
+		"frontend": "file:../frontend",
+		"nodemon": "^2.0.14",
+		"pkg": "^5.4.1"
+	},
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"common": "file:../common/dist",
+		"compression": "^1.7.4",
+		"cookie-parser": "^1.4.5",
+		"debounce": "^1.2.1",
+		"escape-html": "^1.0.3",
+		"express": "^4.17.1",
+		"express-fileupload": "^1.2.1",
+		"graphql": "^16.0.1",
+		"image-size": "^1.0.0",
+		"jimp": "^0.16.1",
+		"js-yaml": "^4.1.0",
+		"log4js": "^6.3.0",
+		"mime": "^2.6.0",
+		"minimist": "^1.2.5",
+		"mongodb": "^4.1.3",
+		"mongoose": "^6.0.12",
+		"preact": "^10.5.15",
+		"preact-render-to-string": "^5.1.19",
+		"prompt": "^1.2.0",
+		"rate-limiter-flexible": "^2.3.3",
+		"websocket": "^1.0.34"
+	}
 }

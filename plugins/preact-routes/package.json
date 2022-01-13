@@ -1,9 +1,9 @@
 {
-	"name": "@auriserve/plugin-routes",
+	"name": "@auriserve/plugin-preact-routes",
 	"version": "0.0.1",
-	"description": "Routing Plugin for AuriServe",
+	"description": "Adds preact routes that can be used with the routes plugin.",
 	"author": "Auri <me@auri.xyz>",
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"scripts": {
 		"dist": "webpack --mode=production --progress --config ./webpack.ts",
 		"dev": "webpack --mode=development --watch --progress --config ./webpack.ts"
@@ -20,6 +20,7 @@
 	},
 	"sideEffects": false,
 	"devDependencies": {
+		"@types/preact": "file:../preact",
 		"@babel/core": "^7.16.7",
 		"@babel/preset-typescript": "^7.16.7",
 		"@typescript-eslint/eslint-plugin": "^5.9.1",

@@ -16,12 +16,23 @@ export interface Req {
 	body: string;
 }
 
+/**
+ * The Routes API.
+ * Allows objects deriving the Route interface to be bound to specific paths,
+ * which will be called by the server when a request is made.
+ */
+
 export default class Routes {
+	/** An abstract route class that can be extended with a custom `render` function. */
 	BaseRoute: typeof BaseRoute = BaseRoute;
 
+	/** The root Route object. */
 	private root: Route | null = null;
+
+	/** The error Route object. */
 	private error: Route | null = null;
 
+	/** Creates a Routes Req object from an Express Request. */
 	static createReq(req: Request): Req {
 		return {
 			path: req.path.split('/').filter(Boolean).join('/'),
@@ -30,40 +41,59 @@ export default class Routes {
 		};
 	}
 
+	/** Returns the route at the specified path, or null. */
 	get(path: string): Route | null {
 		if (!this.root) return null;
 		return this.root.get(path.split('/').filter(Boolean).join('/'));
 	}
 
+	/** Returns the root route. */
 	getRoot(): Route | null {
 		return this.get('/');
 	}
 
+	/** Sets the root route. */
 	setRoot(root: Route | null) {
 		this.root = root;
 	}
 
+	/** Sets the error route. */
 	setErrorRoute(route: Route | null) {
 		this.error = route;
 	}
 
+	/** Handles a GET request and sends the render result of a Route if there is one at the specified path. */
 	handleGet = (req: Request, res: Response, next: NextFunction) => {
-		if (!this.root) return next();
+		if (!this.root) {
+			next();
+			return;
+		}
 
 		const routeRes = this.root.req(Routes.createReq(req));
-		if (routeRes === null) return next();
+		if (routeRes === null) {
+			next();
+			return;
+		}
 
 		res.send(routeRes);
 	};
 
+	/** Returns a GET handler for a specific error code. */
 	getErrorHandler(errorCode: number, errorMessage?: string) {
 		return (req: Request, res: Response, next: NextFunction) => {
-			if (!this.error) return next();
+			if (!this.error) {
+				next();
+				return;
+			}
 
-			const routeRes = this.error.req({ ...Routes.createReq(req), errorCode, errorMessage });
-			if (routeRes === null) return res.sendStatus(404);
+			const routeRes = this.error.req({
+				...Routes.createReq(req),
+				errorCode,
+				errorMessage,
+			});
 
-			res.send(routeRes);
+			if (routeRes === null) res.sendStatus(404);
+			else res.send(routeRes);
 		};
 	}
 }

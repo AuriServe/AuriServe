@@ -39,16 +39,14 @@ export abstract class BaseRoute implements Route {
 	get(path: string): Route | null {
 		if (path === this.path) return this;
 		const childSegment = path.substring(this.path.length).split('/')[0];
-		if (childSegment && this.children.has(childSegment)) return this.children.get(childSegment)!.get(path);
-		return null;
+		return this.children.get(childSegment)?.get(path) ?? null;
 	}
 
 	req(req: Req) {
 		console.log(this.children);
 		if (this.path === req.path) return this.render(req);
 		const childSegment = req.path.substring(this.path.length).split('/')[0];
-		if (childSegment && this.children.has(childSegment)) return this.children.get(childSegment)!.req(req);
-		return null;
+		return this.children.get(childSegment)?.req(req) ?? null;
 	}
 
 	abstract render(req: Req): string;

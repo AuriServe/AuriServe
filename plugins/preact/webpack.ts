@@ -17,7 +17,7 @@ export default function (_: any, argv: { mode: string }) {
 
 		output: {
 			path: resolve(__dirname, 'dist'),
-			filename: 'server.js',
+			filename: 'main.js',
 		},
 
 		resolve: {

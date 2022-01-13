@@ -1,6 +1,6 @@
 export {};
 
-import type { Routes } from './Server';
+import type { Routes } from './Main';
 
 declare global {
 	interface AuriServeAPI {

@@ -1,6 +1,5 @@
 import Mongoose from 'mongoose';
 
-
 /**
  * A user role with a list of abilities.
  */
@@ -16,7 +15,7 @@ export const RoleSchema = new Mongoose.Schema<IRole>({
 	creator: { type: {}, required: true },
 	name: { type: String, required: true },
 	color: { type: {} },
-	abilities: { type: [String], required: true }
+	abilities: { type: [String], required: true },
 });
 
 export default Mongoose.model('Role', RoleSchema);

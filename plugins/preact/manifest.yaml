@@ -1,0 +1,8 @@
+name: Preact
+identifier: preact
+description: Exposes a Preact instance to plugins.
+
+version: 1.0.0
+author: Auri
+
+entry: dist/main.js
