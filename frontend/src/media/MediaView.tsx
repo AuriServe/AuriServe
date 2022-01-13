@@ -31,8 +31,8 @@ export default function MediaView({ user, media, onDelete }: Props) {
 
 	return (
 		<div class={tw`w-screen max-w-3xl`}>
-			<Card.Header class={tw`flex-{& row} gap-3 items-center`}>
-				<MediaIcon path={media.url} iconOnly={true} class={tw`!bg-gray-{100 dark:600}`} />
+			<Card.Header class={tw`flex-(& row) gap-3 items-center`}>
+				<MediaIcon path={media.url} iconOnly={true} class={tw`!bg-gray-(100 dark:600)`} />
 
 				<div class={tw`text-left overflow-hidden flex-grow`}>
 					<p class={tw`truncate font-medium text-gray-100`}>{media.name}</p>
@@ -61,7 +61,7 @@ export default function MediaView({ user, media, onDelete }: Props) {
 						class={tw`w-full h-max min-w-16 max-h-128 object-contain rounded`}
 					/>
 				) : (
-					<div class={tw`py-20 w-full flex-{& col} items-center gap-4`}>
+					<div class={tw`py-20 w-full flex-(& col) items-center gap-4`}>
 						<p class={tw`text-gray-300 font-medium`}>
 							&nbsp;Can't preview this type of file.
 						</p>

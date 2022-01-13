@@ -1,15 +1,21 @@
+/* eslint-disable */
+
 const colors = require('tailwindcss/colors');
 const plugin = require('tailwindcss/plugin');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
-const varColor = (color) => ({ opacityValue }) => `rgba(var(--theme-${color}), ${opacityValue ?? 1})`;
+const varColor =
+	(color) =>
+	({ opacityValue }) =>
+		`rgba(var(--theme-${color}), ${opacityValue ?? 1})`;
 
 const varColorSwatch = (color) => {
 	const colors = {};
-	[ 50, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
-		.forEach(weight => colors[weight] = varColor(`${color}-${weight}`));
+	[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].forEach(
+		(weight) => (colors[weight] = varColor(`${color}-${weight}`))
+	);
 	return colors;
-}
+};
 
 module.exports = {
 	content: ['./src/**/*.sss', './src/**/*.tsx', './src/**/*.tw'],

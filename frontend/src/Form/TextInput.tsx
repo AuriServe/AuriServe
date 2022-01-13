@@ -125,14 +125,14 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 				rows={1}
 				class={tw`
 					peer w-full px-1.5 pt-5 pb-0 rounded scroll-input !outline-none resize-none focus:shadow-md
-					border-{4,gray-{input,dark:focus:700}} bg-gray-{100,dark:input,dark:focus:700}
+					border-(4 gray-(input dark:focus:700)) bg-gray-(100 dark:input dark:focus:700)
 					autofill:![-webkit-box-shadow:0_0_0px_1000px_theme(colors.neutral.input)_inset]
 					dark:focus:autofill:![-webkit-box-shadow:0_0_0px_1000px_theme(colors.neutral.700)_inset]
-					autofill:first-line:{!font-sans,!text-accent-100,!text-base}
-					autofill:{![-webkit-text-fill-color:theme(colors.accent.100)],caret-accent-50}
-					[transition:color_75ms,border-color_75ms,background-color_75ms,box_shadow_0ms]
-					${showInvalid && 'text-{red-{800,dark:200},hover:red-{800,dark:50}}'}
-					${showInvalid && 'text-{focus:gray-{900,dark:100}'}
+					autofill:first-line:(!font-sans !text-accent-100 !text-base)
+					autofill:(![-webkit-text-fill-color:theme(colors.accent.100)] caret-accent-50)
+					[transition:color_75ms,border-color_75ms,background-color_75ms,box-shadow_0ms]
+					${showInvalid && 'text-(red-(800,dark:200),hover:red-(800,dark:500))'}
+					${showInvalid && 'text-(focus:gray-(900,dark:100)'}
 				`}
 				value={Tag === 'input' ? value.current : undefined}
 				onInput={handleChange}

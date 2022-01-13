@@ -1,25 +1,24 @@
-import { tw } from './twind';
 import Cookie from 'js-cookie';
+import * as Int from 'common/graph/type';
 import { h, createContext } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 import Sidebar from './Sidebar';
 import CommandPalette from './ShortcutPalette';
+
+import { tw } from './twind';
+
 import {
 	LoginPage,
 	MainPage,
 	PagesPage,
 	MediaPage,
-	UserPage,
+	// UserPage,
 	SettingsPage,
 	EditorControlPage,
 	EditorRendererPage,
 } from './pages';
-
-import './Tailwind.tw';
-
-import * as Int from 'common/graph/type';
 
 type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
@@ -68,8 +67,8 @@ export default function App() {
 			{state === 'LOGIN' ? (
 				<div
 					class={tw`AS_ROOT grid min-h-screen theme-blue
-						bg-gray-{100,dark:900} text-gray-{800,dark:100}
-						icon-p-gray-{500,dark:100} icon-s-gray-{400,dark:300}`}>
+						bg-gray-(100,dark:900) text-gray-(800,dark:100)
+						icon-p-gray-(500,dark:100) icon-s-gray-(400,dark:300)`}>
 					<LoginPage onLogin={() => setState('AUTH')} />
 				</div>
 			) : (
@@ -85,7 +84,7 @@ export default function App() {
 						<Route
 							path='/pages/:page'
 							element={
-								<div class={tw`AS_ROOT grid min-h-screen bg-gray-{50,dark:900}`}>
+								<div class={tw`AS_ROOT grid min-h-screen bg-gray-(50,dark:900)`}>
 									<EditorControlPage />
 								</div>
 							}
@@ -95,8 +94,8 @@ export default function App() {
 							element={
 								<div
 									class={tw`AS_ROOT grid min-h-screen font-sans pl-14 theme-blue
-										bg-gray-{100,dark:900} text-gray-{800,dark:100}
-										icon-p-gray-{500,dark:100} icon-s-gray-{400,dark:300}`}>
+										bg-gray-(100,dark:900) text-gray-(800,dark:100)
+										icon-p-gray-(500,dark:100) icon-s-gray-(400,dark:300)`}>
 									<div class={tw`grid animate-fadein`}>
 										<Sidebar />
 										<Routes>
@@ -105,7 +104,7 @@ export default function App() {
 											<Route path='/media/' element={<MediaPage />} />
 											<Route path='/media/:id' element={<MediaPage />} />
 											<Route path='/settings/*' element={<SettingsPage />} />
-											<Route path='/users/:id' element={<UserPage />} />
+											{/* <Route path='/users/:id' element={<UserPage />} /> */}
 											<Route element={<Navigate to='/' />} />
 										</Routes>
 									</div>

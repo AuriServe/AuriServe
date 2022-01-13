@@ -19,9 +19,9 @@ export default function MainPage() {
 		<Page>
 			<Title>Home</Title>
 
-			<div class={tw`text-center flex-{& col-reverse} my-12`}>
-				<h2 class={tw`text-{gray-100 2xl} mt-1`}>{info?.name}</h2>
-				<h3 class={tw`text-{gray-300 xs} font-medium tracking-widest uppercase`}>
+			<div class={tw`text-center flex-(& col-reverse) my-12`}>
+				<h2 class={tw`text-(gray-100 2xl) mt-1`}>{info?.name}</h2>
+				<h3 class={tw`text-(gray-300 xs) font-medium tracking-widest uppercase`}>
 					{info?.domain}
 				</h3>
 			</div>
@@ -29,7 +29,7 @@ export default function MainPage() {
 			<TileLayout>
 				<TileLayout.Grid class={tw`mx-auto my-6 max-w-5xl`} gap={4} columns={3}>
 					<TileLayout.Tile width={3} height={2}>
-						<div class={tw`flex-{& wrap} justify-center gap-4`}>
+						<div class={tw`flex-(& wrap) justify-center gap-4`}>
 							{getShortcuts()
 								.slice(1, 7)
 								.map((s, i) => (
@@ -45,7 +45,7 @@ export default function MainPage() {
 											<Svg
 												src={s.icon}
 												class={tw`w-8 rounded-l-md transition px-5 py-8 transition
-										dark:bg-gray-{750 group-hocus:700}
+										dark:bg-gray-(750 group-hocus:700)
 										group-hocus:icon-p-accent-50 group-hocus:icon-s-accent-400`}
 											/>
 										)}

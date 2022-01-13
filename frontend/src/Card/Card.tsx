@@ -30,7 +30,7 @@ function Card(props: Props) {
 		<Tag
 			{...props}
 			ref={props.refObj}
-			class={merge(tw`block bg-{white,dark:gray-800} rounded-lg shadow-md`, props.class)}
+			class={merge(tw`block bg-(white,dark:gray-800) rounded-lg shadow-md`, props.class)}
 		/>
 	);
 }

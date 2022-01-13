@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-import Card from './Card';
+import Card from '../Card';
 import Button from './Button';
 
 import { merge } from 'common/util';

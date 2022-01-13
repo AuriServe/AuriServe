@@ -1,8 +1,28 @@
-import { defineConfig, twind as create, cssom, css, colorFromTheme } from '@twind/core';
+import {
+	defineConfig,
+	escape,
+	twind as create,
+	dom,
+	css,
+	colorFromTheme,
+} from '@twind/core';
 
 import tailwind from '@twind/preset-tailwind';
 import colors from '@twind/preset-tailwind/colors';
 import defaultTheme from '@twind/preset-tailwind/defaultTheme';
+
+// function hash(str: string) {
+// 	let hash = 0,
+// 		i,
+// 		chr;
+// 	if (str.length === 0) return hash;
+// 	for (i = 0; i < str.length; i++) {
+// 		chr = str.charCodeAt(i);
+// 		hash = (hash << 5) - hash + chr;
+// 		hash |= 0;
+// 	}
+// 	return (hash < 0 ? -1 : 1) * hash;
+// }
 
 export const themeColors = {
 	indigo: {
@@ -150,7 +170,11 @@ const varColorSwatch = (color: string) => {
 };
 const config = defineConfig({
 	presets: [tailwind({ preflight: true, darkMode: 'class' })],
-	tag: (val: string) => `as-${val}`,
+	tag: (val: string) => {
+		return `as-${val}`;
+		// if (val.length < 16) return `as-${val}`;
+		// return `as-apply-${hash(val)}`;
+	},
 	// tag: true,
 	rules: [
 		[
@@ -167,13 +191,28 @@ const config = defineConfig({
 				property: '--icon-secondary' as any,
 			}),
 		],
+		['interact-none', { userSelect: 'none', pointerEvents: 'none' }],
 	],
 	variants: [
 		['focus-old', '&:focus'],
 		['focus', '&:focus-visible'],
-		['hocus', '&:hover,&:focus-visible'],
+		['hocus', '&:where(:hover,:focus-visible)'],
 		['active', '&:active'],
-		['group-hocus', '&:hover,&:focus-visible'],
+		[
+			'((group|peer)(-[^-]+)?)-hocus',
+			({ $1 }, { tag }) => `.${escape(tag($1))}:where(:hover,:focus-visible) &`,
+		],
+		['peer-focus', (_, { tag }) => `.${escape(tag('peer'))}:focus-visible ~ &`],
+		[
+			'peer-placeholder-shown',
+			(_, { tag }) => `.${escape(tag('peer'))}:placeholder-shown ~ &`,
+		],
+		// ['not-autofill', '&:not(:autofill)'],
+		// ['peer-not-autofill', (_, { tag }) => `${escape(tag('peer'))}:not(:autofill) &`],
+		[
+			'test',
+			(_, { tag }) => `.${escape(tag('peer'))}:is(:placeholder-shown:not(:focus)) ~ &`,
+		],
 	],
 	theme: {
 		extend: {
@@ -216,7 +255,7 @@ const config = defineConfig({
 	},
 });
 
-export const twind = create(config, cssom());
+export const twind = create(config, dom());
 
 twind.inject(css`
 	@font-face {
@@ -288,6 +327,10 @@ twind.inject(css`
 		.scroll-input:focus::-webkit-scrollbar-thumb {
 			@apply border-gray-700;
 		}
+	}
+
+	*[class*='as-after'] {
+		content: ' ';
 	}
 
 	.AS_TRANSITION_THEME,

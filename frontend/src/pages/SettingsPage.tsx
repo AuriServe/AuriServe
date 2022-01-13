@@ -10,10 +10,12 @@ import {
 	ThemesSettings,
 	PluginsSettings,
 	MediaSettings,
-	UsersSettings,
+	// UsersSettings,
 	RolesSettings,
 	DeveloperSettings,
 } from './settings';
+
+import { tw } from '../twind';
 
 import icon_home from '@res/icon/home.svg';
 import icon_themes from '@res/icon/theme.svg';
@@ -37,21 +39,21 @@ function SidebarLink({ label, path, icon, notifications }: SidebarLinkProps) {
 			<Link
 				to={path}
 				// activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
-				className='flex gap-3 p-2 items-end rounded-md transition text-neutral-200 hover:bg-neutral-800/50'>
-				<Svg src={icon} size={6} class='ml-0.5' />
-				<p class='leading-snug font-medium flex-grow'>{label}</p>
+				className={tw`flex gap-3 p-2 items-end rounded-md transition text-gray-200 hover:bg-gray-800/50`}>
+				<Svg src={icon} size={6} class={tw`ml-0.5`} />
+				<p class={tw`leading-snug font-medium flex-grow`}>{label}</p>
 				{typeof notifications === 'number' && (
 					<div
-						class='block w-4 h-4 bg-accent-400 text-neutral-700 rounded-full
-						text-[13px] font-black text-center leading-none pt-px mb-1 mr-1 ring-4
-						ring-accent-600/25 ring-offset-neutral-900'>
+						class={tw`block w-4 h-4 bg-accent-400 text-gray-700 rounded-full
+						text-[13px] font-black text-center leading-none pt-px mb-1 mr-1
+						ring-{4 accent-600/25 offset-gray-900}`}>
 						{notifications}
 					</div>
 				)}
 				{typeof notifications === 'boolean' && (
 					<div
-						class='block w-2.5 h-2.5 bg-accent-500 text-neutral-700 rounded-full
-						text-sm font-black text-center leading-none pt-0.5 mb-1.5 mr-2 ring ring-accent-600/25'
+						class={tw`block w-2.5 h-2.5 bg-accent-500 text-gray-700 rounded-full
+						text-sm font-black text-center leading-none pt-0.5 mb-1.5 mr-2 ring-{& accent-600/25}`}
 					/>
 				)}
 			</Link>
@@ -65,7 +67,7 @@ const SettingsSections = memo(function SettingsSections({
 	refs: { current: Record<string, HTMLDivElement | null> };
 }) {
 	return (
-		<div class='w-full max-w-4xl p-6 pb-16 space-y-12'>
+		<div class={tw`w-full max-w-4xl p-6 pb-16 space-y-12`}>
 			<div ref={(ref) => (refs.current.overview = ref)}>
 				<MainSettings />
 			</div>
@@ -78,9 +80,9 @@ const SettingsSections = memo(function SettingsSections({
 			<div ref={(ref) => (refs.current.media = ref)}>
 				<MediaSettings />
 			</div>
-			<div ref={(ref) => (refs.current.users = ref)}>
+			{/* <div ref={(ref) => (refs.current.users = ref)}>
 				<UsersSettings />
-			</div>
+			</div> */}
 			<div ref={(ref) => (refs.current.roles = ref)}>
 				<RolesSettings />
 			</div>
@@ -164,10 +166,10 @@ export default function SettingsPage() {
 	}, [navigate]);
 
 	return (
-		<Page class='flex justify-center !pb-0 min-h-screen'>
+		<Page class={tw`flex justify-center !pb-0 min-h-screen`}>
 			<Title>Settings</Title>
-			<div class='w-full md:w-64 h-full pl-4 flex-shrink-0'>
-				<ul class='sticky top-6 flex flex-col gap-2 mt-6' role='navigation'>
+			<div class={tw`w-full md:w-64 h-full pl-4 flex-shrink-0`}>
+				<ul class={tw`sticky top-6 flex-{& col} gap-2 mt-6`} role='navigation'>
 					<SidebarLink label='Overview' path='/settings/overview/' icon={icon_home} />
 					<SidebarLink label='Themes' path='/settings/themes/' icon={icon_themes} />
 					<SidebarLink label='Plugins' path='/settings/plugins/' icon={icon_plugins} />
@@ -189,7 +191,7 @@ export default function SettingsPage() {
 				</ul>
 			</div>
 			<SettingsSections refs={refs} />
-			<div class='w-48 flex-shrink hidden 2xl:block' />
+			<div class={tw`w-48 flex-shrink hidden 2xl:block`} />
 		</Page>
 	);
 }

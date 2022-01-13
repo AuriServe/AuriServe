@@ -75,9 +75,9 @@ function BaseButton(props: Props) {
 			{...props}
 			style={style}
 			class={merge(
-				tw`group flex w-max items-center justify-center font-bold uppercase tracking-widest
-				select-none !outline-none transition-all shadow:{none hocus:md active:none}
-				ring-{none focus:& active:& offset-{active:2 focus:2} dark:offset-gray-750}
+				tw`group ~(flex w-max items-center justify-center font-bold uppercase tracking-widest
+				select-none !outline-none transition-all shadow-(none hocus:md active:none)
+				ring-(none focus:& active:& offset-(active:2 focus:2) dark:offset-gray-750))
 				rounded${props.rounded && '-full'}`,
 				props.class
 			)}>
@@ -104,10 +104,10 @@ export function Primary(props: Props) {
 		<BaseButton
 			{...props}
 			class={merge(
-				tw`bg-accent-{{600 dark:600} hocus:{700 dark:500} active:{900 dark:700}}
-				text-{white hocus:{accent-100 dark:white} active:{accent-200 dark:accent-100}}
-				icon-p-{white active:{accent-300 dark:white}} icon-s-{accent-300 active:{accent-500 dark:accent-300}}
-				ring-accent-{{300 dark:800/75} active:400}`,
+				tw`~(bg-accent-((600 dark:600) hocus:(700 dark:500) active:(900 dark:700))
+				text-(white hocus:(accent-100 dark:white) active:(accent-200 dark:accent-100))
+				icon-p-(white active:(accent-300 dark:white)) icon-s-(accent-300 active:(accent-500 dark:accent-300))
+				ring-accent-((300 dark:800/75) active:400))`,
 				props.class
 			)}
 		/>
@@ -119,10 +119,10 @@ export function Secondary(props: Props) {
 		<BaseButton
 			{...props}
 			class={merge(
-				tw`bg-accent-{{200 dark:500/30} hocus:{600 dark:500/40} active:{900 dark:500/25}}
-				text-accent-{{900 dark:100} hocus:100 active:{200 dark:200}} dark:hocus:text-white
-				icon-p-accent-{900 dark:100 hocus:100 active:200} icon-s-accent-{400 dark:400 hocus:300 active:400}
-				ring-accent-{{300 dark:500/20} active:{400 dark:500/20}}`,
+				tw`~(bg-accent-((200 dark:500/30) hocus:(600 dark:500/40) active:(900 dark:500/25))
+				text-accent-((900 dark:100) hocus:100 active:(200 dark:200)) dark:hocus:text-white
+				icon-p-accent-((900 dark:100 hocus:100 active:200) icon-s-accent-(400 dark:400 hocus:300 active:400))
+				ring-accent-((300 dark:500/20) active:(400 dark:500/20)))`,
 				props.class
 			)}
 		/>
@@ -134,10 +134,10 @@ export function Tertiary(props: Props) {
 		<BaseButton
 			{...props}
 			class={merge(
-				tw`bg-gray-{{200 dark:600} hocus:{300 dark:500} active:{500 dark:600}}
-				text-gray-{{600 dark:100} hocus:{300 dark:50}} active:{100 dark:200}}
-				icon-p-gray-{600 dark:100 active:100} icon-s-gray-{500 dark:300 active:300}
-				ring-gray-{{300 dark:600} active:{400 dark:600}}`,
+				tw`~(bg-gray-((200 dark:600) hocus:(300 dark:500) active:(500 dark:600))
+				text-gray-((600 dark:100) hocus:(300 dark:50)) active:(100 dark:200))
+				icon-p-gray-(600 dark:100 active:100) icon-s-gray-(500 dark:300 active:300)
+				ring-gray-((300 dark:600) active:(400 dark:600)))`,
 				props.class
 			)}
 		/>
@@ -149,19 +149,18 @@ export function Link(props: Props) {
 		<UnstyledButton
 			{...props}
 			class={merge(
-				tw`group relative isolate inline !outline-none leading-none
-				icon-p-{accent-700 active:white dark:{accent-200 hocus:white active:gray-700}
-				icon-s-{accent-400 active:accent-200 dark:{accent-400 hocus:accent-200 active:gray-900}}
+				tw`group ~(relative isolate inline !outline-none leading-none
+				icon-p-(accent-700 active:white dark:(accent-200 hocus:white active:gray-700)
+				icon-s-(accent-400 active:accent-200 dark:(accent-400 hocus:accent-200 active:gray-900)))
 				${props.icon && 'ml-0.5'}`,
 				props.class
 			)}>
 			<div
-				class={tw`
-				absolute z-10 rounded-sm transition-all ease-out
-				w-{full group-hocus:[calc(100% + 8px)] group-active:[calc(100% + 8px)]}
-				bottom-{px group-hocus:-0.5 group-active:-0.5} left-{0 group-hocus:-1 group-active:-1}
-				h-{1 group-hocus:[calc(100% + 6px)] group-active:[calc(100% + 6px)]}
-				bg-accent-{{500/30 dark:400/25} group-hocus:{500/20 dark:500/20} group-active:{500 dark:500}}`}
+				class={tw`~(absolute z-10 rounded-sm transition-all ease-out
+				w-(full group-hocus:[calc(100% + 8px)] group-active:[calc(100% + 8px)])
+				bottom-(px group-hocus:-0.5 group-active:-0.5) left-(0 group-hocus:-1 group-active:-1)
+				h-(1 group-hocus:[calc(100% + 6px)] group-active:[calc(100% + 6px)])
+				bg-accent-((500/30 dark:400/25) group-hocus:(500/20 dark:500/20) group-active:(500 dark:500)))`}
 			/>
 
 			{props.icon && !props.iconRight && (
@@ -174,7 +173,7 @@ export function Link(props: Props) {
 
 			<span
 				class={tw`z-10 font-medium
-					text-{accent-{700 dark:300} group-hocus:{accent-600 dark:white} group-active:{white dark:gray-800}}
+					text-(accent-(700 dark:300) group-hocus:(accent-600 dark:white) group-active:(white dark:gray-800))
 					${
 						props.iconOnly
 							? 'sr-only'

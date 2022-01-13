@@ -4,8 +4,6 @@ import { resolve } from 'path';
 import * as Webpack from 'webpack';
 import { merge } from 'webpack-merge';
 
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
-const CSSMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -77,14 +75,11 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 				},
 			],
 		},
-		optimization: {
-			minimizer: ['...', new CSSMinimizerPlugin()],
-		},
 	};
 
 	if (mode === 'development') {
 		baseConfig = merge(baseConfig, {
-			plugins: [new LiveReloadPlugin({ delay: 500 })],
+			plugins: [new LiveReloadPlugin({ delay: 300 })],
 		});
 	}
 
@@ -110,42 +105,8 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 			library: 'AS_EDITOR',
 		},
 
-		plugins: [new MiniCSSExtractPlugin()],
-
 		module: {
 			rules: [
-				{
-					test: /\.s[c|a]ss$/,
-					use: ['null-loader'],
-				},
-				{
-					test: /\.tw$/,
-					use: [
-						MiniCSSExtractPlugin.loader,
-						{ loader: 'css-loader', options: { url: false, importLoaders: 1 } },
-						'postcss-loader',
-					],
-				},
-				{
-					test: /\.sss$/,
-					use: [
-						MiniCSSExtractPlugin.loader,
-						{
-							loader: 'css-loader',
-							options: {
-								url: false,
-								importLoaders: 1,
-								modules: {
-									localIdentName:
-										mode === 'development'
-											? '[local]_[hash:base64:4]'
-											: '[hash:base64:8]',
-								},
-							},
-						},
-						'postcss-loader',
-					],
-				},
 				{
 					test: /\.svg$/i,
 					type: 'asset/source',
@@ -169,31 +130,6 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 		},
 
 		entry: { client: './Client.ts' },
-
-		module: {
-			rules: [
-				{
-					test: /\.sss$/,
-					use: [
-						'style-loader',
-						{
-							loader: 'css-loader',
-							options: {
-								url: false,
-								importLoaders: 1,
-								modules: {
-									localIdentName:
-										mode === 'development'
-											? '[local]_[hash:base64:4]'
-											: '[hash:base64:8]',
-								},
-							},
-						},
-						'postcss-loader',
-					],
-				},
-			],
-		},
 	});
 
 	return [interfaceConfig, clientConfig];

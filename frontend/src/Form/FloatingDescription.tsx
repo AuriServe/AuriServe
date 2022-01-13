@@ -59,8 +59,8 @@ export default function FloatingDescription(props: Props) {
 		containerRef.current.style.height = `${ref.clientHeight}px`;
 	};
 
-	const ref = form.fields[state!.name]?.ref as HTMLElement | undefined;
-	const schema = form.schema.fields[state!.name] as FormField | undefined;
+	const ref = form.fields[state?.name ?? '']?.ref as HTMLElement | undefined;
+	const schema = form.schema.fields[state?.name ?? ''] as FormField | undefined;
 
 	const posRef = useRef<{ top: string; left: string }>({ top: '', left: '' });
 

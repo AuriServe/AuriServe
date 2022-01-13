@@ -22,6 +22,7 @@
 		// General Rules
 
 		"@typescript-eslint/explicit-module-boundary-types": 0,
+		"@typescript-eslint/no-useless-constructor": 1,
 		"consistent-return": 1,
 		"constructor-super": 2,
 		"no-caller": 2,
@@ -49,7 +50,6 @@
 		"no-useless-call": 1,
 		"no-useless-computed-key": 1,
 		"no-useless-concat": 1,
-		"no-useless-constructor": 1,
 		"no-useless-escape": 1,
 		"no-useless-rename": 1,
 		"no-var": 1,

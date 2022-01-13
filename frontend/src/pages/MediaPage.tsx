@@ -181,7 +181,7 @@ export default function MediaPage() {
 								setSelected={setSelected}
 								multi={true}
 								enabled={true}
-								class={tw`grid-{& cols-[repeat(auto-fit,minmax(350px,1fr))]} gap-3`}>
+								class={tw`grid-(& cols-[repeat(auto-fit,minmax(350px,1fr))]) gap-3`}>
 								{media
 									.map((item: any, ind: number) =>
 										!deleted.includes(ind) ? (
@@ -199,7 +199,7 @@ export default function MediaPage() {
 						)}
 
 						{(!media || !media.filter((_, i) => !deleted.includes(i)).length) && (
-							<h2 class={`text-{2xl center gray-500} mt-20 mb-16 pb-2`}>
+							<h2 class={tw`text-(2xl center gray-500) mt-20 mb-16 pb-2`}>
 								{!media ? 'Loading media...' : 'No media found.'}
 							</h2>
 						)}

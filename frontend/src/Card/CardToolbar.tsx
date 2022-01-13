@@ -68,7 +68,7 @@ export default function CardToolbar(props: Props) {
 			{...passedProps}
 			ref={handleSetRef}
 			class={merge(
-				tw`z-10 flex gap-2 top-0 px-4 py-3 -mt-4 bg-{white dark:gray-750} transition-shadow
+				tw`z-10 flex gap-2 top-0 px-4 py-3 -mt-4 bg-(white dark:gray-750) transition-shadow
 				${props.sticky !== false ? 'sticky' : ''} ${isSticky && 'shadow-md'}`,
 				props.class
 			)}>
@@ -82,5 +82,5 @@ CardToolbar.Spacer = function Spacer() {
 };
 
 CardToolbar.Divider = function Divider() {
-	return <div class={tw`w-0.5 my-2 justify-stretch rounded bg-gray-{300 dark:500}`} />;
+	return <div class={tw`w-0.5 my-2 justify-stretch rounded bg-gray-(300 dark:500)`} />;
 };

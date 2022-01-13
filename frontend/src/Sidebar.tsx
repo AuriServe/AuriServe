@@ -41,23 +41,22 @@ function SidebarLink({ label, path, icon, props }: SidebarLinkProps) {
 			{...props}
 			to={typeof path === 'string' ? path : undefined}
 			onClick={typeof path === 'function' ? path : undefined}
-			class={tw`group relative p-1 m-2 w-10 h-10 rounded !outline-none transition
-				bg-{transparent hocus:accent-400/30}
-				after:{absolute w-2 h-2 transition transform rotate-45 bg-neutral-{50 dark:900}
-					[clip-path:polygon(0_0,0%_100%,100%_100%)] top-[calc(50%-0.25rem)] left-[calc(100%+0.25rem+.5px)]}
+			class={tw`group relative p-1 m-2 w-10 h-10 rounded !outline-none transition bg-(transparent hocus:accent-400/30)
+				after:(absolute w-2 h-2 transition transform rotate-45 bg-gray-(50 dark:900)
+					[clip-path:polygon(0_0,0%_100%,100%_100%)] top-[calc(50%-0.25rem)] left-[calc(100%+0.25rem+.5px)])
 				${active ? '!bg-accent-400/50' : 'after:scale-0'}`}>
 			<Svg
 				src={icon}
 				size={8}
-				class={tw`icon-p-{accent-200 group-hocus:accent-100} icon-s-{accent-400 group-hocus:accent-200}
+				class={tw`icon-p-(accent-200 group-hocus:accent-100) icon-s-(accent-400 group-hocus:accent-200)
 					${active && '!icon-p-white !icon-s-accent-200'}`}
 			/>
 
 			<span
 				class={tw`block absolute z-10 transform transition left-16 top-1 rounded py-1 px-2.5
 				bg-gray-700 pointer-events-none select-none text-gray-100 whitespace-nowrap font-medium shadow-md
-				opacity-{0 group-hocus:100} translate-x-{1 group-hocus:0} delay-{group-hover:700 group-focus:0}
-				after:{absolute block -left-1 top-3 w-2 h-2 transform rotate-45 bg-gray-700}`}>
+				opacity-(0 group-hocus:100) translate-x-(1 group-hocus:0) delay-(group-hover:700 group-focus:0)
+				after:(absolute block -left-1 top-3 w-2 h-2 transform rotate-45 bg-gray-700)`}>
 				{label}
 			</span>
 		</UnstyledButton>
@@ -69,7 +68,7 @@ export default function Sidebar() {
 		<aside
 			class={tw`fixed z-30 w-14 h-full inset-0 icon-p-accent-300 icon-s-accent-100
 			bg-gradient-to-t from-accent-600 to-accent-500`}>
-			<nav class={tw`flex-{& col} h-full`}>
+			<nav class={tw`flex-(& col) h-full`}>
 				<Svg
 					src={icon_auriserve}
 					size={10}

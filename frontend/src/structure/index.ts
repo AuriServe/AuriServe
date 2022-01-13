@@ -1,11 +1,10 @@
 export { default as Page } from './Page';
-export { default as Card } from './Card';
 export { default as Meter } from './Meter';
 export { default as SectionHeader } from './SectionHeader';
 
 export { default as Button } from './Button';
 export { default as Spinner } from './Spinner';
-export { default as Dropdown } from './Dropdown';
+// export { default as Dropdown } from './Dropdown';
 export { default as SavePopup } from './SavePopup';
 export { default as Selectable } from './Selectable';
 export { default as SelectGroup } from './SelectGroup';

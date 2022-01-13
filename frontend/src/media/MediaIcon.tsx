@@ -32,7 +32,7 @@ export default function MediaIcon(props: Props) {
 	return (
 		<div
 			class={merge(
-				tw`flex w-18 h-18 bg-gray-{100 dark:750} icon-p-gray-100 icon-s-gray-300
+				tw`flex w-18 h-18 bg-gray-(100 dark:750) icon-p-gray-100 icon-s-gray-300
 				rounded interact-none place-items-center items-center justify-center transition`,
 				props.class
 			)}>
