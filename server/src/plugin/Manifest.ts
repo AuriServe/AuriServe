@@ -1,3 +1,5 @@
+import Version from './Version';
+
 export interface Manifest {
 	name?: string;
 	identifier: string;
@@ -16,7 +18,9 @@ export interface Manifest {
 
 export type Dependency = { identifier: string; version: string };
 
-export type ParsedManifest = Omit<Manifest, 'entry' | 'watch' | 'depends'> & {
+export type ParsedManifest = Omit<Manifest, 'entry' | 'watch' | 'depends' | 'version'> & {
+	version: Version;
+
 	depends: Dependency[];
 
 	entry: {

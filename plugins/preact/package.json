@@ -9,16 +9,6 @@
 		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=production --progress --config ./webpack.ts",
 		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=development --watch --progress --config ./webpack.ts"
 	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/AuriServe/AuriServeMono.git"
-	},
-	"bugs": {
-		"url": "https://github.com/AuriServe/AuriServeMono/issues"
-	},
 	"sideEffects": false,
 	"devDependencies": {
 		"@babel/core": "^7.16.7",

@@ -5,6 +5,12 @@ export { BaseRoute } from './Route';
 export type { Route } from './Route';
 export type { default as Routes } from './Routes';
 
+declare global {
+	export interface AuriServeAPI {
+		routes: Routes;
+	}
+}
+
 as.routes = new Routes();
 as.core.router.get('*', as.routes.handleGet);
 

@@ -2,21 +2,12 @@
 	"name": "@auriserve/plugin-routes",
 	"version": "0.0.1",
 	"description": "Routing Plugin for AuriServe",
+	"types": "src/Main.d.ts",
 	"author": "Auri <me@auri.xyz>",
 	"license": "UNLICENSED",
 	"scripts": {
-		"dist": "webpack --mode=production --progress --config ./webpack.ts",
-		"dev": "webpack --mode=development --watch --progress --config ./webpack.ts"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/AuriServe/AuriServeMono.git"
-	},
-	"bugs": {
-		"url": "https://github.com/AuriServe/AuriServeMono/issues"
+		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=production --progress --config ./webpack.ts",
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=development --watch --progress --config ./webpack.ts"
 	},
 	"sideEffects": false,
 	"devDependencies": {

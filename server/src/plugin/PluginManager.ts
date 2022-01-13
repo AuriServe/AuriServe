@@ -1,10 +1,12 @@
 import path from 'path';
 import Express from 'express';
+import { assert } from 'common';
 
 import Plugin from './Plugin';
 import RouterApi from './RouterApi';
 import PluginLoader from './PluginLoader';
 import Properties from '../data/model/Properties';
+import pluginDependencyOrder from './pluginDependencyOrder';
 
 export type PluginEvent = 'refresh';
 
@@ -39,36 +41,55 @@ export default class Plugins {
 			Properties.findOne({}),
 			this.loader.refresh(),
 		]);
-		console.log(properties!.enabled.plugins);
-		// this.setEnabled(properties!.enabled.plugins);
-		this.setEnabled(['routes', 'preact', 'preact-routes']);
+
+		this.setEnabled(properties?.enabled?.plugins ?? []);
 	}
 
 	addPlugin(plugin: Plugin) {
 		this.plugins.set(plugin.manifest.identifier, plugin);
 	}
 
-	reloadPlugin(identifier: string) {
-		this.plugins.get(identifier)?.enable(true);
+	reloadPlugin(_identifier: string) {
+		this.setEnabled(this.listEnabled().map((plugin) => plugin.manifest.identifier));
 	}
 
 	/** Enables only the plugins specified. */
 	async setEnabled(identifiers: string[]) {
-		this.plugins.forEach((p) => {
-			if (identifiers.includes(p.manifest.identifier)) this.enable(p.manifest.identifier);
-			else this.disable(p.manifest.identifier);
-		});
-	}
+		const disableOrder = pluginDependencyOrder(
+			[...this.plugins.values()]
+				.filter((plugin) => plugin.isEnabled())
+				.map((plugin) => ({
+					identifier: plugin.manifest.identifier,
+					version: plugin.manifest.version,
+					depends: plugin.manifest.depends,
+				}))
+		).reverse();
 
-	/** Enables the plugin specified. */
-	async enable(identifier: string) {
-		if (await this.plugins.get(identifier)?.enable())
-			this.loader.pluginEnabled(identifier);
-	}
+		console.log('disabling', disableOrder);
 
-	/** Disables the plugin specified. */
-	async disable(identifier: string) {
-		if (this.plugins.get(identifier)?.disable()) this.loader.pluginDisabled(identifier);
+		for (const plugin of disableOrder) {
+			if (this.plugins.get(plugin)?.disable()) this.loader.pluginDisabled(plugin);
+		}
+
+		const enableOrder = pluginDependencyOrder(
+			identifiers
+				.map((identifier) => {
+					const plugin = this.plugins.get(identifier);
+					assert(plugin, `Plugin not found: '${identifier}'.`);
+					return plugin;
+				})
+				.map((plugins) => ({
+					identifier: plugins.manifest.identifier,
+					version: plugins.manifest.version,
+					depends: plugins.manifest.depends,
+				}))
+		);
+
+		console.log('enabling', enableOrder);
+
+		for (const plugin of enableOrder) {
+			if (await this.plugins.get(plugin)?.enable()) this.loader.pluginEnabled(plugin);
+		}
 	}
 
 	/** Gets the specified plugin. */

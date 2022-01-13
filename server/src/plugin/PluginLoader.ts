@@ -6,6 +6,7 @@ import yaml from 'js-yaml';
 
 import Plugin from './Plugin';
 import Logger from '../Logger';
+import Version from './Version';
 import Watcher from '../Watcher';
 import { Manifest } from './Manifest';
 import PluginManager from './PluginManager';
@@ -149,8 +150,10 @@ export default class PluginLoader {
 				return { identifier, version };
 			});
 
+			const version = new Version(manifest.version);
+
 			this.manager.addPlugin(
-				new Plugin(this.manager, { ...manifest, depends, entry, watch })
+				new Plugin(this.manager, { ...manifest, version, depends, entry, watch })
 			);
 		} catch (e) {
 			Logger.error('Encountered an error parsing plugin %s:\n %s', dirName, e);
