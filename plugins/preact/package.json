@@ -2,12 +2,12 @@
 	"name": "@auriserve/plugin-preact",
 	"version": "1.0.0",
 	"description": "Exposes a Preact instance to plugins",
+	"types": "types/Main.d.ts",
 	"author": "Auri <me@auri.xyz>",
-	"types": "src/Main.d.ts",
 	"license": "MIT",
 	"scripts": {
-		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=production --progress --config ./webpack.ts",
-		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly & webpack --mode=development --watch --progress --config ./webpack.ts"
+		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types & webpack --mode=production --progress --config ./webpack.ts",
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types & webpack --mode=development --watch --progress --config ./webpack.ts"
 	},
 	"sideEffects": false,
 	"devDependencies": {

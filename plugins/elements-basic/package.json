@@ -1,7 +1,7 @@
 {
-	"name": "@auriserve/plugin-preact-routes",
+	"name": "@auriserve/plugin-elements-basic",
 	"version": "0.0.1",
-	"description": "Adds preact routes that can be used with the routes plugin.",
+	"description": "Registers basic elements for use with the Auriserve Elements plugin.",
 	"author": "Auri <me@auri.xyz>",
 	"license": "MIT",
 	"scripts": {
@@ -11,8 +11,11 @@
 	"sideEffects": false,
 	"devDependencies": {
 		"@babel/core": "^7.16.7",
+		"@babel/plugin-transform-react-jsx": "^7.16.7",
 		"@babel/preset-typescript": "^7.16.7",
+		"@types/plugin-elements": "file:../elements",
 		"@types/plugin-preact": "file:../preact",
+		"@types/plugin-routes": "file:../routes",
 		"@typescript-eslint/eslint-plugin": "^5.9.1",
 		"@typescript-eslint/parser": "^5.9.1",
 		"babel-loader": "^8.2.3",

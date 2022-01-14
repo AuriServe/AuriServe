@@ -1,8 +1,8 @@
+import type Logger from './logger';
 import type Router from './router';
 import type Database from './database';
 
 declare global {
-
 	/**
 	 * The API Registry interface, which is used to register and require APIs.
 	 * To add your own API's type definitions to this interface,
@@ -58,12 +58,14 @@ declare global {
 
 /** The Core Auriserve API. */
 export interface Core {
-
 	/** Provides access to the API registry. */
 	api: AuriServeAPI;
 
 	/** Provides access to the underlying Router, for handling incoming requests. */
 	router: Router;
+
+	/** Provides access to advanced logging functionality using log4js. */
+	logger: Logger;
 
 	/** Provides access to the underlying MySQL database, for high-preformance data storage. */
 	database: Database;
@@ -86,9 +88,11 @@ export interface Core {
 const api: AuriServeAPI = (globalThis as any)._CONTEXT;
 
 if (!api) {
-	throw new Error('Could not find AuriServe context!\n' +
-		'Please make sure you are loading the \'AuriServe\' module synchronously at least once ' +
-		'at the beginning of your plugin to catch the context.');
+	throw new Error(
+		'Could not find AuriServe context!\n' +
+			"Please make sure you are loading the 'AuriServe' module synchronously at least once " +
+			'at the beginning of your plugin to catch the context.'
+	);
 }
 
 /** The AuriServe API Registry. */

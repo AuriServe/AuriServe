@@ -1,0 +1,12 @@
+name: Elements
+identifier: elements
+description: Adds a registry for Elements, which are Preact components that can be used to build pages. Also adds a PreactRoute route which can be used to compose whole pages from a tree of Elements called a Page.
+
+version: 0.0.1
+author: Auri
+depends:
+- routes ^0.0.1
+- preact ^1
+
+entry:
+  server: dist/server.js

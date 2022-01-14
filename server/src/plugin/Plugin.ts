@@ -1,6 +1,7 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
+import Logger from '../Logger';
 import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
 
@@ -79,6 +80,7 @@ export default class Plugin {
 	private createContext() {
 		const core: any = {
 			router: this.manager.routerApi,
+			logger: Logger,
 			on: this.on.bind(this),
 			once: this.once.bind(this),
 			off: this.off.bind(this),

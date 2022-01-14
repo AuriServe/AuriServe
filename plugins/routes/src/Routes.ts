@@ -37,19 +37,19 @@ export default class Routes {
 		return {
 			path: req.path.split('/').filter(Boolean).join('/'),
 			query: req.query,
-			body: req.body
+			body: req.body,
 		};
 	}
 
 	/** Returns the route at the specified path, or null. */
-	get(path: string): Route | null {
+	async get(path: string): Promise<Route | null> {
 		if (!this.root) return null;
-		return this.root.get(path.split('/').filter(Boolean).join('/'));
+		return await this.root.get(path.split('/').filter(Boolean).join('/'));
 	}
 
 	/** Returns the root route. */
-	getRoot(): Route | null {
-		return this.get('/');
+	async getRoot(): Promise<Route | null> {
+		return await this.get('/');
 	}
 
 	/** Sets the root route. */
@@ -63,13 +63,13 @@ export default class Routes {
 	}
 
 	/** Handles a GET request and sends the render result of a Route if there is one at the specified path. */
-	handleGet = (req: Request, res: Response, next: NextFunction) => {
+	handleGet = async (req: Request, res: Response, next: NextFunction) => {
 		if (!this.root) {
 			next();
 			return;
 		}
 
-		const routeRes = this.root.req(Routes.createReq(req));
+		const routeRes = await this.root.req(Routes.createReq(req));
 		if (routeRes === null) {
 			next();
 			return;

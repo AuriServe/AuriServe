@@ -18,7 +18,7 @@ const handle404 = as.routes.getErrorHandler(404);
 setTimeout(() => as.core.router.get('*', handle404), 1);
 
 as.core.once('cleanup', () => {
-	as.unexport('routes');
 	as.core.router.remove(handle404);
 	as.core.router.remove(as.routes.handleGet);
+	as.unexport('routes');
 });

@@ -23,6 +23,7 @@
 
 		"@typescript-eslint/explicit-module-boundary-types": 0,
 		"@typescript-eslint/no-useless-constructor": 1,
+		// "@typescript-eslint/consistent-return": 1,
 		"consistent-return": 1,
 		"constructor-super": 2,
 		"no-caller": 2,

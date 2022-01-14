@@ -1,6 +1,5 @@
 import path from 'path';
 import Express from 'express';
-import { assert } from 'common';
 
 import Plugin from './Plugin';
 import RouterApi from './RouterApi';
@@ -73,11 +72,8 @@ export default class Plugins {
 
 		const enableOrder = pluginDependencyOrder(
 			identifiers
-				.map((identifier) => {
-					const plugin = this.plugins.get(identifier);
-					assert(plugin, `Plugin not found: '${identifier}'.`);
-					return plugin;
-				})
+				.filter((identifier) => this.plugins.has(identifier))
+				.map((identifier) => this.plugins.get(identifier) as Plugin)
 				.map((plugins) => ({
 					identifier: plugins.manifest.identifier,
 					version: plugins.manifest.version,

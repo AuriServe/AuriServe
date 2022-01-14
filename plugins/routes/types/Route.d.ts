@@ -3,8 +3,8 @@ export interface Route {
     getPath(): string;
     canAdd(): boolean;
     add(pathSegment: string, route: Route): Route;
-    get(path: string): Route | null;
-    req(req: Req): string | null;
+    get(path: string): Promise<Route | null>;
+    req(req: Req): Promise<string | null>;
 }
 export declare abstract class BaseRoute implements Route {
     protected path: string;
@@ -13,7 +13,7 @@ export declare abstract class BaseRoute implements Route {
     getPath(): string;
     canAdd(): boolean;
     add(pathSegment: string, route: Route): Route;
-    get(path: string): Route | null;
-    req(req: Req): string | null;
-    abstract render(req: Req): string;
+    get(path: string): Promise<Route | null>;
+    req(req: Req): Promise<string | null>;
+    abstract render(req: Req): Promise<string>;
 }
