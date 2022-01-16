@@ -1,0 +1,8 @@
+name: Themes
+identifier: themes
+description: Theming for Pages.
+
+version: 1.0.0
+author: Auri
+
+entry: dist/main.js

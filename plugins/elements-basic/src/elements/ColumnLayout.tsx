@@ -1,5 +1,4 @@
 import as from 'auriserve';
-import { merge } from 'common';
 import type { ComponentChildren } from 'preact';
 
 const {

@@ -7,6 +7,7 @@ author: Auri
 depends:
 - routes ^0.0.1
 - preact ^1
+- themes ^0.0.1
 
 entry:
   server: dist/server.js
