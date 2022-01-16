@@ -1,4 +1,4 @@
-import Version from './Version';
+import { Version } from 'common';
 
 export interface Manifest {
 	name?: string;

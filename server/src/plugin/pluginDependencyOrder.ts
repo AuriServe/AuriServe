@@ -1,5 +1,4 @@
-import { assert } from 'common';
-import Version from './Version';
+import { assert, Version } from 'common';
 
 interface InputPlugin {
 	identifier: string;

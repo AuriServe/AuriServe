@@ -12,4 +12,6 @@ export { Color, Hex, RGBA, HSVA, isHex, isRGBA, isHSVA, to } from './color';
 
 export { merge, sign } from './util';
 
+export { default as Version } from './version';
+
 export { AssertError, assert, assertEq, isType, assertSchema } from './assert';

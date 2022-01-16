@@ -1,4 +1,4 @@
-import { assert } from 'common';
+import { assert } from './assert';
 
 /**
  * Represents a version string implementing a subset of the SemVer format.
