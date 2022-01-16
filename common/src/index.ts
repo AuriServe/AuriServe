@@ -1,8 +1,9 @@
 
 export * as Page from './Page';
 export * as Graph from './graph/index';
-export * as ObjectPath from './ObjectPath';
 export * as Definition from './definition';
+
+export { traverse, buildObjectPath } from './traverse';
 
 export { bytes as formatBytes, vector as formatVector,
 	date as formatDate, identifier as toIdentifier, titleCase } from './format';
