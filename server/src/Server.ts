@@ -9,35 +9,35 @@ import { server as WebSocketServer } from 'websocket';
 
 import fss from 'fs';
 import { assert } from 'common';
-import Mongoose from 'mongoose';
-import { graphql } from 'graphql';
+// import Mongoose from 'mongoose';
+// import { graphql } from 'graphql';
 
 import Logger from './Logger';
-import Media from './data/Media';
-import Pages from './data/Pages';
-import Themes from './data/Themes';
-import * as Auth from './data/Auth';
-import Roles from './data/model/Role';
+// import Media from './data/Media';
+// import Pages from './data/Pages';
+// import Themes from './data/Themes';
+// import * as Auth from './data/Auth';
+// import Roles from './data/model/Role';
 // import PageBuilder from './PageBuilder';
-import Properties from './data/model/Properties';
+// import Properties from './data/model/Properties';
 import PluginManager from './plugin/PluginManager';
-import { Schema as schema, Resolver as rootValue } from './data/Graph';
+// import { Schema as schema, Resolver as rootValue } from './data/Graph';
 
 import resolvePath from './ResolvePath';
 import { Config } from './ServerConfig';
-import AdminRouter from './router/AdminRouter';
-import PagesRouter from './router/PagesRouter';
-import createUserPrompt from './CreateUserPrompt';
+// import AdminRouter from './router/AdminRouter';
+// import PagesRouter from './router/PagesRouter';
+// import createUserPrompt from './CreateUserPrompt';
 
 export default class Server {
 	private app = Express();
 
-	private adminRouter: AdminRouter;
-	private pagesRouter: PagesRouter;
+	// private adminRouter: AdminRouter;
+	// private pagesRouter: PagesRouter;
 
-	private media: Media;
-	private pages: Pages;
-	private themes: Themes;
+	// private media: Media;
+	// private pages: Pages;
+	// private themes: Themes;
 	private plugins: PluginManager;
 	// private pageBuilder: PageBuilder;
 
@@ -58,31 +58,30 @@ export default class Server {
 
 		assert(this.conf.db, 'Config is missing a db field.');
 
-		this.pages = new Pages(this.dataPath);
-		this.media = new Media(this.dataPath);
+		// this.pages = new Pages(this.dataPath);
+		// this.media = new Media(this.dataPath);
 
-		this.themes = new Themes(this.dataPath, true);
+		// this.themes = new Themes(this.dataPath, true);
 		this.plugins = new PluginManager(this.dataPath, true, this.app);
 
 		// this.pageBuilder = new PageBuilder(this.dataPath, this.themes, this.plugins);
 
-		// @ts-ignore
-		const contextValue = {
-			plugins: this.plugins,
-			pages: this.pages,
-			themes: this.themes,
-			media: this.media,
-			dataPath: this.dataPath,
-		};
+		// const contextValue = {
+		// 	plugins: this.plugins,
+		// 	pages: this.pages,
+		// 	themes: this.themes,
+		// 	media: this.media,
+		// 	dataPath: this.dataPath,
+		// };
 
-		const gql = (query: string, variableValues: any = undefined) =>
-			graphql({
-				schema,
-				rootValue,
-				contextValue,
-				variableValues,
-				source: query,
-			});
+		// const gql = (query: string, variableValues: any = undefined) =>
+		// 	graphql({
+		// 		schema,
+		// 		rootValue,
+		// 		contextValue,
+		// 		variableValues,
+		// 		source: query,
+		// 	});
 
 		let awaitListen: Promise<any>;
 		let wsServer: WebSocketServer;
@@ -124,20 +123,20 @@ export default class Server {
 		wsServer.on('request', (request) => {
 			if (request.resourceURL.path === '/admin/watch') {
 				const connection = request.accept(undefined, request.origin);
-				this.themes.bind('refresh', () => connection.send('refresh'));
+				// this.themes.bind('refresh', () => connection.send('refresh'));
 				this.plugins.bind('refresh', () => connection.send('refresh'));
 			}
 		});
 
-		this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.media);
-		this.adminRouter = new AdminRouter(
-			this.dataPath,
-			this.app,
-			this.plugins,
-			this.themes,
-			this.media,
-			gql
-		);
+		// this.pagesRouter = new PagesRouter(this.dataPath, this.app, this.media);
+		// this.adminRouter = new AdminRouter(
+		// 	this.dataPath,
+		// 	this.app,
+		// 	this.plugins,
+		// 	// this.themes,
+		// 	// this.media,
+		// 	// gql
+		// );
 
 		awaitListen.then(async () => {
 			Logger.debug(
@@ -146,19 +145,19 @@ export default class Server {
 					: `HTTP server listening on port ${httpPort}.`
 			);
 
-			await Mongoose.connect(this.conf!.db!);
-			Logger.debug('Connected to MongoDB successfully.');
+			// await Mongoose.connect(this.conf!.db!);
+			// Logger.debug('Connected to MongoDB successfully.');
 
-			if (!(await Properties.findOne({})))
-				await Properties.create({ usage: { media_allocated: 1024 * 1024 * 1024 } });
-			if (!(await Auth.listUsers()).length)
-				Logger.warn('No users are registered, run with --super to create one.');
-			if (!(await Roles.findOne({})))
-				await Roles.create({
-					creator: (await Auth.listUsers())[0]?.id ?? 'nobody',
-					name: 'Administrator',
-					abilities: ['ADMINISTRATOR'],
-				});
+			// if (!(await Properties.findOne({})))
+			// 	await Properties.create({ usage: { media_allocated: 1024 * 1024 * 1024 } });
+			// if (!(await Auth.listUsers()).length)
+			// 	Logger.warn('No users are registered, run with --super to create one.');
+			// if (!(await Roles.findOne({})))
+			// 	await Roles.create({
+			// 		creator: (await Auth.listUsers())[0]?.id ?? 'nobody',
+			// 		name: 'Administrator',
+			// 		abilities: ['ADMINISTRATOR'],
+			// 	});
 
 			process.on('SIGINT', () => this.shutdown());
 			process.on('SIGQUIT', () => this.shutdown());
@@ -167,14 +166,14 @@ export default class Server {
 			Logger.info('Initialized AuriServe.');
 			if (conf.verbose || conf.logLevel === 'trace') this.debugRoutes();
 
-			await this.themes.refresh();
+			// await this.themes.refresh();
 			await this.plugins.init();
 			// await this.pageBuilder.init(gql);
 
-			if (this.conf.super) createUserPrompt();
+			// if (this.conf.super) createUserPrompt();
 
-			this.adminRouter.init();
-			this.pagesRouter.init();
+			// this.adminRouter.init();
+			// this.pagesRouter.init();
 		});
 	}
 
@@ -190,11 +189,11 @@ export default class Server {
 		}
 
 		const loc =
-			`https://${ 
+			`https://${
 			host.replace(
 				(this.conf.port || 80).toString(),
 				(this.conf.https!.port || 443).toString()
-			) 
+			)
 			}${req.url}`;
 		res.writeHead(301, { Location: loc });
 		res.end();
@@ -222,7 +221,7 @@ export default class Server {
 
 	private async shutdown() {
 		Logger.info('Shutting down AuriServe.');
-		await Promise.all([this.plugins.cleanup(), this.themes.cleanup()]);
+		await Promise.all([this.plugins.cleanup()/*, this.themes.cleanup()*/]);
 		process.exit();
 	}
 }

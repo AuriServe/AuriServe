@@ -293,7 +293,7 @@ export default class Themes {
 					'themes',
 					identifier,
 					theme.sourceRoot ?? '.',
-					sourcePath
+					sourcePath as string
 				)
 			);
 			return paths;
