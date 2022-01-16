@@ -1,3 +1,4 @@
+import type YAML from './yaml';
 import type Logger from './logger';
 import type Router from './router';
 import type Database from './database';
@@ -66,6 +67,9 @@ export interface Core {
 
 	/** Provides access to advanced logging functionality using log4js. */
 	logger: Logger;
+
+	/** YAML parsing and stringifying. */
+	YAML: YAML;
 
 	/** Provides access to the underlying MySQL database, for high-preformance data storage. */
 	database: Database;

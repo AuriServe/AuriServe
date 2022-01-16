@@ -4,7 +4,7 @@ import Express from 'express';
 import Plugin from './Plugin';
 import RouterApi from './RouterApi';
 import PluginLoader from './PluginLoader';
-import Properties from '../data/model/Properties';
+// import Properties from '../data/model/Properties';
 import pluginDependencyOrder from './pluginDependencyOrder';
 
 export type PluginEvent = 'refresh';
@@ -37,11 +37,13 @@ export default class Plugins {
 
 	async init() {
 		const [properties] = await Promise.all([
-			Properties.findOne({}),
+			// Properties.findOne({}),
+			new Promise((resolve) => resolve({ enabled: { plugins: [ 'routes', 'preact', 'elements', 'elements-basic', 'themes' ] } })),
+			// new Promise((resolve) => resolve({ enabled: { plugins: [] } })),
 			this.loader.refresh(),
 		]);
 
-		this.setEnabled(properties?.enabled?.plugins ?? []);
+		this.setEnabled((properties as any)?.enabled?.plugins ?? []);
 	}
 
 	addPlugin(plugin: Plugin) {
@@ -128,11 +130,11 @@ export default class Plugins {
 
 	/** Saves the current list of enabled plugins to the database. */
 	private async syncToDb() {
-		await Properties.updateOne(
-			{},
-			{
-				$set: { 'enabled.plugins': this.listEnabled().map((p) => p.manifest.identifier) },
-			}
-		);
+		// await Properties.updateOne(
+		// 	{},
+		// 	{
+		// 		$set: { 'enabled.plugins': this.listEnabled().map((p) => p.manifest.identifier) },
+		// 	}
+		// );
 	}
 }

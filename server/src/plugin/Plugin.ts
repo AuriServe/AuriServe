@@ -2,6 +2,7 @@ import path from 'path';
 import { promises as fs } from 'fs';
 
 import Logger from '../Logger';
+import { parse, stringify } from './YAML';
 import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
 
@@ -81,6 +82,7 @@ export default class Plugin {
 		const core: any = {
 			router: this.manager.routerApi,
 			logger: Logger,
+			YAML: { parse, stringify },
 			on: this.on.bind(this),
 			once: this.once.bind(this),
 			off: this.off.bind(this),

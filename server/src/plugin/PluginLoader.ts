@@ -2,8 +2,7 @@ import path from 'path';
 import { assert, assertSchema } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 
-import yaml from 'js-yaml';
-
+import YAML from './YAML';
 import Plugin from './Plugin';
 import Logger from '../Logger';
 import Version from './Version';
@@ -62,16 +61,7 @@ export default class PluginLoader {
 				.readFile(path.join(this.manager.pluginsPath, dirName, 'manifest.yaml'), 'utf8')
 				.catch(() => assert(false, 'Missing manifest.yaml.'))) as string;
 
-			let manifest: Manifest;
-			try {
-				manifest = yaml.load(manifestStr, { schema: yaml.FAILSAFE_SCHEMA }) as Manifest;
-			} catch (e) {
-				assert(e instanceof yaml.YAMLException, `YAML parsing error: ${e}`);
-				assert(
-					false,
-					`Invalid manifest.yaml: ${e.reason} at ${e.mark.line}:${e.mark.column}`
-				);
-			}
+			const manifest = YAML.parse(manifestStr);
 
 			assertSchema<Manifest>(
 				manifest,
@@ -122,7 +112,7 @@ export default class PluginLoader {
 				...new Set([
 					...(manifest.watch ?? []),
 					...Object.values(entry).reduce<string[]>((paths, entry) => {
-						paths.push(...Object.values(entry).filter(Boolean));
+						paths.push(...(Object.values(entry).filter(Boolean) as string[]));
 						return paths;
 					}, []),
 				]),
