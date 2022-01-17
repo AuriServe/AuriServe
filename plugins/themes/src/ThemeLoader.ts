@@ -32,7 +32,7 @@ export default class ThemeLoader {
 	}
 
 	private async parseTheme(dir: string) {
-		console.log(`parsing ${dir}.`);
+		// console.log(`parsing ${dir}.`);
 		const manifest = YAML.parse(
 			await fs.readFile(path.join(this.themeDir, dir, 'manifest.yaml'), 'utf8')
 		);

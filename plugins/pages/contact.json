@@ -1,0 +1,72 @@
+{
+	"metadata": {
+		"title": "Contact",
+		"description": "hey"
+	},
+	"content": {
+		"layout": "default",
+		"sections": {
+			"main": {
+				"element": "LinearLayout",
+				"children": [
+					{
+						"element": "Section",
+						"props": {
+							"gap": 0,
+							"class": "Main"
+						},
+						"children": [
+							{
+								"element": "LinearLayout",
+								"props": {
+									"width": 1000
+								},
+								"children": [
+									{
+										"element": "TextView",
+										"props": {
+											"content": "<h2 style='margin-bottom: -8px'>Contact</h2>"
+										}
+									},
+									{
+										"element": "ColumnLayout",
+										"props": {
+											"columns": "300px:1fr",
+											"minWidth": 1100,
+											"gap": 16
+										},
+										"children": [
+											{
+												"element": "TextView",
+												"props": {
+													"content": "<h3>Address</h3><p><strong>The Medical Clinic Associates</strong><br>4794 Joyce Avenue<br>Powell River, BC<br>V8A 3B6 Canada<br>Phone: <a href='tel:6044856261'>604-485-6261</a><br>Fax: 604-485-2820</p><p>For general inquiries or to make an appointment, please call us between 8:30 am - 5:00 pm Monday - Friday.</p><h3>Clinic Manager</h3><p>Nicole Houghton</p>"
+												}
+											},
+											{
+												"element": "LinearLayout",
+												"children": [
+													{
+														"element": "TextView",
+														"props": {
+															"content": "<h3>Map</h3>"
+														}
+													},
+													{
+														"element": "HTMLView",
+														"props": {
+															"html": "<span>this should be an iframe but it was making a lot of network requests</span>"
+														}
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		}
+	}
+}

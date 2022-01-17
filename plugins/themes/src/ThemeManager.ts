@@ -1,9 +1,9 @@
-import as from 'auriserve';
+// import as from 'auriserve';
 
 import Theme from './Theme';
 import ThemeLoader from './ThemeLoader';
 
-const { logger: Log } = as.core;
+// const { logger: Log } = as.core;
 
 export default class ThemeManager {
 	readonly loader: ThemeLoader;
@@ -16,12 +16,16 @@ export default class ThemeManager {
 
 	async init() {
 		await this.loader.init();
-		for (const [, theme] of this.themes) {
-			Log.debug(await theme.getCSS());
-		}
+		// for (const [, theme] of this.themes) {
+		// Log.debug(await theme.getCSS());
+		// }
 	}
 
 	addTheme(theme: Theme) {
 		this.themes.set(theme.manifest.identifier, theme);
+	}
+
+	listEnabled() {
+		return [...this.themes.values()].filter(Boolean);
 	}
 }

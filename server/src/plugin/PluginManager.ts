@@ -6,6 +6,7 @@ import RouterApi from './RouterApi';
 import PluginLoader from './PluginLoader';
 // import Properties from '../data/model/Properties';
 import pluginDependencyOrder from './pluginDependencyOrder';
+import Logger from '../Logger';
 
 export type PluginEvent = 'refresh';
 
@@ -38,7 +39,20 @@ export default class Plugins {
 	async init() {
 		const [properties] = await Promise.all([
 			// Properties.findOne({}),
-			new Promise((resolve) => resolve({ enabled: { plugins: [ 'routes', 'preact', 'elements', 'elements-basic', 'themes' ] } })),
+			new Promise((resolve) =>
+				resolve({
+					enabled: {
+						plugins: [
+							'routes',
+							'preact',
+							'elements',
+							'elements-basic',
+							'themes',
+							'pages',
+						],
+					},
+				})
+			),
 			// new Promise((resolve) => resolve({ enabled: { plugins: [] } })),
 			this.loader.refresh(),
 		]);
@@ -74,7 +88,11 @@ export default class Plugins {
 
 		const enableOrder = pluginDependencyOrder(
 			identifiers
-				.filter((identifier) => this.plugins.has(identifier))
+				.filter((identifier) => {
+					if (this.plugins.has(identifier)) return true;
+					Logger.error(`Enabled plugin '${identifier}' not found.`);
+					return false;
+				})
 				.map((identifier) => this.plugins.get(identifier) as Plugin)
 				.map((plugins) => ({
 					identifier: plugins.manifest.identifier,

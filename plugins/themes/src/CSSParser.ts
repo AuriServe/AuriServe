@@ -64,7 +64,7 @@ const directives: [RegExp, ReplacerFunc][] = [
 			try {
 				color = traverse(ctx.theme, themePath);
 			} catch (e) {
-				console.log('FAIL');
+				// console.log('FAIL');
 				color = '#000';
 			}
 

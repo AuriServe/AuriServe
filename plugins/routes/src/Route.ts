@@ -46,7 +46,6 @@ export abstract class BaseRoute implements Route {
 	}
 
 	async req(req: Req): Promise<string | null> {
-		console.log(this.children);
 		if (this.path === req.path) return this.render(req);
 		const childSegment = req.path.substring(this.path.length).split('/')[0];
 		return (await this.children.get(childSegment)?.req(req)) ?? null;
