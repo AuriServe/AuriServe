@@ -12,6 +12,7 @@
 	"devDependencies": {
 		"@babel/core": "^7.16.7",
 		"@babel/plugin-transform-react-jsx": "^7.16.7",
+		"@babel/preset-env": "^7.16.8",
 		"@babel/preset-typescript": "^7.16.7",
 		"@types/plugin-elements": "file:../elements",
 		"@types/plugin-preact": "file:../preact",
@@ -21,6 +22,7 @@
 		"babel-loader": "^8.2.3",
 		"eslint-loader": "^4.0.2",
 		"fork-ts-checker-webpack-plugin": "^6.5.0",
+		"plugin-preact": "file:../preact",
 		"preact": "^10.6.4",
 		"ts-loader": "^9.2.6",
 		"webpack-cli": "^4.9.1"

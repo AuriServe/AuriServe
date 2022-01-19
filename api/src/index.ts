@@ -89,7 +89,7 @@ export interface Core {
 
 // Actually get the API context and export it.
 // eslint-disable-next-line no-underscore-dangle
-const api: AuriServeAPI = (globalThis as any)._CONTEXT;
+const api: AuriServeAPI = (global as any)._CONTEXT;
 
 if (!api) {
 	throw new Error(

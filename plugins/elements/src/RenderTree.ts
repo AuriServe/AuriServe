@@ -31,12 +31,12 @@ const {
 // 		this.code = (params[1] as number) ?? 0;
 // 	}
 // }
+// const contextData: PageBuilderContextData = {
+// 	path: rawUrl,
+// 	cookies: cookies
+// };
 
 export default async function renderTree(tree: Node): Promise<string> {
-	// const contextData: PageBuilderContextData = {
-	// 	path: rawUrl,
-	// 	cookies: cookies
-	// };
 
 	async function elementFromNode(node: Node): Promise<VNode> {
 		const Component = as.elements.registeredElements.get(node.element)?.component;
@@ -50,3 +50,4 @@ export default async function renderTree(tree: Node): Promise<string> {
 
 	return renderToString(await elementFromNode(tree));
 }
+

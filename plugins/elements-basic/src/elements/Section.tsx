@@ -1,10 +1,6 @@
-import as from 'auriserve';
+import { h } from 'preact';
 import { merge } from 'common';
 import type { ComponentChildren } from 'preact';
-
-const {
-	preact: { h },
-} = as.preact;
 
 export interface Props {
 	role?: 'header' | 'footer' | 'aside' | 'section';
@@ -20,8 +16,6 @@ export interface Props {
 
 export function Section(props: Props) {
 	const Tag = props.role ?? 'section';
-	// eslint-disable-next-line
-	// @ts-ignore
 	return <Tag class={merge('Section', props.class)} children={props.children} />;
 }
 

@@ -2,11 +2,10 @@ import as from 'auriserve';
 
 import { Page } from './Interface';
 
-const { BaseRoute } = (as as any).routes;
+const { BaseRoute } = as.routes;
 
-export default class PageRoute extends (BaseRoute as any) {
+export default class PageRoute extends BaseRoute {
 	constructor(path: string, readonly page: Page) {
-		// eslint-disable-next-line
 		super(path);
 	}
 

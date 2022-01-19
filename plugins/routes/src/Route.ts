@@ -1,6 +1,6 @@
-import { assert } from 'common/assert';
+import { assert } from 'common';
 
-import type { Req } from './Routes';
+import type Req from './Req';
 
 export interface Route {
 	getPath(): string;

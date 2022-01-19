@@ -1,10 +1,6 @@
-import as from 'auriserve';
-import { merge } from 'common/util';
+import { h } from 'preact';
+import { merge } from 'common';
 import type { ComponentChildren } from 'preact';
-
-const {
-	preact: { h },
-} = as.preact;
 
 export interface Props {
 	url?: string;
@@ -31,7 +27,7 @@ export function Button(props: Props) {
 			aria-label={props.image && props.label}
 			target={props.target === 'new' ? '_blank' : undefined}
 			class={merge('Button', props.class, props.image && 'ImageButton')}>
-			{!props.image && props.label}
+			{!props.image && <span>{props.label}</span>}
 			{props.image && (
 				<img
 					src={

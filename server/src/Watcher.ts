@@ -1,9 +1,9 @@
-import fs from 'fs';
+import fs, { FSWatcher } from 'fs';
 import debounce from 'debounce';
 
 export default class Watcher {
 	private callbacks: (() => void)[] = [];
-	private controller: AbortController = new AbortController();
+	private watchers: FSWatcher[] = [];
 	private onChangeDebounced: any;
 
 	constructor(private paths: string[]) {
@@ -21,16 +21,14 @@ export default class Watcher {
 
 	start() {
 		this.stop();
-		this.controller = new AbortController();
-		this.paths.forEach(async (path) => {
-			fs.watch(path, { persistent: false, signal: this.controller.signal }, () =>
-				this.onChangeDebounced()
-			);
+		this.watchers = this.paths.map((path) => {
+			return fs.watch(path, { persistent: false }, () => this.onChangeDebounced());
 		});
 	}
 
 	stop() {
-		this.controller.abort();
+		this.watchers.map((watcher) => watcher.close());
+		this.watchers = [];
 		this.onChangeDebounced.clear();
 	}
 

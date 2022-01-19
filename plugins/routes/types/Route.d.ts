@@ -1,4 +1,4 @@
-import type { Req } from './Routes';
+import type Req from './Req';
 export interface Route {
     getPath(): string;
     canAdd(): boolean;

@@ -1,10 +1,6 @@
-import as from 'auriserve';
+import { h } from 'preact';
 import { merge } from 'common';
-import { ComponentChildren } from 'preact';
-
-const {
-	preact: { h },
-} = as.preact;
+import type { ComponentChildren } from 'preact';
 
 export interface Props {
 	style?: any;

@@ -15,5 +15,15 @@ declare global {
 	}
 }
 
+(global as any).__AS_PREACT = preact;
+(global as any).__AS_PREACT_HOOKS = hooks;
+(global as any).__AS_PREACT_COMPAT = { forwardRef };
+
 as.preact = { preact, hooks, forwardRef, renderToString };
-as.core.on('cleanup', () => as.unexport('preact'));
+as.core.on('cleanup', () => {
+	as.unexport('preact');
+
+	delete (global as any).__AS_PREACT;
+	delete (global as any).__AS_PREACT_HOOKS;
+	delete (global as any).__AS_PREACT_COMPAT;
+});

@@ -1,10 +1,6 @@
-import as from 'auriserve';
+import { h } from 'preact';
 import { merge } from 'common';
 import type { ComponentChildren } from 'preact';
-
-const {
-	preact: { h },
-} = as.preact;
 
 // import './LinearLayout.sss';
 
@@ -27,8 +23,6 @@ export interface Props {
 
 export function LinearLayout(props: Props) {
 	return (
-		// eslint-disable-next-line
-		// @ts-ignore
 		<div
 			style={{
 				flexDirection: props.direction === 'row' ? 'row' : undefined,

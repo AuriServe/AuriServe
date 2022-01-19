@@ -6,10 +6,9 @@
 	"author": "Auri <me@auri.xyz>",
 	"license": "MIT",
 	"scripts": {
-		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types & webpack --mode=production --progress --config ./webpack.ts",
-		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types & webpack --mode=development --watch --progress --config ./webpack.ts"
+		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts; fg",
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg"
 	},
-	"sideEffects": false,
 	"devDependencies": {
 		"@babel/core": "^7.16.7",
 		"@babel/preset-typescript": "^7.16.7",

@@ -97,17 +97,13 @@ as.pages = {
 		let layout = as.pages.registeredLayouts.get(identifier);
 		assert(layout, `Layout '${identifier}' not found.`);
 
-		const sectionContents = Object.fromEntries(
-			await Promise.all(
-				Object.entries(sections).map(
-					([key, section]) =>
-						new Promise<[string, string]>((resolve) =>
-							as.elements
-								.renderTree(section as any)
-								.then((contents) => resolve([key, contents]))
-						)
-				)
-			)
+		const sectionContents: Record<string, string> = {};
+
+		await Promise.all(
+			Object.entries(sections).map(async ([key, section]) => {
+				const contents = await as.elements.renderTree(section as any);
+				sectionContents[key] = contents;
+			})
 		);
 
 		for (const section of Object.keys(sections)) {

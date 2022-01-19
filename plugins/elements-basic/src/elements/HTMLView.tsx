@@ -1,9 +1,5 @@
-import as from 'auriserve';
+import { h } from 'preact';
 import { merge } from 'common';
-
-const {
-	preact: { h },
-} = as.preact;
 
 export interface Props {
 	html: string;

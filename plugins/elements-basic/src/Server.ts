@@ -1,8 +1,4 @@
 import as from 'auriserve';
-
-// import Button from './elements/Button';
-// import Container from './elements/Container';
-
 const { registerElement } = as.elements;
 
 import Button from './elements/Button';
@@ -14,8 +10,14 @@ registerElement(ColumnLayout);
 import Container from './elements/Container';
 registerElement(Container);
 
+import ImageView from './elements/ImageView';
+registerElement(ImageView);
+
 // import GridLayout from './elements/GridLayout';
 // registerElement(GridLayout);
+
+// import ImageView from './elements/ImageView';
+// registerElement(ImageView);
 
 import HTMLView from './elements/HTMLView';
 registerElement(HTMLView);

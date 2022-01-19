@@ -1,12 +1,6 @@
-import as from 'auriserve';
+import { h } from 'preact';
+// import { forwardRef } from 'preact/compat';
 import type { ComponentChildren } from 'preact';
-
-const {
-	preact: { h },
-	forwardRef,
-} = as.preact;
-
-// import './ColumnLayout.sss';
 
 export type Props = {
 	maxWidth?: number;
@@ -26,10 +20,7 @@ const parseMinMax = (min: string, natural: string) => `minmax(${min}, ${natural}
 const parseColumn = (raw: string) =>
 	raw.startsWith('(')
 		? parseMinMax(
-				...(raw.substring(1, raw.length - 2 - 1).split(',') as unknown as [
-					string,
-					string
-				])
+				...(raw.substring(1, raw.length - 1).split(',') as unknown as [string, string])
 		  )
 		: raw;
 
@@ -59,14 +50,10 @@ export const toCSSUnit = (val: number | string) =>
  * Example: "(200px, 400px):3fr"
  */
 
-export const ColumnLayout = forwardRef<HTMLDivElement, Props>(function ColumnLayout(
-	props,
-	ref
-) {
+export function ColumnLayout(props: Props) {
 	const identifier = props.minWidth ? randomIdentifier() : '';
 	return (
 		<div
-			ref={ref}
 			class={['ColumnLayout', identifier, props.class, props.reverseVertical && 'Reverse']
 				.filter((s) => s)
 				.join(' ')}>
@@ -96,7 +83,7 @@ export const ColumnLayout = forwardRef<HTMLDivElement, Props>(function ColumnLay
 			</div>
 		</div>
 	);
-});
+}
 
 export default {
 	identifier: 'ColumnLayout',

@@ -48,6 +48,14 @@ export default function (_: any, argv: { mode: string }) {
 									allExtensions: true,
 								},
 							],
+							[
+								'@babel/preset-env',
+								{
+									targets: {
+										node: '10.20.1',
+									},
+								},
+							],
 						],
 					},
 				},

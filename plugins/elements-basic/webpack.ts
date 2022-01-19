@@ -15,6 +15,12 @@ export default function (_: any, argv: { mode: string }) {
 		context: resolve(__dirname, 'src'),
 		entry: './Server.ts',
 
+		externals: {
+			'preact': '__AS_PREACT',
+			'preact/hooks': '__AS_PREACT_HOOKS',
+			'preact/compat': '__AS_PREACT_COMPAT',
+		},
+
 		output: {
 			path: resolve(__dirname, 'dist'),
 			filename: 'server.js',
@@ -50,8 +56,16 @@ export default function (_: any, argv: { mode: string }) {
 									pragma: 'h',
 								},
 							],
+							[
+								'@babel/preset-env',
+								{
+									targets: {
+										node: '10.20.1',
+									},
+								},
+							],
 						],
-						plugins: [['@babel/transform-react-jsx', { pragma: 'h' }]],
+						plugins: [['@babel/transform-react-jsx', { pragma: '__AS_PREACT.h' }]],
 					},
 				},
 			],
