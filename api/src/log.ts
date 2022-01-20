@@ -1,6 +1,6 @@
 type LogFunction = (message: string, ...args: any[]) => void;
 
-export default interface Logger {
+export default interface Log {
 	info: LogFunction;
 	debug: LogFunction;
 	error: LogFunction;

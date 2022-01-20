@@ -1,4 +1,4 @@
-import Logger from './Logger';
+import Logger from './Log';
 import * as Auth from './data/Auth';
 import Role from './data/model/Role';
 

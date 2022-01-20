@@ -1,7 +1,8 @@
+import type { Database } from 'better-sqlite3';
+
+import type Log from './log';
 import type YAML from './yaml';
-import type Logger from './logger';
 import type Router from './router';
-import type Database from './database';
 
 declare global {
 	/**
@@ -66,7 +67,7 @@ export interface Core {
 	router: Router;
 
 	/** Provides access to advanced logging functionality using log4js. */
-	logger: Logger;
+	log: Log;
 
 	/** YAML parsing and stringifying. */
 	YAML: YAML;

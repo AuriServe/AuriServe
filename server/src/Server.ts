@@ -1,45 +1,26 @@
+import fss from 'fs';
+import path from 'path';
 import HTTP from 'http';
 import HTTPS from 'https';
-import Express from 'express';
+import { assert } from 'common';
 import { URLSearchParams } from 'url';
+
+import Express from 'express';
+import Database from 'better-sqlite3';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
 import { server as WebSocketServer } from 'websocket';
 
-import fss from 'fs';
-import { assert } from 'common';
-// import Mongoose from 'mongoose';
-// import { graphql } from 'graphql';
-
-import Logger from './Logger';
-// import Media from './data/Media';
-// import Pages from './data/Pages';
-// import Themes from './data/Themes';
-// import * as Auth from './data/Auth';
-// import Roles from './data/model/Role';
-// import PageBuilder from './PageBuilder';
-// import Properties from './data/model/Properties';
-import PluginManager from './plugin/PluginManager';
-// import { Schema as schema, Resolver as rootValue } from './data/Graph';
-
-import resolvePath from './ResolvePath';
+import Logger from './Log';
 import { Config } from './ServerConfig';
-// import AdminRouter from './router/AdminRouter';
-// import PagesRouter from './router/PagesRouter';
-// import createUserPrompt from './CreateUserPrompt';
+import resolvePath from './ResolvePath';
+import PluginManager from './plugin/PluginManager';
 
 export default class Server {
 	private app = Express();
-
-	// private adminRouter: AdminRouter;
-	// private pagesRouter: PagesRouter;
-
-	// private media: Media;
-	// private pages: Pages;
-	// private themes: Themes;
 	private plugins: PluginManager;
-	// private pageBuilder: PageBuilder;
+	private database: Database.Database;
 
 	constructor(public readonly conf: Config, public readonly dataPath: string) {
 		this.app.use(compression());
@@ -56,15 +37,17 @@ export default class Server {
 			);
 		});
 
-		assert(this.conf.db, 'Config is missing a db field.');
+		// assert(this.conf.db, 'Config is missing a db field.');
 
 		// this.pages = new Pages(this.dataPath);
 		// this.media = new Media(this.dataPath);
 
-		// this.themes = new Themes(this.dataPath, true);
-		this.plugins = new PluginManager(this.dataPath, true, this.app);
+		this.database = new Database(path.join(this.dataPath, 'data.sqlite'), {
+			verbose: (query: string) => Logger.trace(`SQL Query:\n${query}`),
+		});
 
-		// this.pageBuilder = new PageBuilder(this.dataPath, this.themes, this.plugins);
+		// this.themes = new Themes(this.dataPath, true);
+		this.plugins = new PluginManager(this.dataPath, true, this.app, this.database);
 
 		// const contextValue = {
 		// 	plugins: this.plugins,
@@ -103,7 +86,7 @@ export default class Server {
 				cert = fss.readFileSync(resolvePath(this.conf.https.cert), 'utf8').toString();
 				key = fss.readFileSync(resolvePath(this.conf.https.key), 'utf8').toString();
 			} catch (e) {
-				assert(false, `Failed to read HTTPS key/certificate files.\n ${  e}`);
+				assert(false, `Failed to read HTTPS key/certificate files.\n ${e}`);
 			}
 
 			const http = HTTP.createServer(this.forwardHttps.bind(this) as any);
@@ -188,13 +171,10 @@ export default class Server {
 			return;
 		}
 
-		const loc =
-			`https://${
-			host.replace(
-				(this.conf.port || 80).toString(),
-				(this.conf.https!.port || 443).toString()
-			)
-			}${req.url}`;
+		const loc = `https://${host.replace(
+			(this.conf.port || 80).toString(),
+			(this.conf.https!.port || 443).toString()
+		)}${req.url}`;
 		res.writeHead(301, { Location: loc });
 		res.end();
 	}
@@ -221,7 +201,7 @@ export default class Server {
 
 	private async shutdown() {
 		Logger.info('Shutting down AuriServe.');
-		await Promise.all([this.plugins.cleanup()/*, this.themes.cleanup()*/]);
+		await Promise.all([this.plugins.cleanup() /*, this.themes.cleanup()*/]);
 		process.exit();
 	}
 }

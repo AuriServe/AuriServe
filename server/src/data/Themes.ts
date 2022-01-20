@@ -2,7 +2,7 @@ import path from 'path';
 import { toIdentifier, assert, isType } from 'common';
 import fss, { promises as fs, constants as fsc } from 'fs';
 
-import Logger from '../Logger';
+import Logger from '../Log';
 import Watcher from '../Watcher';
 import Properties from './model/Properties';
 

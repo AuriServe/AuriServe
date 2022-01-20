@@ -4,7 +4,7 @@ import { promises as fs, constants as fsc } from 'fs';
 import minimist from 'minimist';
 
 import Server from './Server';
-import Logger from './Logger';
+import Logger from './Log';
 import resolvePath from './ResolvePath';
 import { Config, mergeConfig } from './ServerConfig';
 

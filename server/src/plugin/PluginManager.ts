@@ -1,12 +1,12 @@
 import path from 'path';
 import Express from 'express';
+import { Database, Statement } from 'better-sqlite3';
 
+import Log from '../Log';
 import Plugin from './Plugin';
 import RouterApi from './RouterApi';
 import PluginLoader from './PluginLoader';
-// import Properties from '../data/model/Properties';
 import pluginDependencyOrder from './pluginDependencyOrder';
-import Logger from '../Logger';
 
 export type PluginEvent = 'refresh';
 
@@ -27,41 +27,59 @@ export default class Plugins {
 	/** The plugin loader which discovers and watches the plugins. */
 	private loader: PluginLoader;
 
+	private DATABASE_ADD_PLUGIN: Statement<string> = this.database.prepare(
+		'INSERT OR IGNORE INTO plugins(identifier, enabled) VALUES(?, 0)'
+	);
+
 	/** A map of callback identifiers to callbacks. */
 	private callbacks: Map<PluginEvent, ((event?: any) => void)[]> = new Map();
 
-	constructor(dataPath: string, watch: boolean, app: Express.Application) {
+	constructor(
+		dataPath: string,
+		watch: boolean,
+		app: Express.Application,
+		readonly database: Database
+	) {
 		this.pluginsPath = path.join(dataPath, 'plugins');
 		this.routerApi = new RouterApi(app);
 		this.loader = new PluginLoader(this, watch);
 	}
 
 	async init() {
-		const [properties] = await Promise.all([
-			// Properties.findOne({}),
-			new Promise((resolve) =>
-				resolve({
-					enabled: {
-						plugins: [
-							'routes',
-							'preact',
-							'elements',
-							'elements-basic',
-							'themes',
-							'pages',
-						],
-					},
-				})
-			),
-			// new Promise((resolve) => resolve({ enabled: { plugins: [] } })),
-			this.loader.refresh(),
-		]);
+		this.database
+			.prepare(
+				`CREATE TABLE IF NOT EXISTS plugins (
+					identifier TEXT PRIMARY KEY,
+					enabled INTEGER NOT NULL DEFAULT FALSE
+				) STRICT`
+			)
+			.run();
 
-		this.setEnabled((properties as any)?.enabled?.plugins ?? []);
+		// TODO: Stupid dumb fake query
+		this.database.prepare('DELETE FROM plugins').run();
+
+		await this.loader.refresh();
+
+		// TODO: Stupid dumb fake query
+		this.database
+			.prepare(
+				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-basic', 1), ('themes', 1), ('pages', 1)`
+			)
+			.run();
+
+		const enabled = this.database
+			.prepare(`SELECT identifier FROM plugins WHERE enabled = 1`)
+			.pluck()
+			.all();
+
+		console.log(enabled);
+
+		this.setEnabled(enabled);
 	}
 
 	addPlugin(plugin: Plugin) {
 		this.plugins.set(plugin.manifest.identifier, plugin);
+		this.DATABASE_ADD_PLUGIN.run(plugin.manifest.identifier);
 	}
 
 	reloadPlugin(_identifier: string) {
@@ -70,6 +88,14 @@ export default class Plugins {
 
 	/** Enables only the plugins specified. */
 	async setEnabled(identifiers: string[]) {
+		this.database.prepare('UPDATE plugins SET enabled = 0').run();
+		if (identifiers.length)
+			this.database.exec(`
+				UPDATE plugins SET enabled = 1 WHERE identifier IN (${identifiers
+					.map((i) => `'${i}'`)
+					.join(', ')})`);
+
+		this.plugins.set;
 		const disableOrder = pluginDependencyOrder(
 			[...this.plugins.values()]
 				.filter((plugin) => plugin.isEnabled())
@@ -90,7 +116,7 @@ export default class Plugins {
 			identifiers
 				.filter((identifier) => {
 					if (this.plugins.has(identifier)) return true;
-					Logger.error(`Enabled plugin '${identifier}' not found.`);
+					Log.error(`Enabled plugin '${identifier}' not found.`);
 					return false;
 				})
 				.map((identifier) => this.plugins.get(identifier) as Plugin)
@@ -125,7 +151,6 @@ export default class Plugins {
 
 	/** Synchronizes with the database and then cleans up all plugins. */
 	async cleanup() {
-		await this.syncToDb();
 		this.plugins.forEach((plugin) => plugin.disable(true));
 		this.plugins.clear();
 	}
@@ -144,15 +169,5 @@ export default class Plugins {
 		this.plugins.forEach((plugin) => {
 			plugin.emit(event, eventObj);
 		});
-	}
-
-	/** Saves the current list of enabled plugins to the database. */
-	private async syncToDb() {
-		// await Properties.updateOne(
-		// 	{},
-		// 	{
-		// 		$set: { 'enabled.plugins': this.listEnabled().map((p) => p.manifest.identifier) },
-		// 	}
-		// );
 	}
 }

@@ -4,7 +4,7 @@ import { promises as fs, constants as fsc } from 'fs';
 
 import YAML from './YAML';
 import Plugin from './Plugin';
-import Logger from '../Logger';
+import Logger from '../Log';
 import Watcher from '../Watcher';
 import { Manifest } from './Manifest';
 import PluginManager from './PluginManager';

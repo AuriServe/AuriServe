@@ -4,7 +4,7 @@
  * Also adds perfStart and perfEnd methods, which allow easy performance logging.
  */
 
-import log4js, { LoggingEvent } from 'log4js';
+import log4js from 'log4js';
 
 const DEV_PATTERN = '[ %[%-5p%] | %x{location} ] %[%m%]';
 const BUILD_PATTERN = '[ %d | %[%-5p%] ] %[%m%]';

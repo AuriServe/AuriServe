@@ -2,7 +2,7 @@ import path from 'path';
 import { Page } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 
-import Logger from '../Logger';
+import Logger from '../Log';
 import { Page as PageMeta } from 'common/graph/type';
 
 /**

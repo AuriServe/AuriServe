@@ -38,6 +38,7 @@
 	},
 	"devDependencies": {
 		"@types/bcryptjs": "^2.4.2",
+		"@types/better-sqlite3": "^7.4.2",
 		"@types/compression": "^1.7.2",
 		"@types/cookie-parser": "^1.4.2",
 		"@types/debounce": "^1.2.1",
@@ -57,6 +58,7 @@
 	},
 	"dependencies": {
 		"bcryptjs": "^2.4.3",
+		"better-sqlite3": "^7.5.0",
 		"common": "file:../common/dist",
 		"compression": "^1.7.4",
 		"cookie-parser": "^1.4.5",
