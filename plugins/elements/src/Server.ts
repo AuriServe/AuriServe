@@ -10,7 +10,7 @@ as.elements = {
 		as.elements.registeredElements.set(element.identifier, element);
 	},
 	unregisterElement(identifier: string) {
-		as.elements.registeredElements.delete(identifier);
+		return as.elements.registeredElements.delete(identifier);
 	},
 };
 

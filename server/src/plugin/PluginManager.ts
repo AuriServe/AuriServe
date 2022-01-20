@@ -1,6 +1,6 @@
 import path from 'path';
 import Express from 'express';
-import { Database, Statement } from 'better-sqlite3';
+import { Database, Statement } from '../SQLite';
 
 import Log from '../Log';
 import Plugin from './Plugin';

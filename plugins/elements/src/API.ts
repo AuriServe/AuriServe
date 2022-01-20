@@ -6,7 +6,7 @@ export default interface API {
 
 	registeredElements: Map<string, Element>;
 	registerElement(element: Element): void;
-	unregisterElement(identifier: string): void;
+	unregisterElement(identifier: string): boolean;
 }
 
 declare global {

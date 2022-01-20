@@ -6,7 +6,6 @@ import { assert } from 'common';
 import { URLSearchParams } from 'url';
 
 import Express from 'express';
-import Database from 'better-sqlite3';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
@@ -16,11 +15,12 @@ import Logger from './Log';
 import { Config } from './ServerConfig';
 import resolvePath from './ResolvePath';
 import PluginManager from './plugin/PluginManager';
+import connect, { Database } from './SQLite';
 
 export default class Server {
 	private app = Express();
 	private plugins: PluginManager;
-	private database: Database.Database;
+	private database: Database;
 
 	constructor(public readonly conf: Config, public readonly dataPath: string) {
 		this.app.use(compression());
@@ -42,7 +42,7 @@ export default class Server {
 		// this.pages = new Pages(this.dataPath);
 		// this.media = new Media(this.dataPath);
 
-		this.database = new Database(path.join(this.dataPath, 'data.sqlite'), {
+		this.database = connect(path.join(this.dataPath, 'data.sqlite'), {
 			verbose: (query: string) => Logger.trace(`SQL Query:\n${query}`),
 		});
 
