@@ -1,0 +1,45 @@
+#page .Button::before, #page .ImageView-Image, #page .Button.Ghost::after {
+	--corner-size: 1;
+	--r: calc(var(--corner-size) * @theme(corner.size)px);
+	overflow: hidden;
+
+	@if (corner.style == none) {
+		border-radius: 0;
+	}
+
+	@elseif (corner.style == rounded && corner.sides == all) {
+		border-radius: var(--r);
+	}
+
+	@elseif (corner.style == rounded && corner.sides == top_left_bottom_right) {
+		border-radius: var(--r) 0 var(--r) 0;
+	}
+
+	@elseif (corner.style == rounded && corner.sides == top_right_bottom_left) {
+		border-radius: 0 var(--r) 0 var(--r);
+	}
+
+	@elseif (corner.style == bevel && corner.sides == all) {
+		clip-path: polygon(var(--r) 0%, calc(100% - var(--r)) 0%, 100% var(--r), 100% calc(100% - var(--r)), calc(100% - var(--r)) 100%, var(--r) 100%, 0% calc(100% - var(--r)), 0% var(--r));
+	}
+
+	@elseif (corner.style == bevel && corner.sides == top_left_bottom_right) {
+		clip-path: polygon(var(--r) 0%, 100% 0, 100% calc(100% - var(--r)), calc(100% - var(--r)) 100%, 0 100%, 0% var(--r));
+	}
+
+	@elseif (corner.style == bevel && corner.sides == top_right_bottom_left) {
+		clip-path: polygon(calc(100% - var(--r)) 0%, 100% var(--r), 100% 100%, var(--r) 100%, 0% calc(100% - var(--r)), 0 0);
+	}
+
+	@elseif (corner.style == rabbet && corner.sides == all) {
+		clip-path: polygon(0% var(--r), var(--r) var(--r), var(--r) 0%, calc(100% - var(--r)) 0%, calc(100% - var(--r)) var(--r), 100% var(--r), 100% calc(100% - var(--r)), calc(100% - var(--r)) calc(100% - var(--r)), calc(100% - var(--r)) 100%, var(--r) 100%, var(--r) calc(100% - var(--r)), 0% calc(100% - var(--r)));
+	}
+
+	@elseif (corner.style == rabbet && corner.sides == top_left_bottom_right) {
+		clip-path: polygon(0% var(--r), var(--r) var(--r), var(--r) 0%, 100% 0, 100% calc(100% - var(--r)), calc(100% - var(--r)) calc(100% - var(--r)), calc(100% - var(--r)) 100%, 0 100%);
+	}
+
+	@elseif (corner.style == rabbet && corner.sides == top_right_bottom_left) {
+		clip-path: polygon(0 0, calc(100% - var(--r)) 0%, calc(100% - var(--r)) var(--r), 100% var(--r), 100% 100%, var(--r) 100%, var(--r) calc(100% - var(--r)), 0% calc(100% - var(--r)));
+	}
+}

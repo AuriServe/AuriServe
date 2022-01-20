@@ -1,0 +1,155 @@
+#page {
+	.Button:not(.ImageButton) {
+		@apply relative isolate inline-block px-4 py-2.5 select-none cursor-pointer drop-shadow-sm outline outline-offset-[3px] outline-[3px] outline-transparent will-change-transform;
+
+		--r: calc(0.5 * @theme(corner.size)px);
+
+		@if (corner.style == none) {
+			border-radius: 0;
+		}
+
+		@elseif (corner.style != none && corner.sides == all) {
+			border-radius: var(--r);
+		}
+
+		@elseif (corner.style != none && corner.sides == top_left_bottom_right) {
+			border-radius: var(--r) 0 var(--r) 0;
+		}
+
+		@elseif (corner.style != none && corner.sides == top_right_bottom_left) {
+			border-radius: 0 var(--r) 0 var(--r);
+		}
+
+		&, &::before, &::after, & > span {
+			@apply transition-all;
+		}
+
+		& > span {
+			@apply block relative text-white text-center font-semibold tracking-wider no-underline;
+		}
+
+		&::before {
+			--corner-size: 0.5 !important;
+			--fill-dark: var(--section-is-dark) rgb(var(--color-primary-400));
+			--fill-light: rgb(var(--color-primary-700));
+			--fill: var(--fill-dark, var(--fill-light));
+			@apply absolute [content:'_'] w-full h-full inset-0 bg-[color:var(--fill)];
+		}
+
+		&.Ghost {
+			&::before {
+				--fill-dark: var(--section-is-dark) rgb(var(--color-primary-300));
+			}
+
+			&::after {
+				@if (corner.style == rabbet) { --corner-size: 0.47; }
+				@else { --corner-size: 0.4; }
+
+				@apply block absolute [content:'_'] bg-[color:var(--section-background-color)] inset-0.5 w-auto h-auto shadow-inner;
+			}
+
+			& > span {
+				--color-dark: var(--section-is-dark) white;
+				--color-light: rgb(var(--color-primary-900));
+				--color: var(--color-dark, var(--color-light));
+
+				@apply z-10 relative text-[color:var(--color)];
+			}
+		}
+
+		&.Neutral {
+			&::before {
+				--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-600));
+				--fill-light: rgb(var(--color-secondary-700));
+				--fill: var(--fill-dark, var(--fill-light));
+			}
+
+			&.Ghost {
+				&::before {
+					--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-400));
+					--fill-light: rgb(var(--color-secondary-500));
+				}
+
+				& > span {
+					--color-dark: var(--section-is-dark) white;
+					--color-light: rgb(var(--color-secondary-900));
+				}
+			}
+		}
+
+		&:focus-visible {
+			--outline-dark: var(--section-is-dark) rgba(var(--color-primary-300), 0.4);
+			outline-color: var(--outline-dark, rgba(var(--color-primary-500), 0.5));
+
+			&.Neutral {
+				--outline-dark: var(--section-is-dark) rgba(var(--color-secondary-400), 0.4);
+				outline-color: var(--outline-dark, rgba(var(--color-secondary-500), 0.5));
+				/* @apply outline-secondary-600/50; */
+			}
+		}
+
+		&:hover, &:focus-visible {
+			@apply drop-shadow-md -translate-y-px;
+
+			&::before {
+				--fill-dark: var(--section-is-dark) rgb(var(--color-primary-300));
+				--fill-light: rgb(var(--color-primary-600));
+			}
+
+			&.Neutral {
+				&::before {
+					--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-500));
+					--fill-light: rgb(var(--color-secondary-600));
+				}
+			}
+
+			&.Ghost {
+				&::after {
+					@apply opacity-0 scale-x-95 scale-y-75;
+				}
+
+				& > span {
+					@apply text-white;
+				}
+			}
+		}
+
+		&:active {
+			@apply drop-shadow-sm translate-y-0;
+
+			&::before {
+				--fill-dark: var(--section-is-dark) rgb(var(--color-primary-500));
+				--fill-light: rgb(var(--color-primary-800));
+			}
+
+			& > span {
+				@apply text-primary-50;
+			}
+
+			&.Neutral {
+				&::before {
+					--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-700));
+					--fill-light: rgb(var(--color-secondary-800));
+				}
+
+				& > span {
+					@apply text-secondary-100;
+				}
+			}
+
+			&.Ghost {
+				&::after {
+					@apply opacity-0 scale-x-95 scale-y-75;
+				}
+
+				& > span {
+					@apply text-primary-50;
+				}
+
+				&.Neutral > span {
+					@apply text-secondary-100;
+				}
+			}
+		}
+	}
+}

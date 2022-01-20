@@ -1,0 +1,140 @@
+name: Architect
+identifier: architect
+description: Base theme for Architect.
+
+version: 0.0.1
+author: Auri
+
+entry:
+  style: dist/style.css
+  head: head.html
+
+options:
+- key: color.primary
+  label: Primary Color
+  type: color_swatch
+  swatches:
+    burgundy:
+      50: '#FFE3E3'
+      100: '#FFBDBD'
+      200: '#FF9B9B'
+      300: '#F86A6A'
+      400: '#EF4E4E'
+      500: '#dc2e2e'
+      600: '#ca1e24'
+      700: '#ad1a20'
+      800: '#8A041A'
+      900: '#610316'
+    sky:
+      50: '#ecfeff'
+      100: '#cffafe'
+      200: '#a5f3fc'
+      300: '#67e8f9'
+      400: '#22d3ee'
+      500: '#06b6d4'
+      600: '#0A9FBD'
+      700: '#0C89A7'
+      800: '#0e7490'
+      900: '#155e75'
+
+- key: color.secondary
+  label: Secondary Color
+  type: color_swatch
+  swatches:
+    stone:
+      50:  '#faf9f7'
+      100: '#E6E3E1'
+      200: '#D3CEC4'
+      300: '#B8B2A7'
+      400: '#A39E93'
+      500: '#8a7c79'
+      600: '#6f6361'
+      700: '#564e50'
+      800: '#393536'
+      900: '#2d2a28'
+    slate:
+      50:  '#f8fafc'
+      100: '#e9eef5'
+      200: '#cbd5e1'
+      300: '#AEBCCD'
+      400: '#94a3b8'
+      500: '#64748b'
+      600: '#5A6B82'
+      700: '#516179'
+      800: '#405066'
+      900: '#313F54'
+
+- key: corner.style
+  type: option
+  options:
+  - key: none
+  - key: bevel
+  - key: rabbet
+  - key: rounded
+
+- key: corner.size
+  type: number
+  min: 0
+  max: 32
+  step: [ 2, 3, 4, 6, 8, 12, 16, 24, 32 ]
+  requires:
+  - corner.style != none
+
+- key: corner.sides
+  type: option
+  options:
+  - key: all
+    label:
+    icon: res/corner_sides_all.svg
+
+  - key: top_left_bottom_right
+    label:
+    icon: res/corner_sides_top_left_bottom_right.svg
+
+  - key: top_right_bottom_left
+    label:
+    icon: res/corner_sides_top_right_bottom_left.svg
+
+  requires:
+  - corner.style != none
+
+- key: callout.style
+  type: option
+  options:
+  - key: diamond
+  - key: circle
+  - key: line
+
+- key: font.header
+  type: option
+  options:
+  - key: yeseva_one
+  - key: fugaz_one
+  - key: montserrat
+
+presets:
+  refined:
+    default: true
+    values:
+      color.primary: burgundy
+      color.secondary: stone
+
+      corner.style: bevel
+      corner.sides: top_left_bottom_right
+      corner.size: 12
+
+      callout.style: diamond
+
+      font.header: yeseva_one
+  breeze:
+    values:
+      color.primary: sky
+      color.secondary: slate
+
+      corner.style: rounded
+      corner.sides: top_left_bottom_right
+      corner.size: 16
+
+      callout.style: circle
+
+      font.header: montserrat
