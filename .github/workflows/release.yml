@@ -26,9 +26,6 @@ jobs:
     - name: Install Dependencies
       run: npm install; sudo npm install -g nexe
 
-    - name: Acquire and Compress Node Binary
-      run: nexe --target linux-x86-10.20.1 --empty --input server/src/Main.ts; chmod +x ~/.nexe/linux-x86-10.20.1
-
     - name: Build Application
       run: cd server; npm install; npm run build
 
