@@ -17,6 +17,12 @@
 				},
 				"children": [
 					{
+						"include": 2
+					},
+					{
+						"include": 1
+					},
+					{
 						"element": "Section",
 						"props": {
 							"class": "Accent Callout"

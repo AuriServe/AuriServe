@@ -2,16 +2,17 @@ import path from 'path';
 import as from 'auriserve';
 import { promises as fs } from 'fs';
 
-import Manifest from './Manifest';
+import { ParsedManifest } from './Manifest';
 import parseCSS from './CSSParser';
+import parseHTML from './HTMLParser';
 import ThemeManager from './ThemeManager';
 
-const { logger: Log } = as.core;
+const { log } = as.core;
 
 export default class Theme {
 	private options: any;
 
-	constructor(private manager: ThemeManager, readonly manifest: Manifest) {
+	constructor(private manager: ThemeManager, readonly manifest: ParsedManifest) {
 		let defPreset = Object.keys(manifest.presets ?? {})[0];
 		if (manifest.presets) {
 			for (const [identifier, preset] of Object.entries(manifest.presets)) {
@@ -49,19 +50,35 @@ export default class Theme {
 						addTo[keyParts[keyParts.length - 1]] = value;
 						break;
 					default:
-						Log.warn('Unhandled option type:', option.type);
+						log.warn('Unhandled option type:', option.type);
 				}
 			}
 		}
 	}
 
-	async getCSS(): Promise<string> {
+	async buildCSS(): Promise<string> {
+		if (!this.manifest.entry.style) return '';
 		return parseCSS(
 			await fs.readFile(
 				path.join(
 					this.manager.themeDir,
 					this.manifest.identifier,
-					this.manifest.entry as string
+					this.manifest.entry.style
+				),
+				'utf8'
+			),
+			this.options
+		);
+	}
+
+	async buildHead(): Promise<string> {
+		if (!this.manifest.entry.head) return '';
+		return parseHTML(
+			await fs.readFile(
+				path.join(
+					this.manager.themeDir,
+					this.manifest.identifier,
+					this.manifest.entry.head
 				),
 				'utf8'
 			),

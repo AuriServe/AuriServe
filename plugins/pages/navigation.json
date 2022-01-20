@@ -1,0 +1,91 @@
+{
+	"content": {
+		"element": "Float",
+		"props": {
+			"threshold": 40,
+			"class": "NavigationHeader"
+		},
+		"children": [
+			{
+				"element": "ColumnLayout",
+				"props": {
+					"gap": 24,
+					"maxWidth": 1100,
+					"columns": "96px:1fr"
+				},
+				"children": [
+					{
+						"element": "ImageView",
+						"props": {
+							"class": "Logo",
+							"media": { "_id": "60a2d8fdcf20422ab2e5fcbd" }
+						}
+					},
+					{
+						"element": "Container",
+						"children": [
+							{
+								"element": "TextView",
+								"props": {
+									"content": "6233 Powell Place&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;604-483-3545"
+								}
+							},
+							{
+								"element": "Navigation",
+								"props": {
+									"entries": [
+										{ "label": "Home", "to": "/" },
+										{
+											"label": "Menu",
+											"to": "/menu",
+											"entries": [
+												{ "label": "Bistro", "to": "/media/menu_bistro.pdf" },
+												{ "label": "Drinks", "to": "/media/menu_drinks.pdf" },
+												{ "label": "Draughts", "to": "/media/menu_draughts.pdf" }
+											]
+										},
+										{ "label": "Deals", "to": "/deals" },
+										{ "label": "Catering", "to": "/catering" },
+										{ "label": "Marina", "to": "/marina" },
+										{ "label": "About Us", "to": "/about" },
+										{ "label": "Contact", "to": "/contact" }
+									]
+								}
+							}
+						]
+					},
+					{
+						"element": "LinearLayout",
+						"props": {
+							"direction": "row",
+							"class": "Social",
+							"gap": 12
+						},
+						"children": [
+							{
+								"element": "Button",
+								"props": {
+									"label": "Facebook",
+									"url": "https://www.facebook.com/ShinglemillPub/",
+									"width": 32,
+									"target": "new",
+									"image": { "_id": "60a6d069ffc6a62393aa68ba" }
+								}
+							},
+							{
+								"element": "Button",
+								"props": {
+									"label": "Instagram",
+									"url": "https://www.instagram.com/shinglemillpub/",
+									"width": 32,
+									"target": "new",
+									"image": { "_id": "60a6d069ffc6a62393aa68b9" }
+								}
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+}

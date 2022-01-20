@@ -4,17 +4,22 @@ import { assert } from 'common';
 import { promises as fs } from 'fs';
 import escapeHtml from 'escape-html';
 
-import API from './API';
-import { Page } from './Interface';
+// import { Page } from './Interface';
 import PageRoute from './PageRoute';
+import { Node, isIncludeNode, ElementNode, Include } from './Interface';
 
-const { logger: Log } = as.core;
+const { log, database: db } = as.core;
 
-declare global {
-	export interface AuriServeAPI {
-		pages: API;
-	}
-}
+db.exec('DROP TABLE pages');
+db.exec('DROP TABLE includes');
+
+db.prepare(
+	'CREATE TABLE IF NOT EXISTS pages (content TEXT, includes TEXT)'
+).run();
+
+db.prepare(
+	'CREATE TABLE IF NOT EXISTS includes (content TEXT, includes TEXT)'
+).run();
 
 const getSectionRegex = (section: string) => {
 	return new RegExp(
@@ -44,6 +49,7 @@ as.pages = {
 
 	addInjector(section, injector) {
 		as.pages.registeredInjectors[section].add(injector);
+		return injector;
 	},
 
 	removeInjector(section, injector) {
@@ -52,11 +58,27 @@ as.pages = {
 		return true;
 	},
 
-	async buildPage(page) {
+	async buildPage(page, includes = new Map()): Promise<string> {
 		const perfName = `Building page '${page.metadata.title ?? 'Untitled'}'`;
-		Log.perfStart(perfName);
 
-		const [injectHead, injectBodyStart, injectBodyEnd, populatedLayout, themeCSS] =
+		function resolveIncludes(node: Node): void {
+			while (isIncludeNode(node)) {
+				const include: Include | undefined = includes.get(node.include);
+				assert(include, 'Include not found');
+				delete (node as any).include;
+				for (const [ k, v ] of Object.entries(include.content)) (node as any)[k] = v;
+			}
+
+			for (const child of (node as ElementNode).children ?? []) resolveIncludes(child);
+		}
+
+		for (const section of Object.values(page.content.sections)) resolveIncludes(section);
+
+		// console.log('be4');
+		log.perfStart(perfName);
+		// console.log('afr');
+
+		const [injectHead, injectBodyStart, injectBodyEnd, populatedLayout] =
 			await Promise.all([
 				Promise.all(
 					[...as.pages.registeredInjectors.head].map((injector) => injector())
@@ -68,7 +90,6 @@ as.pages = {
 					[...as.pages.registeredInjectors.body_end].map((injector) => injector())
 				).then((res) => res.join('\n')),
 				as.pages.populateLayout(page.content.layout ?? 'default', page.content.sections),
-				as.themes.getThemeCSS(),
 			]);
 
 		const html = `
@@ -79,7 +100,6 @@ as.pages = {
 				<meta name='description' content='${escapeHtml(page.metadata.description)}'>
 				<meta name='viewport' content='width=device-width, initial-scale=1'>
 				<title>${escapeHtml(page.metadata.title)}</title>
-				<style>${themeCSS}</style>
 				${injectHead}
 			</head>
 			<body id='page'>
@@ -89,7 +109,7 @@ as.pages = {
 			</body>
 		</html>`;
 
-		Log.perfEnd(perfName);
+		log.perfEnd(perfName);
 		return html;
 	},
 
@@ -119,7 +139,8 @@ as.pages = {
 
 as.pages.registerLayout(
 	'default',
-	`
+`
+<input type='checkbox' id='navigation_toggle' style='display: none;'/>
 <header id='header' data-include='header'></header>
 <main id='main' data-include='main'></main>
 <footer id='footer' data-include='footer'></footer>
@@ -127,21 +148,35 @@ as.pages.registerLayout(
 );
 
 (async () => {
-	const pagePath = path.resolve(path.join(__dirname, '..', 'contact.json'));
-	const rawPage = JSON.parse(await fs.readFile(pagePath, 'utf8')) as Page;
+	const page = await fs.readFile(path.join(__dirname, '..', 'page.json'), 'utf8');
+	const include = await fs.readFile(path.join(__dirname, '..', 'header.json'), 'utf8');
+	const include2 = await fs.readFile(path.join(__dirname, '..', 'navigation.json'), 'utf8');
 
-	as.routes.setRoot(
-		new (class extends (as.routes.BaseRoute as any) {
-			async render() {
-				return await as.pages.buildPage(rawPage);
-			}
-			// eslint-disable-next-line
-			// @ts-ignore
-		})('/') as any
-	);
+	db.prepare('DELETE FROM pages').run();
+	db.prepare('DELETE FROM includes').run();
+
+	const { lastInsertRowid: id } = db.prepare<{ content: string; includes: string }>(
+		'INSERT INTO pages (content, includes) VALUES (@content, @includes)'
+	).run({
+		content: page,
+		includes: JSON.stringify([ 1, 2 ]),
+	});
+
+	db.prepare('INSERT INTO includes (content, includes) VALUES (@content, @includes)').run({
+		content: include,
+		includes: JSON.stringify([]),
+	});
+
+	db.prepare('INSERT INTO includes (content, includes) VALUES (@content, @includes)').run({
+		content: include2,
+		includes: JSON.stringify([]),
+	});
+
+	as.routes.setRoot(new PageRoute('/', id as number));
 })();
 
 as.core.once('cleanup', () => as.unexport('pages'));
 
+export * from './API';
 export * from './Interface';
 export { default as PageRoute } from './PageRoute';

@@ -5,7 +5,7 @@ import { promises as fs, constants as fsc } from 'fs';
 import Theme from './Theme';
 import ThemeManager from './ThemeManager';
 
-const { YAML, logger: Log } = as.core;
+const { YAML, log } = as.core;
 
 export default class ThemeLoader {
 	constructor(private manager: ThemeManager, private themeDir: string) {}
@@ -26,7 +26,7 @@ export default class ThemeLoader {
 			)
 		).filter(Boolean) as string[];
 
-		Log.info(`Found plugins: ${themeDirs.map((dir) => `'${dir}'`).join(', ')}.`);
+		log.info(`Found plugins: ${themeDirs.map((dir) => `'${dir}'`).join(', ')}.`);
 
 		await Promise.all(themeDirs.map((dir) => this.parseTheme(dir)));
 	}
@@ -36,7 +36,14 @@ export default class ThemeLoader {
 		const manifest = YAML.parse(
 			await fs.readFile(path.join(this.themeDir, dir, 'manifest.yaml'), 'utf8')
 		);
-		const theme = new Theme(this.manager, manifest);
+
+		const entry = {
+			style: typeof manifest.entry === 'string' ? manifest.entry : manifest.entry.style,
+			script: typeof manifest.entry === 'string' ? undefined : manifest.entry.script,
+			head: typeof manifest.entry === 'string' ? undefined : manifest.entry.head,
+		};
+
+		const theme = new Theme(this.manager, { ...manifest, entry });
 		this.manager.addTheme(theme);
 	}
 }

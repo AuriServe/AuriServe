@@ -7,7 +7,6 @@ author: Auri
 
 depends:
 - preact ^1
-- themes ^0.0.1
 - elements ^0.0.1
 - routes ^0.0.1
 

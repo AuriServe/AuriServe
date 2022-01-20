@@ -1,5 +1,4 @@
 import { traverse, to, Color } from 'common';
-// import { promises as fs, constants as fsc } from 'fs';
 
 function colorToFormat(color: Color, format: string): string {
 	let formattedColor;

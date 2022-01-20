@@ -11,6 +11,10 @@ export interface Page {
 	};
 }
 
+export interface Include {
+	content: Node;
+}
+
 export interface ElementNode {
 	element: string;
 	props?: Record<string, any>;
@@ -18,7 +22,7 @@ export interface ElementNode {
 }
 
 export interface IncludeNode {
-	include: string;
+	include: number;
 }
 
 export interface PopulatedIncludeNode extends IncludeNode {

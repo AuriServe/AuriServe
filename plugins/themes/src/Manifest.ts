@@ -6,7 +6,7 @@ export interface ThemePreset {
 	values?: Record<string, any>;
 }
 
-export default interface Manifest {
+export interface Manifest {
 	name?: string;
 	identifier: string;
 	description?: string;
@@ -20,3 +20,11 @@ export default interface Manifest {
 	options?: { [key: string]: any; key: string; label?: string; type: string }[];
 	presets?: Record<string, ThemePreset>;
 }
+
+export type ParsedManifest = Omit<Manifest, 'entry'> & {
+	entry: {
+		style?: string;
+		head?: string;
+		script?: string;
+	};
+};

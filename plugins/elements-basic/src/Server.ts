@@ -28,8 +28,11 @@ registerElement(LinearLayout);
 // import MarkdownView from './elements/MarkdownView';
 // registerElement(MarkdownView);
 
-// import Navigation from './elements/Navigation';
-// registerElement(Navigation);
+import Navigation from './elements/Navigation';
+registerElement(Navigation);
+
+import Float from './elements/Float';
+registerElement(Float);
 
 // import PersonCard from './elements/PersonCard';
 // registerElement(PersonCard);

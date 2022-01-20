@@ -1,9 +1,9 @@
 import PageRoute from './PageRoute';
-import { Node, Page } from './Interface';
+import { Node, Page, Include } from './Interface';
 
 type InjectorSection = 'head' | 'body_start' | 'body_end';
 
-type InjectorFunction = () => Promise<string>;
+type InjectorFunction = () => string | Promise<string>;
 
 export default interface API {
 	PageRoute: typeof PageRoute;
@@ -16,11 +16,17 @@ export default interface API {
 
 	registeredInjectors: Record<InjectorSection, Set<InjectorFunction>>;
 
-	addInjector(section: InjectorSection, injector: InjectorFunction): void;
+	addInjector(section: InjectorSection, injector: InjectorFunction): InjectorFunction;
 
 	removeInjector(section: InjectorSection, injector: InjectorFunction): boolean;
 
-	buildPage(page: Page): Promise<string>;
+	buildPage(page: Page, includes?: Map<number, Include>): Promise<string>;
 
 	populateLayout(identifier: string, sections: Record<string, Node>): Promise<string>;
+}
+
+declare global {
+	export interface AuriServeAPI {
+		pages: API;
+	}
 }

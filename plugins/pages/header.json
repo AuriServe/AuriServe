@@ -1,0 +1,16 @@
+{
+	"content": {
+		"element": "Section",
+		"props": {
+			"class": "Inverted"
+		},
+		"children": [
+			{
+				"element": "TextView",
+				"props": {
+					"content": "<h1 style='text-align: center;'>Hey there gamer</h1>"
+				}
+			}
+		]
+	}
+}
