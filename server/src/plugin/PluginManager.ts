@@ -63,7 +63,7 @@ export default class Plugins {
 		// TODO: Stupid dumb fake query
 		this.database
 			.prepare(
-				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-basic', 1), ('themes', 1), ('pages', 1)`
+				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-basic', 1), ('themes', 1), ('pages', 1), ('dashboard', 1)`
 			)
 			.run();
 
@@ -71,8 +71,6 @@ export default class Plugins {
 			.prepare(`SELECT identifier FROM plugins WHERE enabled = 1`)
 			.pluck()
 			.all();
-
-		console.log(enabled);
 
 		this.setEnabled(enabled);
 	}

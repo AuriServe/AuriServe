@@ -14,8 +14,8 @@ import { server as WebSocketServer } from 'websocket';
 import Logger from './Log';
 import { Config } from './ServerConfig';
 import resolvePath from './ResolvePath';
-import PluginManager from './plugin/PluginManager';
 import connect, { Database } from './SQLite';
+import PluginManager from './plugin/PluginManager';
 
 export default class Server {
 	private app = Express();

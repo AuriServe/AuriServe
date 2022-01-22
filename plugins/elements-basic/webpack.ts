@@ -5,10 +5,6 @@ import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
 export default function (_: any, argv: { mode: string }) {
 	const prod = argv.mode === 'production';
 
-	/*
-	 * Template Configurations
-	 */
-
 	return {
 		name: 'server',
 		target: 'node',

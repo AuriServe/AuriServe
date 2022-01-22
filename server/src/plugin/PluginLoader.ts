@@ -1,5 +1,5 @@
 import path from 'path';
-import { assert, assertSchema, Version } from 'common';
+import { assert, AssertError, assertSchema, Version } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 
 import YAML from './YAML';
@@ -145,7 +145,11 @@ export default class PluginLoader {
 				new Plugin(this.manager, { ...manifest, version, depends, entry, watch })
 			);
 		} catch (e) {
-			Logger.error('Encountered an error parsing plugin %s:\n %s', dirName, e);
+			if (e instanceof AssertError) {
+				Logger.error(`Failed to load plugin '${dirName}': ${e.message}`);
+			} else {
+				Logger.error('Encountered an error loading plugin %s:\n %s', dirName, e);
+			}
 		}
 	}
 

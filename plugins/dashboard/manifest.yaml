@@ -1,0 +1,14 @@
+name: Dashboard
+identifier: dashboard
+description: A Web-based dashboard for plugins.
+
+version: 0.0.1
+author: Auri
+
+depends:
+- routes ^0.0.1
+- pages ^0.0.1 ?
+
+entry:
+  server: dist/server.js
+  # dashboard: dist/main.js
