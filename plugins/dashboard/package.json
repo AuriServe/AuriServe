@@ -22,7 +22,6 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.16.10",
-		"@types/plugin-routes": "file:../routes",
 		"@babel/plugin-proposal-class-properties": "^7.16.7",
 		"@babel/plugin-proposal-nullish-coalescing-operator": "^7.16.7",
 		"@babel/plugin-transform-react-jsx": "^7.16.7",
@@ -30,6 +29,7 @@
 		"@babel/preset-typescript": "^7.16.7",
 		"@tailwindcss/line-clamp": "^0.3.1",
 		"@types/js-cookie": "^3.0.1",
+		"@types/plugin-routes": "file:../routes",
 		"babel-loader": "^8.2.3",
 		"css-minimizer-webpack-plugin": "^3.4.1",
 		"eslint-loader": "^4.0.2",
@@ -41,15 +41,15 @@
 		"webpack-livereload-plugin": "^3.0.2"
 	},
 	"dependencies": {
-		"auriserve": "file:../../api/dist",
 		"@headlessui/react": "^1.4.3",
-		"@twind/tailwind": "^1.0.0-next.20",
+		"@twind/tailwind": "^1.0.0-next.21",
+		"auriserve": "file:../../api/dist",
 		"common": "file:../../common/dist",
 		"js-cookie": "^3.0.1",
 		"preact": "^10.6.4",
 		"react-flip-move": "^3.0.4",
 		"react-router-dom": "^6.2.1",
-		"twind": "^1.0.0-next.20",
+		"twind": "^1.0.0-next.21",
 		"vibin-hooks": "^0.2.0"
 	}
 }

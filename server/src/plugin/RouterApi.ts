@@ -2,42 +2,43 @@ import Express from 'express';
 
 const METHODS = ['get', 'post', 'put', 'delete', 'patch', 'all'] as const;
 type Method = typeof METHODS[number];
+type PathSpecifier = string | string[];
 
 export default class RouterApi {
 	private router = Express.Router();
-	private handlers: Map<Express.RequestHandler, { path: string; method: Method }> =
+	private handlers: Map<Express.RequestHandler, { path: PathSpecifier; method: Method }> =
 		new Map();
 
 	constructor(app: Express.Application) {
 		app.use((req, res, next) => this.router(req, res, next));
 	}
 
-	get(path: string, handler: Express.RequestHandler) {
+	get(path: PathSpecifier, handler: Express.RequestHandler) {
 		this.registerHandler('get', path, handler);
 		return handler;
 	}
 
-	post(path: string, handler: Express.RequestHandler) {
+	post(path: PathSpecifier, handler: Express.RequestHandler) {
 		this.registerHandler('post', path, handler);
 		return handler;
 	}
 
-	put(path: string, handler: Express.RequestHandler) {
+	put(path: PathSpecifier, handler: Express.RequestHandler) {
 		this.registerHandler('put', path, handler);
 		return handler;
 	}
 
-	delete(path: string, handler: Express.RequestHandler) {
+	delete(path: PathSpecifier, handler: Express.RequestHandler) {
 		this.registerHandler('delete', path, handler);
 		return handler;
 	}
 
-	patch(path: string, handler: Express.RequestHandler) {
+	patch(path: PathSpecifier, handler: Express.RequestHandler) {
 		this.registerHandler('patch', path, handler);
 		return handler;
 	}
 
-	all(path: string, handler: Express.RequestHandler) {
+	all(path: PathSpecifier, handler: Express.RequestHandler) {
 		this.registerHandler('all', path, handler);
 		return handler;
 	}
@@ -46,7 +47,11 @@ export default class RouterApi {
 		this.unregisterHandler(handler);
 	}
 
-	private registerHandler(method: Method, path: string, handler: Express.RequestHandler) {
+	private registerHandler(
+		method: Method,
+		path: PathSpecifier,
+		handler: Express.RequestHandler
+	) {
 		if (this.handlers.has(handler)) return;
 		this.handlers.set(handler, { path, method });
 		this.refreshRouter();

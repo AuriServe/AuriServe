@@ -12,3 +12,6 @@ depends:
 entry:
   server: dist/server.js
   # dashboard: dist/main.js
+
+watch:
+- dist/main.js

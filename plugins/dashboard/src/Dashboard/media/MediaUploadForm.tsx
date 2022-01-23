@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'preact/hooks';
 import { merge } from 'common/util';
 
 // import { Form } from '../input';
-import { Primary as Button } from '../Button';
+import { PrimaryButton } from '../Button';
 import MediaUploadItem from './MediaUploadItem';
 import { SelectGroup, DimensionTransition } from '../structure';
 
@@ -206,7 +206,7 @@ export default function MediaUploadForm(props: Props) {
 			{files.length > 0 && (
 				<div class='my-3 h-12'>
 					{selected.length > 0 && (
-						<Button
+						<PrimaryButton
 							onClick={handleRemoveFiles}
 							icon='/admin/asset/icon/trash-dark.svg'
 							label={`Remove${selected.length === 1 ? '' : ` (${selected.length})`}`}
@@ -232,13 +232,13 @@ export default function MediaUploadForm(props: Props) {
 			</DimensionTransition>
 
 			<div class='flex mt-3 justify-between'>
-				<Button
+				<PrimaryButton
 					onClick={handleClose}
 					label='Cancel'
 					disabled={state === MediaUploadState.UPLOADING}
 				/>
 
-				<Button
+				<PrimaryButton
 					type='submit'
 					label={`Upload File${files.length > 1 ? 's' : ''}`}
 					disabled={files.length === 0 || state === MediaUploadState.UPLOADING}

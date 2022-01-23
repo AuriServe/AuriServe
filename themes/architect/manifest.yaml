@@ -138,3 +138,44 @@ presets:
       callout.style: circle
 
       font.header: montserrat
+
+elements:
+  basic:section:
+  - label: Default
+    class:
+    default: true
+  - label: Accent
+    class: accent
+  - label: Callout
+    class: callout
+  - label: Inverted
+    class: inverted
+
+  basic:text:
+  - label: Default
+    class:
+    default: true
+  - label: Callout
+    class: callout
+  - label: Quote
+    class: quote
+
+  basic:image:
+  - label: Bordered
+    class:
+    default: true
+  - label: Rounded
+    class: rounded
+  - label: Borderless
+    class: borderless
+
+  basic:button:
+  - label: Primary
+    class:
+    default: true
+  - label: Secondary
+    class: secondary
+  - label: Primary Ghost
+    class: ghost
+  - label: Secondary Ghost
+    class: secondary ghost

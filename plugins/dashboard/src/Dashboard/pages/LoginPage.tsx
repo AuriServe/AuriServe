@@ -4,8 +4,8 @@ import { assert } from 'common';
 import { useState, useRef } from 'preact/hooks';
 
 import Svg from '../Svg';
-import * as Btn from '../Button';
 import Card from '../Card';
+import { PrimaryButton } from '../Button';
 import { Title, Page } from '../structure';
 import { Form, FormSchema, Input } from '../Form';
 
@@ -57,7 +57,7 @@ export default function LoginPage({ onLogin }: Props) {
 			setState('pending');
 			setWarning('');
 
-			const r = await fetch('/admin/auth', {
+			const r = await fetch('/dashboard/res/auth', {
 				method: 'POST',
 				cache: 'no-cache',
 				headers: { 'Content-Type': 'application/json' },
@@ -97,7 +97,7 @@ export default function LoginPage({ onLogin }: Props) {
 						class={tw`
 							relative mt-10 mb-6 mx-auto rounded-full
 							bg-gradient-to-tl from-accent-600 to-accent-500
-							ring-{8 accent-{500/50,dark:600/30}} interact-none transition-all duration-300 transform
+							ring-(8 accent-(500/50 dark:600/30)) interact-none transition-all duration-300 transform
 							${state === 'input' ? 'w-3/5 pb-[calc(3/5*100%)]' : 'w-4/5 pb-[calc(4/5*100%)]'}
 							${state === 'auth' && 'opacity-0 scale-90'}`}>
 						<Svg
@@ -129,22 +129,21 @@ export default function LoginPage({ onLogin }: Props) {
 							<Input for='password' />
 
 							{/* <p class='text-center text-blue-600 -mt-1 mb-3'>{warning}</p> */}
-							<Btn.Primary
+							<PrimaryButton
 								size={12}
 								class={tw`!w-full mt-4`}
 								type='submit'
 								disabled={state === 'pending'}
 								label='Log In'
 							/>
-							<Btn.Link type='submit' disabled={state === 'pending'} label='Log In' />
 						</Form>
 					</div>
 				</Card.Body>
 			</Card>
 			<div
-				class={tw`bg-gradient-to-r from-neutral-{100,dark:800} via-neutral-{100,dark:800} to-transparent
+				class={tw`bg-gradient-to-r from-gray-(100 dark:800) via-gray-(100 dark:800) to-transparent
 					w-max py-2 pl-4 pr-80 justify-self-start self-end`}>
-				<p class={tw`text-neutral-{600,dark:300} mt-0.5`}>
+				<p class={tw`text-gray-(600 dark:300) mt-0.5`}>
 					AuriServe 0.0.1&nbsp; &nbsp;&bull;&nbsp; &nbsp;AS Frontend 0.0.1
 				</p>
 			</div>

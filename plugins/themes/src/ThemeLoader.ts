@@ -26,7 +26,7 @@ export default class ThemeLoader {
 			)
 		).filter(Boolean) as string[];
 
-		log.info(`Found plugins: ${themeDirs.map((dir) => `'${dir}'`).join(', ')}.`);
+		log.info(`Found themes: ${themeDirs.map((dir) => `'${dir}'`).join(', ')}.`);
 
 		await Promise.all(themeDirs.map((dir) => this.parseTheme(dir)));
 	}

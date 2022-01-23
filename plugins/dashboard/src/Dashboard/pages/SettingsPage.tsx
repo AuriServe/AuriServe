@@ -44,16 +44,15 @@ function SidebarLink({ label, path, icon, notifications }: SidebarLinkProps) {
 				<p class={tw`leading-snug font-medium flex-grow`}>{label}</p>
 				{typeof notifications === 'number' && (
 					<div
-						class={tw`block w-4 h-4 bg-accent-400 text-gray-700 rounded-full
-						text-[13px] font-black text-center leading-none pt-px mb-1 mr-1
-						ring-{4 accent-600/25 offset-gray-900}`}>
+						class={tw`block w-4 h-4 pt-px mb-1 mr-1 bg-accent-400 leading-none font-black
+							text-([13px] gray-700 center) rounded-full ring-(4 accent-600/25 offset-gray-900)`}>
 						{notifications}
 					</div>
 				)}
 				{typeof notifications === 'boolean' && (
 					<div
-						class={tw`block w-2.5 h-2.5 bg-accent-500 text-gray-700 rounded-full
-						text-sm font-black text-center leading-none pt-0.5 mb-1.5 mr-2 ring-{& accent-600/25}`}
+						class={tw`block w-2.5 h-2.5 pt-0.5 mb-1.5 mr-2 leading-none font-black
+							text-(sm gray-700 center) bg-accent-500 rounded-full ring-(& accent-600/25)`}
 					/>
 				)}
 			</Link>
@@ -169,7 +168,7 @@ export default function SettingsPage() {
 		<Page class={tw`flex justify-center !pb-0 min-h-screen`}>
 			<Title>Settings</Title>
 			<div class={tw`w-full md:w-64 h-full pl-4 flex-shrink-0`}>
-				<ul class={tw`sticky top-6 flex-{& col} gap-2 mt-6`} role='navigation'>
+				<ul class={tw`sticky top-6 flex-(& col) gap-2 mt-6`} role='navigation'>
 					<SidebarLink label='Overview' path='/settings/overview/' icon={icon_home} />
 					<SidebarLink label='Themes' path='/settings/themes/' icon={icon_themes} />
 					<SidebarLink label='Plugins' path='/settings/plugins/' icon={icon_plugins} />

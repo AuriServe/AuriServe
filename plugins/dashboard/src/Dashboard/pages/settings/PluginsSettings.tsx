@@ -7,9 +7,11 @@ import Svg from '../../Svg';
 import Card from '../../Card';
 import PluginItem from './FeatureItem';
 // import { SavePopup } from '../../structure';
-import { Tertiary as Button } from '../../Button';
+import { TertiaryButton } from '../../Button';
 
 import { useData, /*executeQuery,*/ QUERY_PLUGINS /*MUTATE_PLUGINS*/ } from '../../Graph';
+
+import { tw } from '../../twind';
 
 import icon_target from '@res/icon/target.svg';
 import icon_browse from '@res/icon/browse.svg';
@@ -50,8 +52,8 @@ export default function PluginsSettings() {
 				icon={icon_plugins}
 				title='Plugins'
 				subtitle='Manage site functionality.'>
-				<Button
-					class='absolute bottom-4 right-4'
+				<TertiaryButton
+					class={tw`absolute bottom-4 right-4`}
 					icon={icon_browse}
 					label='Browse Plugins'
 					small
@@ -59,9 +61,9 @@ export default function PluginsSettings() {
 			</Card.Header>
 			<Card.Body>
 				{plugins.length !== 0 && (
-					<div className='grid grid-cols-3 gap-4'>
+					<div className={tw`grid grid-cols-3 gap-4`}>
 						{plugins.map((plugin) => (
-							<li class='list-none' key={plugin.identifier}>
+							<li class={tw`list-none`} key={plugin.identifier}>
 								<PluginItem
 									{...plugin}
 									onToggle={() => handleToggle(plugin.identifier)}
@@ -72,9 +74,9 @@ export default function PluginsSettings() {
 					</div>
 				)}
 				{!plugins.length && (
-					<div class='flex py-28 justify-center items-center gap-2'>
+					<div class={tw`flex py-28 justify-center items-center gap-2`}>
 						<Svg src={icon_target} size={6} />
-						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>
+						<p class={tw`leading-none mt-px text-gray-200 font-medium interact-none`}>
 							No plugins found.
 						</p>
 					</div>

@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'preact/hooks';
 import Transition from '../../Transition';
 
 import Card from '../../Card';
-import * as Button from '../../Button';
+import Button from '../../Button';
 import { FormSchema, Form, Input, FloatingDescription } from '../../Form';
 
 import { tw } from '../../twind';

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { Page as GraphPage } from 'common/graph/type';
 
 import Svg from '../Svg';
-import { Primary as Button } from '../Button';
+import { PrimaryButton } from '../Button';
 // import Control from '../editor/Control';
 import TreeView from '../structure/TreeView';
 import { Title, Page, Spinner } from '../structure';
@@ -28,7 +28,7 @@ function RouteItem({ route, dragging }: RouteItemProps) {
 
 	return (
 		<div class='w-full'>
-			<Button
+			<PrimaryButton
 				to={isActive ? '/routes/' : `/routes/edit${route.path}/`}
 				exact
 				class={tw`group text-gray-600 dark:text-gray-100 p-[0.25rem] mb-1 gap-2 ${
@@ -59,7 +59,7 @@ function RouteItem({ route, dragging }: RouteItemProps) {
 						isActive && 'opacity-100'
 					}`}
 				/>
-			</Button>
+			</PrimaryButton>
 		</div>
 	);
 }
@@ -108,7 +108,7 @@ export default function PagesPage() {
 							)}
 						/>
 						<div class={tw`border-b-2 border-gray-600 mb-1.5 mt-0.5`} />
-						<Button
+						<PrimaryButton
 							exact
 							class={tw`
 								!w-full text-left text-gray-600 dark:text-gray-200 p-[0.25rem]
@@ -119,7 +119,7 @@ export default function PagesPage() {
 								class={tw`rounded p-0.5 ml-px transition-colors bg-gray-600/50 group-active:bg-gray-600`}
 							/>
 							<p class={tw`leading-none font-medium text-sm`}>Add Route</p>
-						</Button>
+						</PrimaryButton>
 					</div>
 				)}
 			</div>

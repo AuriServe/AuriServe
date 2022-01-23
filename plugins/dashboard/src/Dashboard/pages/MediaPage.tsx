@@ -4,12 +4,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { Media } from 'common/graph/type';
 
+import Svg from '../Svg';
 import Card from '../Card';
-import * as Btn from '../Button';
+import Button from '../Button';
 import MediaItem from '../media/MediaItem';
 import MediaView from '../media/MediaView';
 import MediaUploadForm from '../media/MediaUploadForm';
 import { Title, Page, Modal, SelectGroup } from '../structure';
+
+import icon_target from '@res/icon/target.svg';
+
 import {
 	useData,
 	// executeQuery,
@@ -126,7 +130,7 @@ export default function MediaPage() {
 						subtitle='Upload, edit, and remove user-uploaded media.'
 					/>
 					<Card.Toolbar>
-						<Btn.Secondary
+						<Button.Secondary
 							to='/media/upload/'
 							onClick={() => setSelected([])}
 							icon={icon_add}
@@ -136,7 +140,7 @@ export default function MediaPage() {
 						{selected.length > 0 && <Card.Toolbar.Divider />}
 
 						{selected.length === 1 && (
-							<Btn.Tertiary
+							<Button.Tertiary
 								onClick={() => navigate(`${media[selected[0]].id}/`)}
 								icon={icon_view}
 								label='View'
@@ -144,7 +148,7 @@ export default function MediaPage() {
 						)}
 
 						{selected.length > 0 && (
-							<Btn.Tertiary
+							<Button.Tertiary
 								icon={icon_trash}
 								label={`Delete ${selected.length === 1 ? '' : `(${selected.length})`}`}
 								onClick={() => handleDelete(selected)}
@@ -153,20 +157,20 @@ export default function MediaPage() {
 
 						<Card.Toolbar.Spacer />
 
-						<Btn.Tertiary
+						<Button.Tertiary
 							onClick={refresh}
 							iconOnly
 							icon={icon_view}
 							label='View Options'
 						/>
-						<Btn.Tertiary
+						<Button.Tertiary
 							onClick={refresh}
 							iconOnly
 							icon={icon_refresh}
 							label='Refresh'
 						/>
 
-						<Btn.Tertiary
+						<Button.Tertiary
 							to='/settings/media/'
 							iconOnly
 							icon={icon_options}
@@ -199,9 +203,12 @@ export default function MediaPage() {
 						)}
 
 						{(!media || !media.filter((_, i) => !deleted.includes(i)).length) && (
-							<h2 class={tw`text-(2xl center gray-500) mt-20 mb-16 pb-2`}>
-								{!media ? 'Loading media...' : 'No media found.'}
-							</h2>
+							<div class={tw`flex py-28 justify-center items-center gap-2`}>
+								<Svg src={icon_target} size={6} />
+								<p class={tw`leading-none mt-px text-gray-200 font-medium interact-none`}>
+									No media found.
+								</p>
+							</div>
 						)}
 					</Card.Body>
 				</Card>

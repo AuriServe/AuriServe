@@ -1,6 +1,8 @@
 import Cookie from 'js-cookie';
 import { Location } from 'react-router-dom';
 
+import { togglePalette } from './ShortcutPalette';
+
 import icon_home from '@res/icon/home.svg';
 import icon_file from '@res/icon/file.svg';
 import icon_media from '@res/icon/image.svg';
@@ -8,6 +10,7 @@ import icon_themes from '@res/icon/theme.svg';
 import icon_logout from '@res/icon/logout.svg';
 import icon_plugins from '@res/icon/plugin.svg';
 import icon_settings from '@res/icon/options.svg';
+import icon_shortcut from '@res/icon/shortcut.svg';
 
 export interface ShortcutContext {
 	location: Location;
@@ -15,6 +18,7 @@ export interface ShortcutContext {
 }
 
 export interface Shortcut {
+	identifier: string;
 	title: string;
 	description?: string;
 	aliases?: string[];
@@ -25,6 +29,7 @@ export interface Shortcut {
 
 export const registeredShortcuts: Shortcut[] = [
 	{
+		identifier: 'dashboard:page_home',
 		title: 'Go Home',
 		aliases: ['view home', 'main'],
 		description: 'Go to the AuriServe home.',
@@ -32,6 +37,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/'),
 	},
 	{
+		identifier: 'dashboard:page_routes',
 		title: 'View Routes',
 		aliases: ['go routes', 'pages', 'site', 'website'],
 		description: 'View and manage routes.',
@@ -39,6 +45,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/routes/'),
 	},
 	{
+		identifier: 'dashboard:page_media',
 		title: 'View Media',
 		aliases: ['go media', 'media', 'images', 'pictures', 'documents', 'files'],
 		description: 'View and manage media.',
@@ -46,6 +53,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/media/'),
 	},
 	{
+		identifier: 'dashboard:upload_media',
 		title: 'Upload Media',
 		aliases: [
 			'add media',
@@ -63,6 +71,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/media/'),
 	},
 	{
+		identifier: 'dashboard:page_settings',
 		title: 'Settings',
 		aliases: [
 			'go settings',
@@ -77,6 +86,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/settings/'),
 	},
 	{
+		identifier: 'dashboard:manage_themes',
 		title: 'Manage Themes',
 		aliases: ['themes settings'],
 		description: 'Find, enable, and disable themes.',
@@ -84,6 +94,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/settings/themes/'),
 	},
 	{
+		identifier: 'dashboard:manage_plugins',
 		title: 'Manage Plugins',
 		aliases: ['plugins settings'],
 		description: 'Find, enable, and disable plugins.',
@@ -91,6 +102,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/settings/plugins/'),
 	},
 	{
+		identifier: 'dashboard:manage_overview',
 		title: 'Manage Overview',
 		aliases: [
 			'overview settings',
@@ -105,6 +117,7 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/settings/overview/'),
 	},
 	{
+		identifier: 'dashboard:manage_media',
 		title: 'Manage Media',
 		aliases: ['media settings', 'image settings', 'file settings'],
 		description: 'Manage media and upload settings.',
@@ -112,16 +125,28 @@ export const registeredShortcuts: Shortcut[] = [
 		action: ({ navigate }) => navigate('/settings/media/'),
 	},
 	{
+		identifier: 'dashboard:shortcut_palette',
+		title: 'Shortcut Palette',
+		aliases: ['command palette'],
+		description: 'Execute commands.',
+		icon: icon_shortcut,
+		action: () => {
+			togglePalette();
+		},
+	},
+	{
+		identifier: 'dashboard:log_out',
 		title: 'Log out',
 		aliases: ['exit', 'close'],
 		description: 'Log out of AuriServe.',
 		icon: icon_logout,
 		action: () => {
 			Cookie.remove('tkn');
-			window.location.href = '/admin';
+			window.location.href = '/dashboard/';
 		},
 	},
 	{
+		identifier: 'dashboard:toggle_dark_mode',
 		title: 'Toggle Dark Mode',
 		aliases: ['dark mode', 'light mode', 'color theme', 'theme'],
 		description: 'Toggle between light and dark mode.',
@@ -139,6 +164,10 @@ export const registeredShortcuts: Shortcut[] = [
 
 export function getShortcuts(): Shortcut[] {
 	return registeredShortcuts;
+}
+
+export function getShortcut(identifier: string): Shortcut | undefined {
+	return registeredShortcuts.find((shortcut) => shortcut.identifier === identifier);
 }
 
 export function registerShortcut(shortcut: Shortcut) {

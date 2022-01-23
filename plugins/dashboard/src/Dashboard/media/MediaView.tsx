@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { formatVector, formatBytes, formatDate } from 'common';
 
 import Card from '../Card';
-import * as Btn from '../Button';
+import Button from '../Button';
 import MediaIcon from './MediaIcon';
 import { Media, User } from 'common/graph/type';
 
@@ -41,14 +41,21 @@ export default function MediaView({ user, media, onDelete }: Props) {
 					</p>
 					<p class={tw`text-sm pt-1 pb-0.5 truncate font-normal text-gray-200`}>
 						{media.url} •{' '}
-						<Btn.Link icon={icon_code} iconOnly label='Copy ID' onClick={handleCopyID} />
+						<Button.Link
+							icon={icon_code}
+							iconOnly
+							label='Copy ID'
+							onClick={handleCopyID}
+						/>
 					</p>
 				</div>
 			</Card.Header>
 
 			<Card.Toolbar>
-				{onDelete && <Btn.Tertiary icon={icon_trash} label='Delete' onClick={onDelete} />}
-				{onDelete && <Btn.Tertiary icon={icon_edit} label='Edit' onClick={onDelete} />}
+				{onDelete && (
+					<Button.Tertiary icon={icon_trash} label='Delete' onClick={onDelete} />
+				)}
+				{onDelete && <Button.Tertiary icon={icon_edit} label='Edit' onClick={onDelete} />}
 			</Card.Toolbar>
 
 			<Card.Body class={tw`w-full flex place-items-center text-center`}>
@@ -65,7 +72,11 @@ export default function MediaView({ user, media, onDelete }: Props) {
 						<p class={tw`text-gray-300 font-medium`}>
 							&nbsp;Can't preview this type of file.
 						</p>
-						<Btn.Tertiary icon={icon_external} label='Open in new tab' href={media.url} />
+						<Button.Tertiary
+							icon={icon_external}
+							label='Open in new tab'
+							href={media.url}
+						/>
 					</div>
 				)}
 			</Card.Body>
@@ -73,7 +84,7 @@ export default function MediaView({ user, media, onDelete }: Props) {
 			<Card.Footer>
 				{media.size && `${formatVector(media.size)} px • `} {formatBytes(media.bytes)}
 				&nbsp;•&nbsp;
-				<Btn.Link icon={icon_external} label='Open' href={media.url} iconRight />
+				<Button.Link icon={icon_external} label='Open' href={media.url} iconRight />
 			</Card.Footer>
 		</div>
 	);

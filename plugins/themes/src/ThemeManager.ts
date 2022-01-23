@@ -67,8 +67,6 @@ export default class ThemeManager {
 
 		style = new CleanCSS({ level: 2 }).minify(style).styles;
 
-		console.log(this.buildDir);
-
 		await Promise.all([
 			fs.writeFile(path.join(this.buildDir, 'style.css'), style),
 			fs.writeFile(path.join(this.buildDir, 'head.html'), head),

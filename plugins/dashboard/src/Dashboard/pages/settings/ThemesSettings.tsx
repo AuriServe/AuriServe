@@ -7,7 +7,9 @@ import { Theme } from 'common/graph/type';
 import Svg from '../../Svg';
 import Card from '../../Card';
 import ThemeItem from './FeatureItem';
-import { Tertiary as Button } from '../../Button';
+import { TertiaryButton } from '../../Button';
+
+import { tw } from '../../twind';
 
 import { useData, /*executeQuery,*/ QUERY_THEMES /*MUTATE_THEMES*/ } from '../../Graph';
 
@@ -50,8 +52,8 @@ export default function ThemesSettings() {
 				icon={icon_theme}
 				title='Themes'
 				subtitle={"Manage your site's appearance."}>
-				<Button
-					class='absolute bottom-4 right-4'
+				<TertiaryButton
+					class={tw`absolute bottom-4 right-4`}
 					icon={icon_browse}
 					label='Browse Themes'
 					small
@@ -59,9 +61,9 @@ export default function ThemesSettings() {
 			</Card.Header>
 			<Card.Body>
 				{themes.length !== 0 && (
-					<div class='grid grid-cols-3 gap-4' aria-role='list'>
+					<div class={tw`grid-(& cols-3) gap-4`} aria-role='list'>
 						{themes.map((theme) => (
-							<li class='list-none' key={theme.identifier}>
+							<li class={tw`list-none`} key={theme.identifier}>
 								<ThemeItem
 									{...theme}
 									onToggle={() => handleToggle(theme.identifier)}
@@ -72,9 +74,9 @@ export default function ThemesSettings() {
 					</div>
 				)}
 				{!themes.length && (
-					<div class='flex py-28 justify-center items-center gap-2'>
+					<div class={tw`flex py-28 justify-center items-center gap-2`}>
 						<Svg src={icon_target} size={6} />
-						<p class='leading-none mt-px text-neutral-200 font-medium interact-none'>
+						<p class={tw`leading-none mt-px text-gray-200 font-medium interact-none`}>
 							No themes found.
 						</p>
 					</div>

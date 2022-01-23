@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 import Sidebar from './Sidebar';
+import { getShortcut } from './Shortcut';
 import CommandPalette from './ShortcutPalette';
 
 import { tw } from './twind';
@@ -66,13 +67,13 @@ export default function App() {
 		<AppContext.Provider value={{ data, mergeData }}>
 			{state === 'LOGIN' ? (
 				<div
-					class={tw`AS_ROOT grid min-h-screen theme-blue
+					class={tw`AS_ROOT grid min-h-screen theme-cyan
 						bg-gray-(100,dark:900) text-gray-(800,dark:100)
 						icon-p-gray-(500,dark:100) icon-s-gray-(400,dark:300)`}>
 					<LoginPage onLogin={() => setState('AUTH')} />
 				</div>
 			) : (
-				<Router basename='/admin'>
+				<Router basename='/dashboard'>
 					{/* <Route
 						path='/:url*'
 						strict
@@ -93,11 +94,21 @@ export default function App() {
 							path='*'
 							element={
 								<div
-									class={tw`AS_ROOT grid min-h-screen font-sans pl-14 theme-blue
+									class={tw`AS_ROOT grid min-h-screen font-sans pl-14 theme-cyan
 										bg-gray-(100,dark:900) text-gray-(800,dark:100)
 										icon-p-gray-(500,dark:100) icon-s-gray-(400,dark:300)`}>
 									<div class={tw`grid animate-fadein`}>
-										<Sidebar />
+										<Sidebar
+											shortcuts={[
+												getShortcut('dashboard:page_home')!,
+												getShortcut('dashboard:page_routes')!,
+												getShortcut('dashboard:page_media')!,
+												getShortcut('dashboard:page_settings')!,
+												'spacer',
+												getShortcut('dashboard:shortcut_palette')!,
+												getShortcut('dashboard:log_out')!,
+											]}
+										/>
 										<Routes>
 											<Route path='/' element={<MainPage />} />
 											<Route path='/routes/*' element={<PagesPage />} />

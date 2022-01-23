@@ -1,55 +1,49 @@
 import { h } from 'preact';
-import Cookie from 'js-cookie';
-import { useMatch } from 'react-router-dom';
+// import Cookie from 'js-cookie';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from './Svg';
+import { Shortcut } from './Shortcut';
 import { UnstyledButton } from './Button';
 
 import { tw } from './twind';
-import { togglePalette } from './ShortcutPalette';
+// import { togglePalette } from './ShortcutPalette';
 
-import icon_home from '@res/icon/home.svg';
-import icon_pages from '@res/icon/file.svg';
-import icon_media from '@res/icon/image.svg';
-import icon_logout from '@res/icon/logout.svg';
-import icon_launch from '@res/icon/launch.svg';
-import icon_options from '@res/icon/options.svg';
+// import icon_home from '@res/icon/home.svg';
+// import icon_pages from '@res/icon/file.svg';
+// import icon_media from '@res/icon/image.svg';
+// import icon_logout from '@res/icon/logout.svg';
+// import icon_launch from '@res/icon/launch.svg';
+import icon_shortcut from '@res/icon/shortcut.svg';
 import icon_auriserve from '@res/icon/auriserve.svg';
 
-function handleOpenPalette() {
-	togglePalette();
-}
+// function handleOpenPalette() {
+// 	togglePalette();
+// }
 
-function handleLogout() {
-	Cookie.remove('tkn');
-	window.location.href = '/admin';
-}
+// function handleLogout() {
+// 	Cookie.remove('tkn');
+// 	window.location.href = '/admin';
+// }
 
 interface SidebarLinkProps {
 	label: string;
-	path: string | (() => void);
 	icon: string;
-	exact?: boolean;
-	props?: any;
+
+	onClick: () => void;
 }
 
-function SidebarLink({ label, path, icon, props }: SidebarLinkProps) {
-	const active = !!useMatch(typeof path === 'string' ? path : '!');
-
+function SidebarLink({ label, icon, onClick}: SidebarLinkProps) {
 	return (
 		<UnstyledButton
-			{...props}
-			to={typeof path === 'string' ? path : undefined}
-			onClick={typeof path === 'function' ? path : undefined}
+			onClick={onClick}
 			class={tw`group relative p-1 m-2 w-10 h-10 rounded !outline-none transition bg-(transparent hocus:accent-400/30)
 				after:(absolute w-2 h-2 transition transform rotate-45 bg-gray-(50 dark:900)
-					[clip-path:polygon(0_0,0%_100%,100%_100%)] top-[calc(50%-0.25rem)] left-[calc(100%+0.25rem+.5px)])
-				${active ? '!bg-accent-400/50' : 'after:scale-0'}`}>
+					[clip-path:polygon(0_0,0%_100%,100%_100%)] top-[calc(50%-0.25rem)] left-[calc(100%+0.25rem+.5px)])`}>
 			<Svg
 				src={icon}
 				size={8}
-				class={tw`icon-p-(accent-200 group-hocus:accent-100) icon-s-(accent-400 group-hocus:accent-200)
-					${active && '!icon-p-white !icon-s-accent-200'}`}
+				class={tw`icon-p-accent-(200 group-hocus:100) icon-s-accent-(400 group-hocus:200)`}
 			/>
 
 			<span
@@ -63,7 +57,14 @@ function SidebarLink({ label, path, icon, props }: SidebarLinkProps) {
 	);
 }
 
-export default function Sidebar() {
+interface Props {
+	shortcuts: (Shortcut | 'spacer')[];
+}
+
+export default function Sidebar({ shortcuts }: Props) {
+	const navigate = useNavigate();
+	const location = useLocation();
+
 	return (
 		<aside
 			class={tw`fixed z-30 w-14 h-full inset-0 icon-p-accent-300 icon-s-accent-100
@@ -80,19 +81,17 @@ export default function Sidebar() {
 
 				<div class={tw`w-3/5 h-1 my-2 mx-auto rounded bg-accent-400`} />
 
-				<SidebarLink label='Home' icon={icon_home} path='/' exact />
-				<SidebarLink label='Routes' icon={icon_pages} path='/routes' />
-				<SidebarLink label='Media' icon={icon_media} path='/media' />
-				<SidebarLink label='Settings' icon={icon_options} path='/settings' />
-
-				<div class={tw`flex-grow`} />
-
-				<SidebarLink
-					label='Shortcut Palette'
-					icon={icon_launch}
-					path={handleOpenPalette}
-				/>
-				<SidebarLink label='Logout' icon={icon_logout} path={handleLogout} />
+				{shortcuts.map((shortcut, i) => {
+					if (shortcut === 'spacer') return <div key={i} class={tw`flex-grow`} />;
+					return (
+						<SidebarLink
+							key={i}
+							label={shortcut.title}
+							icon={shortcut.icon ?? icon_shortcut}
+							onClick={() => shortcut.action({ location, navigate })}
+						/>
+					);
+				})}
 			</nav>
 		</aside>
 	);
