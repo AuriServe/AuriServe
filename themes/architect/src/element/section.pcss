@@ -1,5 +1,5 @@
 #page {
-	.Section {
+	.base\:section {
 		--section-is-dark: initial;
 		--section-header-color: rgb(0, 0, 0);
 		--section-body-color: rgba(0, 0, 0, 0.9);
@@ -8,7 +8,7 @@
 		--section-link-color-active: rgb(var(--color-primary-700));
 		--section-background-color: rgb(255, 255, 255);
 
-		&.Inverted {
+		&.inverted {
 			--section-is-dark: ;
 			--section-header-color: rgb(255, 255, 255);
 			--section-body-color: rgba(255, 255, 255, 0.9);
@@ -18,7 +18,7 @@
 			--section-background-color: rgb(var(--color-secondary-800));
 		}
 
-		&.Accent {
+		&.accent {
 			--section-background-color: rgb(var(--color-secondary-100));
 		}
 
@@ -59,19 +59,19 @@
 			@apply my-3;
 		}
 
-		&.Inverted {
+		&.inverted {
 			/* @apply bg-secondary-800; */
 		}
 
-		&.Accent {
+		&.accent {
 			/* @apply bg-secondary-100; */
 		}
 
-		&.Callout {
+		&.callout {
 			--size: 20px;
 			@apply relative my-16;
 
-			&::after, &::before, .ColumnLayout-Columns::after, .ColumnLayout-Columns::before {
+			&::after, &::before, & > .base:columns > .columns::after, & > .base:columns > .columns::before {
 				@apply absolute [content:'_'] bg-secondary-100;
 				mask-size: var(--size);
 
@@ -86,7 +86,7 @@
 				}
 			}
 
-			.ColumnLayout-Columns {
+			& > .base\:columns > .columns {
 				&::before, &::after {
 					z-index: 0;
 					filter: grayscale(1) brightness(1000%);

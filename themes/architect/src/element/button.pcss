@@ -1,5 +1,5 @@
 #page {
-	.Button:not(.ImageButton) {
+	.base\:button:not(.image) {
 		@apply relative isolate inline-block px-4 py-2.5 select-none cursor-pointer drop-shadow-sm outline outline-offset-[3px] outline-[3px] outline-transparent will-change-transform;
 
 		--r: calc(0.5 * @theme(corner.size)px);
@@ -20,11 +20,11 @@
 			border-radius: 0 var(--r) 0 var(--r);
 		}
 
-		&, &::before, &::after, & > span {
+		&, &::before, &::after, > span {
 			@apply transition-all;
 		}
 
-		& > span {
+		> span {
 			@apply block relative text-white text-center font-semibold tracking-wider no-underline;
 		}
 
@@ -36,7 +36,7 @@
 			@apply absolute [content:'_'] w-full h-full inset-0 bg-[color:var(--fill)];
 		}
 
-		&.Ghost {
+		&.ghost {
 			&::before {
 				--fill-dark: var(--section-is-dark) rgb(var(--color-primary-300));
 			}
@@ -48,7 +48,7 @@
 				@apply block absolute [content:'_'] bg-[color:var(--section-background-color)] inset-0.5 w-auto h-auto shadow-inner;
 			}
 
-			& > span {
+			> span {
 				--color-dark: var(--section-is-dark) white;
 				--color-light: rgb(var(--color-primary-900));
 				--color: var(--color-dark, var(--color-light));
@@ -57,20 +57,20 @@
 			}
 		}
 
-		&.Neutral {
+		&.neutral {
 			&::before {
 				--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-600));
 				--fill-light: rgb(var(--color-secondary-700));
 				--fill: var(--fill-dark, var(--fill-light));
 			}
 
-			&.Ghost {
+			&.ghost {
 				&::before {
 					--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-400));
 					--fill-light: rgb(var(--color-secondary-500));
 				}
 
-				& > span {
+				> span {
 					--color-dark: var(--section-is-dark) white;
 					--color-light: rgb(var(--color-secondary-900));
 				}
@@ -81,7 +81,7 @@
 			--outline-dark: var(--section-is-dark) rgba(var(--color-primary-300), 0.4);
 			outline-color: var(--outline-dark, rgba(var(--color-primary-500), 0.5));
 
-			&.Neutral {
+			&.neutral {
 				--outline-dark: var(--section-is-dark) rgba(var(--color-secondary-400), 0.4);
 				outline-color: var(--outline-dark, rgba(var(--color-secondary-500), 0.5));
 			}
@@ -95,19 +95,19 @@
 				--fill-light: rgb(var(--color-primary-600));
 			}
 
-			&.Neutral {
+			&.neutral {
 				&::before {
 					--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-500));
 					--fill-light: rgb(var(--color-secondary-600));
 				}
 			}
 
-			&.Ghost {
+			&.ghost {
 				&::after {
 					@apply opacity-0 scale-x-95 scale-y-75;
 				}
 
-				& > span {
+				> span {
 					@apply text-white;
 				}
 			}
@@ -121,31 +121,31 @@
 				--fill-light: rgb(var(--color-primary-800));
 			}
 
-			& > span {
+			> span {
 				@apply text-primary-50;
 			}
 
-			&.Neutral {
+			&.neutral {
 				&::before {
 					--fill-dark: var(--section-is-dark) rgb(var(--color-secondary-700));
 					--fill-light: rgb(var(--color-secondary-800));
 				}
 
-				& > span {
+				> span {
 					@apply text-secondary-100;
 				}
 			}
 
-			&.Ghost {
+			&.ghost {
 				&::after {
 					@apply opacity-0 scale-x-95 scale-y-75;
 				}
 
-				& > span {
+				> span {
 					@apply text-primary-50;
 				}
 
-				&.Neutral > span {
+				.neutral > span {
 					@apply text-secondary-100;
 				}
 			}
