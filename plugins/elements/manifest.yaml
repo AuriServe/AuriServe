@@ -8,4 +8,4 @@ depends:
 - preact ^1
 
 entry:
-  server: dist/server.js
+  server: build/server.js

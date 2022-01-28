@@ -4,9 +4,13 @@ import Element from './Element';
 export default interface API {
 	renderTree(tree: Tree): Promise<string>;
 
-	registeredElements: Map<string, Element>;
-	registerElement(element: Element): void;
-	unregisterElement(identifier: string): boolean;
+	elements: Map<string, Element>;
+	addElement(element: Element): void;
+	removeElement(identifier: string): boolean;
+
+	stylesheets: Set<string>;
+	addStylesheet(filePath: string): void;
+	removeStylesheet(filePath: string): boolean;
 }
 
 declare global {

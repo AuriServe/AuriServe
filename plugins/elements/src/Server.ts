@@ -1,16 +1,27 @@
+import fs from 'fs';
 import as from 'auriserve';
+import { assert } from 'common';
 
 import renderTree from './RenderTree';
 
 as.elements = {
 	renderTree,
 
-	registeredElements: new Map(),
-	registerElement(element: any) {
-		as.elements.registeredElements.set(element.identifier, element);
+	elements: new Map(),
+	addElement(element: any) {
+		as.elements.elements.set(element.identifier, element);
 	},
-	unregisterElement(identifier: string) {
-		return as.elements.registeredElements.delete(identifier);
+	removeElement(identifier: string) {
+		return as.elements.elements.delete(identifier);
+	},
+
+	stylesheets: new Set(),
+	addStylesheet(filePath: string) {
+		assert(fs.existsSync(filePath), `Stylesheet '${filePath}' not found.`);
+		as.elements.stylesheets.add(filePath);
+	},
+	removeStylesheet(filePath: string) {
+		return as.elements.stylesheets.delete(filePath);
 	},
 };
 

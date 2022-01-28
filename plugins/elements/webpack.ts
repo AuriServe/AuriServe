@@ -16,7 +16,7 @@ export default function (_: any, argv: { mode: string }) {
 		entry: './Server.ts',
 
 		output: {
-			path: resolve(__dirname, 'dist'),
+			path: resolve(__dirname, 'build'),
 			filename: 'server.js',
 		},
 
