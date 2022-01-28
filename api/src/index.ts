@@ -54,7 +54,7 @@ declare global {
 		 * @returns a boolean indicating if the API is registered.
 		 */
 
-		has(identifier: string): boolean;
+		has(identifier: keyof Omit<AuriServeAPI, 'export' | 'unexport' | 'has'>): boolean;
 	}
 }
 
