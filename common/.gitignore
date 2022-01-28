@@ -1,5 +1,5 @@
-!dist/
-dist/*
+!build/
+build/*
 
-!dist/package.json
-!dist/package_lock.json
+!build/package.json
+!build/package_lock.json

@@ -8,7 +8,7 @@
 	"scripts": {
 		"dev": "nodemon",
 		"build": "tsc --project tsconfig.json",
-		"clean": "find dist -name '*' -not -name 'package.json' -not -path 'dist/node_modules*' -not -name 'dist' -delete"
+		"clean": "find build -name '*' -not -name 'package.json' -not -path 'build/node_modules*' -not -name 'build' -delete"
 	},
 	"nodemonConfig": {
 		"watch": [
