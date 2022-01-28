@@ -26,11 +26,20 @@ export interface Props {
 
 function Card(props: Props) {
 	const Tag = props.as ?? 'section';
+
+	const passedProps = { ...props };
+	delete passedProps.as;
+	delete passedProps.class;
+	delete passedProps.refObj;
+
 	return (
 		<Tag
-			{...props}
+			{...passedProps}
 			ref={props.refObj}
-			class={merge(tw`block bg-(white,dark:gray-800) rounded-lg shadow-md`, props.class)}
+			class={merge(
+				tw`Card~(block bg-(white,dark:gray-800) rounded-lg shadow-md)`,
+				props.class
+			)}
 		/>
 	);
 }

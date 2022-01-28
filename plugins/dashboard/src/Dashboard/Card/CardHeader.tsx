@@ -41,7 +41,10 @@ export default function CardHeader(props: Props) {
 		<div
 			{...passedProps}
 			ref={props.refObj}
-			class={merge(tw`relative p-4 rounded-t-lg bg-(white, dark:gray-750)`, props.class)}>
+			class={merge(
+				tw`CardHeader~(relative p-4 rounded-t-lg bg-(white, dark:gray-750))`,
+				props.class
+			)}>
 			{(props.title !== undefined || props.subtitle !== undefined) && (
 				<div
 					class={tw`flex w-max gap-3 icon-p-gray-(600 dark:100) icon-s-gray-(400 dark:300)`}>

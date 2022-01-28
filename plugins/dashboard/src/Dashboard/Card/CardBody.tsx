@@ -17,5 +17,7 @@ export interface Props {
  */
 
 export default function CardBody(props: Props) {
-	return <div {...props} ref={props.refObj} class={merge(tw`p-4`, props.class)} />;
+	return (
+		<div {...props} ref={props.refObj} class={merge(tw`CardBody~(p-4)`, props.class)} />
+	);
 }

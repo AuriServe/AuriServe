@@ -68,7 +68,7 @@ export default function CardToolbar(props: Props) {
 			{...passedProps}
 			ref={handleSetRef}
 			class={merge(
-				tw`z-10 flex gap-2 top-0 px-4 py-3 -mt-4 bg-(white dark:gray-750) transition-shadow
+				tw`CardToolbar~(z-10 flex gap-2 top-0 px-4 py-3 -mt-4 bg-(white dark:gray-750) transition-shadow)
 				${props.sticky !== false ? 'sticky' : ''} ${isSticky && 'shadow-md'}`,
 				props.class
 			)}>

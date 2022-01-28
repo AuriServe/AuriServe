@@ -40,8 +40,9 @@ export default forwardRef<HTMLElement, Props>(function ToggleInput(props, fRef) 
 					${props.toggleLeft && 'order-2'}`}>
 				<label
 					for={props.id}
-					class={tw`block font-medium leading-none cursor-pointer max-w-xl select-none transition
-					text-gray-{500 dark:200 dark:hover:100}`}>
+					class={tw`
+						block font-medium leading-none cursor-pointer max-w-xl select-none transition
+						text-gray-(500 dark:200 dark:hover:100)`}>
 					{props.label}
 				</label>
 				{description && (
@@ -59,15 +60,15 @@ export default forwardRef<HTMLElement, Props>(function ToggleInput(props, fRef) 
 				/>
 				<div
 					class={tw`absolute inset-0 w-full h-full p-1 transition
-						ring-{accent-500/50 offset-neutral-800 peer-focus:2 peer-focus:offset-2}
-						bg-{gray-input peer-focus:gray-700 peer-checked:accent-400 peer-checked:peer-focus:accent-400}
+						ring-(accent-500/50 offset-neutral-800 peer-focus:2 peer-focus:offset-2)
+						bg-(gray-input peer-focus:gray-700 peer-checked:accent-400 peer-checked:peer-focus:accent-400)
 						${props.rounded ? 'rounded-full' : 'rounded-md'}`}
 				/>
 				<div
 					class={tw`absolute w-4 h-4 shadow-sm shadow-neutral-900/50
 						top-1 left-1 peer-checked:translate-x-4 transition
-						bg-{gray-300 peer-hover:gray-200 peer-focus:accent-400 peer-checked:gray-700
-							peer-checked:peer-hover:gray-600 peer-checked:peer-focus:white}
+						bg-(gray-300 peer-hover:gray-200 peer-focus:accent-400 peer-checked:gray-700
+							peer-checked:peer-hover:gray-600 peer-checked:peer-focus:white)
 						${props.rounded ? 'rounded-full' : 'rounded'}`}
 				/>
 			</div>

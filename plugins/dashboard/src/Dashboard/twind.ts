@@ -1,4 +1,11 @@
-import { twind, escape, dom, colorFromTheme, css } from 'twind';
+import {
+	twind,
+	escape,
+	/*dom as om,*/ cssom as om,
+	colorFromTheme,
+	css,
+	tx,
+} from 'twind';
 import { defineConfig } from '@twind/tailwind';
 
 export const themeColors = {
@@ -236,7 +243,9 @@ const config = defineConfig({
 	},
 } as any);
 
-export const tw = twind(config, dom());
+const tw$ = twind(config, om());
+
+export const tw = tx.bind(tw$);
 
 tw(css`
 	@font-face {

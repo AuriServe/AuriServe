@@ -22,7 +22,7 @@ export default function CardFooter(props: Props) {
 			{...props}
 			ref={props.refObj}
 			class={merge(
-				tw`p-4 pt-0 text-(grey-300 sm right) font-medium leading-none`,
+				tw`CardFooter~(p-4 pt-0 text-(grey-300 sm right) font-medium leading-none)`,
 				props.class
 			)}
 		/>

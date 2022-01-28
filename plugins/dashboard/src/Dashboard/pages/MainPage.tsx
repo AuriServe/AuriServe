@@ -37,27 +37,27 @@ export default function MainPage() {
 										as='button'
 										key={i}
 										onClick={() => s.action({ location, navigate })}
-										class={tw`flex group [flex-basis:calc(33%-8px)] text-left gap-5 p-0 transition !outline-none
-									rounded-md hocus:bg-gray-700 dark:hocus:bg-gray-750
-									ring-accent-500/25 ring-offset-gray-900
-									focus:ring focus:ring-offset-2 active:ring active:ring-offset-2`}>
+										class={tw`group ShortcutButton~(flex gap-5 p-0 text-left transition !outline-none
+											rounded-md hocus:bg-gray-(700 dark:750) active:bg-gray-(700 dark:750) [flex-basis:calc(33%-8px)]
+											ring-(accent-500/25 offset-gray-900) focus:ring-(& offset-2) active:ring(& offset-2))`}>
 										{s.icon && (
 											<Svg
 												src={s.icon}
 												class={tw`w-8 rounded-l-md transition px-5 py-8 transition
-										dark:bg-gray-(750 group-hocus:700)
-										group-hocus:icon-p-accent-50 group-hocus:icon-s-accent-400`}
+													dark:bg-gray-(750 group-hocus:700 group-active:700)
+													group-hocus:icon-p-accent-50 group-hocus:icon-s-accent-400
+													group-active:icon-p-accent-50 group-active:icon-s-accent-400`}
 											/>
 										)}
 										<div class={tw`flex flex-col self-center`}>
 											<p
-												class={tw`truncate leading-4 font-medium dark:group-hocus:text-accent-50`}>
+												class={tw`truncate leading-4 font-medium text-accent-(dark:(group-hocus:50 group-active:50))`}>
 												{s.title}
 											</p>
 											{s.description && (
 												<p
 													class={tw`truncate leading-4 text-sm pt-2 transition
-											dark:text-gray-200 dark:group-hocus:text-accent-200`}>
+														text-gray-(800 dark:200) dark:group-hocus:text-accent-200 dark:group-active:text-accent-200`}>
 													{s.description}
 												</p>
 											)}
