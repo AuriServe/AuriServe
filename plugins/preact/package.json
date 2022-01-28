@@ -6,8 +6,8 @@
 	"author": "Auri <me@auri.xyz>",
 	"license": "MIT",
 	"scripts": {
-		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts; fg",
-		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg"
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg",
+		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts & wait"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.16.7",
@@ -21,8 +21,8 @@
 		"webpack-cli": "^4.9.1"
 	},
 	"dependencies": {
-		"auriserve": "file:../../api/dist",
-		"common": "file:../../common/dist",
+		"auriserve": "file:../../api/build",
+		"common": "file:../../common/build",
 		"preact": "^10.6.4",
 		"preact-render-to-string": "^5.1.19"
 	}
