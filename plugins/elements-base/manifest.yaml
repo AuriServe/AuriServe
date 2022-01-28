@@ -1,0 +1,14 @@
+name: Base Elements
+identifier: elements-base
+description: Registers basic elements for use with the Auriserve Elements plugin.
+
+version: 0.0.1
+author: Auri
+depends:
+- elements ^0.0.1
+- preact ^1
+
+entry:
+  server: build/server.js
+  # client:
+  #   style: build/client.css
