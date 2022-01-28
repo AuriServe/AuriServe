@@ -1,12 +1,12 @@
 {
 	"content": {
-		"element": "Section",
+		"element": "base:section",
 		"props": {
-			"class": "Inverted"
+			"class": "inverted"
 		},
 		"children": [
 			{
-				"element": "TextView",
+				"element": "base:text",
 				"props": {
 					"content": "<h1 style='text-align: center;'>Hey there gamer</h1>"
 				}

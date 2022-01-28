@@ -1,13 +1,13 @@
 {
 	"content": {
-		"element": "Float",
+		"element": "base:float",
 		"props": {
 			"threshold": 40,
 			"class": "NavigationHeader"
 		},
 		"children": [
 			{
-				"element": "ColumnLayout",
+				"element": "base:columns",
 				"props": {
 					"gap": 24,
 					"maxWidth": 1100,
@@ -15,23 +15,23 @@
 				},
 				"children": [
 					{
-						"element": "ImageView",
+						"element": "base:image",
 						"props": {
 							"class": "Logo",
 							"media": { "_id": "60a2d8fdcf20422ab2e5fcbd" }
 						}
 					},
 					{
-						"element": "Container",
+						"element": "base:container",
 						"children": [
 							{
-								"element": "TextView",
+								"element": "base:text",
 								"props": {
 									"content": "6233 Powell Place&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;604-483-3545"
 								}
 							},
 							{
-								"element": "Navigation",
+								"element": "base:navigation",
 								"props": {
 									"entries": [
 										{ "label": "Home", "to": "/" },
@@ -55,7 +55,7 @@
 						]
 					},
 					{
-						"element": "LinearLayout",
+						"element": "base:stack",
 						"props": {
 							"direction": "row",
 							"class": "Social",
@@ -63,7 +63,7 @@
 						},
 						"children": [
 							{
-								"element": "Button",
+								"element": "base:button",
 								"props": {
 									"label": "Facebook",
 									"url": "https://www.facebook.com/ShinglemillPub/",
@@ -73,7 +73,7 @@
 								}
 							},
 							{
-								"element": "Button",
+								"element": "base:button",
 								"props": {
 									"label": "Instagram",
 									"url": "https://www.instagram.com/shinglemillpub/",
