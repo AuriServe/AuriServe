@@ -1,31 +1,24 @@
 {
-  "name": "root",
-  "description": "AuriServe root package. Use the scripts below to install, develop, and build AuriServe.",
-  "private": true,
-  "scripts": {
-    "install": "cd common; npm install && cd dist; npm install && cd ../../frontend; npm install && cd ../server; npm install",
-    "dev-core": "cd common; npm run dev & cd ../frontend; npm run dev & cd ../server; npm run dev",
-    "dev-plugins": "cd plugin-api; npm run dev & cd ../plugin-base; npm run dev",
-    "dev": "npm run dev-plugins & npm run dev-core",
-    "dev-temp": "cd common; npm run dev & cd ../api; npm run dev & cd ../plugins/routes; npm run dev & cd ../../server; npm run dev",
-    "build": "cd common && npm run build && cd ../frontend && npm run build && cd ../server && npm run build"
-  },
-  "devDependencies": {
-    "@types/node": "^17.0.8",
-    "@types/webpack": "^5.28.0",
-    "@typescript-eslint/eslint-plugin": "^5.9.0",
-    "@typescript-eslint/parser": "^5.9.0",
-    "eslint": "^8.6.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-jsdoc": "^37.5.1",
-    "eslint-plugin-react": "^7.28.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "nodemon": "^2.0.15",
-    "prettier": "^2.5.1",
-    "ts-node": "^10.4.0",
-    "tslib": "^2.3.1",
-    "typescript": "^4.5.4",
-    "webpack": "^5.65.0",
-    "webpack-cli": "^4.9.1"
-  }
+	"name": "root",
+	"description": "AuriServe root package. Use the scripts below to install, develop, and build AuriServe.",
+	"private": true,
+	"scripts": {},
+	"devDependencies": {
+		"@types/node": "^17.0.8",
+		"@types/webpack": "^5.28.0",
+		"@typescript-eslint/eslint-plugin": "^5.9.0",
+		"@typescript-eslint/parser": "^5.9.0",
+		"eslint": "^8.6.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-jsdoc": "^37.5.1",
+		"eslint-plugin-react": "^7.28.0",
+		"eslint-plugin-react-hooks": "^4.3.0",
+		"nodemon": "^2.0.15",
+		"prettier": "^2.5.1",
+		"ts-node": "^10.4.0",
+		"tslib": "^2.3.1",
+		"typescript": "^4.5.4",
+		"webpack": "^5.65.0",
+		"webpack-cli": "^4.9.1"
+	}
 }
