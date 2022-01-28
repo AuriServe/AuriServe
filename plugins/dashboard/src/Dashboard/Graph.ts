@@ -6,7 +6,7 @@ import { Query } from 'common/graph';
 import * as Int from 'common/graph/type';
 
 /** The GQL endpoint to query. */
-const ENDPOINT = '/admin/graphql';
+const ENDPOINT = '/dashboard/res/gql';
 
 /**
  * A result provided by the useData hook.
