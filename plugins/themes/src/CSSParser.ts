@@ -1,25 +1,25 @@
-import { traverse, to, Color } from 'common';
+import { traverse, convertColor, Color } from 'common';
 
 function colorToFormat(color: Color, format: string): string {
 	let formattedColor;
 
 	switch (format) {
 		case 'rgb': {
-			const rgba = to(color, 'rgba');
+			const rgba = convertColor(color, 'rgba');
 			formattedColor = `${Math.round(rgba.r)}, ${Math.round(rgba.g)}, ${Math.round(
 				rgba.b
 			)}`;
 			break;
 		}
 		case 'hsv': {
-			const hsva = to(color, 'hsva');
+			const hsva = convertColor(color, 'hsva');
 			formattedColor = `${hsva.h}, ${hsva.s}, ${hsva.v}`;
 			break;
 		}
 
 		default:
 		case 'hex': {
-			formattedColor = to(color, 'hex');
+			formattedColor = convertColor(color, 'hex');
 			break;
 		}
 	}

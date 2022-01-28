@@ -1,4 +1,5 @@
 import path from 'path';
+import as from 'auriserve';
 import CleanCSS from 'clean-css';
 import { promises as fs } from 'fs';
 
@@ -59,13 +60,21 @@ export default class ThemeManager {
 
 	async buildThemes() {
 		let style = (
-			await Promise.all([...this.themes.values()].map((theme) => theme.buildCSS()))
+			await Promise.all([
+				...(as.has('elements')
+					? [...as.elements.stylesheets].map((filePath) => fs.readFile(filePath, 'utf8'))
+					: []),
+				...[...this.themes.values()].map((theme) => theme.buildCSS()),
+			])
 		).join('\n');
+
 		const head = (
 			await Promise.all([...this.themes.values()].map((theme) => theme.buildHead()))
 		).join('\n');
 
-		style = new CleanCSS({ level: 2 }).minify(style).styles;
+		style = new CleanCSS({
+			level: { 1: { specialComments: 'none' }, 2: { all: true } },
+		}).minify(style).styles;
 
 		await Promise.all([
 			fs.writeFile(path.join(this.buildDir, 'style.css'), style),
