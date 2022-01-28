@@ -63,7 +63,7 @@ export default class Plugins {
 		// TODO: Stupid dumb fake query
 		this.database
 			.prepare(
-				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-basic', 1), ('themes', 1), ('pages', 1), ('dashboard', 1)`
+				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-base', 1), ('themes', 1), ('pages', 1), ('dashboard', 1)`
 			)
 			.run();
 
@@ -104,7 +104,9 @@ export default class Plugins {
 				}))
 		).reverse();
 
-		console.log('disabling', disableOrder);
+		if (disableOrder.length) {
+			Log.debug(`Plugins: Disabling ${disableOrder.map((str) => `'${str}'`).join(', ')}.`);
+		}
 
 		for (const plugin of disableOrder) {
 			if (this.plugins.get(plugin)?.disable()) this.loader.pluginDisabled(plugin);
@@ -125,7 +127,7 @@ export default class Plugins {
 				}))
 		);
 
-		console.log('enabling', enableOrder);
+		Log.debug(`Plugins: Enabling ${enableOrder.map((str) => `'${str}'`).join(', ')}.`);
 
 		for (const plugin of enableOrder) {
 			if (await this.plugins.get(plugin)?.enable()) this.loader.pluginEnabled(plugin);

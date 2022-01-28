@@ -3,9 +3,8 @@ import { promises as fs, constants as fsc } from 'fs';
 
 import minimist from 'minimist';
 
-import Server from './Server';
 import Logger from './Log';
-import resolvePath from './ResolvePath';
+import Server from './Server';
 import { Config, mergeConfig } from './ServerConfig';
 
 const DEFAULT_DATA_DIR = 'site-data';
@@ -24,7 +23,9 @@ process.on('unhandledRejection', (e) => {
 	const args = minimist(process.argv.slice(2)) as any;
 
 	// Find the Configuration file.
-	const confPath = resolvePath(
+	const confPath = path.join(
+		__dirname,
+		'..',
 		args.conf
 			? args.conf
 			: args.data
@@ -47,7 +48,7 @@ process.on('unhandledRejection', (e) => {
 	Logger.setLogLevel(conf.verbose ? 'trace' : conf.logLevel ?? 'info');
 
 	// Find the site data folder.
-	const dataPath = resolvePath(conf.data ?? DEFAULT_DATA_DIR);
+	const dataPath = path.join(__dirname, '../', conf.data ?? DEFAULT_DATA_DIR);
 
 	Logger.debug("Initializing AuriServe with configuration file '%s'.", confPath);
 	Logger.debug("Found data directory '%s'.", dataPath);

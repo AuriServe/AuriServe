@@ -146,7 +146,8 @@ export default class PluginLoader {
 			);
 		} catch (e) {
 			if (e instanceof AssertError) {
-				Logger.error(`Failed to load plugin '${dirName}': ${e.message}`);
+				if (!e.message.includes('Missing manifest.yaml'))
+					Logger.error(`Failed to load plugin '${dirName}': ${e.message}`);
 			} else {
 				Logger.error('Encountered an error loading plugin %s:\n %s', dirName, e);
 			}
