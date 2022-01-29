@@ -2,7 +2,7 @@ import path from 'path';
 import { promises as fs } from 'fs';
 
 import Log from '../Log';
-import { parse, stringify } from './YAML';
+import { parse, stringify } from '../YAML';
 import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
 

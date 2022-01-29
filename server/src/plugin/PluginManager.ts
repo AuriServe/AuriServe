@@ -105,12 +105,15 @@ export default class Plugins {
 		).reverse();
 
 		if (disableOrder.length) {
-			Log.debug(`Plugins: Disabling ${disableOrder.map((str) => `'${str}'`).join(', ')}.`);
+			Log.debug(
+				`Plugins: Disabling ${disableOrder.map((str) => `'${str}'`).join(', ')}.`
+			);
+
+			for (const plugin of disableOrder) {
+				if (this.plugins.get(plugin)?.disable()) this.loader.pluginDisabled(plugin);
+			}
 		}
 
-		for (const plugin of disableOrder) {
-			if (this.plugins.get(plugin)?.disable()) this.loader.pluginDisabled(plugin);
-		}
 
 		const enableOrder = pluginDependencyOrder(
 			identifiers
@@ -127,11 +130,14 @@ export default class Plugins {
 				}))
 		);
 
-		Log.debug(`Plugins: Enabling ${enableOrder.map((str) => `'${str}'`).join(', ')}.`);
+		if (enableOrder.length) {
+			Log.debug(`Plugins: Enabling ${enableOrder.map((str) => `'${str}'`).join(', ')}.`);
 
-		for (const plugin of enableOrder) {
-			if (await this.plugins.get(plugin)?.enable()) this.loader.pluginEnabled(plugin);
+			for (const plugin of enableOrder) {
+				if (await this.plugins.get(plugin)?.enable()) this.loader.pluginEnabled(plugin);
+			}
 		}
+
 	}
 
 	/** Gets the specified plugin. */
@@ -149,9 +155,8 @@ export default class Plugins {
 		return this.listAll().filter((p) => p.isEnabled());
 	}
 
-	/** Synchronizes with the database and then cleans up all plugins. */
 	async cleanup() {
-		this.plugins.forEach((plugin) => plugin.disable(true));
+		await this.setEnabled([]);
 		this.plugins.clear();
 	}
 

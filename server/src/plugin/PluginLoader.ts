@@ -2,7 +2,7 @@ import path from 'path';
 import { assert, AssertError, assertSchema, Version } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 
-import YAML from './YAML';
+import YAML from '../YAML';
 import Plugin from './Plugin';
 import Logger from '../Log';
 import Watcher from '../Watcher';
