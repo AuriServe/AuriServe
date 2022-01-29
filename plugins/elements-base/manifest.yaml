@@ -10,5 +10,3 @@ depends:
 
 entry:
   server: build/server.js
-  # client:
-  #   style: build/client.css
