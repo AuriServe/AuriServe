@@ -1,5 +1,0 @@
-!dist/
-dist/*
-
-!dist/package.json
-!dist/package_lock.json
