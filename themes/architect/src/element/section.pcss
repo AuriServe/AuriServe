@@ -16,6 +16,11 @@
 			--section-link-color-hocus: rgb(var(--color-primary-100));
 			--section-link-color-active: rgb(var(--color-primary-300));
 			--section-background-color: rgb(var(--color-secondary-800));
+
+			&.callout::before, &.callout::after {
+				opacity: 0.25;
+				filter: saturate(300%);
+			}
 		}
 
 		&.accent {
@@ -59,20 +64,14 @@
 			@apply my-3;
 		}
 
-		&.inverted {
-			/* @apply bg-secondary-800; */
-		}
-
-		&.accent {
-			/* @apply bg-secondary-100; */
-		}
-
 		&.callout {
 			--size: 20px;
 			@apply relative my-16;
 
-			&::after, &::before, & > .base:columns > .columns::after, & > .base:columns > .columns::before {
-				@apply absolute [content:'_'] bg-secondary-100;
+			&::after, &::before, & > .base\:columns > .inner::after, & > .base\:columns > .inner::before {
+				position: absolute;
+				content: ' ';
+				background: var(--section-background-color);
 				mask-size: var(--size);
 
 				@if (callout.style == diamond) {
@@ -86,10 +85,16 @@
 				}
 			}
 
-			& > .base\:columns > .columns {
+			& > .base\:columns > .inner {
 				&::before, &::after {
 					z-index: 0;
 					filter: grayscale(1) brightness(1000%);
+
+					@supports (backdrop-filter: brightness(200%)) {
+						background-color: transparent;
+						filter: none;
+						backdrop-filter: brightness(200%);
+					}
 				}
 
 				&::before {

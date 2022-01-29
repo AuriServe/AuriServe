@@ -19,12 +19,18 @@
 	},
 	"rules": {
 
-		// General Rules
+		// Typescript Rules
 
 		"@typescript-eslint/explicit-module-boundary-types": 0,
 		"@typescript-eslint/no-useless-constructor": 1,
 		"@typescript-eslint/no-redeclare": 2,
 		"@typescript-eslint/no-duplicate-imports": 2,
+		"@typescript-eslint/no-unused-vars": [ 1, { "argsIgnorePattern": "^_" } ],
+		"@typescript-eslint/no-non-null-assertion": 0, // TODO: Enable this rule
+		"@typescript-eslint/no-explicit-any": 0, // TODO: Enable this rule
+
+		// General Rules
+
 		"prefer-const": 1,
 		"constructor-super": 2,
 		"no-caller": 2,
@@ -68,11 +74,8 @@
 		"valid-jsdoc": 0,
 		"no-fallthrough": 2,
 		"prefer-arrow-callback": [ 2, { "allowNamedFunctions": true }],
-		"@typescript-eslint/no-unused-vars": [ 1, { "argsIgnorePattern": "^_" } ],
-		"@typescript-eslint/no-non-null-assertion": 0, // TODO: Enable this rule
-		"@typescript-eslint/no-explicit-any": 0, // TODO: Enable this rule
 
-		// Preact Specific Rules
+		// Preact Rules
 
 		"react/no-deprecated": 2,
 		"react/react-in-jsx-scope": 0,

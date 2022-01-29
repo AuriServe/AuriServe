@@ -103,7 +103,7 @@
 					{
 						"element": "base:section",
 						"props": {
-							"class": "Accent Callout"
+							"class": "accent callout"
 						}
 					},
 					{
@@ -310,7 +310,7 @@
 					{
 						"element": "base:section",
 						"props": {
-							"class": "inverted"
+							"class": "inverted callout"
 						},
 						"children": [
 							{
