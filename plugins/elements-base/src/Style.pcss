@@ -29,6 +29,18 @@
 	flex-direction: column;
 }
 
+.base\:section-container {
+	> * {
+		&:first-child {
+			margin-top: 0 !important;
+		}
+
+		&:last-child {
+			margin-bottom: 0 !important;
+		}
+	}
+}
+
 /* .ImageView
 	width: 100%
 	height: auto

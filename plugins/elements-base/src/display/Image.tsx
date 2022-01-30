@@ -1,3 +1,4 @@
+import as from 'auriserve';
 import { h, Fragment } from 'preact';
 import { useState, useRef, useLayoutEffect } from 'preact/hooks';
 // // import { withHydration, ClientDefinition, ServerDefinition } from 'plugin-api';
@@ -6,6 +7,8 @@ import { useState, useRef, useLayoutEffect } from 'preact/hooks';
 import { merge } from 'common';
 
 type ViewState = 'STATIC' | 'WAITING' | 'TRANSITIONING' | 'LOADED';
+
+const { hydrated } = as.hydrated;
 
 interface Props {
 	// media: Media;
@@ -107,7 +110,9 @@ function Image(props: Props) {
 	);
 }
 
-export default { identifier, component: Image };
+const ServerImage = hydrated(identifier, Image);
+
+export default { identifier, component: ServerImage };
 
 // export const HydratedImageView = withHydration('ImageView', ImageView, (props: any) => {
 // 	props.media = {

@@ -15,6 +15,7 @@
 		"@babel/preset-env": "^7.16.8",
 		"@babel/preset-typescript": "^7.16.7",
 		"@types/plugin-elements": "file:../elements",
+		"@types/plugin-hydrated": "file:../hydrated",
 		"@types/plugin-preact": "file:../preact",
 		"@types/plugin-routes": "file:../routes",
 		"@typescript-eslint/eslint-plugin": "^5.9.1",

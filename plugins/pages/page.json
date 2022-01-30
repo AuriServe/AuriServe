@@ -13,7 +13,7 @@
 				"element": "base:stack",
 				"props": {
 					"gap": 0,
-					"class": "Main"
+					"class": "base:section-container"
 				},
 				"children": [
 					{
@@ -21,6 +21,12 @@
 					},
 					{
 						"include": 1
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "accent callout"
+						}
 					},
 					{
 						"element": "base:section",
@@ -105,6 +111,25 @@
 						"props": {
 							"class": "accent callout"
 						}
+					},
+					{
+						"element": "base:section",
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"maxWidth": 900
+								},
+								"children": [
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h1>Lakeside Dining at Powell Lake</h1><p>Powell Lake Marina on Powell Lake was purchased in 1983. It was bankrupt at the time and in a state of disrepair. The property consisted of an old shop, a marina, gas dock and a small coffee shop. Through many long hours and a lot of work, Dave Formosa, opened and operated a boat sale service shop alongside the marina. After a number of years in business, Dave added onto the coffee shop and opened the Shinglemill Pub and Bistro in 1986.</p><p>The Shinglemill was named after the community that occupied the property during the early to mid the 1900's. The small community grew around a mill that produced shingles.</p><p>There are many photographs of the early days taken of the Shinglemill and community and Powell Lake displayed throughout the pub and bistro.</p><p>The Shinglemill is located on pristine Powell Lake. The lake, created during the last ice age, is 32 km long and is a favorite recreational area for locals and visitors.</p>"
+										}
+									}
+								]
+							}
+						]
 					},
 					{
 						"element": "base:section",

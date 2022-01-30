@@ -4,6 +4,7 @@ import as from 'auriserve';
 import Static from './Static';
 import hydrated from './Hydrated';
 
+import './API';
 import './Style.pcss';
 
 as.hydrated = {

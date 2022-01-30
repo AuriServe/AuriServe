@@ -2,11 +2,12 @@
 	"name": "@auriserve/plugin-hydrated",
 	"version": "0.0.1",
 	"description": "API for registering Hydrated elements.",
+	"types": "types/Server.d.ts",
 	"author": "Auri <me@auri.xyz>",
 	"license": "MIT",
 	"scripts": {
-		"dev": "webpack --mode=development --watch --progress --config ./webpack.ts",
-		"build": "webpack --mode=production --progress --config ./webpack.ts"
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg",
+		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts & wait"
 	},
 	"sideEffects": false,
 	"devDependencies": {
