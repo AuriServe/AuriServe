@@ -18,8 +18,8 @@
 			--section-background-color: rgb(var(--color-secondary-800));
 
 			&.callout::before, &.callout::after {
-				opacity: 0.25;
-				filter: saturate(300%);
+				opacity: 0.2;
+				filter: saturate(1500%);
 			}
 		}
 
@@ -66,7 +66,7 @@
 
 		&.callout {
 			--size: 20px;
-			@apply relative my-16;
+			@apply relative;
 
 			&::after, &::before, & > .base\:columns > .inner::after, & > .base\:columns > .inner::before {
 				position: absolute;
@@ -90,10 +90,10 @@
 					z-index: 0;
 					filter: grayscale(1) brightness(1000%);
 
-					@supports (backdrop-filter: brightness(200%)) {
+					@supports (backdrop-filter: brightness(175%)) {
 						background-color: transparent;
 						filter: none;
-						backdrop-filter: brightness(200%);
+						backdrop-filter: brightness(175%);
 					}
 				}
 
@@ -129,10 +129,26 @@
 
 			&::after {
 				bottom: calc(-1 * var(--size) * 2 - 4px);
-				left: 30%;
+				left: 40%;
 				width: calc(min(var(--size) * 24, 70%));
 				height: calc(var(--size) * 2);
 			}
+		}
+
+		&:not(.callout) + .base\:section:not(.callout) {
+			@apply pt-0;
+		}
+
+		&:not(.callout) + .base\:section.callout, &.callout + .base\:section:not(.callout) {
+			@apply mt-8;
+		}
+
+		&.callout + .base\:section.callout {
+			@apply mt-16;
+		}
+
+		&:not(.callout).inverted + .base\:section {
+			@apply mt-16;
 		}
 	}
 }

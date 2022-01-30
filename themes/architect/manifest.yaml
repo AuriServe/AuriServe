@@ -95,6 +95,10 @@ options:
     label:
     icon: res/corner_sides_top_right_bottom_left.svg
 
+  - key: teardrop
+    label:
+    icon: res/corner_sides_teardrop.svg
+
   requires:
   - corner.style != none
 

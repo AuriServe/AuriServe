@@ -19,6 +19,10 @@
 		border-radius: 0 var(--r) 0 var(--r);
 	}
 
+	@elseif (corner.style == rounded && corner.sides == teardrop) {
+		border-radius: var(--r) var(--r) 0 var(--r);
+	}
+
 	@elseif (corner.style == bevel && corner.sides == all) {
 		clip-path: polygon(var(--r) 0%, calc(100% - var(--r)) 0%, 100% var(--r), 100% calc(100% - var(--r)), calc(100% - var(--r)) 100%, var(--r) 100%, 0% calc(100% - var(--r)), 0% var(--r));
 	}
@@ -31,6 +35,10 @@
 		clip-path: polygon(calc(100% - var(--r)) 0%, 100% var(--r), 100% 100%, var(--r) 100%, 0% calc(100% - var(--r)), 0 0);
 	}
 
+	@elseif (corner.style == bevel && corner.sides == teardrop) {
+		clip-path: polygon(var(--r) 0%, calc(100% - var(--r)) 0%, 100% var(--r), 100% 100%, var(--r) 100%, 0% calc(100% - var(--r)), 0% var(--r));
+	}
+
 	@elseif (corner.style == rabbet && corner.sides == all) {
 		clip-path: polygon(0% var(--r), var(--r) var(--r), var(--r) 0%, calc(100% - var(--r)) 0%, calc(100% - var(--r)) var(--r), 100% var(--r), 100% calc(100% - var(--r)), calc(100% - var(--r)) calc(100% - var(--r)), calc(100% - var(--r)) 100%, var(--r) 100%, var(--r) calc(100% - var(--r)), 0% calc(100% - var(--r)));
 	}
@@ -41,5 +49,9 @@
 
 	@elseif (corner.style == rabbet && corner.sides == top_right_bottom_left) {
 		clip-path: polygon(0 0, calc(100% - var(--r)) 0%, calc(100% - var(--r)) var(--r), 100% var(--r), 100% 100%, var(--r) 100%, var(--r) calc(100% - var(--r)), 0% calc(100% - var(--r)));
+	}
+
+	@elseif (corner.style == rabbet && corner.sides == teardrop) {
+		clip-path: polygon(0% var(--r), var(--r) var(--r), var(--r) 0%, calc(100% - var(--r)) 0%, calc(100% - var(--r)) var(--r), 100% var(--r), 100% 100%, var(--r) 100%, var(--r) calc(100% - var(--r)), 0% calc(100% - var(--r)));
 	}
 }

@@ -20,6 +20,10 @@
 			border-radius: 0 var(--r) 0 var(--r);
 		}
 
+		@elseif (corner.style != none && corner.sides == teardrop) {
+			border-radius: var(--r) var(--r) 0 var(--r);
+		}
+
 		&, &::before, &::after, > span {
 			@apply transition-all;
 		}
