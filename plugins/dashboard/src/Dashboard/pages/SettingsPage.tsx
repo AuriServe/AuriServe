@@ -7,12 +7,12 @@ import Svg from '../Svg';
 import { Title, Page } from '../structure';
 import {
 	MainSettings,
-	ThemesSettings,
-	PluginsSettings,
-	MediaSettings,
-	// UsersSettings,
-	RolesSettings,
-	DeveloperSettings,
+	// ThemesSettings,
+	// PluginsSettings,
+	// MediaSettings,
+	// // UsersSettings,
+	// RolesSettings,
+	// DeveloperSettings,
 } from './settings';
 
 import { tw } from '../twind';
@@ -70,7 +70,7 @@ const SettingsSections = memo(function SettingsSections({
 			<div ref={(ref) => (refs.current.overview = ref)}>
 				<MainSettings />
 			</div>
-			<div ref={(ref) => (refs.current.themes = ref)}>
+			{/* <div ref={(ref) => (refs.current.themes = ref)}>
 				<ThemesSettings />
 			</div>
 			<div ref={(ref) => (refs.current.plugins = ref)}>
@@ -78,16 +78,16 @@ const SettingsSections = memo(function SettingsSections({
 			</div>
 			<div ref={(ref) => (refs.current.media = ref)}>
 				<MediaSettings />
-			</div>
+			</div> */}
 			{/* <div ref={(ref) => (refs.current.users = ref)}>
 				<UsersSettings />
 			</div> */}
-			<div ref={(ref) => (refs.current.roles = ref)}>
+			{/* <div ref={(ref) => (refs.current.roles = ref)}>
 				<RolesSettings />
 			</div>
 			<div ref={(ref) => (refs.current.developer = ref)}>
 				<DeveloperSettings />
-			</div>
+			</div> */}
 			<div class='h-48' />
 		</div>
 	);

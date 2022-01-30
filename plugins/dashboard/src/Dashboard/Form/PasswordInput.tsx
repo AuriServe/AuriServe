@@ -1,12 +1,13 @@
 import { h } from 'preact';
-import { merge } from 'common/util';
 import { forwardRef } from 'preact/compat';
 import { useRef, useState, useMemo, useEffect, useCallback } from 'preact/hooks';
 
 import InputContainer from './InputContainer';
 
-import { ErrorType } from './Type';
 import { refs } from '../Util';
+import { tw, merge } from '../twind';
+
+import { ErrorType } from './Type';
 
 interface Props {
 	id?: string;
@@ -96,7 +97,7 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 			label={props.label}
 			labelId={id}
 			invalid={showInvalid}
-			class={merge('isolate', props.class)}
+			class={merge(tw`isolate`, props.class)}
 			style={props.style}>
 			<input
 				ref={refs(ref, fRef)}
@@ -104,20 +105,17 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 				type='password'
 				placeholder=' '
 				autocomplete={props.completion}
-				class={merge(
-					'peer w-full px-1.5 pt-5 pb-0 rounded scroll-input',
-					'!outline-none resize-none focus:shadow-md',
-					'border-4 border-neutral-input dark:focus:border-neutral-700',
-					'bg-neutral-100 dark:bg-neutral-input dark:focus:bg-neutral-700',
-					'autofill:![box-shadow:0_0_0px_1000px_theme(colors.neutral.input)_inset]',
-					'dark:focus:autofill:![box-shadow:0_0_0px_1000px_theme(colors.neutral.700)_inset]',
-					'autofill:first-line:!font-sans autofill:first-line:!text-accent-100 autofill:first-line:!text-base',
-					'autofill:![-webkit-text-fill-color:theme(colors.accent.100)] autofill:caret-accent-50',
-					'[transition:color_75ms,border-color_75ms,background-color_75ms,box_shadow_0ms]',
-					showInvalid && 'text-red-800 focus:text-neutral-900',
-					showInvalid &&
-						'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-neutral-100'
-				)}
+				class={tw`
+					peer w-full px-1.5 pt-5 pb-0 rounded scroll-input !outline-none resize-none focus:shadow-md
+					border-(4 gray-(input dark:focus:700)) bg-gray-(100 dark:input dark:focus:700)
+					autofill:[box-shadow:0_0_0_1000px_#1D283F_inset]
+					dark:focus:autofill:[box-shadow:0_0_0_1000px_#202D44_inset]
+					autofill:first-line:(!font-sans !text-accent-100 !text-base)
+					autofill:(![-webkit-text-fill-color:theme(colors.accent.100)] caret-accent-50)
+					[transition:color_75ms,border-color_75ms,background-color_75ms,box-shadow_75ms]
+					${showInvalid && 'text-red-800 focus:text-gray-900'}
+					${showInvalid && 'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-gray-100'}
+				`}
 				value={value.current}
 				onInput={handleChange}
 				onFocus={handleFocus}

@@ -90,13 +90,20 @@ export interface FormFieldMeta {
 	errorMessage: string | null;
 }
 
+/** Event emitter types. */
+export interface EventType {
+	validity: (field: string) => void;
+	focus: (field: string | null) => void;
+}
+
+
 /** Form context interface. */
 export interface FormContextData {
 	id: string;
 	data: Record<string, any>;
 	fields: Record<string, FormFieldMeta>;
 	schema: FormSchema;
-	event: EventEmitter;
+	event: EventEmitter<EventType>;
 }
 
 /** Context containing form information. */

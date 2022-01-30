@@ -28,7 +28,7 @@ export default function FloatingDescription(props: Props) {
 	useEffect(() => {
 		let setNullTimeout: any = 0;
 
-		const unbindFocus = form.event.bind('focus', (field: string) => {
+		const unbindFocus = form.event.bind('focus', (field: string | null) => {
 			if (field === null) {
 				setNullTimeout = setTimeout(() => setState(null), 50);
 			} else {

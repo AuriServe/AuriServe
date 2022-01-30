@@ -4,9 +4,9 @@ import { useRef, useState, useMemo, useEffect, useCallback } from 'preact/hooks'
 
 import InputContainer from './InputContainer';
 
-import { tw } from '../twind';
 import { refs } from '../Util';
 import { ErrorType } from './Type';
+import { tw, merge } from '../twind';
 
 interface Props {
 	id?: string;
@@ -114,7 +114,7 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 			label={props.label}
 			labelId={id}
 			invalid={showInvalid}
-			class={tw`isolate ${props.class}`}
+			class={merge(tw`isolate`, props.class)}
 			style={props.style}>
 			<Tag
 				ref={refs(ref, fRef)}

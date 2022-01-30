@@ -1,7 +1,8 @@
 import {
 	twind,
 	escape,
-	/*dom as om,*/ cssom as om,
+	// dom as om,
+	cssom as om,
 	colorFromTheme,
 	css,
 	tx,
@@ -296,10 +297,6 @@ tw(css`
 	}
 
 	@media (pointer: fine) {
-		html.AS_APP body {
-			padding-left: 14px;
-		}
-
 		html.AS_APP body::-webkit-scrollbar,
 		html.AS_APP body *::-webkit-scrollbar {
 			@apply w-[14px] h-[14px] bg-gray-900;

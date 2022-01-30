@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie';
-import * as Int from 'common/graph/type';
+// import * as Int from 'common/graph/type';
 import { h, createContext } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -13,8 +13,8 @@ import { tw } from './twind';
 import {
 	LoginPage,
 	MainPage,
-	PagesPage,
-	MediaPage,
+	// PagesPage,
+	// MediaPage,
 	// UserPage,
 	SettingsPage,
 	// EditorControlPage,
@@ -27,8 +27,8 @@ document.documentElement.classList.add('dark');
 
 /** Defines the content of the App Context. */
 export interface AppContextData {
-	data: Partial<Int.Root>;
-	mergeData(data: Partial<Int.Root>): void;
+	data: Partial<any>;
+	mergeData(data: Partial<any>): void;
 }
 
 /** The App Context containing graph data. */
@@ -46,14 +46,14 @@ export const AppContext = createContext<AppContextData>({
  */
 
 export default function App() {
-	const [data, setData] = useState<Partial<Int.Root>>({});
+	const [data, setData] = useState<Partial<any>>({});
 	const [state, setState] = useState<AppState>(() =>
 		Cookie.get('tkn') ? 'QUERYING' : 'LOGIN'
 	);
 
 	const mergeData = useCallback(
-		(data: Partial<Int.Root>) =>
-			setData((prevData: Partial<Int.Root>) => {
+		(data: Partial<any>) =>
+			setData((prevData: Partial<any>) => {
 				return { ...prevData, ...data };
 			}),
 		[]
@@ -111,9 +111,9 @@ export default function App() {
 										/>
 										<Routes>
 											<Route path='/' element={<MainPage />} />
-											<Route path='/routes/*' element={<PagesPage />} />
-											<Route path='/media/' element={<MediaPage />} />
-											<Route path='/media/:id' element={<MediaPage />} />
+											{/* <Route path='/routes/*' element={<PagesPage />} /> */}
+											{/* <Route path='/media/' element={<MediaPage />} /> */}
+											{/* <Route path='/media/:id' element={<MediaPage />} /> */}
 											<Route path='/settings/*' element={<SettingsPage />} />
 											{/* <Route path='/users/:id' element={<UserPage />} /> */}
 											<Route element={<Navigate to='/' />} />

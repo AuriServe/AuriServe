@@ -2,8 +2,8 @@ import { useEffect, useContext } from 'preact/hooks';
 
 import { AppContext, AppContextData } from './App';
 
-import { Query } from 'common/graph';
-import * as Int from 'common/graph/type';
+// import { Query } from 'common/graph';
+// import * as Int from 'common/graph/type';
 
 /** The GQL endpoint to query. */
 const ENDPOINT = '/dashboard/res/gql';
@@ -15,7 +15,7 @@ const ENDPOINT = '/dashboard/res/gql';
  * - and a function that can be called to refresh the cache.
  */
 
-type UseDataResult = [Partial<Int.Root>, () => void];
+type UseDataResult = [Partial<any>, () => void];
 
 /**
  * A hook that provides access to the cached App data, and can refresh subsets of data if supplied with queries.
@@ -144,53 +144,57 @@ export async function executeQuery<T = any>(
 // 	};
 // }
 
+const Query = {
+	Info: ''
+}
+
 /** Queries basic site info. */
 export const QUERY_INFO = `info ${Query.Info}`;
 
 /** Queries site quotas. */
-export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;
+// export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;
 
 /** Queries developer settings. */
-export const QUERY_DEVELOPER = `developer ${Query.Developer}`;
+// export const QUERY_DEVELOPER = `developer ${Query.Developer}`;
 
 /** Queries all media elements. */
-export const QUERY_MEDIA = `media ${Query.Media}`;
+// export const QUERY_MEDIA = `media ${Query.Media}`;
 
-/** Queries all themes. */
-export const QUERY_THEMES = `themes ${Query.Theme}`;
+// /** Queries all themes. */
+// export const QUERY_THEMES = `themes ${Query.Theme}`;
 
-/** Queries all plugins. */
-export const QUERY_PLUGINS = `plugins ${Query.Plugin}`;
+// /** Queries all plugins. */
+// export const QUERY_PLUGINS = `plugins ${Query.Plugin}`;
 
-/** Queries all media elements. */
-export const QUERY_USERS = `users ${Query.User}`;
+// /** Queries all media elements. */
+// export const QUERY_USERS = `users ${Query.User}`;
 
-/** Queries all roles. */
-export const QUERY_ROLES = `roles ${Query.Role}`;
+// /** Queries all roles. */
+// export const QUERY_ROLES = `roles ${Query.Role}`;
 
-/** Queries all pages. */
-export const QUERY_PAGES = `pages ${Query.PageMeta}`;
-
-/** Queries a page. */
-export const QUERY_PAGE = `
-	query GetPage($path: String!) {
-		page(path: $path) ${Query.Page}
-	}
-`;
+// /** Queries all pages. */
+// export const QUERY_PAGES = `pages ${Query.PageMeta}`;
 
 /** Queries a page. */
-export const QUERY_INCLUDE = `
-	query GetInclude($path: String!) {
-		include(path: $path) ${Query.Include}
-	}
-`;
+// export const QUERY_PAGE = `
+// 	query GetPage($path: String!) {
+// 		page(path: $path) ${Query.Page}
+// 	}
+// `;
 
-/** Queries a layout. */
-export const QUERY_LAYOUT = `
-	query GetLayout($name: String!) {
-		layout(name: $name) ${Query.Layout}
-	}
-`;
+// /** Queries a page. */
+// export const QUERY_INCLUDE = `
+// 	query GetInclude($path: String!) {
+// 		include(path: $path) ${Query.Include}
+// 	}
+// `;
+
+// /** Queries a layout. */
+// export const QUERY_LAYOUT = `
+// 	query GetLayout($name: String!) {
+// 		layout(name: $name) ${Query.Layout}
+// 	}
+// `;
 
 /** Mutates basic site info. */
 export const MUTATE_INFO = `
