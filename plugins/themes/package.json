@@ -6,8 +6,8 @@
 	"author": "Auri <me@auri.xyz>",
 	"license": "MIT",
 	"scripts": {
-		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg",
-		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts & wait"
+		"dev": "rm build/reset.css; ln -s ../reset.css build/reset.css; tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg",
+		"build": "rm build/reset.css; cp reset.css build/reset.css; tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts & wait"
 	},
 	"sideEffects": false,
 	"devDependencies": {

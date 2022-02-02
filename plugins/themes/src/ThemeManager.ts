@@ -13,9 +13,9 @@ export default class ThemeManager {
 
 	readonly buildDir: string;
 
-	constructor(readonly themeDir: string) {
-		this.buildDir = path.join(themeDir, 'build');
-		this.loader = new ThemeLoader(this, themeDir);
+	constructor(readonly themesPath: string) {
+		this.buildDir = path.join(themesPath, 'build');
+		this.loader = new ThemeLoader(this);
 	}
 
 	async init() {
@@ -56,11 +56,13 @@ export default class ThemeManager {
 
 	addTheme(theme: Theme) {
 		this.themes.set(theme.manifest.identifier, theme);
+		this.loader.themeEnabled(theme.manifest.identifier);
 	}
 
 	async buildThemes() {
 		let style = (
 			await Promise.all([
+				fs.readFile(path.join(__dirname, 'reset.css'), 'utf8'),
 				...(as.has('elements')
 					? [...as.elements.stylesheets].map((filePath) => fs.readFile(filePath, 'utf8'))
 					: []),
@@ -80,6 +82,14 @@ export default class ThemeManager {
 			fs.writeFile(path.join(this.buildDir, 'style.css'), style),
 			fs.writeFile(path.join(this.buildDir, 'head.html'), head),
 		]);
+	}
+
+	reloadTheme(_identifier: string) {
+		this.buildThemes();
+	}
+
+	get(identifier: string) {
+		return this.themes.get(identifier);
 	}
 
 	listEnabled() {

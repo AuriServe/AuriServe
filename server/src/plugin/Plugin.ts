@@ -2,6 +2,7 @@ import path from 'path';
 import { promises as fs } from 'fs';
 
 import Log from '../Log';
+import Watcher from '../Watcher';
 import { parse, stringify } from '../YAML';
 import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
@@ -84,6 +85,7 @@ export default class Plugin {
 			log: Log,
 			database: this.manager.database,
 			YAML: { parse, stringify },
+			Watcher,
 			on: this.on.bind(this),
 			once: this.once.bind(this),
 			off: this.off.bind(this),

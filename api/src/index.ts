@@ -3,6 +3,7 @@ import type { Database } from 'better-sqlite3';
 import type Log from './log';
 import type YAML from './yaml';
 import type Router from './router';
+import type { WatcherConstructor } from './watcher';
 
 declare global {
 	/**
@@ -71,6 +72,9 @@ export interface Core {
 
 	/** YAML parsing and stringifying. */
 	YAML: YAML;
+
+	/** Watches files for changes. */
+	Watcher: WatcherConstructor;
 
 	/** Provides access to the underlying MySQL database, for high-preformance data storage. */
 	database: Database;

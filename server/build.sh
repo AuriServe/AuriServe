@@ -14,5 +14,5 @@ cp better-sqlite3/build/Release/better_sqlite3.node native
 cd ../
 
 eslint src/**/*.ts & tsc --project tsconfig.json &&
-nexe --target linux-x64-10.20.1 --name AuriServe --output build/AuriServe -r 'src/views/*' -r 'interface/dist/*' -r 'interface/res/**/*';
+nexe --target linux-x64-10.20.1 --name AuriServe --output build/AuriServe;
 npm run clean

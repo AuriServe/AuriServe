@@ -61,7 +61,7 @@ export default class Theme {
 		return parseCSS(
 			await fs.readFile(
 				path.join(
-					this.manager.themeDir,
+					this.manager.themesPath,
 					this.manifest.identifier,
 					this.manifest.entry.style
 				),
@@ -76,7 +76,7 @@ export default class Theme {
 		return parseHTML(
 			await fs.readFile(
 				path.join(
-					this.manager.themeDir,
+					this.manager.themesPath,
 					this.manifest.identifier,
 					this.manifest.entry.head
 				),

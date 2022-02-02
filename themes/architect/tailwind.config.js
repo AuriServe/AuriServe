@@ -18,9 +18,9 @@ const varColorSwatch = (color) => {
 module.exports = {
 	content: ['./src/**/*.pcss'],
 	darkMode: 'class',
-	// corePlugins: {
-	// 	preflight: false,
-	// },
+	corePlugins: {
+		preflight: false,
+	},
 	theme: {
 		extend: {
 			outline: {

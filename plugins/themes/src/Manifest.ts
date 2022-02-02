@@ -11,20 +11,26 @@ export interface Manifest {
 	identifier: string;
 	description?: string;
 
-	version: Version;
 	author: string;
-	entry?:
-		| { client?: string | { style?: string; script?: string }; layout?: string }
-		| string;
+	version: Version;
+
+	entry:
+		| string
+		| {
+				style: string;
+				head: string;
+		  };
+	watch?: string[];
 
 	options?: { [key: string]: any; key: string; label?: string; type: string }[];
 	presets?: Record<string, ThemePreset>;
 }
 
-export type ParsedManifest = Omit<Manifest, 'entry'> & {
+export type ParsedManifest = Omit<Manifest, 'entry' | 'watch'> & {
 	entry: {
 		style?: string;
 		head?: string;
-		script?: string;
+		// script?: string;
 	};
+	watch: string[];
 };

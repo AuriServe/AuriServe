@@ -2,7 +2,7 @@ import fs, { FSWatcher } from 'fs';
 import debounce from 'debounce';
 
 export default class Watcher {
-	private callbacks: (() => void)[] = [];
+	private callbacks: Set<() => void> = new Set();
 	private watchers: FSWatcher[] = [];
 	private onChangeDebounced: any;
 
@@ -12,11 +12,11 @@ export default class Watcher {
 	}
 
 	bind(cb: () => void) {
-		this.callbacks.push(cb);
+		this.callbacks.add(cb);
 	}
 
 	unbind(cb: () => void) {
-		this.callbacks = this.callbacks.filter((c) => c !== cb);
+		return this.callbacks.delete(cb);
 	}
 
 	start() {

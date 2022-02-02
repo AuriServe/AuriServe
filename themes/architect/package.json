@@ -2,8 +2,8 @@
 	"name": "test_theme",
 	"description": "A simple test theme.",
 	"scripts": {
-		"dev": "postcss src/index.pcss --watch --verbose --config postcss.config.js -o dist/style.css",
-		"build": "postcss src/index.pcss --verbose --config postcss.config.js -o dist/style.css"
+		"dev": "postcss src/index.pcss --watch --verbose --config postcss.config.js -o build/style.css",
+		"build": "postcss src/index.pcss --verbose --config postcss.config.js -o build/style.css"
 	},
 	"author": "Auri <me@auri.xyz>",
 	"license": "UNLICENSED",
