@@ -8,31 +8,6 @@ type ReplacerFunc = (ctx: Context, ...match: any[]) => string;
 
 const directives: [RegExp, ReplacerFunc][] = [];
 
-// directives.push([
-// 	/\/\*\s*@theme(?:\(([a-z-.,\s]+)*\))*\s*\*\//gim,
-// 	function theme(ctx, _, strArgs) {
-// 		const [themePath, format] = strArgs
-// 			.split(',')
-// 			.filter(Boolean)
-// 			.map((arg: string) => arg.trim());
-
-// 		let value;
-// 		try {
-// 			value = traverse(ctx.theme, themePath);
-// 		} catch (e) {
-// 			console.log(`Couldn't find theme value '${themePath}'`);
-// 			return 'INVALID_THEME_VALUE';
-// 		}
-
-// 		if (format) {
-// 			const parsedFormat = (format ?? 'hex') as 'rgb' | 'hsv' | 'hex';
-// 			return colorToFormat(value, parsedFormat);
-// 		}
-
-// 		return value.toString();
-// 	},
-// ]);
-
 directives.push([
 	/(<!--\s*@if\s*\([\sa-z.,\-=&|_'"]+\)\s*-->(?:(?:.|\r|\n)*?<!--\s*@(?:else ?if\s*\([a-z., ]+\)|else)\s-->)*(.|\r|\n)*?<!--\s*@end ?if\s*-->)/gim,
 	(ctx, match) => {
