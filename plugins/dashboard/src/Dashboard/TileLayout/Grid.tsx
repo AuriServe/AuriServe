@@ -1,6 +1,6 @@
 import { h, ComponentChildren } from 'preact';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 interface Props {
 	gap?: number;

@@ -8,7 +8,7 @@ import Menu from '../Menu/Menu';
 import TileLayout from '../TileLayout';
 import { Page, Title } from '../structure';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 import { getShortcuts } from '../Shortcut';
 import { QUERY_INFO, useData } from '../Graph';
 

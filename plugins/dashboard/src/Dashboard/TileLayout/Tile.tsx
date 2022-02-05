@@ -4,7 +4,7 @@ import { ComponentChildren, h } from 'preact';
 import Button from '../Button';
 import { Context } from './Context';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 
 import icon_edit from '@res/icon/edit.svg';
 import icon_remove from '@res/icon/trash.svg';

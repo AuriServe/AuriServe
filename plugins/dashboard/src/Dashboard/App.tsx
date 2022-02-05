@@ -8,7 +8,7 @@ import Sidebar from './Sidebar';
 import { getShortcut } from './Shortcut';
 import CommandPalette from './ShortcutPalette';
 
-import { tw } from './twind';
+import { tw } from './Twind';
 
 import {
 	LoginPage,

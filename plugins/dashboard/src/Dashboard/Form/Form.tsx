@@ -2,7 +2,7 @@ import { h, ComponentChildren } from 'preact';
 import { forwardRef, memo } from 'preact/compat';
 import { useEffect, useMemo, useRef } from 'preact/hooks';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 
 import EventEmitter from '../EventEmitter';
 import {

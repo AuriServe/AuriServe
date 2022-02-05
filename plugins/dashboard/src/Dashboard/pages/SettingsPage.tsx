@@ -15,7 +15,7 @@ import {
 	// DeveloperSettings,
 } from './settings';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 
 import icon_home from '@res/icon/home.svg';
 import icon_themes from '@res/icon/theme.svg';

@@ -9,7 +9,7 @@ import { PrimaryButton } from '../Button';
 import { Title, Page } from '../structure';
 import { FloatingDescription, Form, FormSchema, Input } from '../Form';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 
 import icon_user from '@res/icon/users.svg';
 import icon_rocket from '@res/icon/launch.svg';

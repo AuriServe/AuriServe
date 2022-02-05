@@ -6,7 +6,7 @@ import InputContainer from './InputContainer';
 
 import { refs } from '../Util';
 import { ErrorType } from './Type';
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 import useAutoFill from './useAutoFill';
 
 interface Props {

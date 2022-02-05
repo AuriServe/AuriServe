@@ -1,7 +1,7 @@
 import { h, RefObject } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 interface Props {
 	// Any default section properties.

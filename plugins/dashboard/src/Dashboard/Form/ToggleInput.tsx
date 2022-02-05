@@ -2,7 +2,7 @@ import { h, Ref } from 'preact';
 import { useContext } from 'preact/hooks';
 import { forwardRef } from 'preact/compat';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 import { ErrorType, FormContext } from './Type';
 
 interface Props {

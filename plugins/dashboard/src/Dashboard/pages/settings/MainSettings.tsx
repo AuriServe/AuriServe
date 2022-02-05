@@ -7,7 +7,7 @@ import Card from '../../Card';
 import Button from '../../Button';
 import { FormSchema, Form, Input, FloatingDescription } from '../../Form';
 
-import { tw } from '../../twind';
+import { tw } from '../../Twind';
 
 import icon_save from '@res/icon/save.svg';
 import icon_overview from '@res/icon/home.svg';

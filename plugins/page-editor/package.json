@@ -1,0 +1,34 @@
+{
+	"name": "@auriserve/plugin-page-editor",
+	"version": "0.0.1",
+	"description": "Dashboard plugin to allow for Visual Page Editing.",
+	"types": "types/Server.d.ts",
+	"author": "Auri <me@auri.xyz>",
+	"license": "UNLICENSED",
+	"scripts": {
+		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts",
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts"
+	},
+	"sideEffects": false,
+	"devDependencies": {
+		"@babel/core": "^7.16.7",
+		"@babel/preset-env": "^7.16.8",
+		"@babel/preset-typescript": "^7.16.7",
+		"@types/escape-html": "^1.0.1",
+		"@types/plugin-elements": "file:../elements",
+		"@types/plugin-routes": "file:../routes",
+		"@typescript-eslint/eslint-plugin": "^5.9.1",
+		"@typescript-eslint/parser": "^5.9.1",
+		"babel-loader": "^8.2.3",
+		"eslint-loader": "^4.0.2",
+		"fork-ts-checker-webpack-plugin": "^6.5.0",
+		"plugin-routes": "file:../routes",
+		"ts-loader": "^9.2.6",
+		"webpack-cli": "^4.9.1"
+	},
+	"dependencies": {
+		"auriserve": "file:../../api/build",
+		"common": "file:../../common/build",
+		"escape-html": "^1.0.3"
+	}
+}

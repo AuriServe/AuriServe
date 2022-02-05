@@ -1,6 +1,6 @@
 import { h, ComponentChildren, RefObject, ComponentType } from 'preact';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 import CardBody from './CardBody';
 import CardHeader from './CardHeader';

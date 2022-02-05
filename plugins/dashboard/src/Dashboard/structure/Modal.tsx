@@ -5,7 +5,7 @@ import Card from '../Card';
 import Portal from './Portal';
 import { Transition } from '../Transition';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 interface Props {
 	active: boolean;

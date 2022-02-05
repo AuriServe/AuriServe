@@ -4,7 +4,7 @@ import { useState, useContext, useEffect } from 'preact/hooks';
 
 import Svg from '../Svg';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 import { FormContext, FormField, FormFieldMeta } from './Type';
 
 import icon_info from '@res/icon/info.svg';

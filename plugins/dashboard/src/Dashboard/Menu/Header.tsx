@@ -1,6 +1,6 @@
 import { ComponentChildren, h } from 'preact';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 interface Props {
 	class?: string;

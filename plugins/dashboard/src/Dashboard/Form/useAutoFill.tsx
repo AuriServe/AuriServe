@@ -1,7 +1,7 @@
 import { RefObject } from 'preact';
 import { useRef, useEffect, useState, useMemo } from 'preact/hooks';
 
-import { tw, css } from '../twind';
+import { tw, css } from '../Twind';
 
 interface UseAutoFillProps {
 	baseBg: string;

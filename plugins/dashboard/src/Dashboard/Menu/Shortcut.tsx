@@ -2,7 +2,7 @@ import { h } from 'preact';
 
 import Svg from '../Svg';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 
 interface Props {
 	icon?: string;

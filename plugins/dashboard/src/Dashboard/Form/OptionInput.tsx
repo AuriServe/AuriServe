@@ -7,7 +7,7 @@ import Svg from '../Svg';
 import { Transition } from '../Transition';
 import InputContainer from './InputContainer';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 import { refs } from '../Util';
 
 import { ErrorType } from './Type';

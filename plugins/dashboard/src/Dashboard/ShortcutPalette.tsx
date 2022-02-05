@@ -6,7 +6,7 @@ import Svg from './Svg';
 import { Modal } from './structure';
 import { Transition, TransitionGroup } from './Transition';
 
-import { tw } from './twind';
+import { tw } from './Twind';
 import { Shortcut, searchShortcuts } from './Shortcut';
 
 import icon_launch from '@res/icon/launch.svg';

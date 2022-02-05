@@ -6,7 +6,7 @@ import Svg from './Svg';
 import { Shortcut } from './Shortcut';
 import { UnstyledButton } from './Button';
 
-import { tw } from './twind';
+import { tw } from './Twind';
 // import { togglePalette } from './ShortcutPalette';
 
 // import icon_home from '@res/icon/home.svg';

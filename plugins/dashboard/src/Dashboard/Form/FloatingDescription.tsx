@@ -5,7 +5,7 @@ import { Portal } from '../structure';
 import Description from './Description';
 import { TransitionGroup } from '../Transition';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 import { ErrorType, FormContext, FormField } from './Type';
 
 interface Props {

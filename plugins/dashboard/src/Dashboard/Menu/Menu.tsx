@@ -6,7 +6,7 @@ import Shortcut from './Shortcut';
 import SubMenu from './SubMenu';
 import Divider from './Divider';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 import Transition from '../Transition';
 
 interface Props {

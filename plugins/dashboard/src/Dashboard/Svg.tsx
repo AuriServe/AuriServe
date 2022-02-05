@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-import { tw, merge } from './twind';
+import { tw, merge } from './Twind';
 
 export interface Props {
 	// Other attributes to be put on the container.

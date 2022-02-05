@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-import { merge, tw } from '../twind';
+import { merge, tw } from '../Twind';
 
 interface Props {
 	class?: string;

@@ -3,7 +3,7 @@ import { h, ComponentChildren } from 'preact';
 
 import Svg from './Svg';
 
-import { tw, merge } from './twind';
+import { tw, merge } from './Twind';
 
 const SIZES = {
 	large: 10,

@@ -1,7 +1,7 @@
 import { forwardRef, useMemo } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 interface Props {
 	/** The input's label. */

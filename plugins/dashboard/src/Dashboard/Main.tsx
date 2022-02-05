@@ -18,6 +18,6 @@ export {
 export { default as Svg } from './Svg';
 
 export { useData, executeQuery } from './Graph';
-export { tw, merge } from './twind';
+export { tw, merge } from './Twind';
 
 export { default as EventEmitter } from './EventEmitter';

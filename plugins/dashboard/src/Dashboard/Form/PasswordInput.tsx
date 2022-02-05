@@ -5,7 +5,7 @@ import { useRef, useState, useMemo, useEffect, useCallback } from 'preact/hooks'
 import InputContainer from './InputContainer';
 
 import { refs } from '../Util';
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 import { ErrorType } from './Type';
 import useAutoFill from './useAutoFill';

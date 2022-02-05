@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'preact/hooks';
 import { createPortal, forwardRef } from 'preact/compat';
 import { h, Fragment, ComponentChildren, RefObject } from 'preact';
 
-import { tw } from '../twind';
+import { tw } from '../Twind';
 
 interface Props {
 	to: HTMLElement;

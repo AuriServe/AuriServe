@@ -5,7 +5,7 @@ import Svg from '../Svg';
 import Menu from './Menu';
 import Shortcut from './Shortcut';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 import icon_arrow_more from '@res/icon/arrow_more.svg';
 

@@ -1,6 +1,6 @@
 import { h, ComponentChildren, RefObject } from 'preact';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 export interface Props {
 	// Any default div properties.

@@ -6,11 +6,20 @@ import {
 	colorFromTheme,
 	css,
 	tx,
+	defineConfig,
 } from 'twind';
-import { defineConfig } from '@twind/tailwind';
 
+import presetTailwind from '@twind/preset-tailwind';
+
+/** The weigths for theme colors. */
+const COLOR_WEIGHTS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
+
+/** The weights for the gray theme colors. */
+const COLOR_WEIGHTS_GRAY = [...COLOR_WEIGHTS, 750, 'input'] as const;
+
+/** All of the theme colors in RGB format. */
 export const themeColors = {
-	indigo: {
+	'indigo': {
 		50: [238, 242, 255],
 		100: [224, 231, 255],
 		200: [199, 210, 254],
@@ -22,7 +31,7 @@ export const themeColors = {
 		800: [55, 48, 163],
 		900: [47, 42, 139],
 	},
-	blue: {
+	'blue': {
 		50: [239, 246, 255],
 		100: [219, 234, 254],
 		200: [191, 219, 254],
@@ -34,7 +43,7 @@ export const themeColors = {
 		800: [30, 64, 175],
 		900: [30, 58, 138],
 	},
-	cyan: {
+	'cyan': {
 		50: [236, 254, 255],
 		100: [207, 250, 254],
 		200: [165, 243, 252],
@@ -46,7 +55,7 @@ export const themeColors = {
 		800: [21, 94, 117],
 		900: [22, 78, 99],
 	},
-	emerald: {
+	'emerald': {
 		50: [236, 253, 245],
 		100: [209, 250, 229],
 		200: [167, 243, 208],
@@ -58,7 +67,7 @@ export const themeColors = {
 		800: [6, 95, 70],
 		900: [6, 78, 59],
 	},
-	lime: {
+	'lime': {
 		50: [247, 254, 231],
 		100: [236, 252, 203],
 		200: [217, 249, 157],
@@ -70,7 +79,7 @@ export const themeColors = {
 		800: [63, 98, 18],
 		900: [54, 83, 20],
 	},
-	amber: {
+	'amber': {
 		50: [255, 251, 235],
 		100: [254, 243, 199],
 		200: [253, 230, 138],
@@ -82,7 +91,7 @@ export const themeColors = {
 		800: [146, 64, 14],
 		900: [120, 53, 15],
 	},
-	red: {
+	'red': {
 		50: [254, 242, 242],
 		100: [254, 226, 226],
 		200: [254, 202, 202],
@@ -94,7 +103,7 @@ export const themeColors = {
 		800: [153, 27, 27],
 		900: [127, 29, 29],
 	},
-	pink: {
+	'pink': {
 		50: [253, 242, 248],
 		100: [252, 231, 243],
 		200: [251, 207, 232],
@@ -106,11 +115,7 @@ export const themeColors = {
 		800: [157, 23, 77],
 		900: [131, 24, 67],
 	},
-};
-
-export const grayColors = {
-	light: {
-		0: [255, 255, 255],
+	'gray-light': {
 		50: [248, 250, 252],
 		100: [241, 245, 249],
 		200: [226, 232, 240],
@@ -122,11 +127,9 @@ export const grayColors = {
 		750: [27, 38, 61],
 		800: [30, 41, 59],
 		900: [15, 23, 42],
-		950: [0, 0, 0],
 		input: [29, 40, 63],
 	},
-	dark: {
-		0: [248, 250, 252],
+	'gray-dark': {
 		50: [241, 245, 249],
 		100: [203, 213, 225],
 		200: [148, 163, 184],
@@ -135,31 +138,24 @@ export const grayColors = {
 		500: [55, 71, 94],
 		600: [43, 57, 81],
 		700: [32, 45, 68],
+		750: [27, 38, 61],
 		800: [23, 33, 55],
 		900: [15, 23, 42],
-		950: [0, 0, 0],
+		input: [29, 40, 63],
 	},
 };
 
-const varColor =
-	(color: string) =>
-	({ opacityValue }: { opacityValue?: number }) =>
-		`rgba(var(--theme-${color}), ${opacityValue ?? 1})`;
-
-const varColorSwatch = (color: string) => {
-	const colors: Record<number, (ctx: { opacityValue?: number }) => string> = {};
-	[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].forEach(
-		(weight) => (colors[weight] = varColor(`${color}-${weight}`))
-	);
-	return colors;
-};
+/** Accepts a color name, and constructs a CSS color from the custom property of that name and an opacityValue. */
+function twindColor(color: string) {
+	return ({ opacityValue }: { opacityValue?: number }) =>
+		`rgba(var(--${color}) / ${opacityValue ?? 1})`;
+}
 
 const config = defineConfig({
-	enablePreflight: true,
+	presets: [presetTailwind()],
 	darkMode: 'class',
 	hash: (val: string) => {
 		if (val.startsWith('dash-')) return val;
-		// console.log(val);
 		return `dash-${val}`;
 	},
 	rules: [
@@ -186,37 +182,26 @@ const config = defineConfig({
 		['hocus', '&:hover,&:focus-visible'],
 		[
 			'((group|peer)(~.+)?)-hocus',
-			({ 1: $1 }: { 1: string }, { e, h }: { e: any, h: any }) =>
+			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
 				['hover', 'focus-visible']
 					.map((state) => `:merge(.${e(h($1))}):${state}${$1[0] === 'p' ? '~' : ' '}&`)
-					.join(','),
+					.join(',')) as any,
 		],
 		[
 			'((group|peer)(~.+)?)-focus-input',
-			({ 1: $1 }: { 1: string }, { e, h }: { e: any, h: any }) =>
-					`:merge(.${e(h($1))}):focus${$1[0] === 'p' ? '~' : ' '}&`
+			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
+				`:merge(.${e(h($1))}):focus${$1[0] === 'p' ? '~' : ' '}&`) as any,
 		],
 		[
 			'((group|peer)(~.+)?)-focus',
-			({ 1: $1 }: { 1: string }, { e, h }: { e: any, h: any }) =>
-					`:merge(.${e(h($1))}):focus-visible${$1[0] === 'p' ? '~' : ' '}&`
+			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
+				`:merge(.${e(h($1))}):focus-visible${$1[0] === 'p' ? '~' : ' '}&`) as any,
 		],
-
-
-		// ['hocus', '&:where(:hover,:focus-visible)'],
-		// ['active', '&:active'],
-		// [
-		// 	'((group|peer)(-[^-]+)?)-hocus',
-		// 	({ 1: $1 }: { 1: string }, { h }: any) =>
-		// 		`.${escape(h($1))}:where(:hover,:focus-visible) &`,
-		// ],
 		['peer-focus', (_: any, { h }: any) => `.${escape(h('peer'))}:focus-visible ~ &`],
 		[
 			'peer-placeholder-shown',
 			(_: any, { h }: any) => `.${escape(h('peer'))}:placeholder-shown ~ &`,
 		],
-		// ['not-autofill', '&:not(:autofill)'],
-		// ['peer-not-autofill', (_, { tag }) => `${escape(tag('peer'))}:not(:autofill) &`],
 		[
 			'input-inactive',
 			(_: any, { h }: any) =>
@@ -263,24 +248,25 @@ const config = defineConfig({
 			},
 		},
 		colors: {
+			white: ({ opacityValue }: { opacityValue?: number }) =>
+				`rgba(255 255 255 / ${opacityValue ?? 1})`,
+			black: ({ opacityValue }: { opacityValue?: number }) =>
+				`rgba(0 0 0 / ${opacityValue ?? 1})`,
 			transparent: 'transparent',
-			gray: {
-				...varColorSwatch('gray'),
-				750: varColor('gray-750'),
-				input: varColor('gray-input'),
-			},
-			red: Object.fromEntries(
-				Object.entries(themeColors.red).map(([k, v]) => [k, `rgb(${v})`])
+			gray: Object.fromEntries(
+				COLOR_WEIGHTS_GRAY.map((weight) => [weight, twindColor(`theme-gray-${weight}`)])
 			),
-			accent: varColorSwatch('accent'),
-			white: varColor('gray-0'),
-			black: varColor('gray-950'),
+			accent: Object.fromEntries(
+				COLOR_WEIGHTS.map((weight) => [weight, twindColor(`theme-accent-${weight}`)])
+			),
+			red: Object.fromEntries(
+				COLOR_WEIGHTS.map((weight) => [weight, twindColor(`color-red-${weight}`)])
+			),
 		} as any,
 	},
-} as any);
+});
 
 const tw$ = twind(config, om());
-
 export const tw = tx.bind(tw$);
 
 tw(css`
@@ -299,28 +285,35 @@ tw(css`
 	}
 
 	:root {
-		${Object.entries(grayColors.light)
-			.map(([label, color]) => `--theme-gray-${label}: ${color.join(', ')};`)
-			.join('\n')}
+		${
+			// Create CSS variables for all of the colors.
+			Object.entries(themeColors)
+				.map(([name, colors]) =>
+					Object.entries(colors)
+						.map(([weight, color]) => `--color-${name}-${weight}: ${color.join(' ')};`)
+						.join('\n')
+				)
+				.join('\n')
+		}
 
-		${Object.entries(themeColors.red)
-			.map(([label, color]) => `--theme-red-${label}: ${color.join(', ')};`)
-			.join('\n')}
+		${COLOR_WEIGHTS_GRAY.map(
+			(weight) => `--theme-gray-${weight}: var(--color-gray-light-${weight});`
+		).join('\n')}
 	}
 
 	.dark {
-		${Object.entries(grayColors.dark)
-			.map(([label, color]) => `--theme-gray-${label}: ${color.join(', ')};`)
-			.join('\n')}
+		${COLOR_WEIGHTS_GRAY.map(
+			(weight) => `--theme-gray-${weight}: var(--color-gray-dark-${weight});`
+		).join('\n')}
 	}
 
-	${Object.entries(themeColors)
+	${Object.keys(themeColors)
 		.map(
-			([name, colors]) => `.theme-${name} {
-			${Object.entries(colors)
-				.map(([label, color]) => `--theme-accent-${label}: ${color.join(', ')};`)
-				.join('\n')}
-		}`
+			(name) => `.theme-${name} {
+				${COLOR_WEIGHTS.map(
+					(weight) => `--theme-accent-${weight}: var(--color-${name}-${weight});`
+				).join('\n')}
+			}`
 		)
 		.join('\n')}
 
@@ -377,7 +370,17 @@ tw(css`
 		@apply bg-gray-500/50;
 	}
 
-	/* Can watch for Autofill changes by using the animationstart event. */
+	${
+		/* Animations for watching for Autofill events. */
+		['Start', 'Cancel']
+			.map(
+				(type) => `@keyframes onAutoFill${type} {
+			from { --v: 1 }
+			to { --v: 0 }
+		}`
+			)
+			.join('\n')
+	}
 
 	input:autofill {
 		animation: onAutoFillStart 0s 1;
@@ -386,32 +389,7 @@ tw(css`
 	input:not(:autofill) {
 		animation: onAutoFillCancel 0s 1;
 	}
-
-	@keyframes onAutoFillStart {
-		from {
-			--v: 1;
-		}
-		to {
-			--v: 0;
-		}
-	}
-
-	@keyframes onAutoFillCancel {
-		from {
-			--v: 1;
-		}
-		to {
-			--v: 0;
-		}
-	}
 `);
 
 export { merge } from 'common';
 export { css } from 'twind';
-
-// export const grayLight = Object.fromEntries(
-// 	Object.entries(grayColors.light).map(([k, c]) => [k, `rgb(${c.join(', ')})`])
-// );
-// export const grayDark = Object.fromEntries(
-// 	Object.entries(grayColors.dark).map(([k, c]) => [k, `rgb(${c.join(', ')})`])
-// );

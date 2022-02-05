@@ -1,6 +1,6 @@
 import { h, RefObject } from 'preact';
 
-import { tw, merge } from '../twind';
+import { tw, merge } from '../Twind';
 
 import Svg from '../Svg';
 
