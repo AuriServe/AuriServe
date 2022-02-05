@@ -67,6 +67,9 @@ const FORM_SCHEMA: FormSchema = {
 			label: 'Site Visibility',
 			description: 'The visibility of your site to search engines.',
 			// default: 'visible',
+			// validation: {
+			// 	optional: true,
+			// },
 			options: {
 				visible: 'Visible',
 				hidden: 'Hidden',

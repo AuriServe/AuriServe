@@ -139,7 +139,7 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 			{props.multiline && (
 				<div
 					class={tw`absolute top-0 w-[calc(100%-16px)] h-6 rounded-tl
-					transition bg-gray-input dark:peer-focus:bg-gray-700 interact-none`}
+					transition duration-75 bg-gray-input dark:peer-focus:bg-gray-700 interact-none`}
 				/>
 			)}
 		</InputContainer>

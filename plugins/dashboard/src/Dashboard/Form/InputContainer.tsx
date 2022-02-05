@@ -38,31 +38,30 @@ interface Props {
  */
 
 function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean) {
-	let classes = 'absolute w-full transition-all interact-none';
+	const posInactive = 'top-[0.9375rem] left-3 text-base font-medium';
+	const posActive = 'top-1.5 left-2.5 text-xs font-bold';
+	const validActive = 'text-accent-(600 dark:300)';
+	const validInactive = 'text-(gray-((500 dark:300) peer-hover:(500 dark:200)))';
+	const invalidActive = 'text-red-(800 dark:300)';
+	const invalidInactive =
+		'text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:(800 dark:300))';
 
-	if (populated === undefined)
-		classes += ` top-(1.5 test:[0.9375rem]) left-(2.5 test:3) text-(xs test:base) font-(bold test:medium)`;
-	else
-		classes += populated
-			? ' top-1.5 left-2.5 text-xs font-bold'
-			: ` top-(peer-focus-input:1.5 [0.9375rem]) left-(peer-focus-input:2.5 3)
-						text-(peer-focus-input:xs base) font-(peer-focus-input:bold medium)`;
+	const colActive = invalid ? invalidActive : validActive;
+	const colInactive = invalid ? invalidInactive : validInactive;
 
-	if (active === undefined) {
-		if (!invalid)
-			classes += `text-(gray-((500 dark:300) peer-hover:(500 dark:200)) peer-focus-input:!accent-(600 dark:300))`;
-		else
-			classes += ` text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:!(800 dark:300))`;
-	} else if (!invalid)
-		classes += active
-			? ' text-accent-(600 dark:300)'
-			: ` text-(gray-(500 dark:300 peer-hover:(500 dark:200)) peer-focus-input:!accent-(600 dark:300))`;
-	else
-		classes += active
-			? ' text-red-(800 dark:300)'
-			: ` text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:(800 dark:300))`;
-
-	return classes;
+	return tw`InputContainerLabel~(
+		absolute w-full transition-all interact-none
+		${
+			populated === undefined
+				? `${posActive} input-inactive:(${posInactive})`
+				: `${populated ? posActive : posInactive}`
+		}
+		${
+			active === undefined
+				? `${colInactive} peer-focus-input:!(${colActive})`
+				: `${active ? colActive : `${colInactive} peer-focus-input:!(${colActive})`}`
+		}
+	)`;
 }
 
 /**
@@ -72,11 +71,6 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
  */
 
 export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, ref) {
-	const labelStyles = useMemo(
-		() => getLabelStyles(props.active, props.populated, props.invalid),
-		[props.active, props.populated, props.invalid]
-	);
-
 	return (
 		<div
 			ref={ref}
@@ -86,7 +80,12 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 			)}
 			style={props.style}>
 			{props.children}
-			<label for={props.labelId} class={tw`${labelStyles}`}>
+			<label
+				for={props.labelId}
+				class={useMemo(
+					() => getLabelStyles(props.active, props.populated, props.invalid),
+					[props.active, props.populated, props.invalid]
+				)}>
 				{props.label}
 			</label>
 			<div

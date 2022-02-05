@@ -46,7 +46,7 @@ export default function Input(props: Props) {
 		form.event.emit('validity', props.for);
 	};
 
-	const handleChange = (value: string) => {
+	const handleChange = (value: any) => {
 		form.data[props.for] = value;
 		props.onChange?.(value);
 	};

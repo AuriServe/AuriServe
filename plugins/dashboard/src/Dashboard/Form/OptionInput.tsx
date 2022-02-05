@@ -25,7 +25,7 @@ interface Props {
 	pattern?: RegExp;
 	patternHint?: string;
 
-	onChange?: (value: string) => void;
+	onChange?: (value: string | undefined) => void;
 	onValidity?: (error: ErrorType | null, message: string | null) => void;
 	onFocus?: (elem: HTMLElement) => void;
 	onBlur?: (elem: HTMLElement) => void;
@@ -61,7 +61,7 @@ export default forwardRef<HTMLElement, Props>(function OptionInput(props, fRef) 
 		onValidity?.(error, errorMessage);
 	}, [value, optional, onValidity]);
 
-	const handleChange = (newValue: string) => {
+	const handleChange = (newValue: string | undefined) => {
 		setValue(newValue);
 		props.onChange?.(newValue);
 	};
@@ -131,14 +131,37 @@ export default forwardRef<HTMLElement, Props>(function OptionInput(props, fRef) 
 							static
 							className={tw`absolute z-50 left-0 top-[calc(100%+0.5rem)] w-full flex-row-reverse
 						bg-gray-700 rounded shadow-md outline-none overflow-hidden`}>
+							{optional && (
+								<Listbox.Option
+									key={undefined}
+									value={undefined}
+									className={({ active, selected }) => tw`
+										p-2.5 flex transition cursor-pointer duration-75
+										${active ? 'bg-gray-750/50 text-accent-200' : 'bg-gray-750 text-gray-200'}
+										${selected && 'font-medium !text-gray-100'}
+									`}>
+									{({ selected }: { selected: boolean }) => (
+										<Fragment>
+											<span class={tw`grow`}>None</span>
+											{selected && (
+												<Svg
+													src={icon_check}
+													size={6}
+													class={tw`icon-p-accent-200 icon-s-gray-500`}
+												/>
+											)}
+										</Fragment>
+									)}
+								</Listbox.Option>
+							)}
 							{Object.entries(props.options).map(([value, label]) => (
 								<Listbox.Option
 									key={value}
 									value={value}
 									className={({ active, selected }) =>
-										tw`p-2.5 flex transition text-gray-200 cursor-pointer duration-75
-											${active && 'bg-accent-400/10 !text-accent-200'}
-											${selected && 'font-medium !text-white'}`
+										tw`p-2.5 flex transition cursor-pointer duration-75
+											${active ? 'bg-accent-400/10 text-accent-200' : 'text-gray-200'}
+											${selected && 'font-medium !text-gray-100'}`
 									}>
 									{({ selected }: { selected: boolean }) => (
 										<Fragment>
