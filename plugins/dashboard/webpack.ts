@@ -84,6 +84,7 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 
 		output: {
 			path: resolve(__dirname, './dist'),
+			filename: 'main.js',
 		},
 
 		resolve: {
@@ -122,6 +123,22 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 									jsxPragma: 'h',
 								},
 							],
+							// [
+							// 	'@babel/preset-env',
+							// 	{
+							// 		modules: false,
+							// 		useBuiltIns: false,
+							// 		targets: {
+							// 			browsers: [
+							// 				'Chrome >= 60',
+							// 				'Safari >= 10.1',
+							// 				'iOS >= 10.3',
+							// 				'Firefox >= 54',
+							// 				'Edge >= 15',
+							// 			],
+							// 		},
+							// 	},
+							// ],
 							[
 								'@babel/preset-env',
 								{
@@ -131,8 +148,8 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 						],
 						plugins: [
 							['@babel/transform-react-jsx', { pragma: 'h' }],
-							'@babel/plugin-proposal-class-properties',
-							'@babel/plugin-proposal-private-methods',
+							// '@babel/plugin-proposal-class-properties',
+							// '@babel/plugin-proposal-private-methods',
 						],
 					},
 				},

@@ -67,8 +67,7 @@ export default function Sidebar({ shortcuts }: Props) {
 
 	return (
 		<aside
-			class={tw`fixed z-30 w-14 h-full inset-0 icon-p-accent-300 icon-s-accent-100
-			bg-gradient-to-t from-accent-600 to-accent-500`}>
+			class={tw`fixed z-30 w-14 h-full inset-0 icon-(p-accent-300 s-accent-100) bg-accent-600`}>
 			<nav class={tw`flex-(& col) h-full`}>
 				<Svg
 					src={icon_auriserve}
@@ -76,7 +75,7 @@ export default function Sidebar({ shortcuts }: Props) {
 					role='heading'
 					aria-level='1'
 					aria-label='AuriServe'
-					class={tw`m-2 animate-rocket icon-p-accent-200 icon-s-accent-300`}
+					class={tw`m-2 animate-rocket icon-p-accent-100 icon-s-accent-300`}
 				/>
 
 				<div class={tw`w-3/5 h-1 my-2 mx-auto rounded bg-accent-400`} />

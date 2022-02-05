@@ -144,12 +144,8 @@ export async function executeQuery<T = any>(
 // 	};
 // }
 
-const Query = {
-	Info: ''
-}
-
 /** Queries basic site info. */
-export const QUERY_INFO = `info ${Query.Info}`;
+export const QUERY_INFO = `info { name, description, domain }`;
 
 /** Queries site quotas. */
 // export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;

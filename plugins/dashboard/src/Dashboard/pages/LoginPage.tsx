@@ -7,7 +7,7 @@ import Svg from '../Svg';
 import Card from '../Card';
 import { PrimaryButton } from '../Button';
 import { Title, Page } from '../structure';
-import { Form, FormSchema, Input } from '../Form';
+import { FloatingDescription, Form, FormSchema, Input } from '../Form';
 
 import { tw } from '../twind';
 
@@ -22,6 +22,7 @@ const FORM_SCHEMA: FormSchema = {
 	fields: {
 		username: {
 			type: 'text',
+			description: 'Please enter your username.',
 			completion: 'username',
 			validation: {
 				minLength: 3,
@@ -30,6 +31,7 @@ const FORM_SCHEMA: FormSchema = {
 		},
 		password: {
 			type: 'password',
+			description: 'Please enter your password.',
 			completion: 'current-password',
 			validation: {
 				minLength: 8,
@@ -128,6 +130,8 @@ export default function LoginPage({ onLogin }: Props) {
 								onSubmit={handleSubmit}>
 								<Input for='username' />
 								<Input for='password' />
+
+								<FloatingDescription class={tw`w-80`} position='right' />
 
 								{/* <p class='text-center text-blue-600 -mt-1 mb-3'>{warning}</p> */}
 								<PrimaryButton

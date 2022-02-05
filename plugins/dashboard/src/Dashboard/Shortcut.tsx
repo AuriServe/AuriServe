@@ -4,11 +4,11 @@ import { Location } from 'react-router-dom';
 import { togglePalette } from './ShortcutPalette';
 
 import icon_home from '@res/icon/home.svg';
-import icon_file from '@res/icon/file.svg';
-import icon_media from '@res/icon/image.svg';
+// import icon_file from '@res/icon/file.svg';
+// import icon_media from '@res/icon/image.svg';
 import icon_themes from '@res/icon/theme.svg';
 import icon_logout from '@res/icon/logout.svg';
-import icon_plugins from '@res/icon/plugin.svg';
+// import icon_plugins from '@res/icon/plugin.svg';
 import icon_settings from '@res/icon/options.svg';
 import icon_shortcut from '@res/icon/shortcut.svg';
 
@@ -36,40 +36,40 @@ export const registeredShortcuts: Shortcut[] = [
 		icon: icon_home,
 		action: ({ navigate }) => navigate('/'),
 	},
-	{
-		identifier: 'dashboard:page_routes',
-		title: 'View Routes',
-		aliases: ['go routes', 'pages', 'site', 'website'],
-		description: 'View and manage routes.',
-		icon: icon_file,
-		action: ({ navigate }) => navigate('/routes/'),
-	},
-	{
-		identifier: 'dashboard:page_media',
-		title: 'View Media',
-		aliases: ['go media', 'media', 'images', 'pictures', 'documents', 'files'],
-		description: 'View and manage media.',
-		icon: icon_media,
-		action: ({ navigate }) => navigate('/media/'),
-	},
-	{
-		identifier: 'dashboard:upload_media',
-		title: 'Upload Media',
-		aliases: [
-			'add media',
-			'add images',
-			'add pictures',
-			'add documents',
-			'add files',
-			'upload images',
-			'upload pictures',
-			'upload documents',
-			'upload files',
-		],
-		description: 'Upload a new media item.',
-		icon: icon_media,
-		action: ({ navigate }) => navigate('/media/'),
-	},
+	// {
+	// 	identifier: 'dashboard:page_routes',
+	// 	title: 'View Routes',
+	// 	aliases: ['go routes', 'pages', 'site', 'website'],
+	// 	description: 'View and manage routes.',
+	// 	icon: icon_file,
+	// 	action: ({ navigate }) => navigate('/routes/'),
+	// },
+	// {
+	// 	identifier: 'dashboard:page_media',
+	// 	title: 'View Media',
+	// 	aliases: ['go media', 'media', 'images', 'pictures', 'documents', 'files'],
+	// 	description: 'View and manage media.',
+	// 	icon: icon_media,
+	// 	action: ({ navigate }) => navigate('/media/'),
+	// },
+	// {
+	// 	identifier: 'dashboard:upload_media',
+	// 	title: 'Upload Media',
+	// 	aliases: [
+	// 		'add media',
+	// 		'add images',
+	// 		'add pictures',
+	// 		'add documents',
+	// 		'add files',
+	// 		'upload images',
+	// 		'upload pictures',
+	// 		'upload documents',
+	// 		'upload files',
+	// 	],
+	// 	description: 'Upload a new media item.',
+	// 	icon: icon_media,
+	// 	action: ({ navigate }) => navigate('/media/'),
+	// },
 	{
 		identifier: 'dashboard:page_settings',
 		title: 'Settings',
@@ -85,22 +85,22 @@ export const registeredShortcuts: Shortcut[] = [
 		icon: icon_settings,
 		action: ({ navigate }) => navigate('/settings/'),
 	},
-	{
-		identifier: 'dashboard:manage_themes',
-		title: 'Manage Themes',
-		aliases: ['themes settings'],
-		description: 'Find, enable, and disable themes.',
-		icon: icon_themes,
-		action: ({ navigate }) => navigate('/settings/themes/'),
-	},
-	{
-		identifier: 'dashboard:manage_plugins',
-		title: 'Manage Plugins',
-		aliases: ['plugins settings'],
-		description: 'Find, enable, and disable plugins.',
-		icon: icon_plugins,
-		action: ({ navigate }) => navigate('/settings/plugins/'),
-	},
+	// {
+	// 	identifier: 'dashboard:manage_themes',
+	// 	title: 'Manage Themes',
+	// 	aliases: ['themes settings'],
+	// 	description: 'Find, enable, and disable themes.',
+	// 	icon: icon_themes,
+	// 	action: ({ navigate }) => navigate('/settings/themes/'),
+	// },
+	// {
+	// 	identifier: 'dashboard:manage_plugins',
+	// 	title: 'Manage Plugins',
+	// 	aliases: ['plugins settings'],
+	// 	description: 'Find, enable, and disable plugins.',
+	// 	icon: icon_plugins,
+	// 	action: ({ navigate }) => navigate('/settings/plugins/'),
+	// },
 	{
 		identifier: 'dashboard:manage_overview',
 		title: 'Manage Overview',
@@ -116,14 +116,14 @@ export const registeredShortcuts: Shortcut[] = [
 		icon: icon_home,
 		action: ({ navigate }) => navigate('/settings/overview/'),
 	},
-	{
-		identifier: 'dashboard:manage_media',
-		title: 'Manage Media',
-		aliases: ['media settings', 'image settings', 'file settings'],
-		description: 'Manage media and upload settings.',
-		icon: icon_media,
-		action: ({ navigate }) => navigate('/settings/media/'),
-	},
+	// {
+	// 	identifier: 'dashboard:manage_media',
+	// 	title: 'Manage Media',
+	// 	aliases: ['media settings', 'image settings', 'file settings'],
+	// 	description: 'Manage media and upload settings.',
+	// 	icon: icon_media,
+	// 	action: ({ navigate }) => navigate('/settings/media/'),
+	// },
 	{
 		identifier: 'dashboard:shortcut_palette',
 		title: 'Shortcut Palette',

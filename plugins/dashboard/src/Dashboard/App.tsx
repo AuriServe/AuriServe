@@ -67,9 +67,9 @@ export default function App() {
 		<AppContext.Provider value={{ data, mergeData }}>
 			{state === 'LOGIN' ? (
 				<div
-					class={tw`AS_ROOT grid min-h-screen theme-cyan
-						bg-gray-(100,dark:900) text-gray-(800,dark:100)
-						icon-p-gray-(500,dark:100) icon-s-gray-(400,dark:300)`}>
+					class={tw`AS_ROOT grid min-h-screen theme-indigo
+						bg-gray-(100 dark:900) text-gray-(800 dark:100)
+						icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
 					<LoginPage onLogin={() => setState('AUTH')} />
 				</div>
 			) : (
@@ -94,17 +94,17 @@ export default function App() {
 							path='*'
 							element={
 								<div
-									class={tw`AS_ROOT grid min-h-screen font-sans pl-14 theme-cyan
-										bg-gray-(100,dark:900) text-gray-(800,dark:100)
-										icon-p-gray-(500,dark:100) icon-s-gray-(400,dark:300)`}>
+									class={tw`AS_ROOT grid min-h-screen font-sans pl-14 theme-indigo
+										bg-gray-(100 dark:900) text-gray-(800 dark:100)
+										icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
 									<div class={tw`grid animate-fadein`}>
 										<Sidebar
 											shortcuts={[
 												getShortcut('dashboard:page_home')!,
-												getShortcut('dashboard:page_routes')!,
-												getShortcut('dashboard:page_media')!,
-												getShortcut('dashboard:page_settings')!,
+												// getShortcut('dashboard:page_routes')!,
+												// getShortcut('dashboard:page_media')!,
 												'spacer',
+												getShortcut('dashboard:page_settings')!,
 												getShortcut('dashboard:shortcut_palette')!,
 												getShortcut('dashboard:log_out')!,
 											]}

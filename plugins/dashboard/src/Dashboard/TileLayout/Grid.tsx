@@ -1,6 +1,6 @@
 import { h, ComponentChildren } from 'preact';
 
-import { merge } from 'common/util';
+import { tw, merge } from '../twind';
 
 interface Props {
 	gap?: number;
@@ -14,7 +14,7 @@ interface Props {
 export default function Grid(props: Props) {
 	return (
 		<div
-			class={merge('grid', props.class)}
+			class={merge(tw`grid`, props.class)}
 			style={{
 				gridAutoRows: '6rem',
 				gridTemplateColumns: `repeat(${props.columns ?? 3}, minmax(0, 1fr))`,

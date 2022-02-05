@@ -180,15 +180,36 @@ const config = defineConfig({
 		['interact-none', { userSelect: 'none', pointerEvents: 'none' }],
 	],
 	variants: [
-		['focus-old', '&:focus'],
+		['focus-input', '&:focus'],
 		['focus', '&:focus-visible'],
-		['hocus', '&:where(:hover,:focus-visible)'],
-		['active', '&:active'],
+
+		['hocus', '&:hover,&:focus-visible'],
 		[
-			'((group|peer)(-[^-]+)?)-hocus',
-			({ 1: $1 }: { 1: string }, { h }: any) =>
-				`.${escape(h($1))}:where(:hover,:focus-visible) &`,
+			'((group|peer)(~.+)?)-hocus',
+			({ 1: $1 }: { 1: string }, { e, h }: { e: any, h: any }) =>
+				['hover', 'focus-visible']
+					.map((state) => `:merge(.${e(h($1))}):${state}${$1[0] === 'p' ? '~' : ' '}&`)
+					.join(','),
 		],
+		[
+			'((group|peer)(~.+)?)-focus-input',
+			({ 1: $1 }: { 1: string }, { e, h }: { e: any, h: any }) =>
+					`:merge(.${e(h($1))}):focus${$1[0] === 'p' ? '~' : ' '}&`
+		],
+		[
+			'((group|peer)(~.+)?)-focus',
+			({ 1: $1 }: { 1: string }, { e, h }: { e: any, h: any }) =>
+					`:merge(.${e(h($1))}):focus-visible${$1[0] === 'p' ? '~' : ' '}&`
+		],
+
+
+		// ['hocus', '&:where(:hover,:focus-visible)'],
+		// ['active', '&:active'],
+		// [
+		// 	'((group|peer)(-[^-]+)?)-hocus',
+		// 	({ 1: $1 }: { 1: string }, { h }: any) =>
+		// 		`.${escape(h($1))}:where(:hover,:focus-visible) &`,
+		// ],
 		['peer-focus', (_: any, { h }: any) => `.${escape(h('peer'))}:focus-visible ~ &`],
 		[
 			'peer-placeholder-shown',
@@ -225,6 +246,20 @@ const config = defineConfig({
 			},
 			cursor: {
 				'resize-ns': 'ns-resize',
+			},
+			animation: {
+				'drop-fade-in': 'drop-fade-in 150ms ease-out 1 forwards',
+				'scale-in': 'scale-in 250ms ease-out 1 forwards',
+			},
+			keyframes: {
+				'scale-in': {
+					from: { opacity: 0, transform: 'scale(0.9)' },
+					to: { transform: 'scale(1)' },
+				},
+				'drop-fade-in': {
+					from: { opacity: 0, transform: 'translateY(-0.25rem)' },
+					to: { opacity: 1 },
+				},
 			},
 		},
 		colors: {
@@ -267,6 +302,10 @@ tw(css`
 		${Object.entries(grayColors.light)
 			.map(([label, color]) => `--theme-gray-${label}: ${color.join(', ')};`)
 			.join('\n')}
+
+		${Object.entries(themeColors.red)
+			.map(([label, color]) => `--theme-red-${label}: ${color.join(', ')};`)
+			.join('\n')}
 	}
 
 	.dark {
@@ -285,8 +324,7 @@ tw(css`
 		)
 		.join('\n')}
 
-	svg,
-	svg > * {
+	svg, svg > * {
 		transition: all 75ms ease-in-out;
 	}
 
@@ -307,21 +345,21 @@ tw(css`
 			@apply rounded-full bg-gray-600 hover:bg-gray-500 border-solid border-4 border-gray-900;
 		}
 
-		.scroll-input::-webkit-scrollbar {
-			@apply bg-gray-input hover:bg-gray-700;
+		html.AS_APP body .scroll-input::-webkit-scrollbar {
+			@apply bg-gray-input;
 		}
 
-		.scroll-input::-webkit-scrollbar-thumb {
+		html.AS_APP body .scroll-input:focus::-webkit-scrollbar {
+			@apply bg-gray-700;
+		}
+
+		html.AS_APP body .scroll-input::-webkit-scrollbar-thumb {
 			@apply bg-gray-500 hover:bg-gray-400 border-solid border-4 border-gray-input;
 		}
 
-		.scroll-input:focus::-webkit-scrollbar-thumb {
+		html.AS_APP body .scroll-input:focus::-webkit-scrollbar-thumb {
 			@apply border-gray-700;
 		}
-	}
-
-	*[class*='dash-after'] {
-		content: ' ';
 	}
 
 	.AS_TRANSITION_THEME,
@@ -338,6 +376,42 @@ tw(css`
 	*::selection {
 		@apply bg-gray-500/50;
 	}
+
+	/* Can watch for Autofill changes by using the animationstart event. */
+
+	input:autofill {
+		animation: onAutoFillStart 0s 1;
+	}
+
+	input:not(:autofill) {
+		animation: onAutoFillCancel 0s 1;
+	}
+
+	@keyframes onAutoFillStart {
+		from {
+			--v: 1;
+		}
+		to {
+			--v: 0;
+		}
+	}
+
+	@keyframes onAutoFillCancel {
+		from {
+			--v: 1;
+		}
+		to {
+			--v: 0;
+		}
+	}
 `);
 
 export { merge } from 'common';
+export { css } from 'twind';
+
+// export const grayLight = Object.fromEntries(
+// 	Object.entries(grayColors.light).map(([k, c]) => [k, `rgb(${c.join(', ')})`])
+// );
+// export const grayDark = Object.fromEntries(
+// 	Object.entries(grayColors.dark).map(([k, c]) => [k, `rgb(${c.join(', ')})`])
+// );
