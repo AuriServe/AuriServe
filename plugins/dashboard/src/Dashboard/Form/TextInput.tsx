@@ -7,6 +7,7 @@ import InputContainer from './InputContainer';
 import { refs } from '../Util';
 import { ErrorType } from './Type';
 import { tw, merge } from '../twind';
+import useAutoFill from './useAutoFill';
 
 interface Props {
 	id?: string;
@@ -38,6 +39,9 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 
 	const [invalid, setInvalid] = useState<boolean>(false);
 	const [shouldShowInvalid, setShouldShowInvalid] = useState<boolean>(false);
+
+	const showInvalid = invalid && shouldShowInvalid;
+	const [autofillRef, autofillClasses] = useAutoFill(showInvalid);
 
 	const Tag = props.multiline ? 'textarea' : 'input';
 	const id = useMemo(
@@ -72,8 +76,8 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 		if (!ref.current) return;
 		handleValidate();
 		if (props.multiline) {
-			ref.current.style.height = '';
-			ref.current.style.height = `${Math.min(
+			ref.current.style.minHeight = '';
+			ref.current.style.minHeight = `${Math.min(
 				ref.current.scrollHeight,
 				props.maxHeight ?? 200
 			)}px`;
@@ -88,8 +92,8 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 		props.onChange?.(newValue);
 		handleValidate();
 		if (props.multiline) {
-			ref.current.style.height = '';
-			ref.current.style.height = `${Math.min(
+			ref.current.style.minHeight = '';
+			ref.current.style.minHeight = `${Math.min(
 				ref.current.scrollHeight,
 				props.maxHeight ?? 200
 			)}px`;
@@ -107,33 +111,24 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 		setShouldShowInvalid(invalid);
 	};
 
-	const showInvalid = invalid && shouldShowInvalid;
-
 	return (
 		<InputContainer
 			label={props.label}
 			labelId={id}
 			invalid={showInvalid}
-			class={merge(tw`isolate`, props.class)}
+			class={props.class}
 			style={props.style}>
 			<Tag
-				ref={refs(ref, fRef)}
+				ref={refs(ref, fRef, autofillRef)}
 				id={id}
 				type='text'
 				placeholder=' '
 				autocomplete={props.completion}
 				rows={1}
-				class={tw`
-					peer w-full px-1.5 pt-5 pb-0 rounded scroll-input !outline-none resize-none focus:shadow-md
-					border-(4 gray-(input dark:focus:700)) bg-gray-(100 dark:input dark:focus:700)
-					autofill:[box-shadow:0_0_0_1000px_#1D283F_inset]
-					dark:focus:autofill:[box-shadow:0_0_0_1000px_#202D44_inset]
-					autofill:first-line:(!font-sans !text-accent-100 !text-base)
-					autofill:(![-webkit-text-fill-color:theme(colors.accent.100)] caret-accent-50)
-					[transition:color_75ms,border-color_75ms,background-color_75ms,box-shadow_75ms]
-					${showInvalid && 'text-(red-(800,dark:200),hover:red-(800,dark:500))'}
-					${showInvalid && 'text-(focus:gray-(900,dark:100)'}
-				`}
+				class={merge(
+					tw`peer w-full px-1.5 pt-5 pb-0 rounded scroll-input !outline-none resize-none`,
+					autofillClasses
+				)}
 				value={Tag === 'input' ? value.current : undefined}
 				onInput={handleChange}
 				onFocus={handleFocus}
@@ -144,7 +139,7 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 			{props.multiline && (
 				<div
 					class={tw`absolute top-0 w-[calc(100%-16px)] h-6 rounded-tl
-					transition bg-neutral-input dark:peer-focus:bg-neutral-700 interact-none`}
+					transition bg-gray-input dark:peer-focus:bg-gray-700 interact-none`}
 				/>
 			)}
 		</InputContainer>

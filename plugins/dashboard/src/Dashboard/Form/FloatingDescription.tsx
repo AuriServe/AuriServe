@@ -1,12 +1,12 @@
-import { merge } from 'common/util';
 import { ComponentChildren, h } from 'preact';
-import { TransitionGroup } from '../Transition';
 import { useContext, useRef, useState, useEffect } from 'preact/hooks';
-
-import { ErrorType, FormContext, FormField } from './Type';
 
 import { Portal } from '../structure';
 import Description from './Description';
+import { TransitionGroup } from '../Transition';
+
+import { tw, merge } from '../twind';
+import { ErrorType, FormContext, FormField } from './Type';
 
 interface Props {
 	style?: any;
@@ -23,7 +23,9 @@ export default function FloatingDescription(props: Props) {
 	const form = useContext(FormContext);
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const [state, setState] = useState<{ name: string; error: ErrorType | null } | null>(null);
+	const [state, setState] = useState<{ name: string; error: ErrorType | null } | null>(
+		null
+	);
 
 	useEffect(() => {
 		let setNullTimeout: any = 0;
@@ -65,9 +67,12 @@ export default function FloatingDescription(props: Props) {
 	const posRef = useRef<{ top: string; left: string }>({ top: '', left: '' });
 
 	if (ref) {
-		posRef.current.top = `${Math.floor(ref.getBoundingClientRect().top + window.scrollY)}px`;
+		posRef.current.top = `${Math.floor(
+			ref.getBoundingClientRect().top + window.scrollY
+		)}px`;
 		posRef.current.left = `${
-			Math.floor(ref.getBoundingClientRect().right + window.scrollX) + (props.padding ?? 4) * 4
+			Math.floor(ref.getBoundingClientRect().right + window.scrollX) +
+			(props.padding ?? 4) * 4
 		}px`;
 	}
 
@@ -75,29 +80,28 @@ export default function FloatingDescription(props: Props) {
 		<Portal to={document.querySelector('.AS_ROOT') ?? document.body}>
 			<div
 				ref={containerRef}
-				style={{ ...props.style, top: posRef.current.top, left: posRef.current.left, transformOrigin: 'left center' }}
+				style={{ ...props.style, top: posRef.current.top, left: posRef.current.left }}
 				class={merge(
-					'isolate absolute z-10 w-80 min-h-[2.5rem] bg-neutral-700',
-					'shadow-md rounded transition-all',
-					'after:absolute after:-left-1.5 after:top-3.5 after:w-3 after:h-3',
-					'after:bg-neutral-700 after:rotate-45',
-					!ref && 'opacity-0 scale-[98%]',
+					tw`
+					isolate absolute z-10 w-80 min-h-[2.5rem] bg-gray-700 shadow-md rounded transition-all
+					after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45) [transform-origin:left_center]
+					${!ref && 'opacity-0 scale-[98%]'}`,
 					props.class
 				)}>
-				<div class='overflow-hidden h-full w-full relative'>
+				<div class={tw`overflow-hidden h-full w-full relative`}>
 					<TransitionGroup
 						duration={175}
-						enter='transition delay-75 duration-100 z-10'
-						enterFrom='opacity-0 -translate-y-1'
-						exit='transition duration-100'
-						exitTo='opacity-0 translate-y-1'>
+						enter={tw`transition delay-75 duration-100 z-10`}
+						enterFrom={tw`opacity-0 -translate-y-1`}
+						exit={tw`transition duration-100`}
+						exitTo={tw`opacity-0 translate-y-1`}>
 						{schema && schema.description && (
 							<Description
 								key={(state?.name ?? '-') + state?.error}
 								ref={handleUpdateContainerHeight}
 								for={state!.name}
 								_manual={true}
-								class={merge('absolute top-0 left-0 w-full', props.innerClass)}>
+								class={merge(tw`absolute top-0 left-0 w-full`, props.innerClass)}>
 								{props.children}
 							</Description>
 						)}

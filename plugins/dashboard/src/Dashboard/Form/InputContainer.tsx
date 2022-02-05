@@ -1,7 +1,7 @@
 import { forwardRef, useMemo } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
 
-import { tw } from '../twind';
+import { tw, merge } from '../twind';
 
 interface Props {
 	/** The input's label. */
@@ -45,22 +45,22 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
 	else
 		classes += populated
 			? ' top-1.5 left-2.5 text-xs font-bold'
-			: ` top-(peer-focus:1.5 [0.9375rem]) left-(peer-focus:2.5 3)
-						text-(peer-focus:xs base) font-(peer-focus:bold medium)`;
+			: ` top-(peer-focus-input:1.5 [0.9375rem]) left-(peer-focus-input:2.5 3)
+						text-(peer-focus-input:xs base) font-(peer-focus-input:bold medium)`;
 
 	if (active === undefined) {
 		if (!invalid)
-			classes += `text-(gray-((500 dark:300) peer-hover:(500 dark:200)) peer-focus:accent-(600 dark:300))`;
+			classes += `text-(gray-((500 dark:300) peer-hover:(500 dark:200)) peer-focus-input:!accent-(600 dark:300))`;
 		else
-			classes += ` text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus:(800 dark:300))`;
+			classes += ` text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:!(800 dark:300))`;
 	} else if (!invalid)
 		classes += active
 			? ' text-accent-(600 dark:300)'
-			: ` text-(gray-(500 dark:300 peer-hover:(500 dark:200)) peer-focus:accent-(600 dark:300))`;
+			: ` text-(gray-(500 dark:300 peer-hover:(500 dark:200)) peer-focus-input:!accent-(600 dark:300))`;
 	else
 		classes += active
 			? ' text-red-(800 dark:300)'
-			: ` text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus:(800 dark:300))`;
+			: ` text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:(800 dark:300))`;
 
 	return classes;
 }
@@ -80,7 +80,10 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 	return (
 		<div
 			ref={ref}
-			class={tw`relative group grid w-full h-max ${props.class}`}
+			class={merge(
+				tw`group InputContainer~(isolate relative grid w-full h-max)`,
+				props.class
+			)}
 			style={props.style}>
 			{props.children}
 			<label for={props.labelId} class={tw`${labelStyles}`}>
