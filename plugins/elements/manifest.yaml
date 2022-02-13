@@ -7,5 +7,4 @@ author: Auri
 depends:
 - preact ^1
 
-entry:
-  server: build/server.js
+entry: build/server.js

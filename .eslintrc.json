@@ -34,6 +34,7 @@
 		"prefer-const": 1,
 		"constructor-super": 2,
 		"no-caller": 2,
+		"no-inner-declarations": 0,
 		"no-const-assign": 2,
 		"no-dupe-class-members": 2,
 		"no-dupe-keys": 2,

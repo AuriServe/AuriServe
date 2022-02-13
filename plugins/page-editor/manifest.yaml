@@ -9,4 +9,6 @@ depends:
 - pages ^0.0.1
 - dashboard ^0.0.1
 
-entry: dist/main.js
+entry:
+  server: build/server.js
+  dashboard: build/dashboard.js

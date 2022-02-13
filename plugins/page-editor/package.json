@@ -12,6 +12,7 @@
 	"sideEffects": false,
 	"devDependencies": {
 		"@babel/core": "^7.16.7",
+		"@babel/plugin-transform-react-jsx": "^7.16.7",
 		"@babel/preset-env": "^7.16.8",
 		"@babel/preset-typescript": "^7.16.7",
 		"@types/escape-html": "^1.0.1",
@@ -23,6 +24,7 @@
 		"eslint-loader": "^4.0.2",
 		"fork-ts-checker-webpack-plugin": "^6.5.0",
 		"plugin-routes": "file:../routes",
+		"preact": "^10.6.5",
 		"ts-loader": "^9.2.6",
 		"webpack-cli": "^4.9.1"
 	},
