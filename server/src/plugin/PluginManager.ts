@@ -6,6 +6,7 @@ import Log from '../Log';
 import Plugin from './Plugin';
 import RouterApi from './RouterApi';
 import PluginLoader from './PluginLoader';
+import { ParsedManifest } from './Manifest';
 import pluginDependencyOrder from './pluginDependencyOrder';
 
 export type PluginEvent = 'refresh';
@@ -23,6 +24,9 @@ export default class Plugins {
 
 	/** A map of plugins indexed by their identifiers. */
 	readonly plugins: Map<string, Plugin> = new Map();
+
+	/** A map of plugin manifests indexed by their identifiers. */
+	readonly manifests: Map<string, ParsedManifest> = new Map();
 
 	/** The plugin loader which discovers and watches the plugins. */
 	private loader: PluginLoader;
@@ -63,7 +67,7 @@ export default class Plugins {
 		// TODO: Stupid dumb fake query
 		this.database
 			.prepare(
-				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-base', 1), ('themes', 1), ('pages', 1), ('dashboard', 1), ('hydrated', 1)`
+				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-base', 1), ('themes', 1), ('pages', 1), ('dashboard', 1), ('hydrated', 1), ('page-editor', 1)`
 			)
 			.run();
 
@@ -114,7 +118,6 @@ export default class Plugins {
 			}
 		}
 
-
 		const enableOrder = pluginDependencyOrder(
 			identifiers
 				.filter((identifier) => {
@@ -137,7 +140,6 @@ export default class Plugins {
 				if (await this.plugins.get(plugin)?.enable()) this.loader.pluginEnabled(plugin);
 			}
 		}
-
 	}
 
 	/** Gets the specified plugin. */

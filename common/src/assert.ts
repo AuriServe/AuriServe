@@ -98,8 +98,9 @@ export function assertEq(a: any, b: any, message: string, error: any, ...params:
  */
 
 export function assertEq(a: any, b: any, message: string, ...other: any[]) {
+	// eslint-disable-next-line
 	// @ts-ignore
-	if (a !== b) return assert(false, message + ` (${a} != ${b})`, ...other);
+	if (a !== b) return assert(false, `${message} (${a} != ${b})`, ...other);
 }
 
 /**
@@ -108,7 +109,14 @@ export function assertEq(a: any, b: any, message: string, ...other: any[]) {
  * distinction being that undefined is considered a primitive, and does not satisfy 'object'.
  */
 
-type Primitive = 'string' | 'number' | 'boolean' | 'object' | 'null' | 'undefined';
+type Primitive =
+	| 'string'
+	| 'number'
+	| 'boolean'
+	| 'object'
+	| 'null'
+	| 'undefined'
+	| 'any';
 
 /**
  * Given a primitive type name or prototype, checks if the value provided is of the given type.
@@ -121,23 +129,25 @@ type Primitive = 'string' | 'number' | 'boolean' | 'object' | 'null' | 'undefine
  * @returns true if the value is the given type, false otherwise.
  */
 
- export function isType(val: any, type: Primitive | Function) {
+export function isType(val: any, type: Primitive | ((...args: any[]) => any)) {
+	if (type === 'any') return true;
 	if (typeof type === 'string') {
 		if (type === 'undefined') return val === undefined;
 		if (typeof val === type) return true;
-	}
-	else if (val instanceof (type as any)) return true;
+	} else if (val instanceof (type as any)) return true;
 	return false;
 }
 
 type PrimitiveArray = `${Primitive}[]`;
 
 export interface Schema {
-	[ key: string ]: (Primitive | PrimitiveArray | Schema) | (Primitive | PrimitiveArray | Schema)[];
+	[key: string]:
+		| (Primitive | PrimitiveArray | Schema)
+		| (Primitive | PrimitiveArray | Schema)[];
 }
 
-export function isRawObject(obj: any): obj is Object {
-	return obj && obj.constructor === Object || false;
+export function isRawObject(obj: any): obj is Record<string, string> {
+	return (obj && obj.constructor === Object) || false;
 }
 
 function isSchema(val: Primitive | PrimitiveArray | Schema): val is Schema {
@@ -148,16 +158,19 @@ function isPrimitiveArray(str: Primitive | PrimitiveArray): str is PrimitiveArra
 	return str.includes('[]');
 }
 
-export function matchesSchema(object: any, schema: Schema, path: string = ''): true | string {
+export function matchesSchema(object: any, schema: Schema, path = ''): true | string {
 	if (!isRawObject(object)) return 'Not an object.';
-	for (const [ key, validation ] of Object.entries(schema)) {
-		const validations = Array.isArray(validation) ? validation : [ validation ];
+	for (const [key, validation] of Object.entries(schema)) {
+		const validations = Array.isArray(validation) ? validation : [validation];
 
-		let extraKeys = Object.keys(object).filter(key => schema[key] === undefined).map(key => `'${path}${key}'`);
+		const extraKeys = Object.keys(object)
+			.filter((key) => schema[key] === undefined)
+			.map((key) => `'${path}${key}'`);
 		if (extraKeys.length > 0) {
-			const keysStr = extraKeys.length === 1
-				? extraKeys[0]
-				: extraKeys.length === 2
+			const keysStr =
+				extraKeys.length === 1
+					? extraKeys[0]
+					: extraKeys.length === 2
 					? `${extraKeys[0]} and ${extraKeys[1]}`
 					: `${extraKeys.slice(0, -1).join(', ')}, and ${extraKeys.slice(-1)}`;
 
@@ -165,15 +178,18 @@ export function matchesSchema(object: any, schema: Schema, path: string = ''): t
 		}
 
 		let anyValid = false;
-		for (let validation of validations) {
+		for (const validation of validations) {
 			if (isSchema(validation)) {
-				const matches = matchesSchema(object[key], validation as Schema, `${path}${key}.`);
+				const matches = matchesSchema(
+					object[key],
+					validation as Schema,
+					`${path}${key}.`
+				);
 				if (matches === true) {
 					anyValid = true;
 					break;
 				}
-			}
-			else if (isPrimitiveArray(validation)) {
+			} else if (isPrimitiveArray(validation)) {
 				const nonArrayPrimitive = validation.replace('[]', '') as Primitive;
 				if (Array.isArray(object[key])) {
 					let valid = true;
@@ -188,33 +204,37 @@ export function matchesSchema(object: any, schema: Schema, path: string = ''): t
 						break;
 					}
 				}
-			}
-			else {
-				if (isType(object[key], validation)) {
-					anyValid = true;
-					break;
-				}
+			} else if (isType(object[key], validation)) {
+				anyValid = true;
+				break;
 			}
 		}
 
 		if (!anyValid) {
-			const typesArr = validations.map(v => isRawObject(v) ? '[subschema]' : (v as any).toString());
-			const typesStr = typesArr.length === 1
-				? typesArr[0]
-				: typesArr.length === 2
+			const typesArr = validations.map((v) =>
+				isRawObject(v) ? '[subschema]' : (v as any).toString()
+			);
+			const typesStr =
+				typesArr.length === 1
+					? typesArr[0]
+					: typesArr.length === 2
 					? `${typesArr[0]} or ${typesArr[1]}`
 					: `${typesArr.slice(0, -1).join(', ')}, or ${typesArr.slice(-1)}`;
 
 			return `'${path}${key}' must be ${typesStr}.`;
 		}
-
 	}
 	return true;
 }
 
-export function assertSchema<T = any>(object: any, schema: Schema, message: string, ...other: any[]):
-	asserts object is T {
+export function assertSchema<T = any>(
+	object: any,
+	schema: Schema,
+	message: string,
+	...other: any[]
+): asserts object is T {
 	const matches = matchesSchema(object, schema);
+	// eslint-disable-next-line
 	// @ts-ignore
-	if (typeof matches === 'string') assert(false, message + `: ${matches}`, ...other);
+	if (typeof matches === 'string') assert(false, `${message}: ${matches}`, ...other);
 }

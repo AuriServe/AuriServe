@@ -6,8 +6,8 @@ import YAML from '../YAML';
 import Plugin from './Plugin';
 import Logger from '../Log';
 import Watcher from '../Watcher';
-import { Manifest } from './Manifest';
 import PluginManager from './PluginManager';
+import { Manifest, EntryTree } from './Manifest';
 
 /** Manages finding, toggling, and loading plugins.*/
 export default class PluginLoader {
@@ -73,17 +73,7 @@ export default class PluginLoader {
 					version: 'string',
 					depends: ['undefined', 'string[]'],
 
-					entry: [
-						'string',
-						{
-							server: ['undefined', 'string', { script: ['undefined', 'string'] }],
-							client: [
-								'undefined',
-								'string',
-								{ script: ['undefined', 'string'], style: ['undefined', 'string'] },
-							],
-						},
-					],
+					entry: 'any',
 					watch: ['undefined', 'string[]'],
 				},
 				'Invalid manifest.yaml'
@@ -94,28 +84,21 @@ export default class PluginLoader {
 				`Folder name must be '${manifest.identifier}'.`
 			);
 
-			const entry = {
-				server:
-					typeof manifest.entry === 'string'
-						? { script: manifest.entry }
-						: typeof manifest.entry.server === 'string'
-						? { script: manifest.entry.server }
-						: manifest.entry.server ?? {},
-				client:
-					typeof manifest.entry.client === 'string'
-						? { script: manifest.entry.client }
-						: manifest.entry.client ?? {},
-			};
+			const entry: Record<string, string> = {};
+			function parseEntryTree(obj: EntryTree, path: string) {
+				for (const key of Object.keys(obj)) {
+					const value = obj[key];
+					if (typeof value === 'string') {
+						entry[path + key] = value;
+					} else if (typeof value === 'object') {
+						parseEntryTree(value, `${path + key}_`);
+					}
+				}
+			}
+			if (typeof manifest.entry === 'string') entry.server = manifest.entry;
+			else parseEntryTree(manifest.entry, '');
 
-			const watch = [
-				...new Set([
-					...(manifest.watch ?? []),
-					...Object.values(entry).reduce<string[]>((paths, entry) => {
-						paths.push(...(Object.values(entry).filter(Boolean) as string[]));
-						return paths;
-					}, []),
-				]),
-			];
+			const watch = [...new Set([...(manifest.watch ?? []), ...Object.values(entry)])];
 
 			await Promise.all(
 				watch.map((sourcePath: string) =>

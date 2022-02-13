@@ -3,6 +3,7 @@ import type { Database } from 'better-sqlite3';
 import type Log from './log';
 import type YAML from './yaml';
 import type Router from './router';
+import type { PluginManifest } from './plugin';
 import type { WatcherConstructor } from './watcher';
 
 declare global {
@@ -72,6 +73,9 @@ export interface Core {
 
 	/** YAML parsing and stringifying. */
 	YAML: YAML;
+
+	/** Currently loaded plugin manifests. */
+	plugins: Map<string, PluginManifest>;
 
 	/** Watches files for changes. */
 	Watcher: WatcherConstructor;

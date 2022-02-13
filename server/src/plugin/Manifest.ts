@@ -1,5 +1,9 @@
 import { Version } from 'common';
 
+export interface EntryTree {
+	[entry: string]: string | EntryTree;
+}
+
 export interface Manifest {
 	name?: string;
 	identifier: string;
@@ -9,10 +13,7 @@ export interface Manifest {
 	version: string;
 	depends?: string[];
 
-	entry: {
-		server?: string | { script?: string };
-		client?: string | { script?: string; style?: string };
-	};
+	entry: string | EntryTree;
 	watch?: string[];
 }
 
@@ -23,10 +24,6 @@ export type ParsedManifest = Omit<Manifest, 'entry' | 'watch' | 'depends' | 'ver
 
 	depends: Dependency[];
 
-	entry: {
-		server: { script?: string };
-		client: { script?: string; style?: string };
-	};
-
+	entry: Record<string, string>;
 	watch: string[];
 };

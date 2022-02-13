@@ -27,13 +27,14 @@ export default class Plugin {
 		}
 
 		this.enabled = true;
+		this.manager.manifests.set(this.manifest.identifier, this.manifest);
 
-		if (this.manifest.entry.server.script) {
+		if (this.manifest.entry.server) {
 			const entryPath = await fs.realpath(
 				path.resolve(
 					this.manager.pluginsPath,
 					this.manifest.identifier,
-					this.manifest.entry.server.script
+					this.manifest.entry.server
 				)
 			);
 
@@ -51,6 +52,7 @@ export default class Plugin {
 		this.emit('cleanup', { shutdown });
 		this.events.clear();
 		this.enabled = false;
+		this.manager.manifests.delete(this.manifest.identifier);
 		return true;
 	}
 
@@ -85,6 +87,7 @@ export default class Plugin {
 			log: Log,
 			database: this.manager.database,
 			YAML: { parse, stringify },
+			plugins: this.manager.manifests,
 			Watcher,
 			on: this.on.bind(this),
 			once: this.once.bind(this),
