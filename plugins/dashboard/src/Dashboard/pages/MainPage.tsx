@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { Fragment, h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -6,11 +6,12 @@ import Svg from '../Svg';
 import Card from '../Card';
 import Menu from '../Menu/Menu';
 import TileLayout from '../TileLayout';
-import { Page, Title } from '../structure';
 
 import { tw } from '../Twind';
 import { getShortcuts } from '../Shortcut';
 import { QUERY_INFO, useData } from '../Graph';
+
+import icon_shortcut from '@res/icon/shortcut.svg';
 
 import icon_copy from '@res/icon/copy.svg';
 import icon_cut from '@res/icon/cut.svg';
@@ -65,9 +66,7 @@ export default function MainPage() {
 	}, []);
 
 	return (
-		<Page>
-			<Title>Home</Title>
-
+		<Fragment>
 			<div class={tw`text-center flex-(& col-reverse) my-12`}>
 				<h2 class={tw`text-(gray-(900 dark:100) 2xl) mt-1`}>{info?.name}</h2>
 				<h3
@@ -78,40 +77,39 @@ export default function MainPage() {
 
 			<TileLayout>
 				<TileLayout.Grid class={tw`mx-auto my-6 max-w-5xl`} gap={4} columns={3}>
-					<TileLayout.Tile width={3} height={1}>
+					<TileLayout.Tile width={3} height={2}>
 						<div class={tw`flex-(& wrap) justify-center gap-4`}>
-							{getShortcuts()
-								.slice(3, 6)
+							{[...getShortcuts().values()]
+								.reverse()
+								.slice(0, 6)
 								.map((s, i) => (
 									<Card
 										as='button'
 										key={i}
 										onClick={() => s.action({ location, navigate })}
 										class={tw`group ShortcutButton~(flex gap-5 p-0 text-left transition !outline-none
-											rounded-md bg-gray-(hocus:(700 dark:750) active:(700 dark:750)) [flex-basis:calc(33%-8px)]
-											ring-((accent-500/25 offset-gray-900) focus:(& offset-2) active:(& offset-2)))`}>
-										{s.icon && (
-											<Svg
-												src={s.icon}
-												size={8}
-												class={tw`
-													m-(1.5 dark:0) px-(4 dark:5) py-([1.625rem] dark:8) mr-0
-													rounded-(& dark:(none l-md)) transition
-													bg-gray-((100 dark:750) group-hocus:(200 dark:700) group-active:(100 dark:700))
-													icon-p-(group-hocus:white group-active:white)
-													icon-s-(group-hocus:accent-300 group-active:accent-300)`}
-											/>
-										)}
+										rounded-md bg-gray-(hocus:(700 dark:750) active:(700 dark:750)) [flex-basis:calc(33%-8px)]
+										ring-((accent-500/25 offset-gray-900) focus:(& offset-2) active:(& offset-2)))`}>
+										<Svg
+											src={s.icon ?? icon_shortcut}
+											size={8}
+											class={tw`
+											m-(1.5 dark:0) px-(4 dark:5) py-([1.625rem] dark:8) mr-0
+											rounded-(& dark:(none l-md)) transition
+											bg-gray-((100 dark:750) group-hocus:(200 dark:700) group-active:(100 dark:700))
+											icon-p-(group-hocus:white group-active:white)
+											icon-s-(group-hocus:accent-300 group-active:accent-300)`}
+										/>
 										<div class={tw`flex flex-col self-center`}>
 											<p
 												class={tw`truncate leading-4 font-medium
-													text-((gray-800 dark:gray-100) group-hocus:(dark:50) group-active:(dark:50))`}>
+												text-((gray-800 dark:gray-100) group-hocus:(dark:50) group-active:(dark:50))`}>
 												{s.title}
 											</p>
 											{s.description && (
 												<p
 													class={tw`truncate leading-4 text-sm pt-2 transition
-														text-gray-(600 dark:200) dark:group-hocus:text-accent-200 dark:group-active:text-accent-200`}>
+													text-gray-(600 dark:200) dark:group-hocus:text-accent-200 dark:group-active:text-accent-200`}>
 													{s.description}
 												</p>
 											)}
@@ -176,6 +174,6 @@ export default function MainPage() {
 					<Menu.Shortcut icon={icon_logout} label='Log Out' />
 				</Menu.Entry>
 			</Menu>
-		</Page>
+		</Fragment>
 	);
 }

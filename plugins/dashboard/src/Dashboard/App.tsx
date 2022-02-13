@@ -1,25 +1,16 @@
 import Cookie from 'js-cookie';
-// import * as Int from 'common/graph/type';
 import { h, createContext } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Sidebar from './Sidebar';
+import { getPages } from './Page';
 import { getShortcut } from './Shortcut';
+import { Page, Title } from './Structure';
 import CommandPalette from './ShortcutPalette';
+import { LoginPage, UnknownPage } from './pages';
 
 import { tw } from './Twind';
-
-import {
-	LoginPage,
-	MainPage,
-	// PagesPage,
-	// MediaPage,
-	// UserPage,
-	SettingsPage,
-	// EditorControlPage,
-	// EditorRendererPage,
-} from './pages';
 
 type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
@@ -65,66 +56,47 @@ export default function App() {
 
 	return (
 		<AppContext.Provider value={{ data, mergeData }}>
-			{state === 'LOGIN' ? (
-				<div
-					class={tw`AS_ROOT grid min-h-screen theme-indigo
-						bg-gray-(100 dark:900) text-gray-(800 dark:100)
-						icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
+			<div
+				class={tw`
+				AS_ROOT ${state !== 'LOGIN' && 'pl-14'} grid min-h-screen font-sans theme-indigo
+				bg-gray-(100 dark:900) text-gray-(800 dark:100)
+				icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
+				{state === 'LOGIN' ? (
 					<LoginPage onLogin={() => setState('AUTH')} />
-				</div>
-			) : (
-				<Router basename='/dashboard'>
-					{/* <Route
-						path='/:url*'
-						strict
-						render={(props) => <Redirect to={`${props.location.pathname}/${props.location.search}`} />}
-					/> */}
-					<CommandPalette />
-					<Routes>
-						{/* <Route path='/renderer' element={<EditorRendererPage />} /> */}
-						<Route
-							path='/pages/:page'
-							element={
-								<div class={tw`AS_ROOT grid min-h-screen bg-gray-(50,dark:900)`}>
-									{/* <EditorControlPage /> */}
-								</div>
-							}
+				) : (
+					<Router basename='/dashboard'>
+						<CommandPalette />
+						<Sidebar
+							shortcuts={[
+								getShortcut('dashboard:page_home')!,
+								// getShortcut('dashboard:page_routes')!,
+								// getShortcut('dashboard:page_media')!,
+								'spacer',
+								getShortcut('dashboard:page_settings')!,
+								getShortcut('dashboard:shortcut_palette')!,
+								getShortcut('dashboard:log_out')!,
+							]}
 						/>
-						<Route
-							path='*'
-							element={
-								<div
-									class={tw`AS_ROOT grid min-h-screen font-sans pl-14 theme-indigo
-										bg-gray-(100 dark:900) text-gray-(800 dark:100)
-										icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
-									<div class={tw`grid animate-fadein`}>
-										<Sidebar
-											shortcuts={[
-												getShortcut('dashboard:page_home')!,
-												// getShortcut('dashboard:page_routes')!,
-												// getShortcut('dashboard:page_media')!,
-												'spacer',
-												getShortcut('dashboard:page_settings')!,
-												getShortcut('dashboard:shortcut_palette')!,
-												getShortcut('dashboard:log_out')!,
-											]}
-										/>
-										<Routes>
-											<Route path='/' element={<MainPage />} />
-											{/* <Route path='/routes/*' element={<PagesPage />} /> */}
-											{/* <Route path='/media/' element={<MediaPage />} /> */}
-											{/* <Route path='/media/:id' element={<MediaPage />} /> */}
-											<Route path='/settings/*' element={<SettingsPage />} />
-											{/* <Route path='/users/:id' element={<UserPage />} /> */}
-											<Route element={<Navigate to='/' />} />
-										</Routes>
-									</div>
-								</div>
-							}
-						/>
-					</Routes>
-				</Router>
-			)}
+						<Routes>
+							{[...getPages().entries()].map(
+								([key, { path, title, component: Component }]) => (
+									<Route
+										key={key}
+										path={path === '/' ? path : `${path}/*`}
+										element={
+											<Page>
+												<Title>{title}</Title>
+												<Component />
+											</Page>
+										}
+									/>
+								)
+							)}
+							<Route path='*' element={<UnknownPage />} />
+						</Routes>
+					</Router>
+				)}
+			</div>
 		</AppContext.Provider>
 	);
 }

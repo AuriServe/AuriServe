@@ -6,7 +6,7 @@ import { useState, useRef } from 'preact/hooks';
 import Svg from '../Svg';
 import Card from '../Card';
 import { PrimaryButton } from '../Button';
-import { Title, Page } from '../structure';
+import { Title, Page } from '../Structure';
 import { FloatingDescription, Form, FormSchema, Input } from '../Form';
 
 import { tw } from '../Twind';

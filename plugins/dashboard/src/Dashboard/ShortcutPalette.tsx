@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 
 import Svg from './Svg';
-import { Modal } from './structure';
+import { Modal } from './Structure';
 import { Transition, TransitionGroup } from './Transition';
 
 import { tw } from './Twind';
@@ -11,6 +11,7 @@ import { Shortcut, searchShortcuts } from './Shortcut';
 
 import icon_launch from '@res/icon/launch.svg';
 import icon_target from '@res/icon/target.svg';
+import icon_shortcut from '@res/icon/shortcut.svg';
 
 export let togglePalette: () => void;
 
@@ -201,9 +202,10 @@ export default function ShortcutPalette() {
 									class={tw`flex w-full text-left gap-4 p-2 rounded-md
 										!outline-none hover:!bg-gray-600/50 active:!bg-gray-600
 										${active === i && 'bg-gray-600/50 group-hover:bg-gray-600/30'}`}>
-									{s.icon && (
-										<Svg class={tw`w-6 h-6 rounded bg-gray-600 p-2`} src={s.icon} />
-									)}
+									<Svg
+										class={tw`w-6 h-6 rounded bg-gray-600 p-2`}
+										src={s.icon ?? icon_shortcut}
+									/>
 									<div class={tw`flex flex-col self-center`}>
 										<p class={tw`truncate leading-none font-medium`}>{s.title}</p>
 										{s.description && (

@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import { NavLink as Link, useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
-import { Title, Page } from '../structure';
+import { Title, Page } from '../Structure';
 import {
 	MainSettings,
 	// ThemesSettings,

@@ -27,151 +27,22 @@ export interface Shortcut {
 	action: (ctx: ShortcutContext) => void;
 }
 
-export const registeredShortcuts: Shortcut[] = [
-	{
-		identifier: 'dashboard:page_home',
-		title: 'Go Home',
-		aliases: ['view home', 'main'],
-		description: 'Go to the AuriServe home.',
-		icon: icon_home,
-		action: ({ navigate }) => navigate('/'),
-	},
-	// {
-	// 	identifier: 'dashboard:page_routes',
-	// 	title: 'View Routes',
-	// 	aliases: ['go routes', 'pages', 'site', 'website'],
-	// 	description: 'View and manage routes.',
-	// 	icon: icon_file,
-	// 	action: ({ navigate }) => navigate('/routes/'),
-	// },
-	// {
-	// 	identifier: 'dashboard:page_media',
-	// 	title: 'View Media',
-	// 	aliases: ['go media', 'media', 'images', 'pictures', 'documents', 'files'],
-	// 	description: 'View and manage media.',
-	// 	icon: icon_media,
-	// 	action: ({ navigate }) => navigate('/media/'),
-	// },
-	// {
-	// 	identifier: 'dashboard:upload_media',
-	// 	title: 'Upload Media',
-	// 	aliases: [
-	// 		'add media',
-	// 		'add images',
-	// 		'add pictures',
-	// 		'add documents',
-	// 		'add files',
-	// 		'upload images',
-	// 		'upload pictures',
-	// 		'upload documents',
-	// 		'upload files',
-	// 	],
-	// 	description: 'Upload a new media item.',
-	// 	icon: icon_media,
-	// 	action: ({ navigate }) => navigate('/media/'),
-	// },
-	{
-		identifier: 'dashboard:page_settings',
-		title: 'Settings',
-		aliases: [
-			'go settings',
-			'view settings',
-			'view options',
-			'view configuation',
-			'options',
-			'configuration',
-		],
-		description: 'Manage AuriServe settings.',
-		icon: icon_settings,
-		action: ({ navigate }) => navigate('/settings/'),
-	},
-	// {
-	// 	identifier: 'dashboard:manage_themes',
-	// 	title: 'Manage Themes',
-	// 	aliases: ['themes settings'],
-	// 	description: 'Find, enable, and disable themes.',
-	// 	icon: icon_themes,
-	// 	action: ({ navigate }) => navigate('/settings/themes/'),
-	// },
-	// {
-	// 	identifier: 'dashboard:manage_plugins',
-	// 	title: 'Manage Plugins',
-	// 	aliases: ['plugins settings'],
-	// 	description: 'Find, enable, and disable plugins.',
-	// 	icon: icon_plugins,
-	// 	action: ({ navigate }) => navigate('/settings/plugins/'),
-	// },
-	{
-		identifier: 'dashboard:manage_overview',
-		title: 'Manage Overview',
-		aliases: [
-			'overview settings',
-			'site name',
-			'name',
-			'description',
-			'favicon',
-			'address',
-		],
-		description: 'Edit basic site appearance settings.',
-		icon: icon_home,
-		action: ({ navigate }) => navigate('/settings/overview/'),
-	},
-	// {
-	// 	identifier: 'dashboard:manage_media',
-	// 	title: 'Manage Media',
-	// 	aliases: ['media settings', 'image settings', 'file settings'],
-	// 	description: 'Manage media and upload settings.',
-	// 	icon: icon_media,
-	// 	action: ({ navigate }) => navigate('/settings/media/'),
-	// },
-	{
-		identifier: 'dashboard:shortcut_palette',
-		title: 'Shortcut Palette',
-		aliases: ['command palette'],
-		description: 'Execute commands.',
-		icon: icon_shortcut,
-		action: () => {
-			togglePalette();
-		},
-	},
-	{
-		identifier: 'dashboard:log_out',
-		title: 'Log out',
-		aliases: ['exit', 'close'],
-		description: 'Log out of AuriServe.',
-		icon: icon_logout,
-		action: () => {
-			Cookie.remove('tkn');
-			window.location.href = '/dashboard/';
-		},
-	},
-	{
-		identifier: 'dashboard:toggle_dark_mode',
-		title: 'Toggle Dark Mode',
-		aliases: ['dark mode', 'light mode', 'color theme', 'theme'],
-		description: 'Toggle between light and dark mode.',
-		icon: icon_themes,
-		action: () => {
-			document.documentElement.classList.add('AS_TRANSITION_THEME');
-			setTimeout(() => document.documentElement.classList.toggle('dark'), 50);
-			setTimeout(
-				() => document.documentElement.classList.remove('AS_TRANSITION_THEME'),
-				300
-			);
-		},
-	},
-];
+export const registeredShortcuts: Map<string, Shortcut> = new Map();
 
-export function getShortcuts(): Shortcut[] {
+export function getShortcuts(): Map<string, Shortcut> {
 	return registeredShortcuts;
 }
 
 export function getShortcut(identifier: string): Shortcut | undefined {
-	return registeredShortcuts.find((shortcut) => shortcut.identifier === identifier);
+	return registeredShortcuts.get(identifier);
 }
 
 export function registerShortcut(shortcut: Shortcut) {
-	registeredShortcuts.push(shortcut);
+	registeredShortcuts.set(shortcut.identifier, shortcut);
+}
+
+export function unregisterShortcut(identifier: string): boolean {
+	return registeredShortcuts.delete(identifier);
 }
 
 export function getQueryScore(str: string, query: string) {
@@ -192,7 +63,7 @@ export function getQueryScore(str: string, query: string) {
 }
 
 export function searchShortcuts(query: string): Shortcut[] {
-	return registeredShortcuts
+	return [...registeredShortcuts.values()]
 		.map((s) => {
 			const score = Math.max(
 				getQueryScore(s.title.toLowerCase(), query),
@@ -206,3 +77,83 @@ export function searchShortcuts(query: string): Shortcut[] {
 		.map(([s]) => s)
 		.slice(0, 7);
 }
+
+registerShortcut({
+	identifier: 'dashboard:page_home',
+	title: 'Go Home',
+	aliases: ['view home', 'main'],
+	description: 'Go to the AuriServe home.',
+	icon: icon_home,
+	action: ({ navigate }) => navigate('/'),
+});
+
+registerShortcut({
+	identifier: 'dashboard:page_settings',
+	title: 'Settings',
+	aliases: [
+		'go settings',
+		'view settings',
+		'view options',
+		'view configuation',
+		'options',
+		'configuration',
+	],
+	description: 'Manage AuriServe settings.',
+	icon: icon_settings,
+	action: ({ navigate }) => navigate('/settings/'),
+});
+
+registerShortcut({
+	identifier: 'dashboard:manage_overview',
+	title: 'Manage Overview',
+	aliases: [
+		'overview settings',
+		'site name',
+		'name',
+		'description',
+		'favicon',
+		'address',
+	],
+	description: 'Edit basic site appearance settings.',
+	icon: icon_home,
+	action: ({ navigate }) => navigate('/settings/overview/'),
+});
+
+registerShortcut({
+	identifier: 'dashboard:shortcut_palette',
+	title: 'Shortcut Palette',
+	aliases: ['command palette'],
+	description: 'Execute commands.',
+	icon: icon_shortcut,
+	action: () => {
+		togglePalette();
+	},
+});
+
+registerShortcut({
+	identifier: 'dashboard:log_out',
+	title: 'Log out',
+	aliases: ['exit', 'close'],
+	description: 'Log out of AuriServe.',
+	icon: icon_logout,
+	action: () => {
+		Cookie.remove('tkn');
+		window.location.href = '/dashboard/';
+	},
+});
+
+registerShortcut({
+	identifier: 'dashboard:toggle_dark_mode',
+	title: 'Toggle Dark Mode',
+	aliases: ['dark mode', 'light mode', 'color theme', 'theme'],
+	description: 'Toggle between light and dark mode.',
+	icon: icon_themes,
+	action: () => {
+		document.documentElement.classList.add('AS_TRANSITION_THEME');
+		setTimeout(() => document.documentElement.classList.toggle('dark'), 50);
+		setTimeout(
+			() => document.documentElement.classList.remove('AS_TRANSITION_THEME'),
+			300
+		);
+	},
+});

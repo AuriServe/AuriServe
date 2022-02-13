@@ -33,6 +33,26 @@ const schema = `
 	}
 `;
 
+function trim(templateArgs: TemplateStringsArray, ...args: any[]) {
+	const strings = templateArgs
+		.reduce((acc, str, i) => {
+			acc += str;
+			if (i < args.length) {
+				acc += args[i];
+			}
+			return acc;
+		}, '')
+		.split('\n');
+
+	let firstNonEmpty = -1;
+	while (strings[++firstNonEmpty].trim() === '') {}
+
+	const leadingWhitespace = strings[firstNonEmpty].match(/^\s+(?=\S)/)![0];
+	const killRegex = new RegExp(`^${leadingWhitespace}`, 'gm');
+
+	return strings.slice(firstNonEmpty).join('\n').replace(killRegex, '');
+}
+
 const resolver = {
 	info: {
 		name: 'The Shinglemill',
@@ -87,11 +107,53 @@ as.dashboard = {
 				})
 			);
 
-			this.routeHandlers.push(
-				router.get(['/dashboard', '/dashboard/*'], (_, res) => {
-					res.sendFile(path.join(__dirname, '..', 'res', 'Server', 'page.html'));
-				})
-			);
+			setTimeout(() => {
+				const dashboardPlugins = [...as.core.plugins.values()].filter(
+					(p) => p.entry.dashboard
+				);
+				console.log(dashboardPlugins);
+				for (const plugin of dashboardPlugins) {
+					this.routeHandlers.push(
+						router.get(`/dashboard/res/plugin/${plugin.identifier}`, (_, res) => {
+							res.sendFile(
+								path.join(
+									__dirname,
+									'..',
+									'..',
+									plugin.identifier,
+									plugin.entry.dashboard
+								)
+							);
+						})
+					);
+				}
+
+				this.routeHandlers.push(
+					router.get(['/dashboard', '/dashboard/*'], (_, res) => {
+						res.status(200).send(trim`
+						<!DOCTYPE html>
+						<html lang='en' class='AS_APP dark'>
+							<head>
+								<meta charset='utf-8'/>
+								<meta name='robots' content='noindex'/>
+								<meta name='viewport' content='width=device-width'/>
+								<title>Dashboard</title>
+								<meta name='description' content='Website dashboard.'/>
+
+								<script src='/dashboard/res/main.js' defer></script>
+								${dashboardPlugins
+									.map(
+										(plugin) =>
+											`<script src='/dashboard/res/plugin/${plugin.identifier}' defer></script>`
+									)
+									.join('\n')}
+							</head>
+							<body id='root'>
+							</body>
+						</html>`);
+					})
+				);
+			});
 		},
 
 		cleanup() {

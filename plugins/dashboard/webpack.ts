@@ -80,11 +80,15 @@ export default function (_: {}, argv: { mode: string; analyze: boolean }) {
 
 		name: 'dashboard',
 		context: resolve(__dirname, 'src'),
-		entry: './Dashboard/Main.tsx',
+		entry: './Dashboard/Main.ts',
 
 		output: {
 			path: resolve(__dirname, './dist'),
 			filename: 'main.js',
+			library: {
+				name: 'Dashboard',
+				type: 'var',
+			},
 		},
 
 		resolve: {

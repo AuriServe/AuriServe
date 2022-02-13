@@ -1,7 +1,7 @@
 import { ComponentChildren, h } from 'preact';
 import { useContext, useRef, useState, useEffect } from 'preact/hooks';
 
-import { Portal } from '../structure';
+import { Portal } from '../Structure';
 import Description from './Description';
 import { TransitionGroup } from '../Transition';
 

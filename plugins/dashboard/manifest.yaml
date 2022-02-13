@@ -9,9 +9,7 @@ depends:
 - routes ^0.0.1
 - pages ^0.0.1 ?
 
-entry:
-  server: dist/server.js
-  # dashboard: dist/main.js
+entry: dist/server.js
 
 watch:
 - dist/main.js

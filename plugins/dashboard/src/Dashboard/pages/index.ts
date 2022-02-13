@@ -6,3 +6,4 @@ export { default as LoginPage } from './LoginPage';
 export { default as SettingsPage } from './SettingsPage';
 // export { default as EditorControlPage } from './EditorControlPage';
 // export { default as EditorRendererPage } from './EditorRendererPage';
+export { default as UnknownPage } from './UnknownPage';
