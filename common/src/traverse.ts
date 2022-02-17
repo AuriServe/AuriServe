@@ -2,9 +2,9 @@ import { assert } from './assert';
 
 function descend(seg: string, object: any) {
 	if (seg.startsWith('[')) {
-		assert(seg.endsWith(']'), `Invalid path array segment '${seg}'.`);
-		const num = Number.parseInt(seg.substring(1, seg.length - 2 - 1), 10);
-		assert(!Number.isNaN(num), `Invalid path array segment '${seg}'.`);
+		assert(seg.endsWith(']'), `Invalid path array segment '${seg}'. [1]`);
+		const num = Number.parseInt(seg.substring(1, seg.length - 1), 10);
+		assert(!Number.isNaN(num), `Invalid path array segment '${seg}'. [2]`);
 		assert(
 			Array.isArray(object),
 			`Invalid Array index into Value '${JSON.stringify(object)}'.`
