@@ -1,7 +1,7 @@
 import { assert } from 'common';
 import { FunctionalComponent } from 'preact';
 
-import { MainPage as HomePage, SettingsPage } from './pages';
+import { HomePage, SettingsPage } from './Component/Page';
 
 export const pages: Map<string, Page> = new Map();
 

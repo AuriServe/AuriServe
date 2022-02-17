@@ -197,7 +197,7 @@ const config = defineConfig({
 			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
 				`:merge(.${e(h($1))}):focus-visible${$1[0] === 'p' ? '~' : ' '}&`) as any,
 		],
-		['peer-focus', (_: any, { h }: any) => `.${escape(h('peer'))}:focus-visible ~ &`],
+		// ['peer-focus', (_: any, { h }: any) => `.${escape(h('peer'))}:focus-visible ~ &`],
 		[
 			'peer-placeholder-shown',
 			(_: any, { h }: any) => `.${escape(h('peer'))}:placeholder-shown ~ &`,
@@ -223,9 +223,6 @@ const config = defineConfig({
 			maxHeight: {
 				128: '32rem',
 			},
-			fontWeight: {
-				normal: 450,
-			} as any,
 			spacing: {
 				18: '4.5rem',
 			},
@@ -234,6 +231,7 @@ const config = defineConfig({
 			},
 			animation: {
 				'drop-fade-in': 'drop-fade-in 150ms ease-out 1 forwards',
+				'rise-fade-in': 'rise-fade-in 150ms ease-out 1 forwards',
 				'scale-in': 'scale-in 250ms ease-out 1 forwards',
 			},
 			keyframes: {
@@ -243,6 +241,10 @@ const config = defineConfig({
 				},
 				'drop-fade-in': {
 					from: { opacity: 0, transform: 'translateY(-0.25rem)' },
+					to: { opacity: 1 },
+				},
+				'rise-fade-in': {
+					from: { opacity: 0, transform: 'translateY(0.25rem)' },
 					to: { opacity: 1 },
 				},
 			},
@@ -305,6 +307,18 @@ tw(css`
 		${COLOR_WEIGHTS_GRAY.map(
 			(weight) => `--theme-gray-${weight}: var(--color-gray-dark-${weight});`
 		).join('\n')}
+	}
+
+	[class*='dash-before']::before {
+		display: block;
+		--dash-tw-content: ' ';
+		content: var(--dash-tw-content);
+	}
+
+	[class*='dash-after']::after {
+		display: block;
+		--dash-tw-content: ' ';
+		content: var(--dash-tw-content);
 	}
 
 	${Object.keys(themeColors)

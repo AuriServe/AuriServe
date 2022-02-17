@@ -111,7 +111,7 @@ as.dashboard = {
 				const dashboardPlugins = [...as.core.plugins.values()].filter(
 					(p) => p.entry.dashboard
 				);
-				console.log(dashboardPlugins);
+
 				for (const plugin of dashboardPlugins) {
 					this.routeHandlers.push(
 						router.get(`/dashboard/res/plugin/${plugin.identifier}`, (_, res) => {

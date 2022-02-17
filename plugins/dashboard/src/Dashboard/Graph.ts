@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'preact/hooks';
 
-import { AppContext, AppContextData } from './App';
+import { AppContext, AppContextData } from './Component/App';
 
 // import { Query } from 'common/graph';
 // import * as Int from 'common/graph/type';

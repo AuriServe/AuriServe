@@ -10,3 +10,18 @@ export function refs<T = HTMLElement>(
 		}
 	}) as RefCallback<T>;
 }
+
+export function elementBounds(elem: HTMLElement): {
+	top: number;
+	left: number;
+	width: number;
+	height: number;
+} {
+	const { x: left, y: top, width, height } = elem.getBoundingClientRect();
+	return {
+		left: left + document.documentElement.scrollLeft,
+		top: top + document.documentElement.scrollTop,
+		width,
+		height,
+	};
+}
