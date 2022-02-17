@@ -6,7 +6,7 @@
 	"author": "Auri <me@auri.xyz>",
 	"license": "UNLICENSED",
 	"scripts": {
-		"dist": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts",
+		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts",
 		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts"
 	},
 	"sideEffects": false,
@@ -30,7 +30,9 @@
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
+		"pages": "file:../pages",
 		"common": "file:../../common/build",
-		"escape-html": "^1.0.3"
+		"escape-html": "^1.0.3",
+		"vibin-hooks": "^0.2.1"
 	}
 }

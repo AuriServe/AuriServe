@@ -1,6 +1,4 @@
-// eslint-disable-next-line
-// @ts-ignore
-import { registerPage, registerShortcut } from 'dashboard';
+import { registerPage, registerShortcut, Icon } from 'dashboard';
 
 import PagesPage from './PagesPage';
 
@@ -13,9 +11,9 @@ registerPage({
 
 registerShortcut({
 	identifier: 'page-editor:pages',
+	icon: Icon.file,
 	title: 'View Pages',
 	aliases: ['go pages'],
 	description: 'View and edit site pages.',
-	// icon: icon_page,
 	action: ({ navigate }: any) => navigate('/pages/'),
 });

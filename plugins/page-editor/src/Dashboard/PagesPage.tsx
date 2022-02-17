@@ -1,9 +1,11 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 
+import Editor from './Editor';
+
 // eslint-disable-next-line
 // @ts-ignore
-import { tw, PrimaryButton, Svg, Spinner } from 'dashboard';
+import { tw, Svg, Spinner, Icon } from 'dashboard';
 
 interface Page {
 	path: string;
@@ -16,45 +18,25 @@ interface PageItemProps {
 	dragging?: boolean;
 }
 
-function PageItem({ page, dragging }: PageItemProps) {
-	const isActive = dragging;
-	// const path = route.path.replace(new RegExp('^' + parentPath), '');
-	// const isActive = location.pathname.replace('/admin/routes/edit', '') === route.path + '/';
-
+function PageItem({ page }: PageItemProps) {
 	return (
-		<div class='w-full'>
-			<PrimaryButton
-				to={isActive ? '/routes/' : `/routes/edit${page.path}/`}
-				exact
-				class={tw`group text-gray-600 dark:text-gray-100 p-[0.25rem] mb-1 gap-2 ${
-					isActive
-						? '!bg-gray-200/25 dark:!bg-gray-700 !border-gray-200 dark:!border-gray-800'
-						: '!bg-transparent !border-transparent active:!bg-gray-600/20'
-				}`}>
+		<div class={tw`w-full`}>
+			<div class={tw`group flex items-center gap-2`}>
+				<Svg src={page.icon} size={6} class={tw`p-1 bg-gray-700 rounded`} />
+
+				<div class={tw`grow flex flex-col gap-px pt-[3px]`}>
+					<p class={tw`text-sm font-medium leading-none`}>{page.name}</p>
+					<p class={tw`text-[11px] font-medium text-gray-300`}>
+						{page.path === '/' ? '(root)' : page.path || '(virtual)'}
+					</p>
+				</div>
+
 				<Svg
-					src={page.icon}
-					size={6}
-					class={tw`rounded p-0.5 ml-px transition-colors ${
-						isActive ? 'bg-gray-600' : 'bg-gray-600/50 group-active:bg-gray-600'
-					}`}
-				/>
-
-				<p class={tw`leading-none text-[15px] flex-grow`}>
-					{page.name}
-					<br />
-					<span class={tw`text-[11px] text-gray-300`}>
-						{page.path === '/index' ? '(root)' : page.path || '(virtual)'}
-					</span>
-				</p>
-
-				{/* <Svg
-					src={icon_menu}
+					src={Icon.menu}
 					size={5}
-					class={tw`transition opacity-0 group-hover:opacity-50 hover:!opacity-100 !pointer-events-auto ${
-						isActive && 'opacity-100'
-					}`}
-				/> */}
-			</PrimaryButton>
+					class={tw`icon-p-gray-300 p-0.5 pt-1 opacity-0 group-hocus:opacity-100`}
+				/>
+			</div>
 		</div>
 	);
 }
@@ -62,7 +44,13 @@ function PageItem({ page, dragging }: PageItemProps) {
 export default function PagesPage() {
 	// const [{ pages: rawPages, info }] = useData([QUERY_PAGES, QUERY_INFO], []);
 
-	const [pages, setPages] = useState<Page[]>([{ path: '/', name: 'Home', icon: '' }]);
+	const [pages] = useState<Page[]>([
+		{ path: '/', name: 'Home', icon: Icon.home },
+		{ path: 'about', name: 'About', icon: Icon.info },
+		{ path: 'contact', name: 'Contact', icon: Icon.file },
+		{ path: 'blog', name: 'Blog', icon: Icon.file },
+		{ path: 'social', name: 'Social Media', icon: Icon.heart },
+	]);
 
 	// useEffect(
 	// 	() =>
@@ -84,9 +72,7 @@ export default function PagesPage() {
 
 	return (
 		<div class={tw`-mb-14 h-screen flex`}>
-			<div
-				class={tw`w-72 p-2.5 h-full bg-gray-800 flex-shrink-0 relative z-10 rounded-r-xl
-				shadow-lg shadow-gray-900/75`}>
+			<div class={tw`w-72 p-2.5 h-full bg-gray-800 flex-shrink-0 relative z-10 shadow`}>
 				{/* <SectionHeader class='p-1' title='Configure Routes' icon='/admin/asset/icon/ext-file-color.svg'/>
 				<div class='border-b border-gray-600 mt-1.5 mb-2.5'/> */}
 				{!pages && <Spinner size={40} class={tw`mt-16 mx-auto animate-fadein-150`} />}
@@ -101,19 +87,17 @@ export default function PagesPage() {
 								<PageItem page={data} dragging={dragging} />
 							)}
 						/> */}
-						<div>
+						<div class={tw`p-1 flex-(& col) gap-3`}>
 							{pages.map((page, i) => (
 								<PageItem key={i} page={page} />
 							))}
 						</div>
-						<div class={tw`border-b-2 border-gray-600 mb-1.5 mt-0.5`} />
-						<PrimaryButton label='Add Route' />
+						{/* <div class={tw`border-b-2 border-gray-600 mb-1.5 mt-2`} /> */}
+						{/* <PrimaryButton label='Add Route' /> */}
 					</div>
 				)}
 			</div>
-			<div class={tw`p-4`}>
-				<h1 class={tw`text-7xl text-accent-300 font-black`}>Henlo there, how are you?</h1>
-			</div>
+			<Editor />
 		</div>
 	);
 }
