@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { forwardRef } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
 
 import Svg from './Svg';
@@ -32,7 +33,10 @@ export interface Props {
 	children?: ComponentChildren;
 }
 
-export function UnstyledButton(props: Props) {
+export const UnstyledButton = forwardRef<HTMLElement, Props>(function UnstyledButton(
+	props,
+	ref
+) {
 	const Tag: any = props.to ? NavLink : props.href ? 'a' : 'button';
 	const passedProps = { ...props };
 
@@ -47,15 +51,16 @@ export function UnstyledButton(props: Props) {
 
 	return (
 		<Tag
+			ref={ref}
 			{...passedProps}
 			className={props.class}
 			target={Tag === 'a' ? '_blank' : undefined}
 			rel={Tag === 'a' ? 'noreferrer noopener' : undefined}
 		/>
 	);
-}
+});
 
-function BaseButton(props: Props) {
+const BaseButton = forwardRef<HTMLElement, Props>(function BaseButton(props, ref) {
 	const size =
 		(typeof props.size === 'number'
 			? props.size
@@ -72,6 +77,7 @@ function BaseButton(props: Props) {
 
 	return (
 		<UnstyledButton
+			ref={ref}
 			{...props}
 			style={style}
 			class={merge(
@@ -88,7 +94,10 @@ function BaseButton(props: Props) {
 					class={tw`text-xs mt-px -mb-px ${props.iconOnly && 'sr-only'}`}
 					style={
 						props.icon
-							? { paddingLeft: size - paddingThreshold, paddingRight: size < 48 ? 4 : 0 }
+							? {
+									paddingLeft: size - paddingThreshold,
+									paddingRight: size < 48 ? 4 : 0,
+							  }
 							: {}
 					}>
 					{props.label}
@@ -97,11 +106,15 @@ function BaseButton(props: Props) {
 			{props.icon && props.iconRight && <Svg src={props.icon} size={6} />}
 		</UnstyledButton>
 	);
-}
+});
 
-export function PrimaryButton(props: Props) {
+export const PrimaryButton = forwardRef<HTMLElement, Props>(function PrimaryButton(
+	props,
+	ref
+) {
 	return (
 		<BaseButton
+			ref={ref}
 			{...props}
 			class={merge(
 				tw`PrimaryButton~(bg-accent-((600 dark:600) hocus:(700 dark:500) active:(900 dark:700))
@@ -113,11 +126,15 @@ export function PrimaryButton(props: Props) {
 			)}
 		/>
 	);
-}
+});
 
-export function SecondaryButton(props: Props) {
+export const SecondaryButton = forwardRef<HTMLElement, Props>(function SecondaryButton(
+	props,
+	ref
+) {
 	return (
 		<BaseButton
+			ref={ref}
 			{...props}
 			class={merge(
 				tw`SecondaryButton~(bg-accent-((200 dark:500/30) hocus:(600 dark:500/40) active:(900 dark:500/25))
@@ -128,11 +145,15 @@ export function SecondaryButton(props: Props) {
 			)}
 		/>
 	);
-}
+});
 
-export function TertiaryButton(props: Props) {
+export const TertiaryButton = forwardRef<HTMLElement, Props>(function TertiaryButton(
+	props,
+	ref
+) {
 	return (
 		<BaseButton
+			ref={ref}
 			{...props}
 			class={merge(
 				tw`TertiaryButton~(bg-gray-((200 dark:600) hocus:(300 dark:500) active:(500 dark:600))
@@ -143,11 +164,12 @@ export function TertiaryButton(props: Props) {
 			)}
 		/>
 	);
-}
+});
 
-export function LinkButton(props: Props) {
+export const LinkButton = forwardRef<HTMLElement, Props>(function LinkButton(props, ref) {
 	return (
 		<UnstyledButton
+			ref={ref}
 			{...props}
 			class={merge(
 				tw`group LinkButton~(relative isolate inline !outline-none leading-none
@@ -192,7 +214,7 @@ export function LinkButton(props: Props) {
 			)}
 		</UnstyledButton>
 	);
-}
+});
 
 const obj: {
 	Primary: typeof PrimaryButton;

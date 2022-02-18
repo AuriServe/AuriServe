@@ -3,3 +3,10 @@ dist/
 build/
 site-data/
 types/
+plugins/analytics/data/city.checksum
+plugins/analytics/data/country.checksum
+plugins/analytics/data/geoip-city-names.dat
+plugins/analytics/data/geoip-city.dat
+plugins/analytics/data/geoip-city6.dat
+plugins/analytics/data/geoip-country.dat
+plugins/analytics/data/geoip-country6.dat

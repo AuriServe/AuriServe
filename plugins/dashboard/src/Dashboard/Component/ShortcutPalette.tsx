@@ -140,7 +140,6 @@ export default function ShortcutPalette() {
 						class={tw`p-4 w-full bg-gray-700 rounded-lg mb-4 !outline-none shadow-md pointer-events-auto pl-14`}
 						type='text'
 						placeholder=''
-						autofocus
 						value={query}
 						onInput={(e: any) => setQuery(e.target.value)}
 					/>

@@ -30,7 +30,10 @@ export {
 	LinkButton,
 } from './Component/Button';
 
+export { default as Menu } from './Component/Menu/Menu';
+
 export { tw, merge } from './Twind';
+export { refs, elementBounds } from './Util';
 
 export * as Icon from './Icon';
 export { default as EventEmitter } from './EventEmitter';

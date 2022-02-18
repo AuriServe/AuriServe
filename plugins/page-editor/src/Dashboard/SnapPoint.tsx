@@ -13,7 +13,6 @@ import { useContext } from 'preact/hooks';
 
 export interface Props {
 	path: string;
-	ind: number;
 
 	xStretch?: boolean;
 	yStretch?: boolean;
@@ -27,7 +26,7 @@ export default function SnapPoint(props: Props) {
 	if (!editor.placing) return null;
 	return (
 		<div
-			onMouseUp={() => editor.snapNode(props.path, props.ind)}
+			onMouseUp={() => editor.addNode(props.path)}
 			class={tw`SnapPoint~(relative ${props.yStretch && 'h-full -left-0.5 z-100'}
 				${props.xStretch && 'w-full -top-0.5'})`}>
 			<div

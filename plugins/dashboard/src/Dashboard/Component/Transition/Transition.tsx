@@ -4,9 +4,10 @@ import { cloneElement, ComponentChildren, ComponentType, Fragment, h } from 'pre
 // import TransitionGroup from './TransitionGroup';
 
 import { State, TransitionClasses, merge, getClassesForState } from './Types';
+import { forwardRef } from 'preact/compat';
 
 interface Props extends TransitionClasses {
-	[key: string]: any;
+	[prop: string]: unknown;
 
 	as?: ComponentType<any> | string;
 	useClassName?: boolean;
@@ -19,9 +20,9 @@ interface Props extends TransitionClasses {
 	children?: ComponentChildren;
 }
 
-export default function Transition(props: Props) {
+export default forwardRef<HTMLElement, Props>(function Transition(props, ref) {
 	const timeoutRef = useRef<any>(null);
-	const initialRef = useRef<boolean>(!(props.initial || false));
+	const initialRef = useRef<boolean>(true);
 	const [state, setState] = useState<State>(props.show ? State.Entered : State.Exited);
 	// TODO: Replace getClassesForState to fix this.
 	const classes = useMemo(
@@ -33,7 +34,7 @@ export default function Transition(props: Props) {
 	useLayoutEffect(() => {
 		if (initialRef.current) {
 			initialRef.current = false;
-			return;
+			if (!props.show || !props.initial) return;
 		}
 
 		if (timeoutRef.current) {
@@ -43,7 +44,7 @@ export default function Transition(props: Props) {
 
 		if (props.show) setState(State.BeforeEnter);
 		else setState(State.BeforeExit);
-	}, [props.show]);
+	}, [props.show, props.initial]);
 
 	useLayoutEffect(() => {
 		window.requestAnimationFrame(() => {
@@ -80,23 +81,24 @@ export default function Transition(props: Props) {
 		) as any;
 	}
 
-	const renderProps: Partial<Props> & { className?: string } = { ...props };
-	delete renderProps.as;
-	delete renderProps.show;
-	delete renderProps.initial;
-	delete renderProps.class;
-	delete renderProps.duration;
-	delete renderProps.enter;
-	delete renderProps.enterFrom;
-	delete renderProps.enterTo;
-	delete renderProps.exit;
-	delete renderProps.exitFrom;
-	delete renderProps.exitTo;
-	delete renderProps.invertExit;
+	const passedProps: Partial<Props> & { className?: string } = { ...props };
+	delete passedProps.as;
+	delete passedProps.show;
+	delete passedProps.initial;
+	delete passedProps.class;
+	delete passedProps.duration;
+	delete passedProps.enter;
+	delete passedProps.enterFrom;
+	delete passedProps.enterTo;
+	delete passedProps.exit;
+	delete passedProps.exitFrom;
+	delete passedProps.exitTo;
+	delete passedProps.invertExit;
+	passedProps.ref = ref;
 
-	renderProps[props.useClassName ? 'className' : 'class'] = merge(classes);
+	passedProps[props.useClassName ? 'className' : 'class'] = merge(classes);
 
-	return <Tag {...renderProps} />;
-}
+	return <Tag {...passedProps} />;
+});
 
 // Transition.Group = TransitionGroup;

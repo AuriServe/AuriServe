@@ -7,6 +7,7 @@ import { ElementContext } from '../Element';
 
 export interface Props {
 	gap: number;
+	horizontal?: boolean;
 	children: ComponentChildren;
 }
 
@@ -16,8 +17,15 @@ export function Stack(props: Props) {
 	const path = `${element.path}.children`;
 
 	return (
-		<div ref={ref} class={tw`flex flex-col w-full p-4`}>
-			<SnapPoint path={path} ind={0} xStretch yOff={-8} />
+		<div ref={ref} class={tw`flex ${!props.horizontal && 'flex-col'} w-full`}>
+			{/* <SnapPoint path={path} ind={0} xStretch yOff={-8} /> */}
+			<SnapPoint
+				path={`${path}[0]`}
+				xStretch={!props.horizontal}
+				yStretch={props.horizontal}
+				yOff={props.horizontal ? 0 : -8}
+				xOff={props.horizontal ? -8 : 0}
+			/>
 			{(Array.isArray(props.children) ? props.children : [props.children]).map(
 				(child, i) => (
 					<Fragment key={i}>
@@ -25,7 +33,13 @@ export function Stack(props: Props) {
 							<div class={tw`Gap~(w-[${props.gap / 4}rem] h-[${props.gap / 4}rem])`} />
 						)}
 						{child}
-						<SnapPoint path={path} ind={i + 1} xStretch yOff={8} />
+						<SnapPoint
+							path={`${path}[${i + 1}]]`}
+							xStretch={!props.horizontal}
+							yStretch={props.horizontal}
+							yOff={props.horizontal ? 0 : 8}
+							xOff={props.horizontal ? 8 : 0}
+						/>
 					</Fragment>
 				)
 			)}

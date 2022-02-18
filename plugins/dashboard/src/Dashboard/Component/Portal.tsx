@@ -1,12 +1,24 @@
-import { useRef, useEffect } from 'preact/hooks';
+import { useEffect, useMemo } from 'preact/hooks';
 import { createPortal, forwardRef } from 'preact/compat';
-import { h, Fragment, ComponentChildren, RefObject } from 'preact';
+import {
+	h,
+	ComponentChildren,
+	RefObject,
+	FunctionalComponent,
+	ComponentClass,
+} from 'preact';
 
-import { tw } from '../Twind';
+import { tw, merge } from '../Twind';
 
 interface Props {
-	to: HTMLElement;
+	[prop: string]: unknown;
+
+	to?: HTMLElement;
+	as?: string | FunctionalComponent<any> | ComponentClass<any, any>;
+
+	style?: any;
 	class?: string;
+	wrapperClass?: string;
 	children?: ComponentChildren;
 }
 
@@ -14,19 +26,25 @@ export default forwardRef<HTMLDivElement, Props>(function Portal(
 	props: Props,
 	ref: RefObject<HTMLDivElement>
 ) {
-	const root = useRef<HTMLDivElement>(document.createElement('div'));
-
-	if (ref) ref.current = root.current;
+	const root = useMemo(() => document.createElement('div'), []);
 
 	useEffect(() => {
-		root.current.className = props.class ?? tw`fixed top-0 left-0`;
-	}, [props.class]);
+		root.className = merge(tw`Portal~(fixed top-0 left-0 w-0 h-0)`, props.wrapperClass);
+	}, [props.wrapperClass, root]);
 
 	useEffect(() => {
-		const elem = root.current;
-		props.to.appendChild(elem);
-		return () => props.to.removeChild(elem);
-	}, [props.to]);
+		const parent = props.to ?? document.querySelector('.AS_ROOT') ?? document.body;
+		parent.appendChild(root);
+		return () => parent.removeChild(root);
+	}, [props.to, root]);
 
-	return createPortal(<Fragment>{props.children}</Fragment>, root.current);
+	const Tag = props.as ?? 'div';
+
+	const passedProps = { ...props };
+	delete passedProps.to;
+	delete passedProps.as;
+	delete passedProps.wrapperClass;
+	passedProps.ref = ref;
+
+	return createPortal(<Tag {...passedProps} />, root);
 });

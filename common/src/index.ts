@@ -1,4 +1,4 @@
-export { traverse, buildObjectPath } from './traverse';
+export { traversePath, buildPath, splitPath } from './path';
 
 export {
 	bytes as formatBytes,

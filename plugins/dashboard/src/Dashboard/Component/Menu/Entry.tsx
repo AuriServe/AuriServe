@@ -1,9 +1,9 @@
-import { useState } from 'preact/hooks';
-import { h, ComponentChildren } from 'preact';
+import { useContext, useState } from 'preact/hooks';
+import { h, ComponentChildren, cloneElement } from 'preact';
 
 import Svg from '../Svg';
-import Menu from './Menu';
 import Shortcut from './Shortcut';
+import Menu, { MenuContext } from './Menu';
 
 import { tw, merge } from '../../Twind';
 
@@ -15,9 +15,13 @@ interface Props {
 
 	class?: string;
 	children?: ComponentChildren;
+
+	disabled?: boolean;
+	onClick?: () => true | void;
 }
 
 export default function Entry(props: Props) {
+	const ctx = useContext(MenuContext);
 	const [hover, setHover] = useState<boolean>(false);
 
 	const shortcuts: any[] = [];
@@ -31,18 +35,16 @@ export default function Entry(props: Props) {
 
 	children.forEach((child) => {
 		if (child.type === Shortcut) {
-			shortcuts.push(child);
+			shortcuts.push(cloneElement(child));
 		} else {
-			subEntries.push(child);
+			subEntries.push(cloneElement(child));
 		}
-		// 	assert(!submenu, 'Menu entry can only have one submenu.');
-		// 	submenu = cloneElement(child, {
-		// 		class: merge(child.class, tw`absolute left-full -top-1.5`),
-		// 	});
-		// } else if (child.type === Shortcut) {
-		// 	shortcuts.push(child);
-		// } else assert(false, 'Menu entry can only have SubMenu and Shortcut children.');
 	});
+
+	const handleClick = () => {
+		const keepAlive = props.onClick?.() ?? (subEntries.length > 0 && !props.onClick);
+		if (!keepAlive) ctx.onClose?.();
+	};
 
 	return (
 		<li
@@ -52,15 +54,18 @@ export default function Entry(props: Props) {
 				}`,
 				props.class
 			)}>
-			<button
+			<div
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
 				class={tw`grow cursor-auto grid`}>
-				<div
+				<button
+					disabled={props.disabled}
+					onClick={handleClick}
 					class={tw`Entry~(flex px-1.5 py-1.5 items-center text-left
 						gap-3 rounded transition duration-75 cursor-pointer
 						hocus:(bg-accent-400/5 icon-p-white icon-s-accent-400 text-accent-100)
 						icon-p-gray-100 icon-s-gray-300 text-gray-200)
+						disabled:!(cursor-auto bg-transparent icon-p-gray-400 icon-s-gray-600 text-gray-300)
 						${hover ? '!(bg-accent-400/5 icon-p-white icon-s-accent-400 text-accent-100)' : ''}`}>
 					<Svg src={props.icon ?? ''} size={6} />
 					<p class={tw`grow leading-none pt-px font-medium transition duration-75`}>
@@ -74,15 +79,15 @@ export default function Entry(props: Props) {
 						/>
 					)}
 					{shortcuts.length > 0 && <div class='w-1' />}
-				</div>
+				</button>
 				{subEntries.length !== 0 && (
 					<Menu
 						active={hover}
-						class={tw`absolute left-full -top-1.5 will-change-transform`}>
+						class={tw`absolute !left-full !-top-1.5 will-change-transform`}>
 						{subEntries}
 					</Menu>
 				)}
-			</button>
+			</div>
 			{shortcuts.length !== 0 && <div class={tw`flex`}>{shortcuts}</div>}
 		</li>
 	);

@@ -40,38 +40,36 @@ export default function Modal(props: Props) {
 	}, [props.active]);
 
 	return (
-		<Portal class={tw`absolute`} to={document.querySelector('.AS_ROOT') ?? document.body}>
-			<Transition
-				as='div'
-				show={props.active}
-				duration={150}
-				invertExit
-				class={tw`fixed flex-{& col} w-[calc(100%-56px)] h-full items-center overflow-auto
-					top-0 left-0 ml-14 justify-around bg-gray-50/80 dark:bg-[#081024cc] backdrop-filter backdrop-blur-md`}
-				style={{ zIndex: props.z ?? 100 }}
-				onClick={props.onClose}
-				enter={tw`will-change-transform transition duration-150`}
-				enterFrom={tw`opacity-0`}
-				enterTo={tw`opacity-100`}>
-				<div class={tw`flex w-full h-auto px-3 py-12 overflow-auto justify-around`}>
-					{/** TODO: Make a TransitionChild component to make nested transitions like this work without jank. */}
-					<Transition
-						show={props.active}
-						initial
-						duration={150}
-						invertExit
-						enter={tw`transition duration-150`}
-						enterFrom={tw`scale-[98%]`}
-						enterTo={tw`scale-100`}>
-						<Card
-							class={merge(tw`h-min will-change-transform`, props.class)}
-							style={props.style}
-							onClick={(e: any) => e.stopPropagation()}>
-							{props.children}
-						</Card>
-					</Transition>
-				</div>
-			</Transition>
+		<Portal
+			as={Transition}
+			show={props.active}
+			duration={150}
+			invertExit
+			class={tw`fixed w-full h-full flex-(& col) w-[calc(100%-56px)] h-full items-center overflow-auto
+				pl-14 justify-around bg-gray-50/80 dark:bg-[#081024cc] backdrop-filter backdrop-blur-md`}
+			style={{ zIndex: props.z ?? 100 }}
+			onClick={props.onClose}
+			enter={tw`will-change-transform transition duration-150`}
+			enterFrom={tw`opacity-0`}
+			enterTo={tw`opacity-100`}>
+			<div class={tw`flex w-full h-auto px-3 py-12 overflow-auto justify-around`}>
+				{/** TODO: Make a TransitionChild component to make nested transitions like this work without jank. */}
+				<Transition
+					show={props.active}
+					initial
+					duration={150}
+					invertExit
+					enter={tw`transition duration-150`}
+					enterFrom={tw`scale-[98%]`}
+					enterTo={tw`scale-100`}>
+					<Card
+						class={merge(tw`h-min will-change-transform`, props.class)}
+						style={props.style}
+						onClick={(e: any) => e.stopPropagation()}>
+						{props.children}
+					</Card>
+				</Transition>
+			</div>
 		</Portal>
 	);
 }

@@ -1,10 +1,8 @@
 import { Fragment, h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import Card from '../Card';
-import Menu from '../Menu/Menu';
 import Tooltip from '../Tooltip';
 import TileLayout from '../TileLayout';
 
@@ -13,59 +11,11 @@ import { getShortcuts } from '../../Shortcut';
 import { QUERY_INFO, useData } from '../../Graph';
 
 import * as Icon from '../../Icon';
-// import icon_copy from '@res/icon/copy.svg';
-// import icon_cut from '@res/icon/cut.svg';
-// import icon_paste from '@res/icon/paste.svg';
-
-// import icon_star from '@res/icon/star.svg';
-// import icon_compass from '@res/icon/heart.svg';
-// import icon_download from '@res/icon/download.svg';
-// import icon_update from '@res/icon/update.svg';
-
-// import icon_save from '@res/icon/save.svg';
-// import icon_developer from '@res/icon/developer.svg';
-// import icon_logout from '@res/icon/logout.svg';
-// import icon_file from '@res/icon/file.svg';
-// import icon_tag from '@res/icon/tag.svg';
-
-// import * as Icon from '../../Icon';
 
 export default function MainPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [{ info }] = useData(QUERY_INFO, []);
-
-	const [menuActive, setMenuActive] = useState<boolean>(false);
-	const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-
-	useEffect(() => {
-		document.addEventListener('click', (e: any) => {
-			setMenuActive((active) => {
-				if (active) {
-					e.preventDefault();
-					e.stopPropagation();
-					e.stopImmediatePropagation();
-				}
-				return active;
-			});
-		});
-
-		document.addEventListener('mousedown', (e: any) => {
-			setMenuActive((active) => {
-				if (!active && e.button !== 2) return active;
-				e.preventDefault();
-				e.stopPropagation();
-				e.stopImmediatePropagation();
-
-				if (!active) setMousePos({ x: e.clientX, y: e.clientY });
-				return !active;
-			});
-		});
-
-		document.addEventListener('contextmenu', (e: any) => {
-			e.preventDefault();
-		});
-	}, []);
 
 	return (
 		<Fragment>
@@ -122,7 +72,7 @@ export default function MainPage() {
 					</TileLayout.Tile>
 					<TileLayout.Tile width={1} height={2}>
 						<Card class={tw`h-full`}>
-							<Tooltip position='right'>Hello</Tooltip>
+							<Card.Body />
 						</Card>
 					</TileLayout.Tile>
 					<TileLayout.Tile width={2} height={4}>
@@ -146,37 +96,23 @@ export default function MainPage() {
 					<TileLayout.Tile width={1} height={2}>
 						<Card class={tw`h-full`} />
 					</TileLayout.Tile>
+					<TileLayout.Tile width={1} height={2}>
+						<Card class={tw`h-full`}>
+							<Tooltip position='right'>Hello</Tooltip>
+						</Card>
+					</TileLayout.Tile>
+					<TileLayout.Tile width={1} height={2}>
+						<Card class={tw`h-full`}>
+							<Tooltip position='right'>Hello</Tooltip>
+						</Card>
+					</TileLayout.Tile>
+					<TileLayout.Tile width={1} height={2}>
+						<Card class={tw`h-full`}>
+							<Tooltip position='right'>Hello</Tooltip>
+						</Card>
+					</TileLayout.Tile>
 				</TileLayout.Grid>
 			</TileLayout>
-			<Menu
-				openFrom='topLeft'
-				active={menuActive}
-				class={tw`fixed top-[${mousePos.y}px] left-[${mousePos.x}px]`}>
-				<Menu.Header>
-					<Menu.Shortcut icon={Icon.undo} label='Undo' />
-					<Menu.Shortcut icon={Icon.redo} label='Redo' />
-					<Menu.Header.Spacer width={4} />
-					<Menu.Shortcut icon={Icon.trash} label='Delete' />
-				</Menu.Header>
-
-				<Menu.Entry icon={Icon.copy} label='Copy'>
-					<Menu.Shortcut icon={Icon.cut} label='Cut' />
-				</Menu.Entry>
-
-				<Menu.Entry icon={Icon.paste} label='Paste'>
-					<Menu.Shortcut icon={Icon.paste_before} label='Paste Before' />
-					<Menu.Shortcut icon={Icon.paste_after} label='Paste After' />
-				</Menu.Entry>
-
-				<Menu.Divider />
-
-				<Menu.Entry icon={Icon.shortcut} label='Convert to'>
-					<Menu.Entry icon={Icon.image} label='Image' />
-					<Menu.Entry icon={Icon.image} label='Slideshow' />
-					<Menu.Entry icon={Icon.image} label='Gallery' />
-					<Menu.Entry icon={Icon.image} label='Album' />
-				</Menu.Entry>
-			</Menu>
 		</Fragment>
 	);
 }

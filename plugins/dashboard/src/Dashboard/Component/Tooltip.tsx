@@ -5,6 +5,7 @@ import Portal from './Portal';
 
 import { tw, merge } from '../Twind';
 import { elementBounds } from '../Util';
+import { Transition } from './Transition';
 
 interface Props {
 	label?: string;
@@ -34,6 +35,13 @@ const ARROW_POSITIONS = {
 	right: 'top-1/2 left-0',
 };
 
+const TRANSFORM_OFFSETS = {
+	top: '-translate-y-full -translate-x-1/2',
+	left: '-translate-x-full -translate-y-1/2',
+	right: '-translate-y-1/2',
+	bottom: '-translate-x-1/2',
+};
+
 export default function Tooltip(props: Props) {
 	const elemRef = useRef<HTMLDivElement>(null);
 	const outerRef = useRef<HTMLDivElement>(null);
@@ -45,44 +53,40 @@ export default function Tooltip(props: Props) {
 	});
 
 	useEffect(() => {
-		const elem = elemRef.current as HTMLElement;
-		if (!elem) return;
 		const parent = props.for ?? (outerRef.current?.parentElement as HTMLElement);
 		if (!parent) return;
 
 		const offset = props.offset ?? 12;
 
-		const onMouseOver = () => {
-			const elemBounds = elementBounds(elem);
+		const onMouseEnter = () => {
 			const parentBounds = elementBounds(parent);
 
 			const position = { top: 0, left: 0 };
 
-			if ((props.position ?? 'top') === 'top')
-				position.top = parentBounds.top - elemBounds.height - offset;
+			if ((props.position ?? 'top') === 'top') position.top = parentBounds.top - offset;
 			else if (props.position === 'bottom')
 				position.top = parentBounds.top + parentBounds.height + offset;
-			else
-				position.top = parentBounds.top + parentBounds.height / 2 - elemBounds.height / 2;
+			else position.top = parentBounds.top + parentBounds.height / 2;
 
-			if (props.position === 'left')
-				position.left = parentBounds.left - elemBounds.width - offset;
+			if (props.position === 'left') position.left = parentBounds.left - offset;
 			else if (props.position === 'right')
 				position.left = parentBounds.left + parentBounds.width + offset;
-			else
-				position.left = parentBounds.left + parentBounds.width / 2 - elemBounds.width / 2;
+			else position.left = parentBounds.left + parentBounds.width / 2;
 
 			setPosition(position);
 			setVisible(true);
 		};
-		const onMouseOut = () => setVisible(false);
 
-		parent.addEventListener('mouseover', onMouseOver);
-		parent.addEventListener('mouseout', onMouseOut);
+		const onMouseLeave = () => {
+			setVisible(false);
+		};
+
+		parent.addEventListener('mouseenter', onMouseEnter);
+		parent.addEventListener('mouseleave', onMouseLeave);
 
 		return () => {
-			parent.removeEventListener('mouseover', onMouseOver);
-			parent.removeEventListener('mouseout', onMouseOut);
+			parent.removeEventListener('mouseenter', onMouseEnter);
+			parent.removeEventListener('mouseleave', onMouseLeave);
 		};
 	}, [props.position, props.for, props.offset]);
 
@@ -91,35 +95,35 @@ export default function Tooltip(props: Props) {
 			<div class={tw`sr-only`} ref={outerRef}>
 				{props.label}
 			</div>
-			<Portal
-				to={document.querySelector('.AS_ROOT') ?? document.body}
-				class={tw`fixed top-0 left-0 z-50 isolate`}>
-				<div
-					aria-hidden={true}
-					ref={elemRef}
-					style={{
-						...position,
-						...(props.style ?? {}),
-						transitionDelay: visible ? `${props.delay}ms` : undefined,
-						transformOrigin: TRANSFORM_ORIGINS[props.position ?? 'top'],
-					}}
-					class={merge(
-						tw`
-						Tooltip~(absolute transition rounded py-1 px-2.5 font-medium
-							bg-${props.bg ?? 'gray-700'} drop-shadow-md whitespace-nowrap)
+			{/* This transition renders a portal which renders a div which is our tooltip */}
+			<Transition
+				show={visible}
+				duration={75}
+				enter={tw`transition duration-75`}
+				enterFrom={tw`opacity-0 scale-95`}
+				enterTo={tw`opacity-100 scale-100`}
+				invertExit
+				as={Portal}
+				ref={elemRef}
+				aria-hidden={true}
+				wrapperClass={tw`absolute`}
+				class={merge(
+					tw`Tooltip~(absolute transition rounded py-1 px-2.5 font-medium
+						bg-${props.bg ?? 'gray-700'} drop-shadow-md whitespace-nowrap)
 						after:(w-2 h-2 absolute bg-${props.bg ?? 'gray-700'}
 							rotate-45 -translate-x-1/2 -translate-y-1/2
 							${ARROW_POSITIONS[props.position ?? 'top']})
-						${
-							visible
-								? 'scale-100 opacity-100 will-change-transform'
-								: 'scale-95 opacity-0 interact-none'
-						}`,
-						props.class
-					)}>
-					{props.children ?? props.label}
-				</div>
-			</Portal>
+						${TRANSFORM_OFFSETS[props.position ?? 'top']}`,
+					props.class
+				)}
+				style={{
+					...position,
+					...(props.style ?? {}),
+					transitionDelay: visible ? `${props.delay}ms` : undefined,
+					transformOrigin: TRANSFORM_ORIGINS[props.position ?? 'top'],
+				}}>
+				{props.children ?? props.label}
+			</Transition>
 		</Fragment>
 	);
 }
