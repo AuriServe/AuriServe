@@ -1,0 +1,32 @@
+{
+	"name": "@auriserve/plugin-users",
+	"version": "0.0.1",
+	"description": "Adds authenticated users to the system.",
+	"types": "types/Main.d.ts",
+	"author": "Auri <me@auri.xyz>",
+	"license": "MIT",
+	"scripts": {
+		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg",
+		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts & wait"
+	},
+	"sideEffects": false,
+	"devDependencies": {
+		"@babel/core": "^7.16.7",
+		"@babel/preset-env": "^7.16.8",
+		"@babel/preset-typescript": "^7.16.7",
+		"@types/plugin-preact": "file:../preact",
+		"@types/plugin-routes": "file:../routes",
+		"@typescript-eslint/eslint-plugin": "^5.9.1",
+		"@typescript-eslint/parser": "^5.9.1",
+		"babel-loader": "^8.2.3",
+		"eslint-loader": "^4.0.2",
+		"fork-ts-checker-webpack-plugin": "^6.5.0",
+		"preact": "^10.6.4",
+		"ts-loader": "^9.2.6",
+		"webpack-cli": "^4.9.1"
+	},
+	"dependencies": {
+		"auriserve": "file:../../api/build",
+		"common": "file:../../common/build"
+	}
+}

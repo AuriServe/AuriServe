@@ -70,6 +70,62 @@ as.dashboard = {
 		async init() {
 			this.schema = buildSchema([...this.schemaStrings.values()].join('\n'));
 
+			const { addPermission, addPermissionCategory } = as.users;
+
+			addPermission({
+				identifier: 'view-audit-log',
+				description:
+					'See audit logs for all actions that the user has permission to perform.',
+				category: 'administration',
+			});
+
+			addPermissionCategory({
+				identifier: 'plugins',
+				icon: 'plugin',
+			});
+
+			addPermission({
+				identifier: 'view-plugins',
+				description: 'View installed plugins.',
+				category: 'plugins',
+			});
+
+			addPermission({
+				identifier: 'manage-plugins',
+				description: 'Install and uninstall plugins.',
+				category: 'plugins',
+			});
+
+			addPermission({
+				identifier: 'toggle-plugins',
+				description: 'Enable and disable plugins.',
+				category: 'plugins',
+			});
+
+			addPermissionCategory({
+				identifier: 'users',
+				icon: 'user',
+			});
+
+			addPermission({
+				identifier: 'view-users',
+				description: 'View user profiles and details.',
+				category: 'users',
+			});
+
+			addPermission({
+				identifier: 'manage-users',
+				description:
+					'Add, remove, and change roles of users with roles beneath this role',
+				category: 'users',
+			});
+
+			addPermission({
+				identifier: 'reset-passwords',
+				description: 'Set and reset the passwords of other users.',
+				category: 'users',
+			});
+
 			this.routeHandlers.push(
 				router.get('/dashboard/res/main.js', (_, res) => {
 					res.sendFile(path.join(__dirname, '..', 'dist', 'main.js'));

@@ -58,7 +58,7 @@ export default function App() {
 		<AppContext.Provider value={{ data, mergeData }}>
 			<div
 				class={tw`
-				AS_ROOT ${state !== 'LOGIN' && 'pl-14'} grid min-h-screen font-sans theme-emerald
+				AS_ROOT ${state !== 'LOGIN' && 'pl-14'} grid min-h-screen font-sans theme-blue
 				bg-gray-(100 dark:900) text-gray-(800 dark:100)
 				icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
 				{state === 'LOGIN' ? (

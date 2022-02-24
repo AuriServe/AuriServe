@@ -6,6 +6,7 @@ version: 0.0.1
 author: Auri
 
 depends:
+- users ^0.0.1
 - routes ^0.0.1
 - pages ^0.0.1 ?
 
