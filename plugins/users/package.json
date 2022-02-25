@@ -14,6 +14,7 @@
 		"@babel/core": "^7.16.7",
 		"@babel/preset-env": "^7.16.8",
 		"@babel/preset-typescript": "^7.16.7",
+		"@types/bcryptjs": "^2.4.2",
 		"@types/plugin-preact": "file:../preact",
 		"@types/plugin-routes": "file:../routes",
 		"@typescript-eslint/eslint-plugin": "^5.9.1",
@@ -27,6 +28,8 @@
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
-		"common": "file:../../common/build"
+		"bcryptjs": "^2.4.3",
+		"common": "file:../../common/build",
+		"nanoid": "^3.3.1"
 	}
 }

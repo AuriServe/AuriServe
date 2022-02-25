@@ -1,5 +1,8 @@
 export default interface User {
 	identifier: string;
-	email: string;
-	password: string;
+	name: string;
+	emails: string[];
+	roles: string[];
 }
+
+export type Token = string;
