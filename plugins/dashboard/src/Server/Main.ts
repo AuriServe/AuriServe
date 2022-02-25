@@ -38,7 +38,6 @@ const schema = `
 	type Role {
 		identifier: String!
 		name: String!
-		ind: Int!
 		permissions: [String!]!
 	}
 
@@ -63,8 +62,8 @@ const schema = `
 		user: User!
 
 		users: [User!]!
-		roles: [Role!]!
 
+		roles: [Role!]!
 		permissions: [Permission!]!
 		permissionCategories: [PermissionCategory!]!
 	}
@@ -97,6 +96,7 @@ const resolver = {
 		description: 'hey there hey there',
 		favicon: undefined,
 	},
+	roles: () => [...as.users.roles.values()],
 	permissions: () => [...as.users.permissions.values()],
 	permissionCategories: () => [...as.users.permissionCategories.values()],
 	// user:

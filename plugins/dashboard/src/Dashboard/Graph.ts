@@ -37,6 +37,11 @@ type UseDataResult = [
 			icon: string;
 			priority: number;
 		}[];
+		roles: {
+			identifier: string;
+			name: string;
+			permissions: string[];
+		}[];
 	}>,
 	() => void
 ];
@@ -193,7 +198,7 @@ export const QUERY_PERMISSION_CATEGORIES = `permissionCategories { identifier, n
 export const QUERY_USERS = `users { identifier, name, emails, roles }`;
 
 // /** Queries all roles. */
-// export const QUERY_ROLES = `roles ${Query.Role}`;
+export const QUERY_ROLES = `roles { identifier, name, permissions }`;
 
 // /** Queries all pages. */
 // export const QUERY_PAGES = `pages ${Query.PageMeta}`;

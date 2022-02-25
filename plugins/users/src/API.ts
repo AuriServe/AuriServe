@@ -8,9 +8,9 @@ import {
 } from './Permission';
 
 export default interface API {
-	roles: Map<string, Role>;
-	permissionCategories: Map<string, PermissionCategory>;
+	roles: Role[];
 	permissions: Map<string, Permission>;
+	permissionCategories: Map<string, PermissionCategory>;
 
 	createUser(
 		identifier: string,
@@ -35,7 +35,7 @@ export default interface API {
 	addPermission(permission: PermissionArgument): void;
 	removePermission(identifier: string): boolean;
 
-	addRole(role: Role): void;
+	addRole(identifier: string, ind: number, name: string, permissions: string[]): void;
 	removeRole(identifier: string): boolean;
 }
 

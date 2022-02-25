@@ -9,12 +9,17 @@ import { Form, FormSchema, Input } from '../Form';
 
 import { tw } from '../../Twind';
 import * as Icon from '../../Icon';
-import { QUERY_PERMISSIONS, QUERY_PERMISSION_CATEGORIES, useData } from '../../Graph';
+import {
+	QUERY_PERMISSIONS,
+	QUERY_PERMISSION_CATEGORIES,
+	QUERY_ROLES,
+	useData,
+} from '../../Graph';
 import Svg from '../Svg';
 
 export default function UserSettings() {
-	const [{ permissions, permissionCategories }] = useData(
-		[QUERY_PERMISSIONS, QUERY_PERMISSION_CATEGORIES],
+	const [{ roles, permissions, permissionCategories }] = useData(
+		[QUERY_ROLES, QUERY_PERMISSIONS, QUERY_PERMISSION_CATEGORIES],
 		[]
 	);
 
@@ -48,11 +53,8 @@ export default function UserSettings() {
 				])
 			),
 		} as FormSchema;
-
 		// eslint-disable-next-line
 	}, [permissions?.length]);
-
-	console.log(permissions, schema);
 
 	return (
 		<Card>
@@ -62,13 +64,13 @@ export default function UserSettings() {
 				subtitle='Add, remove, and modify roles.'
 			/>
 			<Card.Body>
-				{permissions && permissionCategories ? (
-					<div class={tw`flex gap-12 p-2`}>
+				{roles && permissions && permissionCategories ? (
+					<div class={tw`flex gap-20 p-2`}>
 						<div class={tw`w-96 flex-(& col) gap-1 items-stretch pl-4`}>
-							{permissions.map(({ identifier }) => (
+							{roles.map(({ identifier, name }) => (
 								<Button.Tertiary
 									key={identifier}
-									label={identifier}
+									label={name}
 									class={tw`w-full shrink-0`}
 								/>
 							))}
@@ -76,7 +78,7 @@ export default function UserSettings() {
 						<Form
 							key={schema.fields.length}
 							schema={schema}
-							class={tw`flex-(& col) w-full grow pr-12`}>
+							class={tw`flex-(& col) w-full grow pr-8`}>
 							{permissionsSorted.map(({ permissions, ...category }) => (
 								<Fragment key={category.identifier}>
 									<div class={tw`flex gap-2 mt-10 mb-6 first:mt-0`}>
@@ -92,12 +94,7 @@ export default function UserSettings() {
 									</div>
 									<div class={tw`flex-(& col) gap-6`}>
 										{permissions.map((identifier) => (
-											<Input
-												rounded
-												key={identifier}
-												for={identifier}
-												class={tw`pl-14`}
-											/>
+											<Input rounded key={identifier} for={identifier} />
 										))}
 									</div>
 								</Fragment>

@@ -4,7 +4,6 @@ import { nanoid } from 'nanoid';
 import { assert, titleCase } from 'common';
 
 import User, { Token } from './User';
-import Role from './Role';
 import {
 	Permission,
 	PermissionArgument,
@@ -15,7 +14,7 @@ import {
 
 export * from './API';
 
-const { log: Log, database: db } = as.core;
+const { database: db } = as.core;
 
 db.exec(`DROP TABLE IF EXISTS users`);
 db.exec(`DROP TABLE IF EXISTS roles`);
@@ -64,7 +63,7 @@ db.exec(
 );
 
 as.users = {
-	roles: new Map(),
+	roles: [],
 	permissions: new Map(),
 	permissionCategories: new Map(),
 
@@ -161,7 +160,10 @@ as.users = {
 		permissionCategory.icon ??= 'default';
 		permissionCategory.priority ??= PermissionCategoryPriority.NORMAL;
 
-		as.users.permissionCategories.set(permissionCategory.identifier, permissionCategory as PermissionCategory);
+		as.users.permissionCategories.set(
+			permissionCategory.identifier,
+			permissionCategory as PermissionCategory
+		);
 	},
 
 	removePermissionCategory(identifier: string): boolean {
@@ -190,13 +192,19 @@ as.users = {
 		return as.users.permissions.delete(identifier);
 	},
 
-	addRole(role: Role) {
-		Log.info('WIP Added role: %s', role.identifier);
+	addRole(identifier: string, ind: number, name: string, permissions: string[]) {
+		assert(
+			as.users.roles.findIndex((role) => role.identifier === identifier) === -1,
+			`Role '${identifier}' already exists.`
+		);
+		this.roles.splice(ind, 0, { identifier, name, permissions });
 	},
 
 	removeRole(identifier: string): boolean {
-		Log.info('Removed role: %s', identifier);
-		return as.users.roles.delete(identifier);
+		const ind = as.users.roles.findIndex((roles) => roles.identifier === identifier);
+		if (ind === -1) return false;
+		as.users.roles.splice(ind, 1);
+		return true;
 	},
 };
 
@@ -220,7 +228,13 @@ as.users.addPermission({
 
 (async () => {
 	await as.users.createUser('aurailus', 'Aurailus', 'me@auri.xyz', 'password');
-	await as.users.getUser(await as.users.getAuthToken('me@auri.xyz', 'password'))
+	as.users.getUser(await as.users.getAuthToken('me@auri.xyz', 'password'));
+	try {
+		as.users.addRole('admin', 0, 'Administrator', ['administrator']);
+		as.users.addRole('asshole', 100, 'ass', ['administrator']);
+	} catch (e) {
+		console.warn(e);
+	}
 	// db.exec(
 	// 	`INSERT INTO roles(identifier, name, ind, permissions) VALUES('admin', 'Admin', 0, 'admin')`
 	// );
