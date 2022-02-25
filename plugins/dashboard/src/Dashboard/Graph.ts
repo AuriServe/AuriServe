@@ -15,7 +15,31 @@ const ENDPOINT = '/dashboard/res/gql';
  * - and a function that can be called to refresh the cache.
  */
 
-type UseDataResult = [Partial<any>, () => void];
+type UseDataResult = [
+	Partial<{
+		info: {
+			name: string;
+			domain: string;
+			description: string;
+			favicon: string;
+		};
+		permissions: {
+			identifier: string;
+			name: string;
+			description: string;
+			category: string;
+			default: boolean;
+		}[];
+		permissionCategories: {
+			identifier: string;
+			name: string;
+			description: string;
+			icon: string;
+			priority: number;
+		}[];
+	}>,
+	() => void
+];
 
 /**
  * A hook that provides access to the cached App data, and can refresh subsets of data if supplied with queries.
@@ -145,7 +169,7 @@ export async function executeQuery<T = any>(
 // }
 
 /** Queries basic site info. */
-export const QUERY_INFO = `info { name, description, domain }`;
+export const QUERY_INFO = `info { name, description, favicon, domain }`;
 
 /** Queries site quotas. */
 // export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;
@@ -156,14 +180,17 @@ export const QUERY_INFO = `info { name, description, domain }`;
 /** Queries all media elements. */
 // export const QUERY_MEDIA = `media ${Query.Media}`;
 
-// /** Queries all themes. */
-// export const QUERY_THEMES = `themes ${Query.Theme}`;
+/** Queries all permissions. */
+export const QUERY_PERMISSIONS = `permissions { identifier, name, description, category, default }`;
+
+/** Queries all permissions categories. */
+export const QUERY_PERMISSION_CATEGORIES = `permissionCategories { identifier, name, description, icon, priority }`;
 
 // /** Queries all plugins. */
 // export const QUERY_PLUGINS = `plugins ${Query.Plugin}`;
 
-// /** Queries all media elements. */
-// export const QUERY_USERS = `users ${Query.User}`;
+// /** Queries all users. */
+export const QUERY_USERS = `users { identifier, name, emails, roles }`;
 
 // /** Queries all roles. */
 // export const QUERY_ROLES = `roles ${Query.Role}`;

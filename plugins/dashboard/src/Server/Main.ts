@@ -62,11 +62,11 @@ const schema = `
 		info: Info!
 		user: User!
 
-		users: [User!]
-		roles: [Role!]
+		users: [User!]!
+		roles: [Role!]!
 
-		permissions: [Permission!]
-		permissionCategories: [PermissionCategory!]
+		permissions: [Permission!]!
+		permissionCategories: [PermissionCategory!]!
 	}
 `;
 
@@ -97,6 +97,8 @@ const resolver = {
 		description: 'hey there hey there',
 		favicon: undefined,
 	},
+	permissions: () => [...as.users.permissions.values()],
+	permissionCategories: () => [...as.users.permissionCategories.values()],
 	// user:
 };
 

@@ -75,6 +75,7 @@ export default memo(
 			Object.entries(props.schema.fields).forEach(([name, schema]) =>
 				initializeField(context.current.data, context.current.fields, name, schema)
 			);
+			context.current.schema = props.schema;
 		}, [props.schema]);
 
 		useEffect(() => {

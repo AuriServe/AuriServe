@@ -38,9 +38,9 @@ export default function UserSettings() {
 							key={user}
 							class={tw`grid grid-cols-[max-content_8rem_8rem_1fr] gap-3 p-2 rounded-md items-center hover:bg-gray-input transition`}>
 							<Svg
-								src={Icon.users}
+								src={Icon.user_circle}
 								size={6}
-								class={tw`p-1 rounded-full bg-accent-600/50 icon-p-accent-100 icon-s-accent-400`}
+								class={tw`p-1 rounded-full bg-accent-600/50 icon-p-transparent icon-s-accent-300`}
 							/>
 							<p class={tw`font-medium text-gray-100 leading-none pt-0.5`}>{user.name}</p>
 							<p class={tw`font-medium text-(gray-300 sm) leading-none flex gap-0.5`}>
