@@ -43,15 +43,15 @@
 	"dependencies": {
 		"@headlessui/react": "^1.4.3",
 		"@twind/preset-tailwind": "^1.0.0-next.35",
+		"@types/users": "file:../users",
 		"auriserve": "file:../../api/build",
 		"common": "file:../../common/build",
-		"@types/users": "file:../users",
 		"graphql": "^16.2.0",
 		"js-cookie": "^3.0.1",
 		"preact": "^10.6.4",
 		"react-flip-move": "^3.0.4",
 		"react-router-dom": "^6.2.1",
 		"twind": "^1.0.0-next.35",
-		"vibin-hooks": "^0.2.0"
+		"vibin-hooks": "^0.2.1"
 	}
 }

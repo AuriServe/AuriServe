@@ -1,4 +1,7 @@
+export { default as add } from '@res/icon/add.svg';
 export { default as arrow_more } from '@res/icon/arrow_more.svg';
+export { default as at } from '@res/icon/at.svg';
+export { default as attach } from '@res/icon/attach.svg';
 export { default as auriserve } from '@res/icon/auriserve.svg';
 export { default as browse } from '@res/icon/browse.svg';
 export { default as check } from '@res/icon/check.svg';
@@ -41,5 +44,7 @@ export { default as trash } from '@res/icon/trash.svg';
 export { default as update } from '@res/icon/update.svg';
 export { default as undo } from '@res/icon/undo.svg';
 export { default as users } from '@res/icon/users.svg';
+export { default as user } from '@res/icon/user.svg';
+export { default as user_circle } from '@res/icon/user_circle.svg';
 export { default as view } from '@res/icon/view.svg';
 export { default as widget_add } from '@res/icon/widget_add.svg';

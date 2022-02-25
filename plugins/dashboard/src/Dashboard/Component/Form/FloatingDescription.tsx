@@ -77,14 +77,14 @@ export default function FloatingDescription(props: Props) {
 	}
 
 	return (
-		<Portal to={document.querySelector('.AS_ROOT') ?? document.body}>
+		<Portal wrapperClass={tw`absolute`}>
 			<div
 				ref={containerRef}
 				style={{ ...props.style, top: posRef.current.top, left: posRef.current.left }}
 				class={merge(
-					tw`
-					isolate absolute z-10 w-80 min-h-[2.5rem] bg-gray-700 shadow-md rounded transition-all
-					after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45) [transform-origin:left_center]
+					tw`FloatingDescription~(isolate absolute z-10 w-80 min-h-[2.5rem]
+						bg-gray-700 shadow-md rounded transition-all [transform-origin:left_center])
+					after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45)
 					${!ref && 'opacity-0 scale-[98%]'}`,
 					props.class
 				)}>

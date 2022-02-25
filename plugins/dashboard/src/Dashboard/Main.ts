@@ -2,6 +2,34 @@ import { h, render } from 'preact';
 
 import App from './Component/App';
 
+import * as Icon from './Icon';
+import { registerSettings } from './Settings';
+import { OverviewSettings, UserSettings } from './Component/Page';
+
+registerSettings({
+	identifier: 'dashboard:overview',
+	title: 'Overview',
+	path: 'overview',
+	icon: Icon.home,
+	component: OverviewSettings,
+});
+
+registerSettings({
+	identifier: 'dashboard:users',
+	title: 'Users',
+	path: 'users',
+	icon: Icon.users,
+	component: UserSettings,
+});
+
+registerSettings({
+	identifier: 'dashboard:roles',
+	title: 'Roles',
+	path: 'roles',
+	icon: Icon.role,
+	component: RoleSettings,
+});
+
 render(h(App, {}), document.getElementById('root')!);
 
 export { Page } from './Component/Page';
@@ -41,6 +69,7 @@ export { default as EventEmitter } from './EventEmitter';
 export { useData, executeQuery } from './Graph';
 export { registerPage, unregisterPage } from './Page';
 export { registerShortcut, unregisterShortcut } from './Shortcut';
+export { registerSettings, unregisterSettings } from './Settings';
 
 import * as Preact from 'preact';
 // eslint-disable-next-line
@@ -53,6 +82,7 @@ import * as PreactCompat from 'preact/compat';
 global.__AS_PREACT_COMPAT = PreactCompat;
 
 import * as PreactHooks from 'preact/hooks';
+import RoleSettings from './Component/Page/RoleSettings';
 // eslint-disable-next-line
 // @ts-ignore
 global.__AS_PREACT_HOOKS = PreactHooks;

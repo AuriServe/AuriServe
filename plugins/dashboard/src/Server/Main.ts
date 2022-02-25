@@ -28,8 +28,45 @@ const schema = `
 		description: String!
 	}
 
+	type User {
+		identifier: String!
+		name: String!
+		emails: [String!]!
+		roles: [String!]!
+	}
+
+	type Role {
+		identifier: String!
+		name: String!
+		ind: Int!
+		permissions: [String!]!
+	}
+
+	type Permission {
+		identifier: String!
+		name: String!
+		category: String!
+		description: String
+		default: Boolean!
+	}
+
+	type PermissionCategory {
+		identifier: String!
+		name: String!
+		description: String
+		icon: String!
+		priority: Int!
+	}
+
 	type Query {
 		info: Info!
+		user: User!
+
+		users: [User!]
+		roles: [Role!]
+
+		permissions: [Permission!]
+		permissionCategories: [PermissionCategory!]
 	}
 `;
 
@@ -60,6 +97,7 @@ const resolver = {
 		description: 'hey there hey there',
 		favicon: undefined,
 	},
+	// user:
 };
 
 as.dashboard = {
