@@ -18,6 +18,7 @@
 		"@types/escape-html": "^1.0.1",
 		"@types/plugin-elements": "file:../elements",
 		"@types/plugin-routes": "file:../routes",
+		"@types/plugin-users": "file:../users",
 		"@typescript-eslint/eslint-plugin": "^5.9.1",
 		"@typescript-eslint/parser": "^5.9.1",
 		"babel-loader": "^8.2.3",

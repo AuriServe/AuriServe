@@ -82,12 +82,7 @@ export default function MainPage() {
 								{Object.entries(Icon).map(([name, icon]) => (
 									<div key={name} class={tw`bg-gray-750 rounded w-12 h-12`}>
 										<Svg src={icon} size={6} class={tw`p-3`} />
-										<Tooltip
-											offset={4}
-											position='bottom'
-											label={name}
-											class={tw`text-sm py-1 px-2 text-gray-100`}
-										/>
+										<Tooltip offset={4} position='bottom' label={name} small />
 									</div>
 								))}
 							</Card.Body>

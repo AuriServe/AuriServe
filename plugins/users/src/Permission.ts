@@ -1,8 +1,9 @@
 export interface Permission {
 	identifier: string;
 	name: string;
-	category: string;
 	description?: string;
+	requires: string[];
+	category: string;
 
 	default: boolean;
 }
@@ -29,5 +30,8 @@ export type PermissionCategoryArgument = Omit<
 > &
 	Partial<PermissionCategory>;
 
-export type PermissionArgument = Omit<Permission, 'name' | 'category' | 'default'> &
+export type PermissionArgument = Omit<
+	Permission,
+	'name' | 'category' | 'default' | 'requires'
+> &
 	Partial<Permission>;

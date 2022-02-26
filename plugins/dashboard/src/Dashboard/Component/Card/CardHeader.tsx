@@ -55,12 +55,14 @@ export default function CardHeader(props: Props) {
 							<Svg size={props.subtitle ? 8 : 6} src={props.icon} />
 						</div>
 					)}
-					<div class={tw`flex-(&, col) justify-center`}>
-						<h2 class={tw`font-bold uppercase tracking-widest text-gray-(800 dark:100)`}>
+					<div class={tw`flex-(& col) gap-1.5 justify-center`}>
+						<h2 class={tw`font-medium leading-none text-lg text-gray-(800 dark:100)`}>
 							{props.title}
 						</h2>
 						{props.subtitle && (
-							<p class={tw`text-(sm gray-(600 dark:200))`}>{props.subtitle}</p>
+							<p class={tw`leading-none text-(sm gray-(600 dark:200))`}>
+								{props.subtitle}
+							</p>
 						)}
 					</div>
 				</div>

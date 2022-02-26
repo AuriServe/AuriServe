@@ -1,9 +1,9 @@
 import { h } from 'preact';
 
-import { merge } from 'common';
+import { tw, merge } from '../Twind';
 
 interface Props {
-	/** Size of the spinner, defaults to 48. */
+	/** Size of the spinner in quarter-rems, defaults to 12. */
 	size?: number;
 
 	/** Classes to apply to the component. */
@@ -16,17 +16,20 @@ interface Props {
 export default function Spinner(props: Props) {
 	return (
 		<div
-			class={merge('relative block', props.class)}
-			style={{ width: props.size ?? 48, height: props.size ?? 48 }}>
+			class={merge(tw`relative block animate-fade-in`, props.class)}
+			style={{
+				width: `${(props.size ?? 12) / 4}rem`,
+				height: `${(props.size ?? 12) / 4}rem`,
+			}}>
 			<div
 				class={merge(
-					'absolute inset-0 rounded-full bg-blue-500/25 animate-spinner-1',
+					tw`absolute inset-0 rounded-full bg-accent-500/25 animate-spinner-1`,
 					props.spinnerClass
 				)}
 			/>
 			<div
 				class={merge(
-					'absolute inset-0 rounded-full bg-blue-500/25 animate-spinner-2',
+					tw`absolute inset-0 rounded-full bg-accent-500/25 animate-spinner-2`,
 					props.spinnerClass
 				)}
 			/>

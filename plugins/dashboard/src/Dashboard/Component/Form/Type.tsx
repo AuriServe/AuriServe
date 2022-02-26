@@ -50,6 +50,9 @@ export interface FormField {
 	/** The description for the field. */
 	description?: string;
 
+	/** The icon for the field. */
+	icon?: string;
+
 	/** The default value for the field. */
 	default?: any;
 
@@ -100,6 +103,7 @@ export interface EventType {
 export interface FormContextData {
 	id: string;
 	data: Record<string, any>;
+	onChange: (field: string, value: any) => void;
 	fields: Record<string, FormFieldMeta>;
 	schema: FormSchema;
 	event: EventEmitter<EventType>;

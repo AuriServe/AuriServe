@@ -174,6 +174,7 @@ as.users = {
 		permission.name ??= titleCase(permission.identifier);
 		permission.category ??= 'default';
 		permission.default ??= false;
+		permission.requires ??= [];
 
 		assert(
 			!as.users.permissions.has(permission.identifier),
@@ -214,7 +215,7 @@ as.users.addPermissionCategory({
 
 as.users.addPermissionCategory({
 	identifier: 'administration',
-	icon: 'security',
+	icon: 'role',
 	priority: PermissionCategoryPriority.MAX,
 });
 
@@ -231,7 +232,11 @@ as.users.addPermission({
 	as.users.getUser(await as.users.getAuthToken('me@auri.xyz', 'password'));
 	try {
 		as.users.addRole('admin', 0, 'Administrator', ['administrator']);
-		as.users.addRole('asshole', 100, 'ass', ['administrator']);
+		as.users.addRole('moderator', 100, 'Moderator', ['view-audit-log']);
+		as.users.addRole('editor', 100, 'Editor', ['administrator']);
+		as.users.addRole('@auri', 0, 'Auri', ['administrator']);
+		as.users.addRole('@john', 0, 'John', ['view-audit-log']);
+		as.users.addRole('_everyone', 0, 'Everyone', []);
 	} catch (e) {
 		console.warn(e);
 	}

@@ -69,7 +69,7 @@ export default function Menu(props: Props) {
 		cloneElement(child, {
 			class: merge(
 				child.props.class,
-				tw`opacity-0 animate-${isTop ? 'drop' : 'rise'}-fade-in
+				tw`animate-${isTop ? 'drop' : 'rise'}-fade-in
 				[animation-delay:${(isTop ? i + 1 : children.length - i - 1) * 25}ms]`
 			),
 		})

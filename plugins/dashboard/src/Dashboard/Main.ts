@@ -4,7 +4,7 @@ import App from './Component/App';
 
 import * as Icon from './Icon';
 import { registerSettings } from './Settings';
-import { OverviewSettings, UserSettings } from './Component/Page';
+import { OverviewSettings, UserSettings, PermissionSettings } from './Component/Page';
 
 registerSettings({
 	identifier: 'dashboard:overview',
@@ -23,11 +23,11 @@ registerSettings({
 });
 
 registerSettings({
-	identifier: 'dashboard:roles',
-	title: 'Roles',
-	path: 'roles',
+	identifier: 'dashboard:permissions',
+	title: 'Permissions',
+	path: 'permissions',
 	icon: Icon.role,
-	component: RoleSettings,
+	component: PermissionSettings,
 });
 
 render(h(App, {}), document.getElementById('root')!);
@@ -82,7 +82,6 @@ import * as PreactCompat from 'preact/compat';
 global.__AS_PREACT_COMPAT = PreactCompat;
 
 import * as PreactHooks from 'preact/hooks';
-import RoleSettings from './Component/Page/RoleSettings';
 // eslint-disable-next-line
 // @ts-ignore
 global.__AS_PREACT_HOOKS = PreactHooks;

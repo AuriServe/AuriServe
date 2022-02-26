@@ -221,11 +221,13 @@ const obj: {
 	Secondary: typeof SecondaryButton;
 	Tertiary: typeof TertiaryButton;
 	Link: typeof LinkButton;
+	Unstyled: typeof UnstyledButton;
 } = {
 	Primary: PrimaryButton,
 	Secondary: SecondaryButton,
 	Tertiary: TertiaryButton,
 	Link: LinkButton,
+	Unstyled: UnstyledButton,
 };
 
 export default obj;

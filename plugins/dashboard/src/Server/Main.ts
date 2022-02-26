@@ -114,8 +114,7 @@ as.dashboard = {
 
 			addPermission({
 				identifier: 'view-audit-log',
-				description:
-					'See audit logs for all actions that the user has permission to perform.',
+				description: 'See audit logs for activities the user has permission to perform.',
 				category: 'administration',
 			});
 
@@ -126,43 +125,43 @@ as.dashboard = {
 
 			addPermission({
 				identifier: 'view-plugins',
-				description: 'View installed plugins.',
+				category: 'plugins',
+			});
+
+			addPermission({
+				identifier: 'toggle-plugins',
+				requires: ['view-plugins'],
 				category: 'plugins',
 			});
 
 			addPermission({
 				identifier: 'manage-plugins',
 				description: 'Install and uninstall plugins.',
-				category: 'plugins',
-			});
-
-			addPermission({
-				identifier: 'toggle-plugins',
-				description: 'Enable and disable plugins.',
+				requires: ['view-plugins', 'toggle-plugins'],
 				category: 'plugins',
 			});
 
 			addPermissionCategory({
 				identifier: 'users',
-				icon: 'user',
+				icon: 'users',
 			});
 
 			addPermission({
 				identifier: 'view-users',
-				description: 'View user profiles and details.',
 				category: 'users',
 			});
 
 			addPermission({
 				identifier: 'manage-users',
-				description:
-					'Add, remove, and change roles of users with roles beneath this role',
+				description: 'Add, remove, and manage users with lower roles.',
+				requires: ['view-users'],
 				category: 'users',
 			});
 
 			addPermission({
 				identifier: 'reset-passwords',
-				description: 'Set and reset the passwords of other users.',
+				description: 'Reset the passwords of users with lower roles.',
+				requires: ['view-users'],
 				category: 'users',
 			});
 

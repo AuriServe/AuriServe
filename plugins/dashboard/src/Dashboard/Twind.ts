@@ -230,14 +230,21 @@ const config = defineConfig({
 				'resize-ns': 'ns-resize',
 			},
 			animation: {
-				'drop-fade-in': 'drop-fade-in 150ms ease-out 1 forwards',
-				'rise-fade-in': 'rise-fade-in 150ms ease-out 1 forwards',
-				'scale-in': 'scale-in 250ms ease-out 1 forwards',
+				'fade-in': 'fade-in 150ms ease-out 1 backwards',
+				'drop-fade-in': 'drop-fade-in 150ms ease-out 1 backwards',
+				'rise-fade-in': 'rise-fade-in 150ms ease-out 1 backwards',
+				'scale-in': 'scale-in 250ms ease-out 1 backwards',
+				'spinner-1': 'spinner 1s ease-in-out alternate infinite',
+				'spinner-2': 'spinner 1s ease-in-out -1s alternate infinite',
 			},
 			keyframes: {
 				'scale-in': {
 					from: { opacity: 0, transform: 'scale(0.9)' },
 					to: { transform: 'scale(1)' },
+				},
+				'fade-in': {
+					from: { opacity: 0 },
+					to: { opacity: 1 },
 				},
 				'drop-fade-in': {
 					from: { opacity: 0, transform: 'translateY(-0.25rem)' },
@@ -246,6 +253,14 @@ const config = defineConfig({
 				'rise-fade-in': {
 					from: { opacity: 0, transform: 'translateY(0.25rem)' },
 					to: { opacity: 1 },
+				},
+				'spinner': {
+					from: {
+						transform: 'scale(0)',
+					},
+					to: {
+						transform: 'scale(1)',
+					},
 				},
 			},
 		},

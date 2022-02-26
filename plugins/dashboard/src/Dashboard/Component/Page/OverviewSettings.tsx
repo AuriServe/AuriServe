@@ -67,6 +67,11 @@ const FORM_SCHEMA: FormSchema = {
 				hidden: 'Hidden',
 			},
 		},
+		toggle: {
+			type: 'toggle',
+			label: 'Toggle option demo',
+			description: '',
+		},
 	},
 };
 
@@ -111,6 +116,7 @@ export default function OverviewSettings() {
 							<Input for='favicon' />
 							<Input for='themeColor' />
 							<Input for='visibility' />
+							<Input for='toggle' />
 						</div>
 					</div>
 

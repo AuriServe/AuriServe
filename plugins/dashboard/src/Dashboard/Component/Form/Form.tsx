@@ -1,6 +1,7 @@
+import { buildPath, splitPath, traversePath } from 'common';
 import { h, ComponentChildren } from 'preact';
 import { forwardRef, memo } from 'preact/compat';
-import { useEffect, useMemo, useRef } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef } from 'preact/hooks';
 
 import { tw } from '../../Twind';
 
@@ -18,6 +19,7 @@ import {
 export interface Props {
 	schema: FormSchema;
 
+	onChange?: (data: any, field: string, newValue: any, oldValue: any) => void;
 	onSubmit?: (data: any) => void;
 
 	style?: any;
@@ -65,10 +67,30 @@ export default memo(
 		const context = useRef<FormContextData>({
 			id,
 			data: {},
+			onChange: null as any,
 			fields: {},
 			schema: props.schema,
 			event: new EventEmitter(),
 		});
+
+		const { onChange: propsOnChange } = props;
+
+		const onChange = useCallback(
+			(field: string, newValue: string) => {
+				const path = splitPath(field);
+				const key = path.pop();
+				field = buildPath(...path);
+
+				console.log('change!');
+				const obj = traversePath(context.current.data, field);
+				const oldValue = obj[key!];
+				obj[key!] = newValue;
+				propsOnChange?.(context.current.data, field, newValue, oldValue);
+			},
+			[propsOnChange]
+		);
+
+		context.current.onChange = onChange;
 
 		useMemo(() => {
 			context.current.fields = {};

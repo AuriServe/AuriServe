@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { titleCase } from 'common';
+import { titleCase, traversePath } from 'common';
 import { useRef, useContext, useEffect } from 'preact/hooks';
 
 import { FormContext, FormField, ErrorType } from './Type';
@@ -26,28 +26,25 @@ export default function Input(props: Props) {
 	const form = useContext(FormContext);
 
 	const id = `${form.id}-${props.for}`;
-	const schema = form.schema.fields[props.for] as FormField;
+	const schema = traversePath(form.schema.fields, props.for) as FormField;
 	if (!schema) throw new Error(`Input: Form does not have field '${props.for}'.`);
 
 	useEffect(() => {
-		form.fields[props.for].ref = ref.current;
+		traversePath(form.fields, props.for).ref = ref.current;
 	}, [form.fields, props.for]);
 
 	const handleValidity = (error: ErrorType | null, message: string | null) => {
-		if (
-			form.fields[props.for].error === error &&
-			form.fields[props.for].errorMessage === message
-		)
-			return;
+		const field = traversePath(form.fields, props.for);
+		if (field.error === error && field.errorMessage === message) return;
 
-		form.fields[props.for].error = error;
-		form.fields[props.for].errorMessage = message;
+		field.error = error;
+		field.errorMessage = message;
 
 		form.event.emit('validity', props.for);
 	};
 
 	const handleChange = (value: any) => {
-		form.data[props.for] = value;
+		form.onChange(props.for, value);
 		props.onChange?.(value);
 	};
 
@@ -59,6 +56,8 @@ export default function Input(props: Props) {
 		form.event.emit('focus', null);
 	};
 
+	const value = traversePath(form.data, props.for);
+
 	switch (schema.type) {
 		case 'text':
 			return (
@@ -66,23 +65,19 @@ export default function Input(props: Props) {
 					ref={ref}
 					id={id}
 					label={schema.label ?? titleCase(props.for)}
-					value={form.data[props.for]}
+					value={value}
 					completion={schema.completion}
-
 					multiline={schema.multiline}
 					maxHeight={schema.maxHeight}
-
 					optional={schema.validation?.optional}
 					minLength={schema.validation?.minLength}
 					maxLength={schema.validation?.maxLength}
 					pattern={schema.validation?.pattern}
 					patternHint={schema.validation?.patternHint}
-
 					onChange={handleChange}
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
-
 					class={props.class}
 					style={props.style}
 				/>
@@ -93,42 +88,36 @@ export default function Input(props: Props) {
 					ref={ref}
 					id={id}
 					label={schema.label ?? titleCase(props.for)}
-					value={form.data[props.for]}
+					value={value}
 					completion={schema.completion}
-
 					optional={schema.validation?.optional}
 					minLength={schema.validation?.minLength}
 					maxLength={schema.validation?.maxLength}
 					pattern={schema.validation?.pattern}
 					patternHint={schema.validation?.patternHint}
-
 					onChange={handleChange}
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
-
 					class={props.class}
 					style={props.style}
 				/>
-			)
+			);
 		case 'option':
 			return (
 				<OptionInput
 					ref={ref}
 					id={id}
 					label={schema.label ?? titleCase(props.for)}
-					value={form.data[props.for]}
+					value={value}
 					options={schema.options!}
-
 					optional={schema.validation?.optional}
 					pattern={schema.validation?.pattern}
 					patternHint={schema.validation?.patternHint}
-
 					onChange={handleChange}
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
-
 					class={props.class}
 					style={props.style}
 				/>
@@ -140,18 +129,16 @@ export default function Input(props: Props) {
 					id={id}
 					for={props.for}
 					label={schema.label ?? titleCase(props.for)}
-					value={form.data[props.for]}
-
+					description={schema.description}
+					icon={schema.icon}
+					value={value}
 					rounded={props.rounded}
 					toggleLeft={props.toggleLeft}
-
 					optional={schema.validation?.optional}
-
 					onChange={handleChange}
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
-
 					class={props.class}
 					style={props.style}
 				/>
