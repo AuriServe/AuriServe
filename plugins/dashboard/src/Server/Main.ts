@@ -1,10 +1,12 @@
 import path from 'path';
 import as from 'auriserve';
-import { graphql, buildSchema } from 'graphql';
+import { graphql, buildSchema, GraphQLResolveInfo } from 'graphql';
 
 import './API';
+import { User } from 'users';
+import { assert, isType } from 'common';
 
-const { router } = as.core;
+const { router, log: Log } = as.core;
 
 const schema = `
 	scalar Date
@@ -32,13 +34,14 @@ const schema = `
 		identifier: String!
 		name: String!
 		emails: [String!]!
-		roles: [String!]!
+		roles: [String!]
+		permissions: [String!]
 	}
 
 	type Role {
 		identifier: String!
 		name: String!
-		permissions: [String!]!
+		permissions: [String!]
 	}
 
 	type Permission {
@@ -61,11 +64,11 @@ const schema = `
 		info: Info!
 		user: User!
 
-		users: [User!]!
+		users: [User!]
 
-		roles: [Role!]!
-		permissions: [Permission!]!
-		permissionCategories: [PermissionCategory!]!
+		roles: [Role!]
+		permissions: [Permission!]
+		permissionCategories: [PermissionCategory!]
 	}
 `;
 
@@ -73,9 +76,7 @@ function trim(templateArgs: TemplateStringsArray, ...args: any[]) {
 	const strings = templateArgs
 		.reduce((acc, str, i) => {
 			acc += str;
-			if (i < args.length) {
-				acc += args[i];
-			}
+			if (i < args.length) acc += args[i];
 			return acc;
 		}, '')
 		.split('\n');
@@ -89,18 +90,36 @@ function trim(templateArgs: TemplateStringsArray, ...args: any[]) {
 	return strings.slice(firstNonEmpty).join('\n').replace(killRegex, '');
 }
 
-const resolver = {
-	info: {
-		name: 'The Shinglemill',
-		domain: 'shinglemill.ca',
-		description: 'hey there hey there',
-		favicon: undefined,
-	},
-	roles: () => [...as.users.roles.values()],
-	permissions: () => [...as.users.permissions.values()],
-	permissionCategories: () => [...as.users.permissionCategories.values()],
-	// user:
-};
+interface Ctx {
+	user: User;
+	permissions: Set<string>;
+	context: any;
+}
+
+function gate<T = any>(
+	permissions: string[],
+	callback: (root: any, ctx: Ctx, info: GraphQLResolveInfo) => T
+): (root: any, ctx: any, info: GraphQLResolveInfo) => T | undefined {
+	for (const permission of permissions) {
+		assert(
+			as.users.permissions.has(permission),
+			`Permission '${permission}' does not exist.`
+		);
+	}
+
+	return (root: any, ctx: Ctx, info: GraphQLResolveInfo) => {
+		const userPermissions = ctx.permissions;
+		if (!userPermissions.has('administrator')) {
+			for (const permission of permissions) {
+				if (!userPermissions.has(permission)) {
+					return undefined;
+				}
+			}
+		}
+
+		return callback(root, ctx, info);
+	};
+}
 
 as.dashboard = {
 	internal: {
@@ -113,8 +132,21 @@ as.dashboard = {
 			const { addPermission, addPermissionCategory } = as.users;
 
 			addPermission({
-				identifier: 'view-audit-log',
+				identifier: 'view_audit_log',
 				description: 'See audit logs for activities the user has permission to perform.',
+				category: 'administration',
+			});
+
+			addPermission({
+				identifier: 'view_permissions',
+				description: 'View user and role permissions.',
+				category: 'administration',
+			});
+
+			addPermission({
+				identifier: 'manage_permissions',
+				description: 'Add, remove, and edit user and role permissions.',
+				// requires: ['view_permissions'],
 				category: 'administration',
 			});
 
@@ -124,20 +156,20 @@ as.dashboard = {
 			});
 
 			addPermission({
-				identifier: 'view-plugins',
+				identifier: 'view_plugins',
 				category: 'plugins',
 			});
 
 			addPermission({
-				identifier: 'toggle-plugins',
-				requires: ['view-plugins'],
+				identifier: 'toggle_plugins',
+				// requires: ['view-plugins'],
 				category: 'plugins',
 			});
 
 			addPermission({
-				identifier: 'manage-plugins',
+				identifier: 'manage_plugins',
 				description: 'Install and uninstall plugins.',
-				requires: ['view-plugins', 'toggle-plugins'],
+				// requires: ['view-plugins', 'toggle-plugins'],
 				category: 'plugins',
 			});
 
@@ -147,23 +179,48 @@ as.dashboard = {
 			});
 
 			addPermission({
-				identifier: 'view-users',
+				identifier: 'view_users',
 				category: 'users',
 			});
 
 			addPermission({
-				identifier: 'manage-users',
+				identifier: 'manage_users',
 				description: 'Add, remove, and manage users with lower roles.',
-				requires: ['view-users'],
+				// requires: ['view-users'],
 				category: 'users',
 			});
 
 			addPermission({
-				identifier: 'reset-passwords',
+				identifier: 'reset_passwords',
 				description: 'Reset the passwords of users with lower roles.',
-				requires: ['view-users'],
+				// requires: ['view-users'],
 				category: 'users',
 			});
+
+			as.dashboard.gqlResolver = {
+				info: {
+					name: 'The Shinglemill',
+					domain: 'shinglemill.ca',
+					description: 'hey there hey there',
+					favicon: undefined,
+				},
+				user: (_: any, ctx: Ctx) => ({ ...ctx.user, permissions: ctx.permissions }),
+				roles: (_: any, ctx: Ctx) => {
+					const roles = [...as.users.roles.values()];
+					if (
+						!ctx.permissions.has('view_permissions') &&
+						!ctx.permissions.has('administrator')
+					) {
+						roles.forEach((role: any) => ({ ...role, permissions: undefined }));
+					}
+					return roles;
+				},
+				permissions: gate(['view_permissions'], () => as.users.permissions.values()),
+				permissionCategories: gate(['view_permissions'], () =>
+					as.users.permissionCategories.values()
+				),
+				users: gate(['view_users'], () => as.users.listUsers()),
+			};
 
 			this.routeHandlers.push(
 				router.get('/dashboard/res/main.js', (_, res) => {
@@ -178,21 +235,54 @@ as.dashboard = {
 			);
 
 			this.routeHandlers.push(
-				router.post('/dashboard/res/auth', (_, res) => {
-					res.send('1234fakeToken4321');
+				router.post('/dashboard/res/auth', async (req, res) => {
+					try {
+						assert(
+							isType(req.body.identity, 'string') && isType(req.body.password, 'string'),
+							'Missing required information.'
+						);
+
+						const token = await as.users.getAuthToken(
+							req.body.identity,
+							req.body.password
+						);
+
+						res.send(token);
+					} catch (e) {
+						if ((e as Error).name === 'AssertError') {
+							res.status(401).send((e as Error).message);
+						} else {
+							Log.warn('Unhandled error in auth handler: ', e);
+							res.sendStatus(400);
+						}
+					}
 				})
 			);
 
 			this.routeHandlers.push(
 				router.post('/dashboard/res/gql', async (req, res) => {
-					res.send(
-						await graphql({
-							schema: this.schema!,
-							source: req.body.query,
-							rootValue: as.dashboard.gqlResolver,
-							contextValue: as.dashboard.gqlContext,
-						})
-					);
+					try {
+						const token = req.headers.token;
+						assert(token && typeof token === 'string', 'Missing required information.');
+						const user = as.users.getUser(token);
+						const permissions = as.users.getRolePermissions(user.roles);
+
+						res.send(
+							await graphql({
+								schema: this.schema!,
+								source: req.body.query,
+								rootValue: as.dashboard.gqlResolver,
+								contextValue: { permissions, context: as.dashboard.gqlContext, user },
+							})
+						);
+					} catch (e) {
+						if ((e as Error).name === 'AssertError') {
+							res.status(401).send((e as Error).message);
+						} else {
+							Log.warn('Unhandled error in gql handler: ', e);
+							res.sendStatus(400);
+						}
+					}
 				})
 			);
 
@@ -255,11 +345,11 @@ as.dashboard = {
 			this.routeHandlers.forEach((handler) => router.remove(handler));
 			this.schemaStrings = new Set();
 			as.dashboard.gqlContext = {};
-			as.dashboard.gqlResolver = resolver;
+			as.dashboard.gqlResolver = {};
 		},
 	},
 
-	gqlResolver: resolver,
+	gqlResolver: {},
 	gqlContext: {},
 
 	extendGQLSchema(schema: string) {

@@ -15,6 +15,7 @@ interface Props {
 	value?: string;
 	for: string;
 
+	disabled?: boolean;
 	optional?: boolean;
 
 	onChange?: (value: string) => void;
@@ -38,6 +39,7 @@ export default forwardRef<HTMLElement, Props>(function ToggleInput(props, fRef) 
 		(evt: Event) => {
 			evt.preventDefault();
 			evt.stopPropagation();
+			if (props.disabled) return;
 
 			setValue((oldValue) => {
 				const value = !oldValue;
@@ -45,14 +47,15 @@ export default forwardRef<HTMLElement, Props>(function ToggleInput(props, fRef) 
 				return value;
 			});
 		},
-		[onChange]
+		[onChange, props.disabled]
 	);
 
 	return (
 		<div
 			ref={fRef as Ref<HTMLDivElement>}
 			class={merge(
-				tw`flex-(& col) px-2.5 py-3 rounded transition cursor-pointer border-2 border-transparent group
+				tw`flex-(& col) px-2.5 py-3 rounded transition border-2 border-transparent group
+				cursor-${props.disabled ? 'auto' : 'pointer'}
 				${value ? 'bg-gray-input' : '!border-gray-input'}`,
 				props.class
 			)}
@@ -73,21 +76,30 @@ export default forwardRef<HTMLElement, Props>(function ToggleInput(props, fRef) 
 						type='checkbox'
 						id={props.id}
 						checked={value}
+						disabled={props.disabled}
 						onChange={() => setValue(!value)}
 						onClick={(evt) => evt.stopPropagation()}
-						class={tw`absolute z-10 w-full h-full inset-0 opacity-0 peer cursor-pointer`}
+						class={tw`absolute z-10 w-full h-full inset-0 opacity-0 peer cursor-(pointer disabled:auto)`}
 					/>
 					<div
 						class={tw`absolute inset-0 w-full h-full p-1 rounded-full transition
-							ring-(accent-400 offset-gray-800 group-focus-within:(2 offset-2))
-							bg-(gray-700 group-focus-within:gray-700 peer-checked:accent-400
-							peer-checked:group-focus-within:accent-400)`}
+							${
+								props.disabled
+									? `bg-gray-700 peer-checked:bg-gray-400`
+									: `ring-(accent-400 offset-gray-800 group-focus-within:(2 offset-2))
+										bg-(gray-700 group-focus-within:gray-700 peer-checked:accent-400
+										peer-checked:group-focus-within:accent-400)`
+							}`}
 					/>
 					<div
 						class={tw`absolute w-4 h-4 rounded-full shadow-sm shadow-gray-900/50
 							top-1 left-1 peer-checked:translate-x-4 transition
-							bg-(gray-300 group-hover:gray-200 group-focus-within:accent-400 peer-checked:gray-700
-								peer-checked:group-hover:gray-600 peer-checked:group-focus-within:gray-700)`}
+							${
+								props.disabled
+									? `bg-gray-400 peer-checked:bg-gray-700`
+									: `bg-(gray-300 group-hover:gray-200 group-focus-within:accent-400 peer-checked:gray-700
+										peer-checked:group-hover:gray-600 peer-checked:group-focus-within:gray-700)`
+							}`}
 					/>
 				</div>
 			</div>

@@ -81,7 +81,6 @@ export default memo(
 				const key = path.pop();
 				field = buildPath(...path);
 
-				console.log('change!');
 				const obj = traversePath(context.current.data, field);
 				const oldValue = obj[key!];
 				obj[key!] = newValue;

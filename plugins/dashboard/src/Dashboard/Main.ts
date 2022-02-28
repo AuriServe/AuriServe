@@ -19,6 +19,7 @@ registerSettings({
 	title: 'Users',
 	path: 'users',
 	icon: Icon.users,
+	permissions: ['view_users'],
 	component: UserSettings,
 });
 
@@ -27,6 +28,7 @@ registerSettings({
 	title: 'Permissions',
 	path: 'permissions',
 	icon: Icon.role,
+	permissions: ['view_permissions'],
 	component: PermissionSettings,
 });
 

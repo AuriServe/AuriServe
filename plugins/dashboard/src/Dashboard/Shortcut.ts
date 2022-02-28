@@ -1,16 +1,8 @@
-import Cookie from 'js-cookie';
 import { Location } from 'react-router-dom';
 
 import { togglePalette } from './Component/ShortcutPalette';
 
-import icon_home from '@res/icon/home.svg';
-// import icon_file from '@res/icon/file.svg';
-// import icon_media from '@res/icon/image.svg';
-import icon_themes from '@res/icon/theme.svg';
-import icon_logout from '@res/icon/logout.svg';
-// import icon_plugins from '@res/icon/plugin.svg';
-import icon_settings from '@res/icon/options.svg';
-import icon_shortcut from '@res/icon/shortcut.svg';
+import * as Icon from './Icon';
 
 export interface ShortcutContext {
 	location: Location;
@@ -83,7 +75,7 @@ registerShortcut({
 	title: 'Go Home',
 	aliases: ['view home', 'main'],
 	description: 'Go to the AuriServe home.',
-	icon: icon_home,
+	icon: Icon.home,
 	action: ({ navigate }) => navigate('/'),
 });
 
@@ -99,7 +91,7 @@ registerShortcut({
 		'configuration',
 	],
 	description: 'Manage AuriServe settings.',
-	icon: icon_settings,
+	icon: Icon.options,
 	action: ({ navigate }) => navigate('/settings/'),
 });
 
@@ -115,7 +107,7 @@ registerShortcut({
 		'address',
 	],
 	description: 'Edit basic site appearance settings.',
-	icon: icon_home,
+	icon: Icon.home,
 	action: ({ navigate }) => navigate('/settings/overview/'),
 });
 
@@ -124,7 +116,7 @@ registerShortcut({
 	title: 'Shortcut Palette',
 	aliases: ['command palette'],
 	description: 'Execute commands.',
-	icon: icon_shortcut,
+	icon: Icon.shortcut,
 	action: () => {
 		togglePalette();
 	},
@@ -135,9 +127,9 @@ registerShortcut({
 	title: 'Log out',
 	aliases: ['exit', 'close'],
 	description: 'Log out of AuriServe.',
-	icon: icon_logout,
+	icon: Icon.logout,
 	action: () => {
-		Cookie.remove('tkn');
+		window.localStorage.removeItem('token');
 		window.location.href = '/dashboard/';
 	},
 });
@@ -147,7 +139,7 @@ registerShortcut({
 	title: 'Toggle Dark Mode',
 	aliases: ['dark mode', 'light mode', 'color theme', 'theme'],
 	description: 'Toggle between light and dark mode.',
-	icon: icon_themes,
+	icon: Icon.theme,
 	action: () => {
 		document.documentElement.classList.add('AS_TRANSITION_THEME');
 		setTimeout(() => document.documentElement.classList.toggle('dark'), 50);

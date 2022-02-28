@@ -7,10 +7,26 @@ import Svg from '../Svg';
 
 import { tw } from '../../Twind';
 import { getSettings } from '../../Settings';
-
-const settings = getSettings();
+import { QUERY_SELF_USER, useData } from '../../Graph';
+import { useMemo } from 'preact/hooks';
 
 export default function SettingsPage() {
+	const [{ user }] = useData(QUERY_SELF_USER, []);
+
+	const settings = useMemo(() => {
+		if (!user) return null;
+
+		if (user.permissions.includes('administrator')) return [...getSettings().values()];
+
+		return [...getSettings().values()].filter(
+			(setting) =>
+				setting.permissions?.findIndex((perm) => !user.permissions.includes(perm)) ??
+				-1 === -1
+		);
+		// eslint-disable-next-line
+	}, [...(user?.permissions ?? [])]);
+
+	if (!settings) return null;
 	// const location = useLocation();
 	// const navigate = useNavigate();
 
@@ -87,13 +103,13 @@ export default function SettingsPage() {
 				<ul class={tw`sticky top-6 flex-(& col) gap-2 mt-6`} role='navigation'>
 					{[...settings.values()].map((setting) => (
 						<li key={setting.identifier}>
-						<Link
-							to={setting.path}
-							// activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
-							className={tw`flex gap-3 p-2 items-end rounded-md transition text-gray-200 hover:bg-gray-800/50`}>
-							<Svg src={setting.icon} size={6} class={tw`ml-0.5`} />
-							<p class={tw`leading-snug font-medium flex-grow`}>{setting.title}</p>
-							{/*{typeof notifications === 'number' && (
+							<Link
+								to={setting.path}
+								// activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
+								className={tw`flex gap-3 p-2 items-end rounded-md transition text-gray-200 hover:bg-gray-800/50`}>
+								<Svg src={setting.icon} size={6} class={tw`ml-0.5`} />
+								<p class={tw`leading-snug font-medium flex-grow`}>{setting.title}</p>
+								{/*{typeof notifications === 'number' && (
 								<div
 									class={tw`block w-4 h-4 pt-px mb-1 mr-1 bg-accent-400 leading-none font-black
 										text-([13px] gray-700 center) rounded-full ring-(4 accent-600/25 offset-gray-900)`}>
@@ -106,13 +122,15 @@ export default function SettingsPage() {
 										text-(sm gray-700 center) bg-accent-500 rounded-full ring-(& accent-600/25)`}
 								/>
 							)}*/}
-						</Link>
-					</li>
+							</Link>
+						</li>
 					))}
 				</ul>
 			</div>
 			<div class={tw`w-full max-w-4xl p-6 pb-16 space-y-12`}>
-				{[...settings.values()].map(({ identifier, component: Component }) => <Component key={identifier} />)}
+				{[...settings.values()].map(({ identifier, component: Component }) => (
+					<Component key={identifier} />
+				))}
 				<div class='h-48' />
 			</div>
 			<div class={tw`w-48 flex-shrink hidden 2xl:block`} />

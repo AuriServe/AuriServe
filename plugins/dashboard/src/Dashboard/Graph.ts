@@ -17,6 +17,12 @@ const ENDPOINT = '/dashboard/res/gql';
 
 type UseDataResult = [
 	Partial<{
+		user: {
+			name: string;
+			identifier: string;
+			roles: string[];
+			permissions: string[];
+		};
 		info: {
 			name: string;
 			domain: string;
@@ -41,6 +47,12 @@ type UseDataResult = [
 			identifier: string;
 			name: string;
 			permissions: string[];
+		}[];
+		users: {
+			identifier: string;
+			name: string;
+			emails: string[];
+			roles: string[];
 		}[];
 	}>,
 	() => void
@@ -67,6 +79,7 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
 	const { data, mergeData } = useContext<AppContextData>(AppContext);
 
 	const refreshData = async (abort?: AbortSignal) => {
+		if (!queries.length) return;
 		const data = await executeQuery(query);
 		if (!abort?.aborted) mergeData(data);
 	};
@@ -79,61 +92,6 @@ export function useData(queries: string | string[], dependents?: any[]): UseData
 
 	return [data, (abort?: AbortSignal) => refreshData(abort)];
 }
-
-/**
- * A result provided by the useQuery hook.
- * It is an array containing (in the following order):
- * - The currently cached query data,
- * - A boolean indicating load state,
- * - and a function that can be called to refresh the cache.
- */
-
-// type UseQueryResult = [Partial<Int.Root>, boolean, () => void];
-
-// /**
-//  * A hook that provides access to making cached GraphQL queries.
-//  * Accepts a query string which will be interpreted *as is*.
-//  * It is recommended to use the constant queries defined below this function.
-//  *
-//  * Returns an array containing (in the following order):
-//  * - The currently cached query data,
-//  * - A boolean indicating load state,
-//  * - and a function that can be called to refresh the cache.
-//  *
-//  * @param {string} queries - A GraphQL query to operate on the server.
-//  * @param {Options} options - An optional set of options to alter the caching behavior of the queries.
-//  * @param {Object} variables - An optional set of variables to send with the query.
-//  * @returns an array containing the hook's result.
-//  */
-
-// export function useQuery(query: string, variables: any = {}): UseQueryResult {
-// 	// const dataRef = useRef<Partial<Int.Root>>({});
-// 	// const fetchRef = useRef<AbortController>(new AbortController());
-
-// 	// useEffect(() => {
-
-// 	// }, [])
-
-// 	// const res = useGraphQL({
-// 	// 	loadOnMount: true,
-// 	// 	loadOnReload: true,
-// 	// 	...options,
-// 	// 	operation: { query, variables },
-// 	// 	fetchOptionsOverride,
-// 	// });
-
-// 	// if (res.cacheValue?.graphQLErrors)
-// 	// 	console.error('Query Error:', res.cacheValue?.graphQLErrors);
-// 	// return [(res.cacheValue?.data ?? {}) as Partial<Int.Root>, res.loading, res.load];
-
-// 	return [
-// 		{},
-// 		false,
-// 		() => {
-// 			/* TODO */
-// 		},
-// 	];
-// }
 
 /**
  * A function that executes a query.
@@ -149,7 +107,7 @@ export async function executeQuery<T = any>(
 ): Promise<T> {
 	const res = (await fetch(ENDPOINT, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers: { 'Content-Type': 'application/json', token: localStorage.getItem('token') } as any,
 		cache: 'no-cache',
 		body: JSON.stringify({ query, variables }),
 	}).then((res) => res.json())) as { data?: T; graphQLErrors?: string[] };
@@ -158,23 +116,23 @@ export async function executeQuery<T = any>(
 	return res.data ?? ({} as T);
 }
 
-// /**
-//  * A hook that returns a function to execute the provided GQL query with dynamic variables,
-//  * which is useful for mutations. Triggers a refresh when the query completes.
-//  * It is recommended to use the constant queries defined below this function.
-//  *
-//  * @param {string} mutation - A GraphQL query to operate on the server.
-//  * @returns an function that will execute the specified query with the provided variables.
-//  */
-
-// export function useMutation(mutation: string) {
-// 	return async (variables: any) => {
-// 		return await executeQuery(mutation, variables);;
-// 	};
-// }
-
 /** Queries basic site info. */
 export const QUERY_INFO = `info { name, description, favicon, domain }`;
+
+/** Queries all permissions. */
+export const QUERY_PERMISSIONS = `permissions { identifier, name, description, category, default }`;
+
+/** Queries all permissions categories. */
+export const QUERY_PERMISSION_CATEGORIES = `permissionCategories { identifier, name, description, icon, priority }`;
+
+/** Queries the current user. */
+export const QUERY_SELF_USER = `user { identifier, name, emails, roles, permissions }`;
+
+/** Queries all users. */
+export const QUERY_USERS = `users { identifier, name, emails, roles }`;
+
+/** Queries all roles. */
+export const QUERY_ROLES = `roles { identifier, name, permissions }`;
 
 /** Queries site quotas. */
 // export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;
@@ -185,20 +143,8 @@ export const QUERY_INFO = `info { name, description, favicon, domain }`;
 /** Queries all media elements. */
 // export const QUERY_MEDIA = `media ${Query.Media}`;
 
-/** Queries all permissions. */
-export const QUERY_PERMISSIONS = `permissions { identifier, name, description, category, default }`;
-
-/** Queries all permissions categories. */
-export const QUERY_PERMISSION_CATEGORIES = `permissionCategories { identifier, name, description, icon, priority }`;
-
 // /** Queries all plugins. */
 // export const QUERY_PLUGINS = `plugins ${Query.Plugin}`;
-
-// /** Queries all users. */
-export const QUERY_USERS = `users { identifier, name, emails, roles }`;
-
-// /** Queries all roles. */
-export const QUERY_ROLES = `roles { identifier, name, permissions }`;
 
 // /** Queries all pages. */
 // export const QUERY_PAGES = `pages ${Query.PageMeta}`;

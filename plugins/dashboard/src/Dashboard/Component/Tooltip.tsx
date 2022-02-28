@@ -25,8 +25,8 @@ interface Props {
 const TRANSFORM_ORIGINS = {
 	top: '50% 150%',
 	right: '-50% 50%',
-	bottom: '50% -50%',
-	left: '150% 50%',
+	bottom: '100% -50%',
+	left: '50% 50%',
 };
 
 const ARROW_POSITIONS = {
@@ -109,7 +109,7 @@ export default function Tooltip(props: Props) {
 				aria-hidden={true}
 				wrapperClass={tw`absolute`}
 				class={merge(
-					tw`Tooltip~(absolute transition rounded font-medium
+					tw`Tooltip~(absolute transition rounded font-medium will-change-transform
 						${props.small ? 'text-sm py-1 px-2 text-gray-100' : 'py-1 px-2.5'}
 						bg-${props.bg ?? 'gray-700'} drop-shadow-md whitespace-nowrap)
 						after:(w-2 h-2 absolute bg-${props.bg ?? 'gray-700'}

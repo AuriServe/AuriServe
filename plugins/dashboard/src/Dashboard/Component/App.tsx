@@ -1,4 +1,3 @@
-import Cookie from 'js-cookie';
 import { h, createContext } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -39,7 +38,7 @@ export const AppContext = createContext<AppContextData>({
 export default function App() {
 	const [data, setData] = useState<Partial<any>>({});
 	const [state, setState] = useState<AppState>(() =>
-		Cookie.get('tkn') ? 'QUERYING' : 'LOGIN'
+		window.localStorage.getItem('token') ? 'QUERYING' : 'LOGIN'
 	);
 
 	const mergeData = useCallback(

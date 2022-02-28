@@ -8,6 +8,7 @@ export interface Settings {
 	title: string;
 	path: string;
 	icon: string;
+	permissions?: string[];
 	component: FunctionalComponent<any>;
 }
 

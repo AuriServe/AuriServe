@@ -8,18 +8,18 @@ function descend(seg: number | string, object: any) {
 		);
 		assert(
 			object.length > seg,
-			`Array '${JSON.stringify(object)}' is missing index '${seg}'.`
+			`Index '${seg}' is missing in Array '${JSON.stringify(object)}'.`
 		);
 		return object[seg];
 	}
 
 	assert(
 		object !== undefined && typeof object === 'object',
-		`Value '${object}' is not an Object.`
+		`Value is not an object: '${object}'.`
 	);
 	assert(
 		seg in object,
-		`Object '${JSON.stringify(object)}' is missing property '${seg}'.`
+		`Object is missing property '${seg}': '${JSON.stringify(object)}'.`
 	);
 	return object[seg];
 }

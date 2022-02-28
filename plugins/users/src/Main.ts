@@ -20,7 +20,7 @@ db.exec(`DROP TABLE IF EXISTS users`);
 db.exec(`DROP TABLE IF EXISTS roles`);
 db.exec(`DROP TABLE IF EXISTS userRoles`);
 db.exec(`DROP TABLE IF EXISTS userEmails`);
-db.exec(`DROP TABLE IF EXISTS userTokens`);
+// db.exec(`DROP TABLE IF EXISTS userTokens`);
 
 db.exec(
 	`CREATE TABLE IF NOT EXISTS users (
@@ -33,14 +33,14 @@ db.exec(
 
 db.exec(
 	`CREATE TABLE IF NOT EXISTS userEmails (
-		email TEXT,
+		email TEXT PRIMARY KEY,
 		user INTEGER
 	) STRICT`
 );
 
 db.exec(
 	`CREATE TABLE IF NOT EXISTS userRoles (
-		role TEXT PRIMARY KEY,
+		role TEXT,
 		user INTEGER NOT NULL
 	) STRICT`
 );
@@ -88,13 +88,22 @@ as.users = {
 		return await bcrypt.compare(password, hash);
 	},
 
-	async getAuthToken(email: string, password: string): Promise<Token> {
-		const user = db
-			.prepare(
-				`SELECT id, password as hash FROM users INNER JOIN userEmails
-				ON users.id = userEmails.user WHERE userEmails.email = ?`
-			)
-			.get(email) as { id: string; hash: string } | undefined;
+	async getAuthToken(identity: string, password: string): Promise<Token> {
+		type DBUser = { id: number; hash: string };
+		let user: DBUser | undefined;
+
+		if (identity.includes('@')) {
+			user = db
+				.prepare(
+					`SELECT id, password as hash FROM users INNER JOIN userEmails
+					ON users.id = userEmails.user WHERE userEmails.email = ?`
+				)
+				.get(identity);
+		} else {
+			user = db
+				.prepare(`SELECT id, password as hash FROM users WHERE identifier = ?`)
+				.get(identity);
+		}
 
 		assert(user, 'Invalid email or password.');
 		assert(
@@ -126,6 +135,27 @@ as.users = {
 		return id;
 	},
 
+	listUsers(): User[] {
+		const emails: { email: string; user: number }[] = db
+			.prepare(`SELECT email, user FROM userEmails`)
+			.all();
+		const roles: { role: string; user: number }[] = db
+			.prepare(`SELECT role, user FROM userRoles`)
+			.all();
+		const users: (User & { id: number })[] = db
+			.prepare(`SELECT id, identifier, name FROM users`)
+			.all();
+
+		return users.map((user) => ({
+			identifier: user.identifier,
+			name: user.name,
+			emails: emails
+				.filter((email) => email.user === user.id)
+				.map((email) => email.email),
+			roles: roles.filter((role) => role.user === user.id).map((role) => role.role),
+		}));
+	},
+
 	getUser(token: Token): User {
 		const userID = as.users.userIDFromToken(token);
 
@@ -146,8 +176,28 @@ as.users = {
 		return { identifier, name, emails, roles };
 	},
 
-	getRolePermissions(_roles: string[]): Set<string> {
-		return new Set();
+	getUserPermissions(token: Token): Set<string> {
+		const userID = db
+			.prepare('SELECT user FROM userTokens WHERE token = ?')
+			.get(token)?.user;
+
+		assert(userID, 'Invalid token.');
+
+		const roles: string[] = db
+			.prepare(`SELECT role FROM userRoles WHERE user = ?`)
+			.all(userID)
+			.map((r) => r.role);
+
+		return this.getRolePermissions(roles);
+	},
+
+	getRolePermissions(roles: string[]): Set<string> {
+		return as.users.roles
+			.filter((role) => roles.includes(role.identifier))
+			.reduce<Set<string>>((acc, role) => {
+				for (const permission of role.permissions) acc.add(permission);
+				return acc;
+			}, new Set());
 	},
 
 	addPermissionCategory(permissionCategory: PermissionCategoryArgument) {
@@ -229,30 +279,39 @@ as.users.addPermission({
 
 (async () => {
 	await as.users.createUser('aurailus', 'Aurailus', 'me@auri.xyz', 'password');
-	as.users.getUser(await as.users.getAuthToken('me@auri.xyz', 'password'));
+	await as.users.createUser('zythia', 'Zythia', 'zythia.woof@gmail.com', 'password');
+	await as.users.createUser('piescorch', 'Elliot', 'mail@example.com', 'password');
+	await as.users.createUser('lore', 'Lore', 'maila@example.com', 'password');
+	await as.users.createUser('choir', 'Jason', 'mailb@example.com', 'password');
+
+	await as.users.createUser('aurailus_', 'Aurailus', '_me@auri.xyz', 'password');
+	await as.users.createUser('zythia_', 'Zythia', '_zythia.woof@gmail.com', 'password');
+	await as.users.createUser('piescorch_', 'Elliot', '_mail@example.com', 'password');
+	await as.users.createUser('lore_', 'Lore', '_maila@example.com', 'password');
+	await as.users.createUser('choir_', 'Jason', '_mailb@example.com', 'password');
+
+	await as.users.createUser('aurailus__', 'Aurailus', '__me@auri.xyz', 'password');
+	await as.users.createUser('zythia__', 'Zythia', '__zythia.woof@gmail.com', 'password');
+	await as.users.createUser('piescorch__', 'Elliot', '__mail@example.com', 'password');
+	await as.users.createUser('lore__', 'Lore', '__maila@example.com', 'password');
+	await as.users.createUser('choir__', 'Jason', '__mailb@example.com', 'password');
+
 	try {
-		as.users.addRole('admin', 0, 'Administrator', ['administrator']);
-		as.users.addRole('moderator', 100, 'Moderator', ['view-audit-log']);
-		as.users.addRole('editor', 100, 'Editor', ['administrator']);
-		as.users.addRole('@auri', 0, 'Auri', ['administrator']);
-		as.users.addRole('@john', 0, 'John', ['view-audit-log']);
+		as.users.addRole('administrator', 0, 'Administrator', ['administrator']);
+		as.users.addRole('moderator', 100, 'Moderator', ['view_audit_log']);
+		as.users.addRole('editor', 100, 'Editor', ['view_pages', 'view_users', 'view_permissions']);
+		as.users.addRole('@aurailus', 0, 'Auri', ['administrator']);
+		as.users.addRole('@john', 0, 'John', ['view_audit_log']);
 		as.users.addRole('_everyone', 0, 'Everyone', []);
 	} catch (e) {
 		console.warn(e);
 	}
-	// db.exec(
-	// 	`INSERT INTO roles(identifier, name, ind, permissions) VALUES('admin', 'Admin', 0, 'admin')`
-	// );
+
 	// db.exec(`INSERT INTO userRoles(role, user) VALUES('administrator', 1)`);
-	// db.exec(`INSERT INTO userEmails(email, user) VALUES('admin@example.com', 1)`);
+	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 1)`);
+	// db.exec(`INSERT INTO userRoles(role, user) VALUES('@aurailus', 1)`);
 
-	// const token = await as.users.getAuthToken('admin@example.com', 'admin');
-	// console.log(await as.users.getUser(token!));
-
-	// console.log(await as.users.getAuthToken('admin@example.co', 'admin'));
-	// console.log(await as.users.getAuthToken('admin@example.com', 'admi'));
-	// console.log(await as.users.getAuthToken('admin@example.com', ''));
-	// console.log(await as.users.getAuthToken('admin@example.com', 'admin'));
+	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 2)`);
 })();
 
 // end test data

@@ -56,6 +56,9 @@ export interface FormField {
 	/** The default value for the field. */
 	default?: any;
 
+	/** Don't allow modifying the field. */
+	disabled?: boolean;
+
 	/** An autocomplete label indicating the field's completion type. */
 	completion?: string;
 

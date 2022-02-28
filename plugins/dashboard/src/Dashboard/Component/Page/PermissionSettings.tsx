@@ -13,6 +13,7 @@ import {
 	QUERY_PERMISSIONS,
 	QUERY_PERMISSION_CATEGORIES,
 	QUERY_ROLES,
+	QUERY_SELF_USER,
 	useData,
 } from '../../Graph';
 
@@ -43,7 +44,7 @@ function RoleLabel(props: {
 					src={Icon.user_circle}
 					size={4}
 					class={tw`p-1 mx-0.5 ${!props.pad && 'ml-2 mr-0'}
-					shrink-0 rounded-full bg-accent-600/50 icon-p-transparent icon-s-accent-300`}
+					shrink-0 rounded-full bg-accent-600/50 icon-p-accent-300 icon-s-transparent`}
 				/>
 			) : (
 				<div class={tw`w-2.5 h-2.5 ml-2.5 ${props.pad ? 'mr-2' : 'mr-0'} grid`}>
@@ -84,13 +85,16 @@ function RoleButton(props: {
 }
 
 export default function PermissionSettings() {
-	const [{ roles: rawRoles, permissions, permissionCategories }] = useData(
-		[QUERY_ROLES, QUERY_PERMISSIONS, QUERY_PERMISSION_CATEGORIES],
+	const [{ user, roles: rawRoles, permissions, permissionCategories }] = useData(
+		[QUERY_SELF_USER, QUERY_ROLES, QUERY_PERMISSIONS, QUERY_PERMISSION_CATEGORIES],
 		[]
 	);
 
 	const [roles, setRoles] = useState<Role[] | undefined>(undefined);
 	const [current, setCurrent] = useState<string | null>(null);
+	const canEdit =
+		user?.permissions.includes('manage_permissions') ||
+		user?.permissions.includes('administrator');
 
 	useEffect(() => {
 		if (!rawRoles || !permissions) return;
@@ -136,6 +140,7 @@ export default function PermissionSettings() {
 					type: 'text',
 					label: 'Role Name',
 					description: 'The name of the role.',
+					disabled: !canEdit,
 					validation: {
 						maxLength: 24,
 					},
@@ -149,13 +154,14 @@ export default function PermissionSettings() {
 							icon: permission.identifier === 'administrator' ? Icon.role : undefined,
 							label: permission.name,
 							description: permission.description,
+							disabled: !canEdit,
 							default: role.permissions[permission.identifier],
 						},
 					])
 				),
 			},
 		} as FormSchema;
-	}, [permissions, role]);
+	}, [permissions, role, canEdit]);
 
 	if (!roles || !permissions || !permissionCategories) {
 		return (
@@ -265,13 +271,15 @@ export default function PermissionSettings() {
 
 					{/** Role Editor */}
 					{!role ? (
-						<div class={tw`flex-(& col) w-full items-center py-20 animate-rise-fade-in`}>
+						<div class={tw`flex-(& col) w-full items-center py-24 animate-rise-fade-in`}>
 							<Svg
 								src={Icon.role}
-								size={12}
-								class={tw`mb-4 p-6 rounded-lg bg-gray-input`}
+								size={10}
+								class={tw`mb-4 p-4 rounded-lg bg-gray-input`}
 							/>
-							<p class={tw`text-gray-300`}>Select a User or Role to edit.</p>
+							<p class={tw`text-gray-300`}>
+								Select a User or Role{canEdit && ' to edit'}.
+							</p>
 						</div>
 					) : (
 						<Form
@@ -295,7 +303,9 @@ export default function PermissionSettings() {
 							</div>
 
 							<div class={tw`flex-(& col) gap-2`}>
-								{getRoleType(role.identifier) === 'role' && <Input for='name' />}
+								{getRoleType(role.identifier) === 'role' && canEdit && (
+									<Input for='name' />
+								)}
 								<Input for='permissions.administrator' />
 							</div>
 

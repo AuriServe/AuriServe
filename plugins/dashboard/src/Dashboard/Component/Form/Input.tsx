@@ -2,12 +2,14 @@ import { h } from 'preact';
 import { titleCase, traversePath } from 'common';
 import { useRef, useContext, useEffect } from 'preact/hooks';
 
-import { FormContext, FormField, ErrorType } from './Type';
-
+import Notice from './Notice';
 import TextInput from './TextInput';
 import OptionInput from './OptionInput';
 import ToggleInput from './ToggleInput';
 import PasswordInput from './PasswordInput';
+
+import { Icon } from '../../Main';
+import { FormContext, FormField, ErrorType } from './Type';
 
 interface Props {
 	for: string;
@@ -26,12 +28,28 @@ export default function Input(props: Props) {
 	const form = useContext(FormContext);
 
 	const id = `${form.id}-${props.for}`;
-	const schema = traversePath(form.schema.fields, props.for) as FormField;
-	if (!schema) throw new Error(`Input: Form does not have field '${props.for}'.`);
+
+	let schema: FormField | undefined;
+	try {
+		schema = traversePath(form.schema.fields, props.for) as FormField;
+	} catch (e) {
+		/* If the field doesn't exist, schema is undefined. */
+	}
 
 	useEffect(() => {
+		if (!schema) return;
 		traversePath(form.fields, props.for).ref = ref.current;
-	}, [form.fields, props.for]);
+	}, [form.fields, props.for, schema]);
+
+	if (!schema) {
+		return (
+			<Notice
+				icon={Icon.error}
+				label='Field not found.'
+				description={`Field '${props.for}' was not found. Please check the form schema.`}
+			/>
+		);
+	}
 
 	const handleValidity = (error: ErrorType | null, message: string | null) => {
 		const field = traversePath(form.fields, props.for);
@@ -134,6 +152,7 @@ export default function Input(props: Props) {
 					value={value}
 					rounded={props.rounded}
 					toggleLeft={props.toggleLeft}
+					disabled={schema.disabled}
 					optional={schema.validation?.optional}
 					onChange={handleChange}
 					onValidity={handleValidity}
@@ -144,6 +163,12 @@ export default function Input(props: Props) {
 				/>
 			);
 		default:
-			throw `Input: Unknown form type '${schema.type}.`;
+			return (
+				<Notice
+					icon={Icon.error}
+					label='Unknown field type.'
+					description={`Field type '${schema.type}' is unknown.`}
+				/>
+			);
 	}
 }

@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import Cookie from 'js-cookie';
 import { assert } from 'common';
 import { useState, useRef } from 'preact/hooks';
 
@@ -19,9 +18,10 @@ interface Props {
 
 const FORM_SCHEMA: FormSchema = {
 	fields: {
-		username: {
+		identity: {
 			type: 'text',
-			description: 'Please enter your username.',
+			label: 'Username or Email',
+			description: 'Please enter your username or a linked email address.',
 			completion: 'username',
 			validation: {
 				minLength: 3,
@@ -46,10 +46,10 @@ export default function LoginPage({ onLogin }: Props) {
 	const [, setWarning] = useState<string>('');
 
 	const handleSubmit = async ({
-		username,
+		identity,
 		password,
 	}: {
-		username: string;
+		identity: string;
 		password: string;
 	}) => {
 		try {
@@ -62,16 +62,13 @@ export default function LoginPage({ onLogin }: Props) {
 				method: 'POST',
 				cache: 'no-cache',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					user: username,
-					pass: password,
-				}),
+				body: JSON.stringify({ identity, password }),
 			});
 
 			const res = await r.text();
 			if (r.status !== 200) throw res;
 
-			Cookie.set('tkn', res, { sameSite: 'Lax' });
+			window.localStorage.setItem('token', res);
 
 			setState('auth');
 			setTimeout(() => onLogin(), 450);
@@ -126,10 +123,10 @@ export default function LoginPage({ onLogin }: Props) {
 								class={tw`flex-(& col) gap-y-4`}
 								schema={FORM_SCHEMA}
 								onSubmit={handleSubmit}>
-								<Input for='username' />
+								<Input for='identity' />
 								<Input for='password' />
 
-								<FloatingDescription class={tw`w-80`} position='right' />
+								<FloatingDescription class={tw`w-72`} position='right' />
 
 								{/* <p class='text-center text-blue-600 -mt-1 mb-3'>{warning}</p> */}
 								<PrimaryButton
