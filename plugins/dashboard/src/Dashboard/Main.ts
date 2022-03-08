@@ -34,6 +34,8 @@ registerSettings({
 
 render(h(App, {}), document.getElementById('root')!);
 
+export { useLocation, useNavigate } from 'react-router-dom';
+
 export { Page } from './Component/Page';
 export { default as Svg } from './Component/Svg';
 export { default as Modal } from './Component/Modal';

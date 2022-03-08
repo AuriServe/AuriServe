@@ -52,10 +52,11 @@ export const UnstyledButton = forwardRef<HTMLElement, Props>(function UnstyledBu
 	return (
 		<Tag
 			ref={ref}
+			type='button'
+			rel={Tag === 'a' ? 'noreferrer noopener' : undefined}
+			target={Tag === 'a' ? '_blank' : undefined}
 			{...passedProps}
 			className={props.class}
-			target={Tag === 'a' ? '_blank' : undefined}
-			rel={Tag === 'a' ? 'noreferrer noopener' : undefined}
 		/>
 	);
 });

@@ -105,7 +105,7 @@ export default forwardRef<HTMLElement, Props>(function ToggleInput(props, fRef) 
 			</div>
 			{props.description && (
 				<p
-					class={tw`text-sm leading-5 mt-1.5 text-gray-200 ${
+					class={tw`text-sm leading-5 mt-1.5 text-gray-200 whitespace-pre-line ${
 						props.icon && 'ml-8 pl-0.5'
 					}`}>
 					{props.description}

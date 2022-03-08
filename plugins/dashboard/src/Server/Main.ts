@@ -365,5 +365,5 @@ as.dashboard = {
 	},
 };
 
-as.dashboard.internal.init();
+setImmediate(() => as.dashboard.internal.init());
 as.core.once('cleanup', () => as.dashboard.internal.cleanup());

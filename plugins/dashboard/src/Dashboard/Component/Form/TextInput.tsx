@@ -29,6 +29,8 @@ interface Props {
 	onFocus?: (elem: HTMLElement) => void;
 	onBlur?: (elem: HTMLElement) => void;
 
+	hideLabel?: boolean;
+
 	style?: any;
 	class?: string;
 }
@@ -113,6 +115,7 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 
 	return (
 		<InputContainer
+			hideLabel={props.hideLabel}
 			label={props.label}
 			labelId={id}
 			invalid={showInvalid}
@@ -126,7 +129,8 @@ export default forwardRef<HTMLElement, Props>(function TextInput(props, fRef) {
 				autocomplete={props.completion}
 				rows={1}
 				class={merge(
-					tw`peer w-full px-1.5 pt-5 pb-0 rounded scroll-input !outline-none resize-none`,
+					tw`peer w-full px-1.5 rounded scroll-input !outline-none resize-none
+						${props.hideLabel ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}`,
 					autofillClasses
 				)}
 				value={Tag === 'input' ? value.current : undefined}

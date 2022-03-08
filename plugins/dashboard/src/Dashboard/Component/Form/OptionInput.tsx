@@ -7,7 +7,7 @@ import Svg from '../Svg';
 import { Transition } from '../Transition';
 import InputContainer from './InputContainer';
 
-import { tw } from '../../Twind';
+import { merge, tw } from '../../Twind';
 import { refs } from '../../Util';
 
 import { ErrorType } from './Type';
@@ -30,8 +30,11 @@ interface Props {
 	onFocus?: (elem: HTMLElement) => void;
 	onBlur?: (elem: HTMLElement) => void;
 
+	hideLabel?: boolean;
+
 	style?: any;
 	class?: string;
+	inputClass?: string;
 }
 
 export default forwardRef<HTMLElement, Props>(function OptionInput(props, fRef) {
@@ -108,17 +111,22 @@ export default forwardRef<HTMLElement, Props>(function OptionInput(props, fRef) 
 					active={open}
 					populated={open || value !== undefined}
 					invalid={showInvalid}
+					hideLabel={props.hideLabel}
 					class={props.class}
 					style={props.style}>
 					<Listbox.Button
 						ref={refs(ref, fRef)}
-						className={tw`peer w-full px-2.5 h-[3.25rem] pt-6 pb-1 pr-10 rounded
+						className={merge(
+							tw`peer w-full px-2.5 pr-10 rounded
+							${props.hideLabel ? 'pt-1.5 pb-1 h-10' : 'pt-6 pb-1 h-[3.25rem]'}
 							text-left !outline-none resize-none transition focus:shaduow-md
 							bg-gray-100 dark:bg-gray-700/75 dark:focus:bg-gray-700
 							${open && '!shadow-md dark:!bg-gray-700'}
 							${showInvalid && 'text-red-800 focus:text-gray-900'}
 							${showInvalid && 'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-gray-100'}
-						`}>
+						`,
+							props.inputClass
+						)}>
 						{props.options[value!] ?? ''}
 					</Listbox.Button>
 					<Transition
@@ -130,7 +138,7 @@ export default forwardRef<HTMLElement, Props>(function OptionInput(props, fRef) 
 						<Listbox.Options
 							static
 							className={tw`absolute z-50 left-0 top-[calc(100%+0.5rem)] w-full flex-row-reverse
-						bg-gray-700 rounded shadow-md outline-none overflow-hidden`}>
+								bg-gray-700 rounded shadow-md outline-none overflow-hidden`}>
 							{optional && (
 								<Listbox.Option
 									key={undefined}
@@ -183,7 +191,8 @@ export default forwardRef<HTMLElement, Props>(function OptionInput(props, fRef) 
 					<Svg
 						src={icon_dropdown}
 						size={7}
-						class={tw`absolute top-3 right-2 icon-p-gray-200 transition
+						class={tw`absolute right-2 icon-p-gray-200 transition
+							${props.hideLabel ? 'top-1.5' : 'top-3'}
 							${open && 'scale-y-[-100%] translate-y-px}'}`}
 					/>
 				</InputContainer>

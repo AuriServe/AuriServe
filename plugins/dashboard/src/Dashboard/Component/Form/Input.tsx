@@ -16,7 +16,9 @@ interface Props {
 
 	style?: any;
 	class?: string;
+	inputClass?: string;
 
+	hideLabel?: boolean;
 	rounded?: boolean;
 	toggleLeft?: boolean;
 
@@ -96,6 +98,7 @@ export default function Input(props: Props) {
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
+					hideLabel={props.hideLabel}
 					class={props.class}
 					style={props.style}
 				/>
@@ -136,7 +139,9 @@ export default function Input(props: Props) {
 					onValidity={handleValidity}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
+					hideLabel={props.hideLabel}
 					class={props.class}
+					inputClass={props.inputClass}
 					style={props.style}
 				/>
 			);

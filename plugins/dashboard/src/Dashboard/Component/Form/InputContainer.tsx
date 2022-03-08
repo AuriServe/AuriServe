@@ -1,4 +1,4 @@
-import { forwardRef, useMemo } from 'preact/compat';
+import { forwardRef } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
 
 import { tw, merge } from '../../Twind';
@@ -9,6 +9,8 @@ interface Props {
 
 	/** The id of the input element the label is for. */
 	labelId: string;
+
+	hideLabel?: boolean;
 
 	/**
 	 * Whether or not the input is populated. i.e. if the label should shrink.
@@ -50,7 +52,7 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
 	const colInactive = invalid ? invalidInactive : validInactive;
 
 	return tw`InputContainerLabel~(
-		absolute w-full transition-all interact-none
+		absolute w-[calc(100%-1.5rem)] truncate transition-all interact-none
 		${
 			populated === undefined
 				? `${posActive} input-inactive:(${posInactive})`
@@ -74,18 +76,16 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 	return (
 		<div
 			ref={ref}
-			class={merge(
-				tw`group InputContainer~(isolate relative grid w-full h-max)`,
-				props.class
-			)}
+			class={merge(tw`group InputContainer~(relative grid w-full h-max)`, props.class)}
 			style={props.style}>
 			{props.children}
 			<label
 				for={props.labelId}
-				class={useMemo(
-					() => getLabelStyles(props.active, props.populated, props.invalid),
-					[props.active, props.populated, props.invalid]
-				)}>
+				class={
+					props.hideLabel
+						? tw`sr-only`
+						: getLabelStyles(props.active, props.populated, props.invalid)
+				}>
 				{props.label}
 			</label>
 			<div
