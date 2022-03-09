@@ -5,4 +5,4 @@ export { default as UnknownPage } from './UnknownPage';
 export { default as SettingsPage } from './SettingsPage';
 export { default as UserSettings } from './UserSettings';
 export { default as OverviewSettings } from './OverviewSettings';
-export { default as PermissionSettings } from './PermissionSettings';
+// export { default as PermissionSettings } from './PermissionSettings';

@@ -4,8 +4,8 @@ import { useState, useRef } from 'preact/hooks';
 
 import Svg from '../Svg';
 import Card from '../Card';
+import Form, { Field } from '../Form';
 import { PrimaryButton } from '../Button';
-import { FloatingDescription, Form, FormSchema, Input } from '../Form';
 
 import { tw } from '../../Twind';
 
@@ -15,29 +15,6 @@ import icon_rocket from '@res/icon/launch.svg';
 interface Props {
 	onLogin: () => void;
 }
-
-const FORM_SCHEMA: FormSchema = {
-	fields: {
-		identity: {
-			type: 'text',
-			label: 'Username or Email',
-			description: 'Please enter your username or a linked email address.',
-			completion: 'username',
-			validation: {
-				minLength: 3,
-				maxLength: 32,
-			},
-		},
-		password: {
-			type: 'password',
-			description: 'Please enter your password.',
-			completion: 'current-password',
-			validation: {
-				minLength: 8,
-			},
-		},
-	},
-};
 
 export default function LoginPage({ onLogin }: Props) {
 	const userInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
@@ -119,20 +96,29 @@ export default function LoginPage({ onLogin }: Props) {
 							class={tw`flex-(& col) p-4 overflow-hidden
 								[transition:max-height_300ms,opacity_200ms]
 								${state === 'input' ? 'max-h-80' : 'max-h-0 opacity-0'}`}>
-							<Form
+							<Form<{ identity: string; password: string }>
 								class={tw`flex-(& col) gap-y-4`}
-								schema={FORM_SCHEMA}
+								initialValue={{ identity: '', password: '' }}
 								onSubmit={handleSubmit}>
-								<Input for='identity' />
-								<Input for='password' />
+								<Field.Text
+									path='identity'
+									label='Username or Email'
+									description='Please enter your username or a linked email address.'
+									completion='username'
+									minLength={3}
+									maxLength={32}
+								/>
+								<Field.Password
+									path='password'
+									description='Please enter your password'
+									completion='current-password'
+									minLength={8}
+								/>
 
-								<FloatingDescription class={tw`w-72`} position='right' />
-
-								{/* <p class='text-center text-blue-600 -mt-1 mb-3'>{warning}</p> */}
 								<PrimaryButton
+									type='submit'
 									size={12}
 									class={tw`!w-full mt-4`}
-									type='submit'
 									disabled={state === 'pending'}
 									label='Log In'
 								/>

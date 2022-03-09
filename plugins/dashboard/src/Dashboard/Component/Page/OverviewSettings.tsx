@@ -1,91 +1,42 @@
 import { h } from 'preact';
-import { useCallback, useRef } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 
 import Card from '../Card';
-import { FormSchema, Form, Input, FloatingDescription } from '../Form';
+import Form, { Field } from '../Form';
 
 import { tw } from '../../Twind';
+import * as Icon from '../../Icon';
+import { DeepPartial } from '../../Util';
 
-import icon_overview from '@res/icon/home.svg';
-
-const FORM_SCHEMA: FormSchema = {
-	fields: {
-		name: {
-			type: 'text',
-			description: 'The name of your website.',
-			default: 'The Shinglemill',
-			validation: {
-				minLength: 3,
-				maxLength: 32,
-			},
-		},
-		address: {
-			type: 'text',
-			description: "Your website's address,\ne.g. www.example.com",
-			default: 'www.shinglemill.ca',
-			validation: {
-				pattern: /^(?:[A-z-_]+\.)+[A-z]{2,24}(?:\/?[A-z-_]+)*\/?$/,
-				patternHint: 'Please enter a valid website address.',
-			},
-		},
-		description: {
-			type: 'text',
-			description: 'A short description of your website, used in search results.',
-			default:
-				'The Shinglemill Pub and Bistro is a favourite restaurant for locals and visitors alike, located on pristine Powell Lake.',
-			multiline: true,
-			minRows: 3,
-			validation: {
-				optional: true,
-				maxLength: 512,
-			},
-		},
-		favicon: {
-			type: 'text',
-			label: 'Favorite Icon',
-			description:
-				'A small icon for your website, displays on tabs and next to bookmarks.',
-			validation: {
-				optional: true,
-				type: ['png', 'svg', 'jpg', 'svg', 'gif'],
-			},
-		},
-		themeColor: {
-			type: 'text',
-			label: 'Accent Color',
-			description: 'The accent color used for your website, used by some browsers.',
-			validation: {
-				optional: true,
-			},
-		},
-		visibility: {
-			type: 'option',
-			label: 'Site Visibility',
-			description: 'The visibility of your site to search engines.',
-			options: {
-				visible: 'Visible',
-				hidden: 'Hidden',
-			},
-		},
-	},
-};
+interface OverviewData {
+	name: string;
+	address: string;
+	description: string;
+	favicon?: string;
+	themeColor?: string;
+	visibility: 'visible' | 'hidden';
+}
 
 export default function OverviewSettings() {
-	const data = useRef<any>({});
-
-	const handleSubmit = useCallback(() => {
-		console.log(data);
-	}, []);
+	const [data, setData] = useState<DeepPartial<OverviewData>>({
+		name: 'The Shinglemill',
+		address: 'www.shinglemill.ca',
+		description:
+			'The Shinglemill Pub and Bistro is a favourite restaurant for locals and visitors alike, located on pristine Powell Lake.',
+		favicon: undefined,
+		themeColor: undefined,
+		visibility: 'hidden',
+	});
 
 	return (
 		<Card>
 			<Card.Header
-				icon={icon_overview}
+				icon={Icon.home}
 				title='Overview'
 				subtitle='Basic site appearance, search engine optimization.'
 			/>
 			<Card.Body>
-				<Form ref={data} schema={FORM_SCHEMA} class={tw`p-2`} onSubmit={handleSubmit}>
+				<Form<OverviewData> class={tw`p-2`} initialValue={data} onSubmit={setData}>
 					<div class={tw`flex-(& row) gap-8`}>
 						<div class={tw`w-64`}>
 							<p class={tw`font-medium mb-1`}>Site Metadata</p>
@@ -94,9 +45,24 @@ export default function OverviewSettings() {
 							</p>
 						</div>
 						<div class={tw`grow pt-1 flex-(& col) gap-4`}>
-							<Input for='name' />
-							<Input for='address' />
-							<Input for='description' class={tw`h-24`} />
+							<Field.Text
+								path='name'
+								description='The name of your website.'
+								minLength={3}
+								maxLength={32}
+							/>
+							<Field.Text
+								path='address'
+								description="Your website's address, e.g. www.example.com"
+								pattern={/^(?:[A-z-_]+\.)+[A-z]{2,24}(?:\/?[A-z-_]+)*\/?$/}
+								patternHint='Please enter a valid website address.'
+							/>
+							<Field.Text
+								path='description'
+								description='A short description of your website, used in search results.'
+								optional
+								maxLength={512}
+							/>
 						</div>
 					</div>
 
@@ -108,13 +74,24 @@ export default function OverviewSettings() {
 							</p>
 						</div>
 						<div class={tw`grow pt-1 flex-(& col) gap-4`}>
-							<Input for='favicon' />
-							<Input for='themeColor' />
-							<Input for='visibility' />
+							<Field.Text
+								path='favicon'
+								label='Favorite Icon'
+								description='A small icon for your website, displays on tabs and next to bookmarks.'
+								optional
+							/>
+							<Field.Text
+								path='themeColor'
+								label='Theme Color'
+								description='The accent color used for your website, used by some browsers.'
+								optional
+							/>
+							<Field.Text
+								path='visibility'
+								description='The visibility of your site to search engines.'
+							/>
 						</div>
 					</div>
-
-					<FloatingDescription position='right' />
 				</Form>
 			</Card.Body>
 		</Card>

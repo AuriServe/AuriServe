@@ -4,7 +4,10 @@ import App from './Component/App';
 
 import * as Icon from './Icon';
 import { registerSettings } from './Settings';
-import { OverviewSettings, UserSettings, PermissionSettings } from './Component/Page';
+import {
+	OverviewSettings,
+	UserSettings /*, PermissionSettings*/,
+} from './Component/Page';
 
 registerSettings({
 	identifier: 'dashboard:overview',
@@ -23,20 +26,21 @@ registerSettings({
 	component: UserSettings,
 });
 
-registerSettings({
-	identifier: 'dashboard:permissions',
-	title: 'Permissions',
-	path: 'permissions',
-	icon: Icon.role,
-	permissions: ['view_permissions'],
-	component: PermissionSettings,
-});
+// registerSettings({
+// 	identifier: 'dashboard:permissions',
+// 	title: 'Permissions',
+// 	path: 'permissions',
+// 	icon: Icon.role,
+// 	permissions: ['view_permissions'],
+// 	component: PermissionSettings,
+// });
 
 render(h(App, {}), document.getElementById('root')!);
 
 export { useLocation, useNavigate } from 'react-router-dom';
 
 export { Page } from './Component/Page';
+export { default as Form, Field } from './Component/Form';
 export { default as Svg } from './Component/Svg';
 export { default as Modal } from './Component/Modal';
 export { default as Title } from './Component/Title';
@@ -44,7 +48,6 @@ export { default as Portal } from './Component/Portal';
 export { default as Spinner } from './Component/Spinner';
 export { Transition, TransitionGroup } from './Component/Transition';
 export { default as DimensionTransition } from './Component/DimensionTransition';
-export { Form, Input, Description, FloatingDescription } from './Component/Form';
 
 export {
 	default as Card,

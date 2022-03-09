@@ -2,11 +2,12 @@ import { ComponentChildren, h } from 'preact';
 import { useContext, useRef, useState, useEffect } from 'preact/hooks';
 
 import Portal from '../Portal';
-import Description from './Description';
 import { TransitionGroup } from '../Transition';
 
+import Svg from '../Svg';
+import * as Icon from '../../Icon';
+import { FormContext } from './Types';
 import { tw, merge } from '../../Twind';
-import { ErrorType, FormContext, FormField } from './Type';
 
 interface Props {
 	style?: any;
@@ -23,36 +24,38 @@ export default function FloatingDescription(props: Props) {
 	const form = useContext(FormContext);
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const [state, setState] = useState<{ name: string; error: ErrorType | null } | null>(
-		null
-	);
+	const [path, setPath] = useState<string | null>(null);
+	// const [state, setState] = useState<{ name: string; error: ErrorType | null } | null>(
+	// 	null
+	// );
 
 	useEffect(() => {
 		let setNullTimeout: any = 0;
 
-		const unbindFocus = form.event.bind('focus', (field: string | null) => {
-			if (field === null) {
-				setNullTimeout = setTimeout(() => setState(null), 50);
+		const unbindFocus = form.event.bind('focus', (path: string | null) => {
+			if (path === null) {
+				setNullTimeout = setTimeout(() => setPath(null), 50);
 			} else {
 				if (setNullTimeout) {
 					clearTimeout(setNullTimeout);
 					setNullTimeout = 0;
 				}
 
-				setState({ name: field, error: form.fields[field].error });
+				setPath(path);
+				// setState({ name: field, /*error: form.fields[field].error*/ });
 			}
 		});
 
-		const unbindValidity = form.event.bind('validity', (field: string) => {
-			setState((state) => {
-				if (state?.name !== field) return state;
-				return { name: field, error: form.fields[field].error };
-			});
-		});
+		// const unbindValidity = form.event.bind('validity', (field: string) => {
+		// 	setState((state) => {
+		// 		if (state?.name !== field) return state;
+		// 		return { name: field, error: form.fields[field].error };
+		// 	});
+		// });
 
 		return () => {
 			unbindFocus();
-			unbindValidity();
+			// unbindValidity();
 		};
 	}, [form]);
 
@@ -61,10 +64,12 @@ export default function FloatingDescription(props: Props) {
 		containerRef.current.style.height = `${ref.clientHeight}px`;
 	};
 
-	const ref = form.fields[state?.name ?? '']?.ref as HTMLElement | undefined;
-	const schema = form.schema.fields[state?.name ?? ''] as FormField | undefined;
-
+	// const ref = form.fields[state?.name ?? '']?.ref as HTMLElement | undefined;
+	// const schema = form.schema.fields[state?.name ?? ''] as FormField | undefined;
+	const ref = path ? form.refs.current[path] : null;
 	const posRef = useRef<{ top: string; left: string }>({ top: '', left: '' });
+
+	const description = ref?.getAttribute('aria-description') ?? '';
 
 	if (ref) {
 		posRef.current.top = `${Math.floor(
@@ -95,15 +100,32 @@ export default function FloatingDescription(props: Props) {
 						enterFrom={tw`opacity-0 -translate-y-1`}
 						exit={tw`transition duration-100`}
 						exitTo={tw`opacity-0 translate-y-1`}>
-						{schema && schema.description && (
-							<Description
-								key={(state?.name ?? '-') + state?.error}
+						{description && (
+							<div
+								key={path ?? '-'}
 								ref={handleUpdateContainerHeight}
-								for={state!.name}
-								_manual={true}
 								class={merge(tw`absolute top-0 left-0 w-full`, props.innerClass)}>
-								{props.children}
-							</Description>
+								<div class={tw`flex gap-2 p-2 pr-3 whitespace-pre-line`}>
+									<Svg
+										src={Icon.info}
+										size={6}
+										class={tw`shrink-0 icon-p-accent-300 icon-s-gray-600 -mt-px`}
+									/>
+									{description}
+								</div>
+								{/* {error && (
+									<div class={tw`p-2 bg-gray-750 rounded-b`}>
+										<div class={tw`flex gap-2 text-accent-300 theme-red whitespace-pre-line`}>
+											<Svg
+												src={icon_error}
+												size={6}
+												class={tw`flex-shrink-0 icon-s-accent-400 icon-p-gray-900 -mt-px`}
+											/>
+											{error.errorMessage ?? error.error}
+										</div>
+									</div>
+								)} */}
+							</div>
 						)}
 					</TransitionGroup>
 				</div>
