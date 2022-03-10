@@ -6,26 +6,25 @@ import Form, { Field } from '../Form';
 
 import { tw } from '../../Twind';
 import * as Icon from '../../Icon';
-import { DeepPartial } from '../../Util';
 
 interface OverviewData {
 	name: string;
 	address: string;
 	description: string;
-	favicon?: string;
-	themeColor?: string;
+	favicon: string | null;
+	themeColor: string | null;
 	visibility: 'visible' | 'hidden';
 }
 
 export default function OverviewSettings() {
-	const [data, setData] = useState<DeepPartial<OverviewData>>({
+	const [data, setData] = useState<OverviewData>({
 		name: 'The Shinglemill',
 		address: 'www.shinglemill.ca',
 		description:
 			'The Shinglemill Pub and Bistro is a favourite restaurant for locals and visitors alike, located on pristine Powell Lake.',
-		favicon: undefined,
-		themeColor: undefined,
-		visibility: 'hidden',
+		favicon: null,
+		themeColor: null,
+		visibility: 'visible',
 	});
 
 	return (
@@ -36,7 +35,7 @@ export default function OverviewSettings() {
 				subtitle='Basic site appearance, search engine optimization.'
 			/>
 			<Card.Body>
-				<Form<OverviewData> class={tw`p-2`} initialValue={data} onSubmit={setData}>
+				<Form class={tw`p-2`} initialValue={data} onSubmit={setData}>
 					<div class={tw`flex-(& row) gap-8`}>
 						<div class={tw`w-64`}>
 							<p class={tw`font-medium mb-1`}>Site Metadata</p>
@@ -82,14 +81,19 @@ export default function OverviewSettings() {
 							/>
 							<Field.Text
 								path='themeColor'
-								label='Theme Color'
 								description='The accent color used for your website, used by some browsers.'
 								optional
 							/>
-							<Field.Text
+							<Field.Option
 								path='visibility'
 								description='The visibility of your site to search engines.'
+								options={{ visible: 'Visible', hidden: 'Hidden' }}
 							/>
+							{/* <Field.Toggle
+								path='visibility'
+								label='Allow site to appear in search results'
+								description='If your site is not visible to search engines, it will be harder to find.'
+							/> */}
 						</div>
 					</div>
 				</Form>

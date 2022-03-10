@@ -29,6 +29,9 @@ interface Props {
 	/** Whether or not the input is invalid, determines the appearance of the container. */
 	invalid?: boolean;
 
+	onFocusIn?: (e: any) => void;
+	onFocusOut?: (e: any) => void;
+
 	style?: any;
 	class?: string;
 	children: ComponentChildren;
@@ -76,6 +79,8 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 	return (
 		<div
 			ref={ref}
+			onfocusin={props.onFocusIn}
+			onfocusout={props.onFocusOut}
 			class={merge(tw`group InputContainer~(relative grid w-full h-max)`, props.class)}
 			style={props.style}>
 			{props.children}
@@ -90,8 +95,13 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 			</label>
 			<div
 				class={tw`
-					absolute bottom-0 w-full h-0.5 rounded-b transition-all [transform-origin:25%]
-					opacity-0 scale-x-75 peer-focus:(opacity-100 scale-x-100)
+					absolute bottom-0 w-full h-0.5 rounded-b transition-all
+					opacity-0 scale-x-75 [transform-origin:25%]
+					${
+						props.active !== undefined
+							? props.active && 'opacity-100 scale-x-100'
+							: 'peer-focus:(opacity-100 scale-x-100)'
+					}
 					${props.active && '!opacity-100 !scale-x-100'}
 					${props.invalid ? 'bg-red-(700/75 dark:300)' : 'bg-accent-(500 dark:400)'}`}
 			/>

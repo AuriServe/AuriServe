@@ -10,7 +10,7 @@ import { refs } from '../../../Util';
 import useAutoFill from '../useAutoFill';
 import { tw, merge } from '../../../Twind';
 
-type Props = FieldProps<string | undefined> & {
+type Props = FieldProps<string | null> & {
 	hideLabel?: boolean;
 
 	minLength?: number;
@@ -22,7 +22,7 @@ type Props = FieldProps<string | undefined> & {
 };
 
 function validate(
-	value: string | undefined,
+	value: string | null,
 	required: boolean,
 	minLength?: number,
 	maxLength?: number,
@@ -41,7 +41,7 @@ function validate(
 			type: 'minLength',
 			message: `Must be at least ${minLength} characters.`,
 		};
-	} else if (value && pattern?.test(value)) {
+	} else if (value && pattern && !pattern.test(value)) {
 		return {
 			type: 'pattern',
 			message: patternHint ?? 'Please match the pattern provided',
@@ -52,18 +52,18 @@ function validate(
 
 function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 	console.log('render field');
-	const { ctx, value, id, label, required, disabled, readonly } = useDerivedState<
-		string | undefined
-	>(props, '');
+	const { ctx, value, id, path, label, required, disabled, readonly } = useDerivedState<
+		string | null
+	>(props, '', true);
 
-	const [invalid, setInvalid] = useState<boolean>(false);
+	const [error, setError] = useState<ValidityError | null>(null);
 	const [shouldShowInvalid, setShouldShowInvalid] = useState<boolean>(false);
 
-	const showInvalid = invalid && shouldShowInvalid;
+	const showInvalid = !!error && shouldShowInvalid;
 	const [autofillRef, autofillClasses] = useAutoFill(showInvalid);
 
 	const checkValidation = useCallback(
-		(value: string | undefined) =>
+		(value: string | null) =>
 			validate(
 				value,
 				required,
@@ -74,33 +74,40 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 			),
 		[required, props.minLength, props.maxLength, props.pattern, props.patternHint]
 	);
-	useLayoutEffect(() => void checkValidation(value.current), [checkValidation, value]);
+
+	const { onValidity } = props;
+	useLayoutEffect(() => {
+		const error = checkValidation(value.current);
+		setError(error);
+		onValidity?.(error);
+	}, [checkValidation, value, onValidity]);
 
 	const handleChange = ({ target }: any) => {
-		const newValue: string | undefined = required
+		const newValue: string | null = required
 			? (target.value as string)
 			: target.value === ''
-			? undefined
+			? null
 			: (target.value as string);
 
 		value.current = newValue;
 		const error = checkValidation(newValue);
 
+		setError(error);
 		props.onValidity?.(error);
-		setInvalid(error !== null);
 		props.onChange?.(newValue);
-		ctx.event.emit('change', props.path!, newValue);
+		ctx.event.emit('validity', path, error);
+		ctx.event.emit('change', path, newValue);
 	};
 
 	const handleFocus = (evt: any) => {
 		props.onFocus?.(evt.target);
-		ctx.event.emit('focus', props.path!);
+		ctx.event.emit('focus', path, true);
 	};
 
 	const handleBlur = (evt: any) => {
 		props.onBlur?.(evt.target);
-		setShouldShowInvalid(invalid);
-		ctx.event.emit('focus', null);
+		setShouldShowInvalid(!!error);
+		ctx.event.emit('focus', path, false);
 	};
 
 	return (
@@ -112,13 +119,10 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 			class={props.class}
 			style={props.style}>
 			<input
-				ref={refs(
-					autofillRef,
-					(ref) => (ctx.refs.current[props.path!] = ref ?? undefined)
-				)}
+				ref={refs(autofillRef, (elem) => (ctx.meta.current[path] = { elem, error }))}
 				id={id}
 				type={props.type}
-				name={props.path}
+				name={path}
 				disabled={disabled}
 				readonly={readonly}
 				placeholder=' '
@@ -129,7 +133,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 						${props.hideLabel ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}`,
 					autofillClasses
 				)}
-				value={value.current}
+				value={value.current ?? ''}
 				onInput={handleChange}
 				onFocus={handleFocus}
 				onBlur={handleBlur}

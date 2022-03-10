@@ -6,8 +6,9 @@ import { TransitionGroup } from '../Transition';
 
 import Svg from '../Svg';
 import * as Icon from '../../Icon';
-import { FormContext } from './Types';
+import { FormContext, ValidityError } from './Types';
 import { tw, merge } from '../../Twind';
+import { elementBounds } from '../../Util';
 
 interface Props {
 	style?: any;
@@ -20,77 +21,116 @@ interface Props {
 	children?: (description: string) => ComponentChildren;
 }
 
+interface State {
+	path: string | null;
+	description: string | null;
+	error: string | null;
+	top: string;
+	left: string;
+}
+
 export default function FloatingDescription(props: Props) {
 	const form = useContext(FormContext);
 	const containerRef = useRef<HTMLDivElement>(null);
-
-	const [path, setPath] = useState<string | null>(null);
-	// const [state, setState] = useState<{ name: string; error: ErrorType | null } | null>(
-	// 	null
-	// );
+	const [state, setState] = useState<State>({
+		path: null,
+		description: null,
+		error: null,
+		top: '',
+		left: '',
+	});
 
 	useEffect(() => {
-		let setNullTimeout: any = 0;
+		let clearPathTimeout = 0;
+		let clearPosTimeout = 0;
 
-		const unbindFocus = form.event.bind('focus', (path: string | null) => {
-			if (path === null) {
-				setNullTimeout = setTimeout(() => setPath(null), 50);
-			} else {
-				if (setNullTimeout) {
-					clearTimeout(setNullTimeout);
-					setNullTimeout = 0;
+		const unbindFocus = form.event.bind('focus', (path, focused) => {
+			setState((oldState) => {
+				if (!focused && path !== oldState.path) return oldState;
+
+				const meta = form.meta.current[path ?? '-'];
+				const description = (meta?.elem?.getAttribute('aria-description') ?? '').replace(
+					/\\n/g,
+					'\n'
+				);
+
+				if (!focused || (!description && !meta?.error)) {
+					if (!clearPathTimeout) {
+						clearPathTimeout = setTimeout(() => {
+							setState((state) => ({
+								...state,
+								path: null,
+								description: null,
+								error: null,
+							}));
+							clearPathTimeout = 0;
+							clearPosTimeout = setTimeout(() => {
+								setState((state) => ({ ...state, top: '', left: '' }));
+								clearPosTimeout = 0;
+							}, 200) as any;
+						}, 50) as any;
+						return oldState;
+					}
 				}
 
-				setPath(path);
-				// setState({ name: field, /*error: form.fields[field].error*/ });
-			}
+				if (clearPathTimeout) {
+					clearTimeout(clearPathTimeout);
+					clearPathTimeout = 0;
+				}
+				if (clearPosTimeout) {
+					clearTimeout(clearPosTimeout);
+					clearPosTimeout = 0;
+				}
+
+				const bounds = elementBounds(meta!.elem!);
+				return {
+					path,
+					description,
+					error: meta!.error?.message ?? null,
+					top: `${Math.floor(bounds.top)}px`,
+					left: `${Math.floor(bounds.left + bounds.width) + (props.padding ?? 4) * 4}px`,
+				} as State;
+			});
 		});
 
-		// const unbindValidity = form.event.bind('validity', (field: string) => {
-		// 	setState((state) => {
-		// 		if (state?.name !== field) return state;
-		// 		return { name: field, error: form.fields[field].error };
-		// 	});
-		// });
+		const unbindValidity = form.event.bind(
+			'validity',
+			(path: string, error: ValidityError | null) => {
+				setState((oldState) => {
+					if (oldState.path !== path) return oldState;
+					return {
+						...oldState,
+						error: error?.message ?? null,
+					};
+				});
+			}
+		);
 
 		return () => {
 			unbindFocus();
-			// unbindValidity();
+			unbindValidity();
+			if (clearPathTimeout) clearTimeout(clearPathTimeout);
+			if (clearPosTimeout) clearTimeout(clearPosTimeout);
 		};
-	}, [form]);
+	}, [form, props.padding]);
 
 	const handleUpdateContainerHeight = (ref: HTMLDivElement | null) => {
 		if (!ref || !containerRef.current) return;
-		containerRef.current.style.height = `${ref.clientHeight}px`;
+		containerRef.current.style.height = `${ref.clientHeight ?? 0}px`;
 	};
 
-	// const ref = form.fields[state?.name ?? '']?.ref as HTMLElement | undefined;
-	// const schema = form.schema.fields[state?.name ?? ''] as FormField | undefined;
-	const ref = path ? form.refs.current[path] : null;
-	const posRef = useRef<{ top: string; left: string }>({ top: '', left: '' });
-
-	const description = ref?.getAttribute('aria-description') ?? '';
-
-	if (ref) {
-		posRef.current.top = `${Math.floor(
-			ref.getBoundingClientRect().top + window.scrollY
-		)}px`;
-		posRef.current.left = `${
-			Math.floor(ref.getBoundingClientRect().right + window.scrollX) +
-			(props.padding ?? 4) * 4
-		}px`;
-	}
+	const show = state.description || state.error;
 
 	return (
 		<Portal wrapperClass={tw`absolute`}>
 			<div
 				ref={containerRef}
-				style={{ ...props.style, top: posRef.current.top, left: posRef.current.left }}
+				style={{ ...props.style, top: state.top, left: state.left }}
 				class={merge(
 					tw`FloatingDescription~(isolate absolute z-10 w-80 min-h-[2.5rem]
 						bg-gray-700 shadow-md rounded transition-all [transform-origin:left_center])
 					after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45)
-					${!ref && 'opacity-0 scale-[98%]'}`,
+					${!show && 'opacity-0 scale-[98%] interact-none'}`,
 					props.class
 				)}>
 				<div class={tw`overflow-hidden h-full w-full relative`}>
@@ -100,31 +140,34 @@ export default function FloatingDescription(props: Props) {
 						enterFrom={tw`opacity-0 -translate-y-1`}
 						exit={tw`transition duration-100`}
 						exitTo={tw`opacity-0 translate-y-1`}>
-						{description && (
+						{show && (
 							<div
-								key={path ?? '-'}
+								key={`${state.description}-${state.error}`}
 								ref={handleUpdateContainerHeight}
 								class={merge(tw`absolute top-0 left-0 w-full`, props.innerClass)}>
-								<div class={tw`flex gap-2 p-2 pr-3 whitespace-pre-line`}>
-									<Svg
-										src={Icon.info}
-										size={6}
-										class={tw`shrink-0 icon-p-accent-300 icon-s-gray-600 -mt-px`}
-									/>
-									{description}
-								</div>
-								{/* {error && (
-									<div class={tw`p-2 bg-gray-750 rounded-b`}>
-										<div class={tw`flex gap-2 text-accent-300 theme-red whitespace-pre-line`}>
+								{state.description && (
+									<div class={tw`flex gap-2 p-2 pr-3 whitespace-pre-line`}>
+										<Svg
+											src={Icon.info}
+											size={6}
+											class={tw`shrink-0 icon-p-accent-300 icon-s-gray-600 -mt-px`}
+										/>
+										{state.description}
+									</div>
+								)}
+								{state.error && (
+									<div class={tw`p-2 ${state.description && 'bg-gray-750 rounded-b'}`}>
+										<div
+											class={tw`flex gap-2 text-accent-300 theme-red whitespace-pre-line`}>
 											<Svg
-												src={icon_error}
+												src={Icon.error}
 												size={6}
 												class={tw`flex-shrink-0 icon-s-accent-400 icon-p-gray-900 -mt-px`}
 											/>
-											{error.errorMessage ?? error.error}
+											{state.error}
 										</div>
 									</div>
-								)} */}
+								)}
 							</div>
 						)}
 					</TransitionGroup>

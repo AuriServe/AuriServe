@@ -8,7 +8,7 @@ import FloatingDescription from './FloatingDescription';
 import { tw } from '../../Twind';
 import { DeepPartial } from '../../Util';
 import EventEmitter from '../../EventEmitter';
-import { FormContext, EventType } from './Types';
+import { FormContext, EventType, FieldMeta } from './Types';
 
 export interface Props<T> {
 	/** For uncontrolled forms. */
@@ -29,10 +29,12 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 	console.log('render form');
 
 	const formRef = useRef<HTMLFormElement>(null);
-	const refs = useRef<Record<string, HTMLElement | undefined>>({});
-	const value = useRef<DeepPartial<ValueType>>({
-		...(props.initialValue ?? props.value ?? {}),
-	} as DeepPartial<ValueType>);
+	const meta = useRef<Record<string, FieldMeta | undefined>>({});
+	const value = useRef<DeepPartial<ValueType>>(
+		JSON.parse(
+			JSON.stringify(props.initialValue ?? props.value ?? {})
+		) as DeepPartial<ValueType>
+	);
 
 	const { onChange: propsOnChange } = props;
 	const event = useMemo(() => {
@@ -62,7 +64,7 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		event.emit('refresh');
 	}, [props.value, event]);
 
-	const ctx = { value, refs, event };
+	const ctx = { value, meta, event };
 
 	const handleSubmit = (e: Event) => {
 		e.preventDefault();
