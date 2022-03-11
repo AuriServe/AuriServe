@@ -1,12 +1,13 @@
 import { h } from 'preact';
-import { useState, useCallback, useLayoutEffect, useRef, useEffect } from 'preact/hooks';
+import { useCallback, useLayoutEffect, useRef, useEffect } from 'preact/hooks';
 
 import InputContainer from './FieldContainer';
 
-import { useDerivedState } from '../useDerivedState';
-import { ValidityError, FieldProps, errorEq } from '../Types';
-
+import { FieldProps } from '../Types';
 import useAutoFill from '../useAutoFill';
+import useValidity from '../useValidity';
+import useDerivedState from '../useDerivedState';
+
 import { tw, merge, css } from '../../../Twind';
 import { elementBounds, refs as bindRefs } from '../../../Util';
 import { sign } from 'common';
@@ -61,93 +62,6 @@ function addStringSeparators(value: number, separator: string) {
 	return value.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, separator);
 }
 
-function validate(
-	textValue: string,
-	value: number | null,
-	required: boolean,
-	minValue: number,
-	maxValue: number,
-	maxWhole: number,
-	maxDecimals: number,
-	prefix: string,
-	suffix: string
-): ValidityError | null {
-	textValue = textValue.replace(/,/g, '');
-
-	/** The index of the decimal point in the value. */
-	const decimalInd = textValue.indexOf('.');
-
-	/** The end index of the whole portion of the value. */
-	const wholeEndInd = decimalInd === -1 ? textValue.length : decimalInd;
-
-	if (required && !textValue.length)
-		return { type: 'required', message: 'Please fill in this field.' };
-	else if (wholeEndInd > maxWhole)
-		return {
-			type: 'maxLength',
-			message: `Must have at most ${maxWhole} digits.`,
-		};
-	else if (decimalInd !== -1 && maxDecimals === 0) {
-		return {
-			type: 'maxLength',
-			message: `Value may not have decimals.`,
-		};
-	} else if (decimalInd !== -1 && textValue.length - decimalInd - 1 > maxDecimals)
-		return {
-			type: 'maxLength',
-			message: `Must have at most ${maxDecimals} decimals.`,
-		};
-	else if (value && value < minValue)
-		return {
-			type: 'minValue',
-			message: `Must be at least ${prefix}${minValue}${suffix}.`,
-		};
-	else if (value && value > maxValue)
-		return {
-			type: 'maxValue',
-			message: `Must be at most ${prefix}${maxValue}${suffix}.`,
-		};
-
-	return null;
-}
-
-// function useValidity(data: any) {
-// 	// a
-// }
-
-// eslint-disable-next-line
-// useValidity([
-// 	{
-// 		condition: (ctx) => ctx.required && !ctx.value,
-// 		message: 'Please fill in this field.',
-// 	},
-// 	{
-// 		condition: (ctx) => ctx.value?.length ?? 0 > ctx.maxLength,
-// 		message: (ctx) => `Must have at most ${ctx.maxWhole} digits.`,
-// 		urgency: 'change',
-// 	},
-// 	{
-// 		condition: (ctx) => ctx.value?.indexOf('.') !== -1 && ctx.maxDecimals === 0,
-// 		message: 'Value may not have decimals.',
-// 		urgency: 'change',
-// 	},
-// 	{
-// 		condition: (ctx) =>
-// 			ctx.value?.indexOf('.') !== -1 &&
-// 			ctx.value?.length - ctx.value?.indexOf('.') - 1 > ctx.maxDecimals,
-// 		message: (ctx) => `Must have at most ${ctx.maxDecimals} decimals.`,
-// 		urgency: 'change',
-// 	},
-// 	{
-// 		condition: (ctx) => ctx.value && ctx.value < ctx.minValue,
-// 		message: (ctx) => `Must be at least ${ctx.prefix}${ctx.minValue}${ctx.suffix}.`,
-// 	},
-// 	{
-// 		condition: (ctx) => ctx.value && ctx.value > ctx.maxValue,
-// 		message: (ctx) => `Must be at most ${ctx.prefix}${ctx.maxValue}${ctx.suffix}.`,
-// 	},
-// ]);
-
 export default function NumberInput(props: Props) {
 	// console.log('render number');
 
@@ -167,7 +81,7 @@ export default function NumberInput(props: Props) {
 				: props.decimals
 			: 0;
 
-	const { ctx, value, id, path, label, required, disabled, readonly } = useDerivedState<
+	const { ctx, value, id, path, label, required, disabled, readonly, onFocus, onBlur } = useDerivedState<
 		number | null
 	>(props, 0, true);
 
@@ -180,6 +94,49 @@ export default function NumberInput(props: Props) {
 	);
 
 	const signValue = useRef<1 | -1>(sign(value.current ?? 0) || 1);
+
+	const { validate, invalid } = useValidity<number | null>({
+		path,
+		context: {},
+		checks: [
+			{
+				condition: ({ value }) => required && !value,
+				message: 'Please fill in this field.',
+			},
+			{
+				condition: () => {
+					const decimalInd = textValue.current.indexOf('.');
+					const wholeEndInd = decimalInd === -1 ? textValue.current.length : decimalInd;
+					return wholeEndInd > maxWhole;
+				},
+				message: 'Must have at most ${maxWhole} digits.',
+				severity: 'change',
+			},
+			{
+				condition: () => textValue.current.indexOf('.') !== -1 && maxDecimals === 0,
+				message: 'Value may not have decimals.',
+				severity: 'change',
+			},
+			{
+				condition: () =>
+					textValue.current.indexOf('.') !== -1 &&
+					textValue.current.length - textValue.current.indexOf('.') - 1 > maxDecimals,
+				message: `Must have at most ${maxDecimals} decimals.`,
+				severity: 'change',
+			},
+			{
+				condition: ({ value }) => value !== null && value < minValue,
+				message: `Must be at least ${props.prefix}${minValue}${props.suffix}.`,
+			},
+			{
+				condition: ({ value }) => value !== null && value > maxValue,
+				message: `Must be at most ${props.prefix}${maxValue}${props.suffix}.`,
+			},
+		],
+		onValidityChange: props.onValidity,
+	});
+
+	useLayoutEffect(() => void validate(value.current), [validate, value]);
 
 	const refs = useRef<{
 		input: HTMLInputElement | null;
@@ -205,11 +162,7 @@ export default function NumberInput(props: Props) {
 		suffixStart: 0,
 	});
 
-	const [error, setError] = useState<ValidityError | null>(null);
-	const [shouldShowInvalid, setShouldShowInvalid] = useState<boolean>(false);
-
-	const showInvalid = !!error && shouldShowInvalid;
-	const [autofillRef, autofillClasses] = useAutoFill<HTMLInputElement>(showInvalid);
+	const [autofillRef, autofillClasses] = useAutoFill<HTMLInputElement>(invalid);
 
 	/** Updates the positions of the prefix and suffix. */
 	const updateElements = useCallback(() => {
@@ -299,29 +252,6 @@ export default function NumberInput(props: Props) {
 	useLayoutEffect(() => updateElements(), [updateElements]);
 	useEffect(() => void setTimeout(() => updateElements(), 16), [updateElements]);
 
-	const checkValidation = useCallback(
-		(textValue: string, signValue: 1 | -1) =>
-			validate(
-				textValue,
-				signValue,
-				required,
-				minValue,
-				maxValue,
-				maxWhole,
-				maxDecimals,
-				props.prefix ?? '',
-				props.suffix ?? ''
-			),
-		[required, minValue, maxValue, maxWhole, maxDecimals, props.prefix, props.suffix]
-	);
-
-	const { onValidity } = props;
-	useLayoutEffect(() => {
-		const error = checkValidation(textValue.current, signValue.current);
-		setError(error);
-		onValidity?.(error);
-	}, [checkValidation, value, onValidity]);
-
 	const handleChange = (evt: Event) => {
 		if (!(evt instanceof Event) || !(evt.target instanceof HTMLInputElement)) return;
 
@@ -334,11 +264,8 @@ export default function NumberInput(props: Props) {
 			: null;
 		value.current = floatValue;
 
-		const error = checkValidation(textValue.current, signValue.current);
-		setError((oldError) => (errorEq(oldError, error) ? oldError : error));
-		props.onValidity?.(error);
+		validate(floatValue);
 		props.onChange?.(floatValue);
-		ctx.event.emit('validity', path, error);
 		ctx.event.emit('change', path, floatValue);
 	};
 
@@ -508,9 +435,7 @@ export default function NumberInput(props: Props) {
 	};
 
 	const handleFocus = (evt: any) => {
-		props.onFocus?.(evt.target);
-		ctx.event.emit('focus', path, true);
-
+		onFocus(evt);
 		if (props.separators ?? true) {
 			const selection = [evt.target.selectionStart!, evt.target.selectionEnd!];
 			evt.target.selectionStart -=
@@ -527,10 +452,7 @@ export default function NumberInput(props: Props) {
 	};
 
 	const handleBlur = (evt: any) => {
-		props.onBlur?.(evt.target);
-		setShouldShowInvalid(!!error);
-		ctx.event.emit('focus', path, false);
-
+		onBlur(evt);
 		if (props.separators ?? true) {
 			textValue.current = value.current
 				? addStringSeparators(Math.abs(value.current), separator)
@@ -545,7 +467,7 @@ export default function NumberInput(props: Props) {
 			hideLabel={props.hideLabel}
 			label={label}
 			labelId={id}
-			invalid={showInvalid}
+			invalid={invalid}
 			class={props.class}
 			style={props.style}>
 			<span class={tw`sr-only`}>{props.prefix}</span>
@@ -553,7 +475,11 @@ export default function NumberInput(props: Props) {
 				ref={bindRefs<HTMLInputElement>(
 					autofillRef,
 					(elem) => (refs.current.input = elem),
-					(elem) => (ctx.meta.current[path] = { elem, error })
+					(elem) =>
+						(ctx.meta.current[path] = {
+							error: ctx.meta.current[path]?.error ?? null,
+							elem,
+						})
 				)}
 				id={id}
 				type='text'
@@ -565,7 +491,8 @@ export default function NumberInput(props: Props) {
 				style={{ paddingLeft: `${refs.current.valueStart}px` }}
 				class={merge(
 					tw`peer w-full px-1.5 pr-0 !outline-none rounded
-						${props.hideLabel ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}`,
+						${props.hideLabel ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}
+						${props.hideLabel && invalid && '!text-red-300'}`,
 					tw`${css`
 						&,
 						&:hover,
@@ -596,7 +523,12 @@ export default function NumberInput(props: Props) {
 			</span>
 			<pre
 				ref={(elem) => (refs.current.prefix = elem)}
-				class={tw`absolute interact-none font-sans
+				class={tw`absolute interact-none font-sans transition duration-75
+					${
+						props.hideLabel && invalid
+							? 'text-red-300/60 peer-focus:text-gray-300'
+							: 'text-gray-300'
+					}
 					${
 						props.hideLabel
 							? 'top-[9px]'
@@ -605,20 +537,25 @@ export default function NumberInput(props: Props) {
 				style={{ left: `${refs.current.prefixStart}px` }}>
 				<span
 					ref={(elem) => (refs.current.negativeSign = elem)}
-					class={tw`text-gray-300 font-sans absolute right-full`}
+					class={tw`font-sans absolute right-full`}
 				/>
-				<span aria-hidden={true} class={tw`text-gray-300 font-sans`}>
+				<span aria-hidden={true} class={tw`font-sans`}>
 					{props.prefix}
 				</span>
 				<span
 					aria-hidden={true}
+					class={tw`opacity-90`}
 					ref={(elem) => (refs.current.wholePadding = elem)}
-					class={tw`text-gray-400`}
 				/>
 			</pre>
 			<pre
 				ref={(elem) => (refs.current.suffix = elem)}
-				class={tw`absolute interact-none font-sans
+				class={tw`absolute interact-none font-sans transition duration-75
+					${
+						props.hideLabel && invalid
+							? 'text-red-300/60 peer-focus:text-gray-300'
+							: 'text-gray-300'
+					}
 					${
 						props.hideLabel
 							? 'top-[9px]'
@@ -628,9 +565,9 @@ export default function NumberInput(props: Props) {
 				<span
 					aria-hidden={true}
 					ref={(elem) => (refs.current.decimalPadding = elem)}
-					class={tw`text-gray-400`}
+					class={tw`opacity-90`}
 				/>
-				<span class={tw`text-gray-300 font-bold`}>{props.suffix}</span>
+				<span class={tw`font-bold`}>{props.suffix}</span>
 			</pre>
 		</InputContainer>
 	);

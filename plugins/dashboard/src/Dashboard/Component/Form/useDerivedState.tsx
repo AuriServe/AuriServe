@@ -24,9 +24,12 @@ interface DerivedState<T> {
 	disabled: boolean;
 	/** Whether or not the field is readonly, based on props. */
 	readonly: boolean;
+
+	onFocus: (evt: Event) => void;
+	onBlur: (evt: Event) => void;
 }
 
-export function useDerivedState<T>(
+export default function useDerivedState<T>(
 	props: FieldProps<T>,
 	defaultValue?: T,
 	defaultNullIfOptional?: boolean
@@ -66,6 +69,16 @@ export function useDerivedState<T>(
 		});
 	}, [path, ctx]);
 
+	const onFocus = (evt: any) => {
+		props.onFocus?.(evt.target);
+		ctx.event.emit('focus', path, true);
+	};
+
+	const onBlur = (evt: any) => {
+		props.onBlur?.(evt.target);
+		ctx.event.emit('focus', path, false);
+	};
+
 	return {
 		ctx,
 		value,
@@ -77,5 +90,8 @@ export function useDerivedState<T>(
 		required,
 		disabled,
 		readonly,
+
+		onFocus,
+		onBlur,
 	};
 }

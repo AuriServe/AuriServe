@@ -1,28 +1,8 @@
 import { createContext } from 'preact';
 import { MutableRef } from 'preact/hooks';
 
+import { ValidityError } from './useValidity';
 import EventEmitter from '../../EventEmitter';
-
-/** Input Error Types */
-export type ErrorType =
-	| 'pattern'
-	| 'maxValue'
-	| 'minValue'
-	| 'minLength'
-	| 'maxLength'
-	| 'required';
-
-/** A form field validation error. */
-export interface ValidityError {
-	type: ErrorType;
-	message: string;
-}
-
-export function errorEq(a: ValidityError | null, b: ValidityError | null) {
-	if (!a && !b) return true;
-	if ((a && !b) || (!a && b)) return false;
-	return a!.type === b!.type && a!.message === b!.message;
-}
 
 /** Event types for Form event emitter. */
 export interface EventType {
@@ -38,7 +18,7 @@ export interface FieldMeta {
 	elem: HTMLElement | null;
 
 	/** The field's error state, if any. */
-	error: ValidityError | null;
+	error: (ValidityError & { visible: boolean }) | null;
 }
 
 /** Form context interface. */

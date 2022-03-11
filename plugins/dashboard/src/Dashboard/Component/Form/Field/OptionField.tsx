@@ -1,17 +1,19 @@
 import { h, Fragment } from 'preact';
 import { useRerender } from 'vibin-hooks';
 import { Listbox } from '@headlessui/react';
-import { useCallback, useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useLayoutEffect, useRef } from 'preact/hooks';
 
 import Svg from '../../Svg';
 import { Transition } from '../../Transition';
 import FieldContainer from './FieldContainer';
 
+import { FieldProps } from '../Types';
+import useValidity from '../useValidity';
+import useDerivedState from '../useDerivedState';
+
 import { refs } from '../../../Util';
 import * as Icon from '../../../Icon';
 import { merge, tw } from '../../../Twind';
-import { useDerivedState } from '../useDerivedState';
-import { ValidityError, FieldProps, errorEq } from '../Types';
 
 type Props = FieldProps<string | null> & {
 	options: Record<string, string>;
@@ -19,66 +21,48 @@ type Props = FieldProps<string | null> & {
 	hideLabel?: boolean;
 };
 
-function validate(value: string | null, required: boolean): ValidityError | null {
-	if (required && !value) {
-		return { type: 'required', message: 'Please select an option.' };
-	}
-	return null;
-}
-
 export default function OptionField(props: Props) {
-	// console.log('render option');
 	const rerender = useRerender();
-	const { ctx, value, id, path, label, required, disabled, readonly } = useDerivedState<
-		string | null
-	>(props, '', true);
+	const { ctx, value, id, path, label, required, disabled, readonly, onFocus, onBlur } =
+		useDerivedState<string | null>(props, '', true);
+
+	const { validate, invalid } = useValidity<string | null>({
+		path,
+		context: {},
+		checks: [
+			{
+				condition: ({ value }) => required && !value,
+				message: 'Please select an option',
+			},
+		],
+		onValidityChange: props.onValidity,
+	});
+	useLayoutEffect(() => void validate(value.current), [validate, value]);
 
 	const blurTimeoutRef = useRef<number>(0);
-	const [error, setError] = useState<ValidityError | null>(null);
-	const [shouldShowInvalid, setShouldShowInvalid] = useState<boolean>(false);
 
 	const ref = useRef<HTMLElement>(null);
 	const rootRef = useRef<HTMLDivElement>(null);
 
-	const checkValidation = useCallback(
-		(value: string | null) => validate(value, required),
-		[required]
-	);
-	const { onValidity } = props;
-	useLayoutEffect(() => {
-		const error = checkValidation(value.current);
-		setError(error);
-		onValidity?.(error);
-	}, [checkValidation, value, onValidity]);
-
 	const handleChange = (newValue: string | null) => {
 		value.current = newValue;
-		const error = checkValidation(newValue);
-
-		setError((oldError) => (errorEq(oldError, error) ? oldError : error));
-		props.onValidity?.(error);
+		validate(newValue);
 		props.onChange?.(newValue);
-		ctx.event.emit('validity', path, error);
 		ctx.event.emit('change', path, newValue);
 		rerender();
 	};
 
-	const handleFocus = ({ target }: any) => {
+	const handleFocus = (evt: Event) => {
 		if (blurTimeoutRef.current) {
 			window.clearTimeout(blurTimeoutRef.current);
 			blurTimeoutRef.current = 0;
 		}
-		props.onFocus?.(target);
-		ctx.event.emit('focus', path, true);
+		onFocus(evt);
 	};
 
-	const handleBlur = ({ target }: any) => {
+	const handleBlur = (evt: Event) => {
 		if (blurTimeoutRef.current) return;
-		blurTimeoutRef.current = window.setTimeout(() => {
-			props.onBlur?.(target);
-			ctx.event.emit('focus', path, false);
-			setShouldShowInvalid(error !== null);
-		});
+		blurTimeoutRef.current = window.setTimeout(() => onBlur(evt));
 	};
 
 	const numEntries = Object.keys(props.options).length + (required ? 0 : 1);
@@ -98,25 +82,27 @@ export default function OptionField(props: Props) {
 					onFocusIn={handleFocus}
 					onFocusOut={handleBlur}
 					populated={open || value.current !== null}
-					invalid={shouldShowInvalid}
+					invalid={invalid}
 					hideLabel={props.hideLabel}
 					class={props.class}
 					style={props.style}>
 					<Listbox.Button
 						id={id}
 						aria-description={props.description}
-						ref={refs(ref, (elem) => (ctx.meta.current[path] = { elem, error }))}
+						ref={refs(
+							ref,
+							(elem) =>
+								(ctx.meta.current[path] = {
+									error: ctx.meta.current[path]?.error ?? null,
+									elem,
+								})
+						)}
 						className={merge(
 							tw`peer w-full px-2.5 pr-10 rounded
 							${props.hideLabel ? 'pt-1.5 pb-1 h-10' : 'pt-6 pb-1 h-[3.25rem]'}
 							text-left !outline-none resize-none transition focus:shaduow-md
 							bg-gray-100 dark:bg-gray-700/75 dark:focus:bg-gray-700
 							${open && '!shadow-md dark:!bg-gray-700'}
-							${shouldShowInvalid && 'text-red-800 focus:text-gray-900'}
-							${
-								shouldShowInvalid &&
-								'dark:text-red-200 dark:hover:text-red-50 dark:focus:text-gray-100'
-							}
 						`
 							// props.inputClass
 						)}>
