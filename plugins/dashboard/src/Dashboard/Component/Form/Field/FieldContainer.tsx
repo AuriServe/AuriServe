@@ -1,6 +1,10 @@
 import { forwardRef } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
 
+import Svg from '../../Svg';
+import Transition from '../../Transition';
+
+import * as Icon from '../../../Icon';
 import { tw, merge } from '../../../Twind';
 
 interface Props {
@@ -105,6 +109,19 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 					${props.active && '!opacity-100 !scale-x-100'}
 					${props.invalid ? 'bg-red-(700/75 dark:300)' : 'bg-accent-(500 dark:400)'}`}
 			/>
+			{props.hideLabel && (
+				<Transition
+					show={props.invalid}
+					size={6}
+					duration={75}
+					enter={tw`transition duration-75`}
+					enterFrom={tw`scale-50 opacity-0`}
+					invertExit
+					as={Svg}
+					src={Icon.error}
+					class={tw`absolute top-2 right-2 icon-p-red-200 icon-s-gray-600`}
+				/>
+			)}
 		</div>
 	);
 });

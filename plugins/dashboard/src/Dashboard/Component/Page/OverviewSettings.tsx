@@ -14,6 +14,8 @@ interface OverviewData {
 	favicon: string | null;
 	themeColor: string | null;
 	visibility: 'visible' | 'hidden';
+	money: number;
+	percent: number;
 }
 
 export default function OverviewSettings() {
@@ -25,6 +27,8 @@ export default function OverviewSettings() {
 		favicon: null,
 		themeColor: null,
 		visibility: 'visible',
+		money: 99999,
+		percent: 0.15,
 	});
 
 	return (
@@ -37,7 +41,7 @@ export default function OverviewSettings() {
 			<Card.Body>
 				<Form class={tw`p-2`} initialValue={data} onSubmit={setData}>
 					<div class={tw`flex-(& row) gap-8`}>
-						<div class={tw`w-64`}>
+						<div class={tw`w-64 shrink-0`}>
 							<p class={tw`font-medium mb-1`}>Site Metadata</p>
 							<p class={tw`text-gray-300 text-sm`}>
 								The basic description of your website.
@@ -62,11 +66,29 @@ export default function OverviewSettings() {
 								optional
 								maxLength={512}
 							/>
+							<Field.Number
+								path='money'
+								decimals={false}
+								maxLength={6}
+								prefix='$ '
+								padWhole
+								minValue={0}
+								maxValue={100000}
+							/>
+							<Field.Number
+								path='percent'
+								decimals={2}
+								maxLength={8}
+								suffix=' %'
+								padDecimals
+								minValue={0}
+								maxValue={100}
+							/>
 						</div>
 					</div>
 
 					<div class={tw`flex-(& row) gap-8 pt-4 mt-6 mb-1`}>
-						<div class={tw`w-64`}>
+						<div class={tw`w-64 shrink-0`}>
 							<p class={tw`font-medium mb-1`}>Site Appearance</p>
 							<p class={tw`text-(gray-300 sm)`}>
 								Settings that determine how browsers display your website.

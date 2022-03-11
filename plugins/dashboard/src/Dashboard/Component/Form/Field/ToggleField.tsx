@@ -2,7 +2,7 @@ import { h } from 'preact';
 
 import Svg from '../../Svg';
 
-import { FieldProps, ValidityError } from '../Types';
+import { errorEq, FieldProps, ValidityError } from '../Types';
 import { useDerivedState } from '../useDerivedState';
 
 import { tw, merge } from '../../../Twind';
@@ -50,7 +50,7 @@ export default function ToggleField(props: Props) {
 		value.current = newValue;
 		const error = checkValidation(newValue);
 
-		setError(error);
+		setError((oldError) => (errorEq(oldError, error) ? oldError : error));
 		setShouldShowInvalid(!!error);
 		props.onValidity?.(error);
 		props.onChange?.(newValue);
@@ -64,7 +64,6 @@ export default function ToggleField(props: Props) {
 	};
 
 	const handleBlur = (evt: any) => {
-		console.log('blur');
 		props.onBlur?.(evt.target);
 		setShouldShowInvalid(!!error);
 		ctx.event.emit('focus', path, false);

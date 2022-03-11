@@ -26,7 +26,7 @@ export interface Props<T> {
 }
 
 export default memo(function Form<ValueType>(props: Props<ValueType>) {
-	console.log('render form');
+	// console.log('render form');
 
 	const formRef = useRef<HTMLFormElement>(null);
 	const meta = useRef<Record<string, FieldMeta | undefined>>({});

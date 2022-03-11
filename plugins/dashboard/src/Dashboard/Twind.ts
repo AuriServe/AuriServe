@@ -19,6 +19,18 @@ const COLOR_WEIGHTS_GRAY = [...COLOR_WEIGHTS, 750, 'input'] as const;
 
 /** All of the theme colors in RGB format. */
 export const themeColors = {
+	'purple': {
+		50: [250, 245, 255],
+		100: [243, 232, 255],
+		200: [233, 213, 255],
+		300: [216, 180, 254],
+		400: [192, 132, 252],
+		500: [168, 85, 247],
+		600: [147, 51, 238],
+		700: [126, 34, 206],
+		800: [107, 33, 168],
+		900: [88, 28, 135],
+	},
 	'indigo': {
 		50: [238, 242, 255],
 		100: [224, 231, 255],
@@ -173,6 +185,27 @@ const config = defineConfig({
 				property: '--icon-secondary' as any,
 			}),
 		],
+		[
+			'scroll-gutter-',
+			colorFromTheme({
+				section: 'colors',
+				property: '--scroll-gutter' as any,
+			}),
+		],
+		[
+			'scroll-bar-',
+			colorFromTheme({
+				section: 'colors',
+				property: '--scroll-bar' as any,
+			}),
+		],
+		[
+			'scroll-bar-hover-',
+			colorFromTheme({
+				section: 'colors',
+				property: '--scroll-bar-hover' as any,
+			}),
+		],
 		['interact-none', { userSelect: 'none', pointerEvents: 'none' }],
 	],
 	variants: [
@@ -301,6 +334,18 @@ tw(css`
 		syntax: '<color>';
 	}
 
+	@property --scroll-gutter {
+		syntax: '<color>';
+	}
+
+	@property --scroll-bar {
+		syntax: '<color>';
+	}
+
+	@property --scroll-bar-hover {
+		syntax: '<color>';
+	}
+
 	:root {
 		${
 			// Create CSS variables for all of the colors.
@@ -359,28 +404,20 @@ tw(css`
 	@media (pointer: fine) {
 		html.AS_APP body::-webkit-scrollbar,
 		html.AS_APP body *::-webkit-scrollbar {
-			@apply w-[14px] h-[14px] bg-gray-900;
+			@apply w-[14px] h-[14px];
+			background-color: var(--scroll-gutter);
 		}
 
 		body::-webkit-scrollbar-thumb,
 		body *::-webkit-scrollbar-thumb {
-			@apply rounded-full bg-gray-600 hover:bg-gray-500 border-solid border-4 border-gray-900;
+			@apply rounded-full border-(4 solid);
+			border-color: var(--scroll-gutter);
+			background-color: var(--scroll-bar);
 		}
 
-		html.AS_APP body .scroll-input::-webkit-scrollbar {
-			@apply bg-gray-input;
-		}
-
-		html.AS_APP body .scroll-input:focus::-webkit-scrollbar {
-			@apply bg-gray-700;
-		}
-
-		html.AS_APP body .scroll-input::-webkit-scrollbar-thumb {
-			@apply bg-gray-500 hover:bg-gray-400 border-solid border-4 border-gray-input;
-		}
-
-		html.AS_APP body .scroll-input:focus::-webkit-scrollbar-thumb {
-			@apply border-gray-700;
+		body::-webkit-scrollbar-thumb:hover,
+		body *::-webkit-scrollbar-thumb:hover {
+			background-color: var(--scroll-bar-hover);
 		}
 	}
 

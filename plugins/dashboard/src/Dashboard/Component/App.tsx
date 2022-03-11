@@ -14,7 +14,9 @@ import { tw } from '../Twind';
 type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
 document.documentElement.classList.add('dark');
-
+document.documentElement.classList.add(
+	...tw`scroll-(gutter-gray-900 bar-(gray-500 hover-gray-400)`.split(' ')
+);
 /** Defines the content of the App Context. */
 export interface AppContextData {
 	data: Partial<any>;

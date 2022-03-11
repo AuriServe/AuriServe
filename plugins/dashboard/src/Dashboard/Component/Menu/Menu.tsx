@@ -108,7 +108,8 @@ export default function Menu(props: Props) {
 			/>
 
 			<div
-				class={tw`Menu~(min-w-[12rem] w-max h-auto grid bg-gray-750 rounded shadow-lg shadow-black/25)`}
+				class={tw`Menu~(min-w-[12rem] w-max h-auto grid bg-gray-750 rounded shadow-lg shadow-black/25)
+					${ctx.root && 'will-change-transform'}`}
 				onContextMenu={(evt) => {
 					evt.preventDefault();
 					evt.stopPropagation();

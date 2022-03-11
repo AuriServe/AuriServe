@@ -4,7 +4,7 @@ import { useState, useCallback, useLayoutEffect } from 'preact/hooks';
 import InputContainer from './FieldContainer';
 
 import { useDerivedState } from '../useDerivedState';
-import { ValidityError, FieldProps } from '../Types';
+import { ValidityError, FieldProps, errorEq } from '../Types';
 
 import { refs } from '../../../Util';
 import useAutoFill from '../useAutoFill';
@@ -29,29 +29,28 @@ function validate(
 	pattern?: RegExp,
 	patternHint?: string
 ): ValidityError | null {
-	if (required && !value?.length) {
+	if (required && !value?.length)
 		return { type: 'required', message: 'Please fill in this field.' };
-	} else if (value && value.length > (maxLength ?? Infinity)) {
+	else if (value && value.length > (maxLength ?? Infinity))
 		return {
 			type: 'maxLength',
 			message: `Must be at most ${maxLength} characters.`,
 		};
-	} else if (value && value.length < (minLength ?? 0)) {
+	else if (value && value.length < (minLength ?? 0))
 		return {
 			type: 'minLength',
 			message: `Must be at least ${minLength} characters.`,
 		};
-	} else if (value && pattern && !pattern.test(value)) {
+	else if (value && pattern && !pattern.test(value))
 		return {
 			type: 'pattern',
 			message: patternHint ?? 'Please match the pattern provided',
 		};
-	}
 	return null;
 }
 
 function RawTextInput(props: Props & { type: 'text' | 'password' }) {
-	console.log('render field');
+	// console.log('render field');
 	const { ctx, value, id, path, label, required, disabled, readonly } = useDerivedState<
 		string | null
 	>(props, '', true);
@@ -92,7 +91,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 		value.current = newValue;
 		const error = checkValidation(newValue);
 
-		setError(error);
+		setError((oldError) => (errorEq(oldError, error) ? oldError : error));
 		props.onValidity?.(error);
 		props.onChange?.(newValue);
 		ctx.event.emit('validity', path, error);

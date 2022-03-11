@@ -109,9 +109,9 @@ export default function Tooltip(props: Props) {
 				aria-hidden={true}
 				wrapperClass={tw`absolute`}
 				class={merge(
-					tw`Tooltip~(absolute transition rounded font-medium will-change-transform
+					tw`Tooltip~(absolute transition rounded font-medium will-change-transform whitespace-pre-line text-center
 						${props.small ? 'text-sm py-1 px-2 text-gray-100' : 'py-1 px-2.5'}
-						bg-${props.bg ?? 'gray-700'} drop-shadow-md whitespace-nowrap)
+						bg-${props.bg ?? 'gray-700'} drop-shadow-md w-max)
 						after:(w-2 h-2 absolute bg-${props.bg ?? 'gray-700'}
 							rotate-45 -translate-x-1/2 -translate-y-1/2
 							${ARROW_POSITIONS[props.position ?? 'top']})

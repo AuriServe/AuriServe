@@ -11,7 +11,7 @@ import { refs } from '../../../Util';
 import * as Icon from '../../../Icon';
 import { merge, tw } from '../../../Twind';
 import { useDerivedState } from '../useDerivedState';
-import { ValidityError, FieldProps } from '../Types';
+import { ValidityError, FieldProps, errorEq } from '../Types';
 
 type Props = FieldProps<string | null> & {
 	options: Record<string, string>;
@@ -27,7 +27,7 @@ function validate(value: string | null, required: boolean): ValidityError | null
 }
 
 export default function OptionField(props: Props) {
-	console.log('render option');
+	// console.log('render option');
 	const rerender = useRerender();
 	const { ctx, value, id, path, label, required, disabled, readonly } = useDerivedState<
 		string | null
@@ -55,7 +55,7 @@ export default function OptionField(props: Props) {
 		value.current = newValue;
 		const error = checkValidation(newValue);
 
-		setError(error);
+		setError((oldError) => (errorEq(oldError, error) ? oldError : error));
 		props.onValidity?.(error);
 		props.onChange?.(newValue);
 		ctx.event.emit('validity', path, error);
@@ -80,6 +80,9 @@ export default function OptionField(props: Props) {
 			setShouldShowInvalid(error !== null);
 		});
 	};
+
+	const numEntries = Object.keys(props.options).length + (required ? 0 : 1);
+	const hasScrollbar = numEntries > 5;
 
 	return (
 		<Listbox
@@ -125,56 +128,63 @@ export default function OptionField(props: Props) {
 						invertExit
 						enter={tw`transition duration-150`}
 						enterFrom={tw`opacity-0 -translate-y-2`}>
-						<Listbox.Options
-							static
-							className={tw`absolute z-50 left-0 top-[calc(100%+0.5rem)] w-full flex-row-reverse
-								bg-gray-700 rounded shadow-md outline-none overflow-hidden`}>
-							{!required && (
-								<Listbox.Option
-									value={null}
-									className={({ active, selected }) => tw`
-										p-2.5 flex transition cursor-pointer duration-75
+						<div
+							class={tw`absolute z-50 left-0
+								bottom---[calc(100%+0.5rem)]
+								top-[calc(100%+0.5rem)]
+								w-full py-0.5 pr-0.5 rounded shadow-md bg-gray-700 grid`}>
+							<Listbox.Options
+								static
+								className={tw`flex-row-reverse max-h-[12.5rem] overflow-auto outline-none
+									scroll-(gutter-gray-700 bar-(gray-400 hover-gray-300)) py-1.5 pl-2
+									${hasScrollbar ? 'pr-0.5' : 'pr-2'}`}>
+								{!required && (
+									<Listbox.Option
+										value={null}
+										className={({ active, selected }) => tw`
+										py-2 px-2 flex rounded transition cursor-pointer duration-75
 										${active ? 'bg-gray-750/50 text-accent-200' : 'bg-gray-750 text-gray-200'}
 										${selected && 'font-medium !text-gray-100'}
 									`}>
-									{({ selected }: { selected: boolean }) => (
-										<Fragment>
-											<span class={tw`grow`}>None</span>
-											{selected && (
-												<Svg
-													class={tw`icon-p-accent-200 icon-s-gray-500`}
-													src={Icon.check}
-													size={6}
-												/>
-											)}
-										</Fragment>
-									)}
-								</Listbox.Option>
-							)}
-							{Object.entries(props.options).map(([value, label]) => (
-								<Listbox.Option
-									key={value}
-									value={value}
-									className={({ active, selected }) =>
-										tw`p-2.5 flex transition cursor-pointer duration-75
+										{({ selected }: { selected: boolean }) => (
+											<Fragment>
+												<span class={tw`grow`}>None</span>
+												{selected && (
+													<Svg
+														class={tw`icon-p-accent-200 icon-s-gray-500`}
+														src={Icon.check}
+														size={6}
+													/>
+												)}
+											</Fragment>
+										)}
+									</Listbox.Option>
+								)}
+								{Object.entries(props.options).map(([value, label]) => (
+									<Listbox.Option
+										key={value}
+										value={value}
+										className={({ active, selected }) =>
+											tw`py-2 px-2 flex rounded transition cursor-pointer duration-75
 											${active ? 'bg-accent-400/10 text-accent-200' : 'text-gray-200'}
 											${selected && 'font-medium !text-gray-100'}`
-									}>
-									{({ selected }: { selected: boolean }) => (
-										<Fragment>
-											<span class={tw`grow`}>{label}</span>
-											{selected && (
-												<Svg
-													class={tw`icon-p-accent-200 icon-s-gray-500`}
-													src={Icon.check}
-													size={6}
-												/>
-											)}
-										</Fragment>
-									)}
-								</Listbox.Option>
-							))}
-						</Listbox.Options>
+										}>
+										{({ selected }: { selected: boolean }) => (
+											<Fragment>
+												<span class={tw`grow`}>{label}</span>
+												{selected && (
+													<Svg
+														class={tw`icon-p-accent-200 icon-s-gray-500`}
+														src={Icon.check}
+														size={6}
+													/>
+												)}
+											</Fragment>
+										)}
+									</Listbox.Option>
+								))}
+							</Listbox.Options>
+						</div>
 					</Transition>
 
 					<Svg

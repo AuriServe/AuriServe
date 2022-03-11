@@ -12,7 +12,7 @@ interface UseAutoFillProps {
 	borderSize: number;
 }
 
-type UseAutoFillResult = [RefObject<HTMLElement>, string];
+type UseAutoFillResult<Element> = [RefObject<Element>, string];
 
 /**
  * Styles an input element with default styles based on an invalid state, obscuring autofill styles.
@@ -21,7 +21,9 @@ type UseAutoFillResult = [RefObject<HTMLElement>, string];
  * @returns a ref object and class name to apply to the input.
  */
 
-export default function useAutoFill(invalid: boolean): UseAutoFillResult;
+export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
+	invalid: boolean
+): UseAutoFillResult<Element>;
 
 /**
  * Styles an input element according to the props object specified, obscuring autofill styles.
@@ -30,7 +32,9 @@ export default function useAutoFill(invalid: boolean): UseAutoFillResult;
  * @returns a ref object and class name to apply to the input.
  */
 
-export default function useAutoFill(props: UseAutoFillProps): UseAutoFillResult;
+export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
+	props: UseAutoFillProps
+): UseAutoFillResult<Element>;
 
 /**
  * Chrome sucks ass and tries to override form styles really shittily when an input is autofilled.
@@ -43,8 +47,10 @@ export default function useAutoFill(props: UseAutoFillProps): UseAutoFillResult;
  * @returns a ref object and class name to apply to the input.
  */
 
-export default function useAutoFill(arg: UseAutoFillProps | boolean): UseAutoFillResult {
-	const ref = useRef<HTMLElement>(null);
+export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
+	arg: UseAutoFillProps | boolean
+): UseAutoFillResult<Element> {
+	const ref = useRef<Element>(null);
 
 	const props = useMemo(() => {
 		if (typeof arg === 'boolean') {

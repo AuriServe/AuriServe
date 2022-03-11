@@ -44,6 +44,7 @@ export { default as Svg } from './Component/Svg';
 export { default as Modal } from './Component/Modal';
 export { default as Title } from './Component/Title';
 export { default as Portal } from './Component/Portal';
+export { default as Tooltip } from './Component/Tooltip';
 export { default as Spinner } from './Component/Spinner';
 export { Transition, TransitionGroup } from './Component/Transition';
 export { default as Form, Field, FieldGroup } from './Component/Form';

@@ -52,8 +52,8 @@ export function useDerivedState<T>(
 	);
 
 	useEffect(() => {
-		if (path) return;
-		ctx.event.bind('refresh', () => {
+		if (!path) return;
+		return ctx.event.bind('refresh', () => {
 			value.current = traversePath(ctx.value.current, path);
 		});
 	}, [path, ctx]);

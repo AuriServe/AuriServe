@@ -18,6 +18,12 @@ export interface ValidityError {
 	message: string;
 }
 
+export function errorEq(a: ValidityError | null, b: ValidityError | null) {
+	if (!a && !b) return true;
+	if ((a && !b) || (!a && b)) return false;
+	return a!.type === b!.type && a!.message === b!.message;
+}
+
 /** Event types for Form event emitter. */
 export interface EventType {
 	change: (path: string, value: any) => void;
