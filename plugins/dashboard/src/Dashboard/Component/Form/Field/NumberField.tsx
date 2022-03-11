@@ -8,7 +8,8 @@ import { ValidityError, FieldProps, errorEq } from '../Types';
 
 import useAutoFill from '../useAutoFill';
 import { tw, merge, css } from '../../../Twind';
-import { elementBounds, refs } from '../../../Util';
+import { elementBounds, refs as bindRefs } from '../../../Util';
+import { sign } from 'common';
 
 type Props = FieldProps<number | null> & {
 	hideLabel?: boolean;
@@ -24,6 +25,9 @@ type Props = FieldProps<number | null> & {
 
 	/** The maximum number of decimals, if true it is 8, if false it is 0. */
 	decimals?: number | boolean;
+
+	/** Allow negative numbers, minValue will be set to -maxValue if not defined. */
+	negative?: boolean;
 
 	/** The step to increment the number by, if the up and down arrow keys are pressed. */
 	step?: number;
@@ -53,12 +57,13 @@ type Props = FieldProps<number | null> & {
  * resulting in decimal values magically losing precision on blur. Hah.
  */
 
-function toCommaSeparatedString(value: number) {
-	return value.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
+function addStringSeparators(value: number, separator: string) {
+	return value.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, separator);
 }
 
 function validate(
-	value: string,
+	textValue: string,
+	value: number | null,
 	required: boolean,
 	minValue: number,
 	maxValue: number,
@@ -67,15 +72,15 @@ function validate(
 	prefix: string,
 	suffix: string
 ): ValidityError | null {
-	value = value.replace(/,/g, '');
+	textValue = textValue.replace(/,/g, '');
 
 	/** The index of the decimal point in the value. */
-	const decimalInd = value.indexOf('.');
+	const decimalInd = textValue.indexOf('.');
 
 	/** The end index of the whole portion of the value. */
-	const wholeEndInd = decimalInd === -1 ? value.length : decimalInd;
+	const wholeEndInd = decimalInd === -1 ? textValue.length : decimalInd;
 
-	if (required && !value.length)
+	if (required && !textValue.length)
 		return { type: 'required', message: 'Please fill in this field.' };
 	else if (wholeEndInd > maxWhole)
 		return {
@@ -87,17 +92,17 @@ function validate(
 			type: 'maxLength',
 			message: `Value may not have decimals.`,
 		};
-	} else if (decimalInd !== -1 && value.length - decimalInd - 1 > maxDecimals)
+	} else if (decimalInd !== -1 && textValue.length - decimalInd - 1 > maxDecimals)
 		return {
 			type: 'maxLength',
 			message: `Must have at most ${maxDecimals} decimals.`,
 		};
-	else if (+value < minValue)
+	else if (value && value < minValue)
 		return {
 			type: 'minValue',
 			message: `Must be at least ${prefix}${minValue}${suffix}.`,
 		};
-	else if (+value > maxValue)
+	else if (value && value > maxValue)
 		return {
 			type: 'maxValue',
 			message: `Must be at most ${prefix}${maxValue}${suffix}.`,
@@ -106,12 +111,53 @@ function validate(
 	return null;
 }
 
+// function useValidity(data: any) {
+// 	// a
+// }
+
+// eslint-disable-next-line
+// useValidity([
+// 	{
+// 		condition: (ctx) => ctx.required && !ctx.value,
+// 		message: 'Please fill in this field.',
+// 	},
+// 	{
+// 		condition: (ctx) => ctx.value?.length ?? 0 > ctx.maxLength,
+// 		message: (ctx) => `Must have at most ${ctx.maxWhole} digits.`,
+// 		urgency: 'change',
+// 	},
+// 	{
+// 		condition: (ctx) => ctx.value?.indexOf('.') !== -1 && ctx.maxDecimals === 0,
+// 		message: 'Value may not have decimals.',
+// 		urgency: 'change',
+// 	},
+// 	{
+// 		condition: (ctx) =>
+// 			ctx.value?.indexOf('.') !== -1 &&
+// 			ctx.value?.length - ctx.value?.indexOf('.') - 1 > ctx.maxDecimals,
+// 		message: (ctx) => `Must have at most ${ctx.maxDecimals} decimals.`,
+// 		urgency: 'change',
+// 	},
+// 	{
+// 		condition: (ctx) => ctx.value && ctx.value < ctx.minValue,
+// 		message: (ctx) => `Must be at least ${ctx.prefix}${ctx.minValue}${ctx.suffix}.`,
+// 	},
+// 	{
+// 		condition: (ctx) => ctx.value && ctx.value > ctx.maxValue,
+// 		message: (ctx) => `Must be at most ${ctx.prefix}${ctx.maxValue}${ctx.suffix}.`,
+// 	},
+// ]);
+
 export default function NumberInput(props: Props) {
 	// console.log('render number');
 
-	const minValue = props.minValue ?? 0;
-	const maxValue = props.maxValue ?? 1000000000;
-	const maxWhole = props.maxLength ?? 16;
+	// eslint-disable-next-line
+	// const separator = ' '; // hair space
+	const separator = ' '; // thin space
+
+	const maxValue = props.maxValue ?? 100000000000;
+	const minValue = props.minValue ?? (props.negative ? -maxValue : 0);
+	const maxWhole = props.maxLength ?? 12;
 	const maxDecimals =
 		props.decimals !== undefined
 			? typeof props.decimals === 'boolean'
@@ -128,16 +174,19 @@ export default function NumberInput(props: Props) {
 	const textValue = useRef<string>(
 		value.current
 			? props.separators ?? true
-				? toCommaSeparatedString(value.current)
-				: value.current.toString()
+				? addStringSeparators(Math.abs(value.current), separator)
+				: Math.abs(value.current).toString()
 			: ''
 	);
 
-	const positionRefs = useRef<{
+	const signValue = useRef<1 | -1>(sign(value.current ?? 0) || 1);
+
+	const refs = useRef<{
 		input: HTMLInputElement | null;
 		sizer: HTMLSpanElement | null;
 		prefix: HTMLPreElement | null;
 		suffix: HTMLPreElement | null;
+		negativeSign: HTMLSpanElement | null;
 		wholePadding: HTMLSpanElement | null;
 		decimalPadding: HTMLSpanElement | null;
 		prefixStart: number;
@@ -148,6 +197,7 @@ export default function NumberInput(props: Props) {
 		sizer: null,
 		prefix: null,
 		suffix: null,
+		negativeSign: null,
 		wholePadding: null,
 		decimalPadding: null,
 		prefixStart: 0,
@@ -163,23 +213,27 @@ export default function NumberInput(props: Props) {
 
 	/** Updates the positions of the prefix and suffix. */
 	const updateElements = useCallback(() => {
-		const { input, sizer, prefix, suffix } = positionRefs.current;
+		const { input, sizer, prefix, suffix } = refs.current;
 
-		const valueWithoutCommas = textValue.current.replace(/,/g, '');
+		const valueWithoutCommas = textValue.current.replace(
+			new RegExp(`/${separator}/g`),
+			''
+		);
 		const decimalInd = valueWithoutCommas.indexOf('.');
 		const wholeEndInd = decimalInd === -1 ? valueWithoutCommas.length : decimalInd;
 
 		sizer!.innerText = textValue.current;
+		refs.current.negativeSign!.innerHTML = signValue.current === -1 ? '-' : '';
 
 		// Apply decimal ghosts.
 		if (maxDecimals && props.padDecimals) {
 			if (decimalInd === -1)
-				positionRefs.current.decimalPadding!.innerText = `${
+				refs.current.decimalPadding!.innerText = `${
 					valueWithoutCommas.length === 0 && !props.padWhole ? '0' : ''
 				}.${'0'.repeat(Math.max(maxDecimals, 0))}`;
 			else {
 				const decimalCount = valueWithoutCommas.length - decimalInd - 1;
-				positionRefs.current.decimalPadding!.innerText = '0'.repeat(
+				refs.current.decimalPadding!.innerText = '0'.repeat(
 					Math.max(maxDecimals - decimalCount, 0)
 				);
 			}
@@ -187,7 +241,7 @@ export default function NumberInput(props: Props) {
 
 		// Apply whole ghosts.
 		if (maxWhole && props.padWhole) {
-			positionRefs.current.wholePadding!.innerText = '0'.repeat(
+			refs.current.wholePadding!.innerText = '0'.repeat(
 				Math.max(maxWhole - wholeEndInd, 0)
 			);
 		}
@@ -198,28 +252,29 @@ export default function NumberInput(props: Props) {
 		const sizerWidth = elementBounds(sizer!).width;
 
 		if (props.alignRight) {
-			positionRefs.current.suffixStart = inputWidth - suffixWidth - 10;
-			if (suffix) suffix.style.left = `${positionRefs.current.suffixStart}px`;
+			refs.current.suffixStart = inputWidth - suffixWidth - 10;
+			if (suffix) suffix.style.left = `${refs.current.suffixStart}px`;
 
-			positionRefs.current.valueStart = inputWidth - suffixWidth - sizerWidth - 4 - 10;
-			input!.style.paddingLeft = `${positionRefs.current.valueStart}px`;
+			refs.current.valueStart = inputWidth - suffixWidth - sizerWidth - 4 - 10;
+			input!.style.paddingLeft = `${refs.current.valueStart}px`;
 
-			positionRefs.current.prefixStart =
-				positionRefs.current.valueStart - prefixWidth + 4;
-			if (prefix) prefix.style.left = `${positionRefs.current.prefixStart}px`;
+			refs.current.prefixStart = refs.current.valueStart - prefixWidth + 4;
+			if (prefix) prefix.style.left = `${refs.current.prefixStart}px`;
 		} else {
-			positionRefs.current.valueStart = prefixWidth + 7;
+			refs.current.valueStart = prefixWidth + 7;
 
-			positionRefs.current.suffixStart = positionRefs.current.valueStart + sizerWidth + 5;
+			refs.current.suffixStart = refs.current.valueStart + sizerWidth + 5;
 
-			input!.style.paddingLeft = `${positionRefs.current.valueStart}px`;
-			if (suffix) suffix.style.left = `${positionRefs.current.suffixStart}px`;
+			input!.style.paddingLeft = `${refs.current.valueStart}px`;
+			if (suffix) suffix.style.left = `${refs.current.suffixStart}px`;
 
-			positionRefs.current.prefixStart = 10;
-			if (prefix) prefix.style.left = `${positionRefs.current.prefixStart}px`;
+			refs.current.prefixStart = 10;
+			if (prefix) prefix.style.left = `${refs.current.prefixStart}px`;
 		}
 	}, [
+		signValue,
 		textValue,
+		separator,
 		maxDecimals,
 		props.padDecimals,
 		maxWhole,
@@ -229,24 +284,26 @@ export default function NumberInput(props: Props) {
 
 	useEffect(() => {
 		return ctx.event.bind('refresh', () => {
-			if (parseFloat(textValue.current) !== value.current) {
+			if (parseFloat(textValue.current) * sign(value.current ?? 0) !== value.current) {
 				textValue.current = value.current
-					? document.activeElement === positionRefs.current.input
-						? value.current.toString()
-						: toCommaSeparatedString(value.current)
+					? document.activeElement === refs.current.input
+						? Math.abs(value.current).toString()
+						: addStringSeparators(Math.abs(value.current), separator)
 					: '';
+				signValue.current = sign(value.current ?? 0) || 1;
 				updateElements();
 			}
 		});
-	}, [ctx, value, updateElements]);
+	}, [ctx, value, separator, updateElements]);
 
 	useLayoutEffect(() => updateElements(), [updateElements]);
 	useEffect(() => void setTimeout(() => updateElements(), 16), [updateElements]);
 
 	const checkValidation = useCallback(
-		(value: string) =>
+		(textValue: string, signValue: 1 | -1) =>
 			validate(
-				value,
+				textValue,
+				signValue,
 				required,
 				minValue,
 				maxValue,
@@ -260,7 +317,7 @@ export default function NumberInput(props: Props) {
 
 	const { onValidity } = props;
 	useLayoutEffect(() => {
-		const error = checkValidation(textValue.current);
+		const error = checkValidation(textValue.current, signValue.current);
 		setError(error);
 		onValidity?.(error);
 	}, [checkValidation, value, onValidity]);
@@ -268,15 +325,16 @@ export default function NumberInput(props: Props) {
 	const handleChange = (evt: Event) => {
 		if (!(evt instanceof Event) || !(evt.target instanceof HTMLInputElement)) return;
 
+		if (evt.target.value === '') signValue.current = 1;
 		textValue.current = evt.target.value;
 		updateElements();
 
 		const floatValue: number | null = textValue.current.length
-			? Number.parseFloat(textValue.current)
+			? Number.parseFloat(textValue.current) * signValue.current
 			: null;
 		value.current = floatValue;
 
-		const error = checkValidation(evt.target.value);
+		const error = checkValidation(textValue.current, signValue.current);
 		setError((oldError) => (errorEq(oldError, error) ? oldError : error));
 		props.onValidity?.(error);
 		props.onChange?.(floatValue);
@@ -311,7 +369,9 @@ export default function NumberInput(props: Props) {
 
 		// If the user is pasting from their clipboard, we need to sanitize the input.
 		if (evt.data.length > 1) {
-			let numericInput = (maxDecimals > 0 ? /^\d*(?:\.\d*)?/ : /^\d*/).exec(evt.data)![0];
+			let numericInput = (maxDecimals > 0 ? /^-?(\d*(?:\.\d*)?)/ : /^-?(\d*)/).exec(
+				evt.data
+			)![1];
 
 			// If the clipboard contains a decimal point, and the value already has a decimal point, we need to truncate it.
 			if (willHaveDecimal && numericInput.indexOf('.') !== -1)
@@ -325,6 +385,13 @@ export default function NumberInput(props: Props) {
 			)}${numericInput}${evt.target.value.slice(selection[1])}`;
 			evt.target.selectionStart = selection[0] + numericInput.length;
 			evt.target.selectionEnd = selection[0] + numericInput.length;
+
+			// Update the sign if the user pastes a negative value, or the paste is at the start of the input.
+			signValue.current = evt.data.startsWith('-')
+				? -1
+				: selection[0] === 0
+				? 1
+				: signValue.current;
 
 			handleChange(evt);
 			evt.preventDefault();
@@ -374,10 +441,19 @@ export default function NumberInput(props: Props) {
 			// a decimal point at the beginning of the value.
 			if (selection[0] === 0) {
 				evt.target.value = `0${evt.target.value}`;
+				handleChange(evt);
 				evt.target.selectionStart = selection[0] + 1;
 				evt.target.selectionEnd = selection[1] + 1;
 			}
 
+			return;
+		}
+
+		// Negate the value if - or + is pressed.
+		else if (evt.data === '-' || evt.data === '+') {
+			if (value.current && minValue < 0) signValue.current *= -1;
+			handleChange(evt);
+			evt.preventDefault();
 			return;
 		}
 
@@ -409,21 +485,25 @@ export default function NumberInput(props: Props) {
 				(evt.key === 'ArrowUp' ? 1 : -1);
 
 			// Step the value, clamping it to the min and max values of the field.
-			const value =
+			const newValue =
 				Math.round(
 					Math.min(
-						Math.max(Number.parseFloat(textValue.current) + stepAmount, minValue ?? 0),
+						Math.max(
+							(value.current ?? Math.max(0, minValue)) + stepAmount,
+							minValue ?? 0
+						),
 						maxValue ?? Infinity
 					) * 10000
 				) / 10000;
 
 			// Clamp the decimal points to the max number of decimals.
-			const valueStr = Number(value.toFixed(maxDecimals)).toString();
+			const valueStr = Number(Math.abs(newValue).toFixed(maxDecimals)).toString();
 
 			// Update the value.
 			evt.target.value = valueStr;
-			textValue.current = valueStr;
-			updateElements();
+			value.current = newValue;
+			signValue.current = sign(newValue) || 1;
+			handleChange(evt);
 		}
 	};
 
@@ -434,12 +514,11 @@ export default function NumberInput(props: Props) {
 		if (props.separators ?? true) {
 			const selection = [evt.target.selectionStart!, evt.target.selectionEnd!];
 			evt.target.selectionStart -=
-				textValue.current.slice(0, selection[0] + 1).split(',').length - 1;
+				textValue.current.slice(0, selection[0] + 1).split(separator).length - 1;
 			evt.target.selectionEnd -=
-				textValue.current.slice(0, selection[1] + 1).split(',').length - 1;
+				textValue.current.slice(0, selection[1] + 1).split(separator).length - 1;
 
-			textValue.current = value.current ? `${value.current}` : '';
-
+			textValue.current = value.current ? `${Math.abs(value.current)}` : '';
 			evt.target.value = textValue.current;
 			evt.target.selectionStart = selection[0];
 			evt.target.selectionEnd = selection[1];
@@ -453,8 +532,10 @@ export default function NumberInput(props: Props) {
 		ctx.event.emit('focus', path, false);
 
 		if (props.separators ?? true) {
-			textValue.current = value.current ? toCommaSeparatedString(value.current) : '';
-			positionRefs.current.input!.value = textValue.current;
+			textValue.current = value.current
+				? addStringSeparators(Math.abs(value.current), separator)
+				: '';
+			refs.current.input!.value = textValue.current;
 			updateElements();
 		}
 	};
@@ -469,9 +550,9 @@ export default function NumberInput(props: Props) {
 			style={props.style}>
 			<span class={tw`sr-only`}>{props.prefix}</span>
 			<input
-				ref={refs<HTMLInputElement>(
+				ref={bindRefs<HTMLInputElement>(
 					autofillRef,
-					(elem) => (positionRefs.current.input = elem),
+					(elem) => (refs.current.input = elem),
 					(elem) => (ctx.meta.current[path] = { elem, error })
 				)}
 				id={id}
@@ -481,7 +562,7 @@ export default function NumberInput(props: Props) {
 				readonly={readonly}
 				placeholder=' '
 				aria-description={props.description}
-				style={{ paddingLeft: `${positionRefs.current.valueStart}px` }}
+				style={{ paddingLeft: `${refs.current.valueStart}px` }}
 				class={merge(
 					tw`peer w-full px-1.5 pr-0 !outline-none rounded
 						${props.hideLabel ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}`,
@@ -509,40 +590,44 @@ export default function NumberInput(props: Props) {
 			/>
 			<span
 				aria-hidden={true}
-				ref={(elem) => (positionRefs.current.sizer = elem)}
+				ref={(elem) => (refs.current.sizer = elem)}
 				class={tw`absolute top-0 left-0 opacity-0 interact-none font-sans`}>
 				{textValue.current}
 			</span>
 			<pre
-				ref={(elem) => (positionRefs.current.prefix = elem)}
+				ref={(elem) => (refs.current.prefix = elem)}
 				class={tw`absolute interact-none font-sans
 					${
 						props.hideLabel
 							? 'top-[9px]'
 							: 'top-6 transition duration-150 input-inactive:opacity-0'
 					}`}
-				style={{ left: `${positionRefs.current.prefixStart}px` }}>
+				style={{ left: `${refs.current.prefixStart}px` }}>
+				<span
+					ref={(elem) => (refs.current.negativeSign = elem)}
+					class={tw`text-gray-300 font-sans absolute right-full`}
+				/>
 				<span aria-hidden={true} class={tw`text-gray-300 font-sans`}>
 					{props.prefix}
 				</span>
 				<span
 					aria-hidden={true}
-					ref={(elem) => (positionRefs.current.wholePadding = elem)}
+					ref={(elem) => (refs.current.wholePadding = elem)}
 					class={tw`text-gray-400`}
 				/>
 			</pre>
 			<pre
-				ref={(elem) => (positionRefs.current.suffix = elem)}
+				ref={(elem) => (refs.current.suffix = elem)}
 				class={tw`absolute interact-none font-sans
 					${
 						props.hideLabel
 							? 'top-[9px]'
 							: 'top-6 transition duration-150 input-inactive:opacity-0'
 					}`}
-				style={{ left: `${positionRefs.current.suffixStart}px` }}>
+				style={{ left: `${refs.current.suffixStart}px` }}>
 				<span
 					aria-hidden={true}
-					ref={(elem) => (positionRefs.current.decimalPadding = elem)}
+					ref={(elem) => (refs.current.decimalPadding = elem)}
 					class={tw`text-gray-400`}
 				/>
 				<span class={tw`text-gray-300 font-bold`}>{props.suffix}</span>

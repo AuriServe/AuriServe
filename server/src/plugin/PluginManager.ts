@@ -67,8 +67,8 @@ export default class Plugins {
 		// TODO: Stupid dumb fake query
 		this.database
 			.prepare(
-				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-base', 1), ('themes', 1), ('pages', 1), ('dashboard', 1), ('hydrated', 1), ('page-editor', 1),
-					('analytics', 0), ('users', 1)`
+				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-base', 1), ('themes', 0), ('pages', 0), ('dashboard', 1), ('hydrated', 1), ('page-editor', 0),
+					('analytics', 0), ('users', 1), ('tax_calculator', 1)`
 			)
 			.run();
 

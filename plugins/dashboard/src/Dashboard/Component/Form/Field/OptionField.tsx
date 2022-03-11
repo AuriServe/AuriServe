@@ -135,7 +135,7 @@ export default function OptionField(props: Props) {
 								w-full py-0.5 pr-0.5 rounded shadow-md bg-gray-700 grid`}>
 							<Listbox.Options
 								static
-								className={tw`flex-row-reverse max-h-[12.5rem] overflow-auto outline-none
+								className={tw`flex-row-reverse max-h-[13rem] overflow-auto outline-none
 									scroll-(gutter-gray-700 bar-(gray-400 hover-gray-300)) py-1.5 pl-2
 									${hasScrollbar ? 'pr-0.5' : 'pr-2'}`}>
 								{!required && (

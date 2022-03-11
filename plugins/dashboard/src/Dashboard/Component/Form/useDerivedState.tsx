@@ -6,15 +6,23 @@ import { camelCaseToTitle } from '../../Util';
 import { FieldProps, FormContext, FormContextData } from './Types';
 
 interface DerivedState<T> {
+	/** The form context. */
 	ctx: FormContextData;
+	/** The field's value. */
 	value: MutableRef<T>;
 
+	/** The field's unique ID. */
 	id: string;
+	/** The field's path, based on props and group. */
 	path: string;
+	/** The field's label, based on props or path. */
 	label: string;
 
+	/** Whether or not the field is required, based on props. */
 	required: boolean;
+	/** Whether or not the field is disabled, based on props. */
 	disabled: boolean;
+	/** Whether or not the field is readonly, based on props. */
 	readonly: boolean;
 }
 

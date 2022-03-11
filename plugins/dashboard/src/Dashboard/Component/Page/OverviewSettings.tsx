@@ -66,24 +66,6 @@ export default function OverviewSettings() {
 								optional
 								maxLength={512}
 							/>
-							<Field.Number
-								path='money'
-								decimals={false}
-								maxLength={6}
-								prefix='$ '
-								padWhole
-								minValue={0}
-								maxValue={100000}
-							/>
-							<Field.Number
-								path='percent'
-								decimals={2}
-								maxLength={8}
-								suffix=' %'
-								padDecimals
-								minValue={0}
-								maxValue={100}
-							/>
 						</div>
 					</div>
 
