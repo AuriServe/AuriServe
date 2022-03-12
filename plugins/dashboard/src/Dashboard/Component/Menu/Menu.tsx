@@ -57,7 +57,7 @@ export default function Menu(props: Props) {
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [props.for, props.offset, props.position?.top, props.position?.left]);
+	}, [props.for, props.offset, props.position?.top, props.position?.left, props.active]);
 
 	let children: any[] = props.children
 		? Array.isArray(props.children)

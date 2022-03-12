@@ -6,9 +6,10 @@ import { TransitionGroup } from '../Transition';
 
 import Svg from '../Svg';
 import * as Icon from '../../Icon';
-import { FormContext, ValidityError } from './Types';
+import { FormContext } from './Form';
 import { tw, merge } from '../../Twind';
 import { elementBounds } from '../../Util';
+import { ValidityError } from './useValidity';
 
 interface Props {
 	style?: any;
@@ -59,7 +60,7 @@ export default function FloatingDescription(props: Props) {
 						clearPathTimeout = setTimeout(() => {
 							setState((state) => ({
 								...state,
-								path: null,
+								path,
 								description: null,
 								error: null,
 							}));
@@ -98,8 +99,14 @@ export default function FloatingDescription(props: Props) {
 			(path: string, error: ValidityError | null) => {
 				setState((oldState) => {
 					if (oldState.path !== path) return oldState;
+					const meta = form.meta.current[path ?? '-'];
+					const bounds = elementBounds(meta!.elem!);
 					return {
 						...oldState,
+						top: `${Math.floor(bounds.top)}px`,
+						left: `${
+							Math.floor(bounds.left + bounds.width) + (props.padding ?? 4) * 4
+						}px`,
 						error: error?.message ?? null,
 					};
 				});

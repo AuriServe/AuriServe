@@ -1,9 +1,11 @@
+import { useRerender } from 'vibin-hooks';
 import { buildPath, splitPath, traversePath } from 'common';
 import { MutableRef, useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 
-import { FieldGroupContext } from './FieldGroup';
+import { FieldProps } from './Types';
 import { camelCaseToTitle } from '../../Util';
-import { FieldProps, FormContext, FormContextData } from './Types';
+import { FieldGroupContext } from './FieldGroup';
+import { FormContext, FormContextData } from './Form';
 
 interface DerivedState<T> {
 	/** The form context. */
@@ -34,6 +36,7 @@ export default function useDerivedState<T>(
 	defaultValue?: T,
 	defaultNullIfOptional?: boolean
 ): DerivedState<T> {
+	const rerender = useRerender();
 	const ctx = useContext(FormContext);
 	const group = useContext(FieldGroupContext);
 
@@ -43,8 +46,11 @@ export default function useDerivedState<T>(
 	);
 
 	const required = props.required ?? !(props.optional ?? false);
-	const disabled = props.disabled ?? !(props.enabled ?? true);
 	const readonly = props.readonly ?? !(props.editable ?? true);
+	const disabled =
+		(props.disabled ?? !(props.enabled ?? true)) ||
+		(ctx.disabled ?? false) ||
+		(group.disabled ?? false);
 
 	const value = useRef<T>(
 		props.value ??
@@ -64,10 +70,13 @@ export default function useDerivedState<T>(
 
 	useEffect(() => {
 		if (!path) return;
-		return ctx.event.bind('refresh', () => {
-			value.current = traversePath(ctx.value.current, path);
+		return ctx.event.bind('refresh', (paths) => {
+			if (paths.has(path)) {
+				value.current = traversePath(ctx.value.current, path);
+				rerender();
+			}
 		});
-	}, [path, ctx]);
+	}, [path, ctx, rerender]);
 
 	const onFocus = (evt: any) => {
 		props.onFocus?.(evt.target);

@@ -207,6 +207,7 @@ const config = defineConfig({
 			}),
 		],
 		['interact-none', { userSelect: 'none', pointerEvents: 'none' }],
+		['interact-auto', { userSelect: 'auto', pointerEvents: 'auto' }],
 	],
 	variants: [
 		['focus-input', '&:focus'],

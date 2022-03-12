@@ -1,4 +1,4 @@
-import { FormContext } from './Types';
+import { FormContext } from './Form';
 import { useContext, useState } from 'preact/hooks';
 
 type CheckCtx<Ctx extends Record<string, unknown>, Value> = Ctx & {
@@ -38,6 +38,7 @@ export default function useValidity<
 >(options: UseValidityOptions<Value, Ctx>): UseValidityResult<Value> {
 	const formCtx = useContext(FormContext);
 	const [error, setError] = useState<ValidityError | null>(null);
+	const invalid = formCtx.meta.current![options.path]?.error?.visible ?? false;
 	// const [ showError, setShowError] = useState<ValidityError | null>
 
 	const validate = (value: Value) => {
@@ -71,7 +72,7 @@ export default function useValidity<
 
 	return {
 		error,
-		invalid: false,
+		invalid,
 		validate,
 	};
 }

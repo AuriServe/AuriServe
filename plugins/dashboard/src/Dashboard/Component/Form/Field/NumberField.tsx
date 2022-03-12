@@ -475,11 +475,7 @@ export default function NumberInput(props: Props) {
 				ref={bindRefs<HTMLInputElement>(
 					autofillRef,
 					(elem) => (refs.current.input = elem),
-					(elem) =>
-						(ctx.meta.current[path] = {
-							error: ctx.meta.current[path]?.error ?? null,
-							elem,
-						})
+					(elem) => ctx.setFieldRef(path, elem)
 				)}
 				id={id}
 				type='text'

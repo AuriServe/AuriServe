@@ -89,14 +89,7 @@ export default function OptionField(props: Props) {
 					<Listbox.Button
 						id={id}
 						aria-description={props.description}
-						ref={refs(
-							ref,
-							(elem) =>
-								(ctx.meta.current[path] = {
-									error: ctx.meta.current[path]?.error ?? null,
-									elem,
-								})
-						)}
+						ref={refs(ref, (elem) => ctx.setFieldRef(path, elem))}
 						className={merge(
 							tw`peer w-full px-2.5 pr-10 rounded
 							${props.hideLabel ? 'pt-1.5 pb-1 h-10' : 'pt-6 pb-1 h-[3.25rem]'}

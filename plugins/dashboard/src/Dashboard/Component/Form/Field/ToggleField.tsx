@@ -56,12 +56,7 @@ export default function ToggleField(props: Props) {
 			<div class={tw`flex gap-3`}>
 				{props.icon && <Svg src={props.icon} size={6} class={tw`shrink-0 -mr-0.5`} />}
 				<input
-					ref={(elem) =>
-						(ctx.meta.current[path] = {
-							error: ctx.meta.current[path]?.error ?? null,
-							elem,
-						})
-					}
+					ref={(elem) => ctx.setFieldRef(path, elem)}
 					id={id}
 					type='checkbox'
 					disabled={disabled}

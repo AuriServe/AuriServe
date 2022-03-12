@@ -1,6 +1,6 @@
-import { memo } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
-import { useMemo, useRef } from 'preact/hooks';
+import { memo, createContext } from 'preact/compat';
+import { useMemo, useRef, MutableRef, useCallback } from 'preact/hooks';
 import { buildPath, splitPath, traversePath } from 'common';
 
 import FloatingDescription from './FloatingDescription';
@@ -8,7 +8,44 @@ import FloatingDescription from './FloatingDescription';
 import { tw } from '../../Twind';
 import { DeepPartial } from '../../Util';
 import EventEmitter from '../../EventEmitter';
-import { FormContext, EventType, FieldMeta } from './Types';
+
+import { ValidityError } from './useValidity';
+
+declare function structuredClone<T>(v: T): T;
+
+/** Event types for Form event emitter. */
+export interface EventType {
+	change: (path: string, value: any) => void;
+	focus: (path: string, focused: boolean) => void;
+	validity: (path: string, error: ValidityError | null) => void;
+	refresh: (paths: Set<string>) => void;
+}
+
+/** Supporting data about a form field. */
+export interface FieldMeta {
+	/** The field's form control, to be programatically focused if needed. */
+	elem: HTMLElement | null;
+
+	/** The field's error state, if any. */
+	error: (ValidityError & { visible: boolean }) | null;
+}
+
+/** Form context interface. */
+export interface FormContextData {
+	value: MutableRef<any>;
+	meta: MutableRef<Record<string, FieldMeta | undefined>>;
+	event: EventEmitter<EventType>;
+	disabled: boolean;
+	setFieldRef: <T extends HTMLElement>(path: string, elem: T | null) => void;
+}
+
+/** Context containing form information. */
+export const FormContext = createContext<FormContextData>(null as any);
+
+/** Hooks to work with the form from outside of it. */
+export interface FormHooks<T> {
+	setValue(value: DeepPartial<T>): void;
+}
 
 export interface Props<T> {
 	/** For uncontrolled forms. */
@@ -17,12 +54,56 @@ export interface Props<T> {
 	/** For controlled forms. */
 	value?: DeepPartial<T>;
 
+	/** Whether or not fields should be disabled. */
+	disabled?: boolean;
+
+	hooks?: MutableRef<FormHooks<T>>;
 	onChange?: (value: DeepPartial<T>) => void;
 	onSubmit?: (value: T) => void;
 
 	style?: any;
 	class?: string;
 	children?: ComponentChildren;
+}
+
+function findPathsToRefresh(
+	oldData: Record<string, unknown> | unknown[] | undefined,
+	newData: Record<string, unknown> | unknown[],
+	path = '',
+	acc?: Set<string>
+) {
+	acc ??= new Set();
+
+	function handleValue(oldValue: unknown, newValue: unknown, path: string) {
+		if (newValue && typeof newValue === 'object') {
+			findPathsToRefresh(
+				oldValue as Record<string, unknown>,
+				newValue as Record<string, unknown>,
+				path,
+				acc
+			);
+		} else if (Array.isArray(newValue)) {
+			findPathsToRefresh(oldValue as unknown[], newValue, path, acc);
+		} else if (oldValue !== newValue) {
+			acc!.add(path);
+		}
+	}
+
+	if (Array.isArray(newData)) {
+		for (let i = 0; i < newData.length; i++) {
+			handleValue((oldData as unknown[] | undefined)?.[i], newData[i], `${path}[${i}]`);
+		}
+	} else if (newData && typeof newData === 'object') {
+		for (const [key, value] of Object.entries(newData)) {
+			handleValue(
+				(oldData as Record<string, unknown> | undefined)?.[key],
+				value,
+				path ? `${path}.${key}` : key
+			);
+		}
+	}
+
+	return acc;
 }
 
 export default memo(function Form<ValueType>(props: Props<ValueType>) {
@@ -41,30 +122,54 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		const event = new EventEmitter<EventType>();
 		event.bind('change', (path, newValue) => {
 			const pathArr = splitPath(path);
-			const lastSeg = pathArr.pop()!;
-			const container = traversePath(value.current, buildPath(...pathArr));
-			container[lastSeg] = newValue;
-			propsOnChange?.({ ...value.current });
+			const key = pathArr.pop()!;
+
+			const newData = structuredClone(value.current);
+			const container = traversePath(newData, buildPath(...pathArr));
+			container[key] = newValue;
+			value.current = newData;
+			propsOnChange?.(newData);
 		});
 
-		// console.log(
-		// 	Object.fromEntries(
-		// 		Object.entries(formRef.current!.elements).filter(
-		// 			([key, control]) => (control as any).name === key
-		// 		)
-		// 	)
-		// );
-		// });
+		event.bind('validity', (path, error) => {
+			if (meta.current[path])
+				meta.current[path]!.error = error && { ...error, visible: true };
+		});
+
+		// event.bind('blur' )
+
 		return event;
 	}, [propsOnChange]);
 
-	useMemo(() => {
-		if (!props.value) return;
-		value.current = props.value;
-		event.emit('refresh');
-	}, [props.value, event]);
+	const setValue = useCallback(
+		(newValue: DeepPartial<ValueType>) => {
+			if (value.current !== newValue) {
+				const dirtyPaths = findPathsToRefresh(value.current as any, newValue as any);
+				value.current = newValue;
+				event.emit('refresh', dirtyPaths);
+				propsOnChange?.(newValue);
+			}
+		},
+		[event, propsOnChange]
+	);
 
-	const ctx = { value, meta, event };
+	const setFieldRef = useCallback(
+		<T extends HTMLElement>(path: string, elem: T | null) => {
+			if (!meta.current[path]) meta.current[path] = { elem, error: null };
+			else meta.current[path]!.elem = elem;
+		},
+		[]
+	);
+
+	if (props.value) setValue(props.value);
+	if (props.hooks) props.hooks.current = { setValue };
+
+	const disabled = props.disabled ?? false;
+
+	const ctx = useMemo(
+		() => ({ value, meta, event, disabled, setFieldRef }),
+		[event, disabled, setFieldRef]
+	);
 
 	const handleSubmit = (e: Event) => {
 		e.preventDefault();
@@ -98,7 +203,12 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		<FormContext.Provider value={ctx}>
 			<form ref={formRef} onSubmit={handleSubmit} class={props.class} style={props.style}>
 				{props.children}
-				<input type='submit' class={tw`sr-only`} tabIndex={-1} />
+				<input
+					type='submit'
+					class={tw`sr-only`}
+					tabIndex={-1}
+					disabled={props.disabled}
+				/>
 				<FloatingDescription position='right' />
 			</form>
 		</FormContext.Provider>

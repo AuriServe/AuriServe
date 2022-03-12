@@ -8,6 +8,7 @@ import Menu, { MenuContext } from './Menu';
 import { tw, merge } from '../../Twind';
 
 import icon_arrow_more from '@res/icon/arrow_more.svg';
+import { Button } from '../../Main';
 
 interface Props {
 	icon?: string;
@@ -58,7 +59,7 @@ export default function Entry(props: Props) {
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
 				class={tw`grow cursor-auto grid`}>
-				<button
+				<Button.Unstyled
 					disabled={props.disabled}
 					onClick={handleClick}
 					class={tw`Entry~(flex px-1.5 py-1.5 items-center text-left
@@ -79,7 +80,7 @@ export default function Entry(props: Props) {
 						/>
 					)}
 					{shortcuts.length > 0 && <div class='w-1' />}
-				</button>
+				</Button.Unstyled>
 				{subEntries.length !== 0 && (
 					<Menu
 						active={hover}

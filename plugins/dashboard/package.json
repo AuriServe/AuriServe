@@ -5,6 +5,7 @@
 	"author": "Auri <me@auri.xyz>",
 	"homepage": "https://github.com/AuriServe",
 	"license": "AGPL-3.0-only",
+	"types": "types/Main.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -13,8 +14,9 @@
 		"url": "git+https://github.com/AuriServe/AuriServe.git"
 	},
 	"scripts": {
-		"dev": "webpack --watch --progress --config webpack.ts",
-		"build": "webpack --mode=production --progress --config webpack.ts",
+		"types": "tsc --project ./tsconfig.types.json --outDir types",
+		"dev": "tsc --watch --project ./tsconfig.types.json --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts",
+		"build": "tsc --project ./tsconfig.types.json > /dev/null & webpack --mode=production --progress --config ./webpack.ts",
 		"analyze": "webpack --mode=production --analyze --progress --config webpack.ts"
 	},
 	"bugs": {
