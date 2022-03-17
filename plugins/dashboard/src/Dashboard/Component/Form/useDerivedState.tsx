@@ -1,6 +1,6 @@
-import { useRerender } from 'vibin-hooks';
-import { buildPath, splitPath, traversePath } from 'common';
-import { MutableRef, useContext, useEffect, useMemo, useRef } from 'preact/hooks';
+import { useLazyRef, useRerender } from 'vibin-hooks';
+import { assert, buildPath, splitPath, traversePath } from 'common';
+import { MutableRef, useContext, useEffect, useMemo } from 'preact/hooks';
 
 import { FieldProps } from './Types';
 import { camelCaseToTitle } from '../../Util';
@@ -52,11 +52,22 @@ export default function useDerivedState<T>(
 		(ctx.disabled ?? false) ||
 		(group.disabled ?? false);
 
-	const value = useRef<T>(
-		props.value ??
-			(props.path && traversePath(ctx.value.current, path)) ??
-			(!required && !defaultNullIfOptional ? defaultValue : null)
-	);
+	const value = useLazyRef<T>(() => {
+		if (props.value != null) return props.value;
+		if (props.path) {
+			try {
+				return traversePath(ctx.value.current, path);
+			} catch (_) {
+				assert(
+					false,
+					`Could not find value for path '${path}' (on initialization).\n${JSON.stringify(
+						ctx.value.current
+					)}`
+				);
+			}
+		}
+		return !required && !defaultNullIfOptional ? defaultValue : null;
+	});
 
 	const id = useMemo(
 		() => props.id ?? Math.random().toString(36).substring(2, 7),
@@ -72,11 +83,20 @@ export default function useDerivedState<T>(
 		if (!path) return;
 		return ctx.event.bind('refresh', (paths) => {
 			if (paths.has(path)) {
-				value.current = traversePath(ctx.value.current, path);
+				try {
+					value.current = traversePath(ctx.value.current, path);
+				} catch (_) {
+					assert(
+						false,
+						`Could not find value for path '${path}' (on refresh).\n${JSON.stringify(
+							ctx.value.current
+						)}`
+					);
+				}
 				rerender();
 			}
 		});
-	}, [path, ctx, rerender]);
+	}, [path, ctx, value, rerender]);
 
 	const onFocus = (evt: any) => {
 		props.onFocus?.(evt.target);

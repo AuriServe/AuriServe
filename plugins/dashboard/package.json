@@ -54,6 +54,6 @@
 		"react-flip-move": "^3.0.4",
 		"react-router-dom": "^6.2.1",
 		"twind": "^1.0.0-next.35",
-		"vibin-hooks": "^0.2.1"
+		"vibin-hooks": "^0.3.0"
 	}
 }

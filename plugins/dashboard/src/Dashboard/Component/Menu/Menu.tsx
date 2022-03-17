@@ -43,7 +43,9 @@ export default function Menu(props: Props) {
 	});
 
 	useLayoutEffect(() => {
+		if (!props.active) return;
 		const bounds = props.for && elementBounds(props.for);
+		console.log(bounds);
 
 		if (bounds) {
 			setPosition({
@@ -65,7 +67,7 @@ export default function Menu(props: Props) {
 			: [props.children]
 		: [];
 
-	children = children.map((child, i) =>
+	children = children.filter(Boolean).map((child, i) =>
 		cloneElement(child, {
 			class: merge(
 				child.props.class,

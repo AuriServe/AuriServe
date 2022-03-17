@@ -50,9 +50,8 @@ export default function Entry(props: Props) {
 	return (
 		<li
 			class={merge(
-				tw`flex mx-1.5 mb-0.5 first-of-type:mt-1.5 last-of-type:mb-1.5 ${
-					hover ? 'z-10 relative' : ''
-				}`,
+				tw`flex mx-1.5 mb-0.5 first-of-type:mt-1.5 last-of-type:mb-1.5 relative
+					${hover ? 'z-10' : ''}`,
 				props.class
 			)}>
 			<div

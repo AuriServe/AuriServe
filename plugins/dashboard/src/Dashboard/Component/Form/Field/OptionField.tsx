@@ -18,6 +18,9 @@ import { merge, tw } from '../../../Twind';
 type Props = FieldProps<string | null> & {
 	options: Record<string, string>;
 
+	noneLabel?: string;
+	showNoneLabel?: boolean;
+
 	hideLabel?: boolean;
 };
 
@@ -68,6 +71,10 @@ export default function OptionField(props: Props) {
 	const numEntries = Object.keys(props.options).length + (required ? 0 : 1);
 	const hasScrollbar = numEntries > 5;
 
+	const options = required
+		? props.options
+		: { '': props.noneLabel ?? 'None', ...props.options };
+
 	return (
 		<Listbox
 			value={value.current}
@@ -81,7 +88,7 @@ export default function OptionField(props: Props) {
 					active={open}
 					onFocusIn={handleFocus}
 					onFocusOut={handleBlur}
-					populated={open || value.current !== null}
+					populated={open || (value.current != null || props.showNoneLabel)}
 					invalid={invalid}
 					hideLabel={props.hideLabel}
 					class={props.class}
@@ -99,7 +106,7 @@ export default function OptionField(props: Props) {
 						`
 							// props.inputClass
 						)}>
-						{props.options[value.current!] ?? ''}
+						{props.options[value.current!] ?? props.noneLabel ?? ''}
 					</Listbox.Button>
 					<Transition
 						show={open}
@@ -114,35 +121,13 @@ export default function OptionField(props: Props) {
 								w-full py-0.5 pr-0.5 rounded shadow-md bg-gray-700 grid`}>
 							<Listbox.Options
 								static
-								className={tw`flex-row-reverse max-h-[13rem] overflow-auto outline-none
+								className={tw`flex-row-reverse max-h-[14rem] overflow-auto outline-none
 									scroll-(gutter-gray-700 bar-(gray-400 hover-gray-300)) py-1.5 pl-2
 									${hasScrollbar ? 'pr-0.5' : 'pr-2'}`}>
-								{!required && (
-									<Listbox.Option
-										value={null}
-										className={({ active, selected }) => tw`
-										py-2 px-2 flex rounded transition cursor-pointer duration-75
-										${active ? 'bg-gray-750/50 text-accent-200' : 'bg-gray-750 text-gray-200'}
-										${selected && 'font-medium !text-gray-100'}
-									`}>
-										{({ selected }: { selected: boolean }) => (
-											<Fragment>
-												<span class={tw`grow`}>None</span>
-												{selected && (
-													<Svg
-														class={tw`icon-p-accent-200 icon-s-gray-500`}
-														src={Icon.check}
-														size={6}
-													/>
-												)}
-											</Fragment>
-										)}
-									</Listbox.Option>
-								)}
-								{Object.entries(props.options).map(([value, label]) => (
+								{Object.entries(options).map(([value, label]) => (
 									<Listbox.Option
 										key={value}
-										value={value}
+										value={value === '' ? null : value}
 										className={({ active, selected }) =>
 											tw`py-2 px-2 flex rounded transition cursor-pointer duration-75
 											${active ? 'bg-accent-400/10 text-accent-200' : 'text-gray-200'}

@@ -60,7 +60,7 @@ export function SavePrompt(props: Props) {
 
 	return (
 		<Portal
-			wrapperClass={tw`top-auto left-14 -bottom-8 w-[calc(100%-3.5rem)] h-max interact-none z-40 isolate`}>
+			wrapperClass={tw`top-auto left-14 -bottom-4 w-[calc(100%-3.5rem)] h-max interact-none z-40 isolate`}>
 			<Transition
 				show={active}
 				duration={150}
@@ -70,9 +70,10 @@ export function SavePrompt(props: Props) {
 				enterFrom={tw`opacity-0 translate-y-1`}
 				exit={tw`transition duration-150`}
 				exitTo={tw`opacity-0 translate-y-1`}
-				class={tw`pt-8 pb-12 bg-gradient-to-b from-transparent via-gray-900 to-gray-900 will-change-transform`}>
+				class={tw`pt-8 pb-8 bg-gradient-to-b from-transparent via-gray-900 to-gray-900 will-change-transform`}>
 				<Card
-					class={tw`bg-gray-400 w-max mx-auto interact-auto rounded-md border-(2 gray-900) shadow-(md gray-900) will-change-transform`}>
+					class={tw`bg-gray-400 w-max mx-auto interact-auto rounded-md
+						border-(2 gray-900) shadow-(md gray-900) will-change-transform`}>
 					<Card.Body class={tw`relative p-2.5`}>
 						{/** Content wrap. */}
 						<div
