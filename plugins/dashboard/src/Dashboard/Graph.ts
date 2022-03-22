@@ -107,7 +107,11 @@ export async function executeQuery<T = any>(
 ): Promise<T> {
 	const res = (await fetch(ENDPOINT, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json', token: localStorage.getItem('token') } as any,
+		headers: {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json',
+			'token': localStorage.getItem('token'),
+		} as any,
 		cache: 'no-cache',
 		body: JSON.stringify({ query, variables }),
 	}).then((res) => res.json())) as { data?: T; graphQLErrors?: string[] };

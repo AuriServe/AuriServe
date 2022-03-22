@@ -28,6 +28,8 @@ export interface Props {
 	href?: string;
 	onClick?: () => void;
 
+	disabled?: boolean;
+
 	style?: any;
 	class?: string;
 	children?: ComponentChildren;
@@ -37,17 +39,27 @@ export const UnstyledButton = forwardRef<HTMLElement, Props>(function UnstyledBu
 	props,
 	ref
 ) {
-	const Tag: any = props.to ? NavLink : props.href ? 'a' : 'button';
+	const Tag: any = props.to
+		? props.disabled
+			? 'span'
+			: NavLink
+		: props.href
+		? props.disabled
+			? 'span'
+			: 'a'
+		: 'button';
 	const passedProps = { ...props };
 
 	delete passedProps.label;
 	delete passedProps.icon;
 	delete passedProps.iconOnly;
 	delete passedProps.iconRight;
+	delete passedProps.href;
 	delete passedProps.small;
 	delete passedProps.size;
 	delete passedProps.rounded;
 	delete passedProps.class;
+	delete passedProps.disabled;
 
 	return (
 		<Tag
@@ -55,6 +67,7 @@ export const UnstyledButton = forwardRef<HTMLElement, Props>(function UnstyledBu
 			type='button'
 			rel={Tag === 'a' ? 'noreferrer noopener' : undefined}
 			target={Tag === 'a' ? '_blank' : undefined}
+			disabled={props.disabled}
 			{...passedProps}
 			className={props.class}
 		/>
@@ -85,6 +98,7 @@ const BaseButton = forwardRef<HTMLElement, Props>(function BaseButton(props, ref
 				tw`group BaseButton~(flex w-max items-center justify-center font-bold uppercase tracking-widest
 				select-none !outline-none transition-all shadow-(none hocus:md active:none)
 				ring-(0 focus:& active:& offset-(active:2 focus:2) dark:offset-gray-750))
+				disabled:(opacity-50 interact-none)
 				rounded${props.rounded && '-full'}`,
 				props.class
 			)}>

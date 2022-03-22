@@ -107,7 +107,7 @@ export default function FloatingDescription(props: Props) {
 						left: `${
 							Math.floor(bounds.left + bounds.width) + (props.padding ?? 4) * 4
 						}px`,
-						error: error?.message ?? null,
+						error: (error?.visible && error?.message) || null,
 					};
 				});
 			}
@@ -137,7 +137,7 @@ export default function FloatingDescription(props: Props) {
 					tw`FloatingDescription~(isolate absolute z-10 w-80 min-h-[2.5rem]
 						bg-gray-700 shadow-md rounded transition-all [transform-origin:left_center])
 					after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45)
-					${!show && 'opacity-0 scale-[98%] interact-none'}`,
+					${show ? 'delay-75' : 'opacity-0 scale-[98%] interact-none'}`,
 					props.class
 				)}>
 				<div class={tw`overflow-hidden h-full w-full relative`}>

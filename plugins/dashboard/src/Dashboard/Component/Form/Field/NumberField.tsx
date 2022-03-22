@@ -3,14 +3,14 @@ import { useCallback, useLayoutEffect, useRef, useEffect } from 'preact/hooks';
 
 import InputContainer from './FieldContainer';
 
-import { FieldProps } from '../Types';
+import type { FieldProps } from '.';
 import useAutoFill from '../useAutoFill';
 import useValidity from '../useValidity';
 import useDerivedState from '../useDerivedState';
 
+import { sign } from 'common';
 import { tw, merge, css } from '../../../Twind';
 import { elementBounds, refs as bindRefs } from '../../../Util';
-import { sign } from 'common';
 
 type Props = FieldProps<number | null> & {
 	hideLabel?: boolean;
@@ -81,9 +81,18 @@ export default function NumberInput(props: Props) {
 				: props.decimals
 			: 0;
 
-	const { ctx, value, id, path, label, required, disabled, readonly, onFocus, onBlur } = useDerivedState<
-		number | null
-	>(props, 0, true);
+	const {
+		ctx,
+		value,
+		id,
+		path,
+		label,
+		required,
+		disabled,
+		readonly,
+		onFocus,
+		onBlur: stateOnBlur,
+	} = useDerivedState<number | null>(props, 0, true);
 
 	const textValue = useRef<string>(
 		value.current
@@ -95,7 +104,11 @@ export default function NumberInput(props: Props) {
 
 	const signValue = useRef<1 | -1>(sign(value.current ?? 0) || 1);
 
-	const { validate, invalid } = useValidity<number | null>({
+	const {
+		validate,
+		onBlur: validityOnBlur,
+		invalid,
+	} = useValidity<number | null>({
 		path,
 		context: {},
 		checks: [
@@ -125,11 +138,11 @@ export default function NumberInput(props: Props) {
 				severity: 'change',
 			},
 			{
-				condition: ({ value }) => value !== null && value < minValue,
+				condition: ({ value }) => value != null && value < minValue,
 				message: `Must be at least ${props.prefix}${minValue}${props.suffix}.`,
 			},
 			{
-				condition: ({ value }) => value !== null && value > maxValue,
+				condition: ({ value }) => value != null && value > maxValue,
 				message: `Must be at most ${props.prefix}${maxValue}${props.suffix}.`,
 			},
 		],
@@ -161,6 +174,13 @@ export default function NumberInput(props: Props) {
 		valueStart: 0,
 		suffixStart: 0,
 	});
+
+	useEffect(() => {
+		// Autofocus on first render if the autofocus prop is set.
+		if (props.autofocus) refs.current.input?.focus();
+		// This *should not* be called again if autofocus changes.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const [autofillRef, autofillClasses] = useAutoFill<HTMLInputElement>(invalid);
 
@@ -452,7 +472,8 @@ export default function NumberInput(props: Props) {
 	};
 
 	const handleBlur = (evt: any) => {
-		onBlur(evt);
+		stateOnBlur(evt);
+		validityOnBlur();
 		if (props.separators ?? true) {
 			textValue.current = value.current
 				? addStringSeparators(Math.abs(value.current), separator)

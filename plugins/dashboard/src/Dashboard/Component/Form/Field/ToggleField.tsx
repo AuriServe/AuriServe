@@ -1,13 +1,14 @@
 import { h } from 'preact';
+import { useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 
 import Svg from '../../Svg';
 
-import { FieldProps } from '../Types';
+import type { FieldProps } from '.';
 import useValidity from '../useValidity';
 import useDerivedState from '../useDerivedState';
 
+import { refs } from '../../../Util';
 import { tw, merge } from '../../../Twind';
-import { useLayoutEffect } from 'preact/hooks';
 
 type Props = FieldProps<boolean> & {
 	icon?: string;
@@ -16,13 +17,35 @@ type Props = FieldProps<boolean> & {
 };
 
 export default function ToggleField(props: Props) {
-	const { ctx, value, id, path, label, disabled, readonly, onFocus, onBlur } =
-		useDerivedState<boolean>(props, false);
+	const ref = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		// Autofocus on first render if the autofocus prop is set.
+		if (props.autofocus) ref.current?.focus();
+		// This *should not* be called again if autofocus changes.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const {
+		ctx,
+		value,
+		id,
+		path,
+		label,
+		disabled,
+		readonly,
+		onFocus,
+		onBlur: stateOnBlur,
+	} = useDerivedState<boolean>(props, false);
 
 	/* Don't use the derived state because checkboxes should default to optional. */
 	const required = props.required ?? !(props.optional ?? true);
 
-	const { validate, invalid } = useValidity<boolean>({
+	const {
+		validate,
+		onBlur: validityOnBlur,
+		invalid,
+	} = useValidity<boolean>({
 		path,
 		context: {},
 		checks: [
@@ -45,6 +68,11 @@ export default function ToggleField(props: Props) {
 		ctx.event.emit('change', path, newValue);
 	};
 
+	const handleBlur = (evt: Event) => {
+		validityOnBlur();
+		stateOnBlur(evt);
+	};
+
 	return (
 		<label
 			class={merge(
@@ -56,7 +84,7 @@ export default function ToggleField(props: Props) {
 			<div class={tw`flex gap-3`}>
 				{props.icon && <Svg src={props.icon} size={6} class={tw`shrink-0 -mr-0.5`} />}
 				<input
-					ref={(elem) => ctx.setFieldRef(path, elem)}
+					ref={refs(ref, (elem) => ctx.setFieldRef(path, elem))}
 					id={id}
 					type='checkbox'
 					disabled={disabled}
@@ -65,7 +93,7 @@ export default function ToggleField(props: Props) {
 					checked={value.current}
 					onChange={handleChange}
 					onFocus={onFocus}
-					onBlur={onBlur}
+					onBlur={handleBlur}
 				/>
 				<div
 					class={tw`absolute bg-gray-input inset-0 opacity-(0 peer-checked:100) transition`}

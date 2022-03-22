@@ -2,7 +2,7 @@ import { useLazyRef, useRerender } from 'vibin-hooks';
 import { assert, buildPath, splitPath, traversePath } from 'common';
 import { MutableRef, useContext, useEffect, useMemo } from 'preact/hooks';
 
-import { FieldProps } from './Types';
+import { FieldProps } from './Field';
 import { camelCaseToTitle } from '../../Util';
 import { FieldGroupContext } from './FieldGroup';
 import { FormContext, FormContextData } from './Form';

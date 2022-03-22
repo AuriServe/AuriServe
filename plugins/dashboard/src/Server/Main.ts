@@ -204,6 +204,7 @@ as.dashboard = {
 							await graphql({
 								schema: this.schema!,
 								source: req.body.query,
+								variableValues: req.body.variables,
 								rootValue: as.dashboard.gqlResolver,
 								contextValue: { permissions, context: as.dashboard.gqlContext, user },
 							})

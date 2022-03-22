@@ -1,13 +1,13 @@
 import { h, Fragment } from 'preact';
 import { useRerender } from 'vibin-hooks';
 import { Listbox } from '@headlessui/react';
-import { useLayoutEffect, useRef } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 
 import Svg from '../../Svg';
 import { Transition } from '../../Transition';
 import FieldContainer from './FieldContainer';
 
-import { FieldProps } from '../Types';
+import type { FieldProps } from '.';
 import useValidity from '../useValidity';
 import useDerivedState from '../useDerivedState';
 
@@ -26,10 +26,24 @@ type Props = FieldProps<string | null> & {
 
 export default function OptionField(props: Props) {
 	const rerender = useRerender();
-	const { ctx, value, id, path, label, required, disabled, readonly, onFocus, onBlur } =
-		useDerivedState<string | null>(props, '', true);
+	const {
+		ctx,
+		value,
+		id,
+		path,
+		label,
+		required,
+		disabled,
+		readonly,
+		onFocus,
+		onBlur: stateOnBlur,
+	} = useDerivedState<string | null>(props, '', true);
 
-	const { validate, invalid } = useValidity<string | null>({
+	const {
+		validate,
+		onBlur: validityOnBlur,
+		invalid,
+	} = useValidity<string | null>({
 		path,
 		context: {},
 		checks: [
@@ -46,6 +60,13 @@ export default function OptionField(props: Props) {
 
 	const ref = useRef<HTMLElement>(null);
 	const rootRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		// Autofocus on first render if the autofocus prop is set.
+		if (props.autofocus) ref.current?.focus();
+		// This *should not* be called again if autofocus changes.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const handleChange = (newValue: string | null) => {
 		value.current = newValue;
@@ -65,7 +86,10 @@ export default function OptionField(props: Props) {
 
 	const handleBlur = (evt: Event) => {
 		if (blurTimeoutRef.current) return;
-		blurTimeoutRef.current = window.setTimeout(() => onBlur(evt));
+		blurTimeoutRef.current = window.setTimeout(() => {
+			validityOnBlur();
+			stateOnBlur(evt);
+		});
 	};
 
 	const numEntries = Object.keys(props.options).length + (required ? 0 : 1);
@@ -88,7 +112,7 @@ export default function OptionField(props: Props) {
 					active={open}
 					onFocusIn={handleFocus}
 					onFocusOut={handleBlur}
-					populated={open || (value.current != null || props.showNoneLabel)}
+					populated={open || value.current != null || props.showNoneLabel}
 					invalid={invalid}
 					hideLabel={props.hideLabel}
 					class={props.class}

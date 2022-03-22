@@ -12,6 +12,7 @@ import EventEmitter from '../../EventEmitter';
 import { ValidityError } from './useValidity';
 
 declare function structuredClone<T>(v: T): T;
+// structuredClone ??= (v: unknown) => JSON.parse(JSON.stringify(v));;
 
 /** Event types for Form event emitter. */
 export interface EventType {
@@ -19,6 +20,7 @@ export interface EventType {
 	focus: (path: string, focused: boolean) => void;
 	validity: (path: string, error: ValidityError | null) => void;
 	refresh: (paths: Set<string>) => void;
+	submit: () => void;
 }
 
 /** Supporting data about a form field. */
@@ -27,7 +29,7 @@ export interface FieldMeta {
 	elem: HTMLElement | null;
 
 	/** The field's error state, if any. */
-	error: (ValidityError & { visible: boolean }) | null;
+	error: ValidityError | null;
 }
 
 /** Form context interface. */
@@ -45,6 +47,7 @@ export const FormContext = createContext<FormContextData>(null as any);
 /** Hooks to work with the form from outside of it. */
 export interface FormHooks<T> {
 	setValue(value: DeepPartial<T>): void;
+	submit(): void;
 }
 
 export interface Props<T> {
@@ -107,8 +110,6 @@ function findPathsToRefresh(
 }
 
 export default memo(function Form<ValueType>(props: Props<ValueType>) {
-	// console.log('render form');
-
 	const formRef = useRef<HTMLFormElement>(null);
 	const meta = useRef<Record<string, FieldMeta | undefined>>({});
 	const value = useRef<DeepPartial<ValueType>>(
@@ -132,11 +133,8 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		});
 
 		event.bind('validity', (path, error) => {
-			if (meta.current[path])
-				meta.current[path]!.error = error && { ...error, visible: true };
+			if (meta.current[path]) meta.current[path]!.error = error;
 		});
-
-		// event.bind('blur' )
 
 		return event;
 	}, [propsOnChange]);
@@ -162,7 +160,6 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 	);
 
 	if (props.value) setValue(props.value);
-	if (props.hooks) props.hooks.current = { setValue };
 
 	const disabled = props.disabled ?? false;
 
@@ -171,33 +168,30 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		[event, disabled, setFieldRef]
 	);
 
-	const handleSubmit = (e: Event) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleSubmit = (e?: Event) => {
+		e?.preventDefault();
+		e?.stopPropagation();
 
-		console.warn("submit doesn't error check yet");
+		event.emit('submit');
+
+		let foundError = false;
+		for (const field of Object.values(meta.current)) {
+			if (field?.error) {
+				field.elem?.focus();
+				foundError = true;
+				break;
+			}
+		}
+
+		if (foundError) {
+			console.warn('couldn\'t submit due to error');
+			return;
+		}
+
 		props.onSubmit?.({ ...value.current } as ValueType);
-		// function findAndFocusInvalid(fields: Record<string, { ref: any; error: any }>) {
-		// 	for (const name in fields) {
-		// 		if (Object.prototype.hasOwnProperty.call(fields, name)) {
-		// 			if (fields[name].error) {
-		// 				const elem = fields[name].ref;
-		// 				elem.focus();
-		// 				elem.blur();
-		// 				elem.focus();
-		// 				return true;
-		// 			}
-		// 			if (fields[name].ref === undefined && findAndFocusInvalid(fields[name]))
-		// 				return true;
-		// 		}
-		// 	}
-		// 	return false;
-		// }
-
-		// if (!findAndFocusInvalid(context.current.fields)) {
-		// 	props.onSubmit?.(context.current.data);
-		// }
 	};
+
+	if (props.hooks) props.hooks.current = { setValue, submit: handleSubmit };
 
 	return (
 		<FormContext.Provider value={ctx}>

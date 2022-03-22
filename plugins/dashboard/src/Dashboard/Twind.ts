@@ -213,6 +213,7 @@ const config = defineConfig({
 		['focus-input', '&:focus'],
 		['focus', '&:focus-visible'],
 
+		['disabled', '&[disabled]'],
 		['hocus', '&:hover,&:focus-visible'],
 		[
 			'((group|peer)(~.+)?)-hocus',
