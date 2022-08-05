@@ -54,7 +54,6 @@ export const UnstyledButton = forwardRef<HTMLElement, Props>(function UnstyledBu
 	delete passedProps.icon;
 	delete passedProps.iconOnly;
 	delete passedProps.iconRight;
-	delete passedProps.href;
 	delete passedProps.small;
 	delete passedProps.size;
 	delete passedProps.rounded;
