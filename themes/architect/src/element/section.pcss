@@ -23,6 +23,14 @@
 			}
 		}
 
+		&.pad-none {
+			@apply !p-0;
+		}
+
+		&.pad-small {
+			@apply px-4 py-4;
+		}
+
 		&.accent {
 			--section-background-color: rgb(var(--color-secondary-100));
 		}
@@ -41,7 +49,7 @@
 		}
 
 		h1, h2 {
-			@apply text-[2rem] my-3;
+			@apply text-[2rem] my-3 leading-8;
 		}
 
 		h3 {

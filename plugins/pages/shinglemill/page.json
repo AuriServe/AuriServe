@@ -1,0 +1,403 @@
+{
+	"metadata": {
+		"title": "Contact",
+		"description": "hey"
+	},
+	"content": {
+		"layout": "default",
+		"sections": {
+			"header": {
+				"element": "base:container"
+			},
+			"main": {
+				"element": "base:stack",
+				"props": {
+					"gap": 0,
+					"class": "base:section-container"
+				},
+				"children": [
+					{
+						"include": 2
+					},
+					{
+						"include": 1
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "accent callout"
+						}
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "accent callout"
+						}
+					},
+					{
+						"element": "base:section",
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"columns": "1.8fr:(300px, 1fr)",
+									"layoutChildren": "center",
+									"minWidth": 900,
+									"maxWidth": 1100,
+									"gap": 32
+								},
+								"children": [
+									{
+										"element": "base:stack",
+										"props": {
+											"gap": 0
+										},
+										"children": [
+											{
+												"element": "base:text",
+												"props": {
+													"content": "<h2>Overlooking Beautiful Powell Lake</h2><h6>Open 11:30 am - 9:00 pm</h6><p>The Shinglemill is located on pristine Powell Lake. Created during the last ice age, the lake is 50 km long and is a favourite recreational area for locals and visitors. The Shinglemill is named for the Powell Lake Shingle Mill that once stood on this site.</p><p>On warm sunny days you can sit on the deck to watch the boats going up and down the lake, and it's warm and cozy inside, whatever the weather.</p>"
+												}
+											},
+											{
+												"element": "base:columns",
+												"props": {
+													"columns": "max-content:max-content:max-content",
+													"minWidth": 500,
+													"gap": 16
+												},
+												"children": [
+													{
+														"element": "base:button",
+														"props": {
+															"label": "Browse our Menu",
+															"url": "/menu"
+														}
+													},
+													{
+														"element": "base:button",
+														"props": {
+															"class": "neutral ghost",
+															"label": "Marina",
+															"url": "/marina"
+														}
+													},
+													{
+														"element": "base:button",
+														"props": {
+															"class": "neutral ghost",
+															"label": "Our History",
+															"url": "/about"
+														}
+													}
+												]
+											}
+										]
+									},
+									{
+										"element": "base:image",
+										"props": {
+											"width": 500,
+											"lightbox": true,
+											"media": { "_id": "60a2ddf4cf20422ab2e5fcbe" }
+										}
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "accent callout"
+						}
+					},
+					{
+						"element": "base:section",
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"maxWidth": 900
+								},
+								"children": [
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h1>Lakeside Dining at Powell Lake</h1><p>Powell Lake Marina on Powell Lake was purchased in 1983. It was bankrupt at the time and in a state of disrepair. The property consisted of an old shop, a marina, gas dock and a small coffee shop. Through many long hours and a lot of work, Dave Formosa, opened and operated a boat sale service shop alongside the marina. After a number of years in business, Dave added onto the coffee shop and opened the Shinglemill Pub and Bistro in 1986.</p><p>The Shinglemill was named after the community that occupied the property during the early to mid the 1900's. The small community grew around a mill that produced shingles.</p><p>There are many photographs of the early days taken of the Shinglemill and community and Powell Lake displayed throughout the pub and bistro.</p><p>The Shinglemill is located on pristine Powell Lake. The lake, created during the last ice age, is 32 km long and is a favorite recreational area for locals and visitors.</p>"
+										}
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"maxWidth": 900
+								},
+								"children": [
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h1>Lakeside Dining at Powell Lake</h1><p>Powell Lake Marina on Powell Lake was purchased in 1983. It was bankrupt at the time and in a state of disrepair. The property consisted of an old shop, a marina, gas dock and a small coffee shop. Through many long hours and a lot of work, Dave Formosa, opened and operated a boat sale service shop alongside the marina. After a number of years in business, Dave added onto the coffee shop and opened the Shinglemill Pub and Bistro in 1986.</p><p>The Shinglemill was named after the community that occupied the property during the early to mid the 1900's. The small community grew around a mill that produced shingles.</p><p>There are many photographs of the early days taken of the Shinglemill and community and Powell Lake displayed throughout the pub and bistro.</p><p>The Shinglemill is located on pristine Powell Lake. The lake, created during the last ice age, is 32 km long and is a favorite recreational area for locals and visitors.</p>"
+										}
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "accent callout"
+						},
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"columns": "1fr:1fr:1fr",
+									"minWidth": 900,
+									"maxWidth": 1100,
+									"gap": 64
+								},
+								"children": [
+									{
+										"element": "base:stack",
+										"props": {
+											"gap": 8,
+											"layoutChildren": "start"
+										},
+										"children": [
+											{
+												"element": "base:image",
+												"props": {
+													"width": 500,
+													"media": { "_id": "60a46155fc7e345a5ba3aa1a" }
+												}
+											},
+											{
+												"element": "base:text",
+												"props": {
+													"content": "<h3>Pub</h3><p>Our full menu is available in both the restaurant and pub, enjoy our signature view no matter where you sit.</p>"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "BottomMarginSmall",
+													"label": "Browse our Menu",
+													"url": "/menu"
+												}
+											}
+										]
+									},
+									{
+										"element": "base:stack",
+										"props": {
+											"gap": 8,
+											"layoutChildren": "start"
+										},
+										"children": [
+											{
+												"element": "base:image",
+												"props": {
+													"width": 500,
+													"media": { "_id": "60a46155fc7e345a5ba3aa19" }
+												}
+											},
+											{
+												"element": "base:text",
+												"props": {
+													"content": "<h3>Bistro</h3><p>The restaurant is named for the Powell Lake Shingle Mill that once stood on this site. On sunny days you can sit on the deck.</p>"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "BottomMarginSmall neutral",
+													"label": "Browse our Menu",
+													"url": "/menu"
+												}
+											}
+										]
+									},
+									{
+										"element": "base:stack",
+										"props": {
+											"gap": 8,
+											"layoutChildren": "start"
+										},
+										"children": [
+											{
+												"element": "base:image",
+												"props": {
+													"width": 500,
+													"media": { "_id": "60a2e0b7cf20422ab2e5fcc1" }
+												}
+											},
+											{
+												"element": "base:text",
+												"props": {
+													"content": "<h3>Marina</h3><p>The marina at the Shinglemill is the only marina located on pristine Powell Lake, right next to a public boat launch.</p>"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "BottomMarginSmall ghost",
+													"label": "Browse our Menu",
+													"url": "/menu"
+												}
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"maxWidth": 900,
+									"gap": 32
+								},
+								"children": [
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h3>The History of the Shinglemill</h3><p>The Shinglemill was built in 1913 by Brooks Bidlake, and was sold in the 1920's to Doc' J.F Jamieson. Howard Jameson was manager until he was succeeded by R. Nanson in 1934. Homes grew up around the Shinglemill and 'Doc' laid a steam line from the mill in the early 1950's.</p><p>The Shinglemill was also the second home for Sam Sing, a respected business pioneer, who was the first merchant in Townsite.</p><p>In 1923, after his profitable business was sold to the Powell River Company, he moved to the Shinglemill. He opened another business that included grocery, butcher shop, general merchandise and bachelor accommodations.</p><p>Sam Sing died in 1937 and his business was carried on by his sons. The Penny Profit store, the last one operated by one of his children, closed its doors in 1987.</p><p>Some of Sing's grandchildren have remained in Powell River. As well as the Shinglemill there were other small shingle bolt companies up and down the lake. Included are Olsen Landing, Goat Lake, as well as various camps operated by H. Nakamura who was interred in 1942 according to Federal Law.</p><p>&nbsp;</p><p>&nbsp;</p><h3>The History of Powell Lake</h3><p>Powell Lake was named in 1881 after Dr. Israel Wood Powell, a medical doctor from Ontario who worked for the British Columbia government during the 1880's A fiord lake, it spans some 50km in length and is 24km wide. In 1924, when the Powell River Company raised it's dam on the Powell River for the second time, the lake level rose to 56km above sea level.</p><p>Although a fresh-water lake, a 1961 study by the University of British Columbia proved the existence of salt water at the bottom of the lake.</p><p>Giuseppe Gagliardi (1886-1947) was from the Calabria area of Italy. It appears that upon his arrival, sometime before 1914, he took his property as a half pre-emption (80 acres). It was then called Powell Lake Farm. He grew a fabulous garden and sold his produce to markets in Powell River.</p><p>Also helping him were John Minichelli and his wife as well as Dominic Diana. Minichelli and Gagliardi worked two homesteads. John's homestead was on Frog Lake. Upon Gagliardi's death, the land remained vacant for many years. In the 1960's, young Americans, disillusioned by the Vietnam war, came to live there. However, after disbanding a few years later they didn't sell the land, determined to save it from developments.</p><p>In 1975, The Scheibers, urged by a former commune member, took a job from Total Education, an alternate school, and started an out-door program. After Total Education, they started their own school which ran until 1985.</p><p>The farm hosted Katimivik programs and it was about the time Peter Scheibers death in 1985 that the name changed to Fiddle Head Farm.</p><p>Head Farm. The farm involved to become an International Hostel site, retreat centre and a holiday destination for families. In recent years the land where the farm once thrived has been sold and logged, but the area remains one of significance in the memories of longtime Powell Riverites.</p><p>Thanks to the P.R. Forestry Museum for the header photos and to Mrs. Scheiber for the information.</p><p>&nbsp;</p>"
+										}
+									},
+									{
+										"element": "base:image",
+										"props": {
+											"media": { "_id": "60a4688ffc7e345a5ba3aa1b" }
+										}
+									},
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h6 style='text-align:center;'>Website designed by <a href=''>Aurailus Design</a>.</h6><p style='text-align:center;'>© Shinglemill Pub & Bistro, 2021.</p>"
+										}
+									},
+									{
+										"element": "base:columns",
+										"props": {
+											"columns": "1fr:1fr:1fr:1fr",
+											"gap": 8
+										},
+										"children": [
+											{
+												"element": "base:button",
+												"props": {
+													"class": "",
+													"label": "See More",
+													"url": "/menu"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "neutral",
+													"label": "See More",
+													"url": "/menu"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "ghost",
+													"label": "See More",
+													"url": "/menu"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "neutral ghost",
+													"label": "See More",
+													"url": "/menu"
+												}
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "inverted callout"
+						},
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"maxWidth": 900,
+									"gap": 32
+								},
+								"children": [
+									{
+										"element": "base:columns",
+										"props": {
+											"columns": "1fr:1fr:1fr:1fr",
+											"gap": 8
+										},
+										"children": [
+											{
+												"element": "base:button",
+												"props": {
+													"class": "",
+													"label": "See More",
+													"url": "/menu"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "neutral",
+													"label": "See More",
+													"url": "/menu"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "ghost",
+													"label": "See More",
+													"url": "/menu"
+												}
+											},
+											{
+												"element": "base:button",
+												"props": {
+													"class": "neutral ghost",
+													"label": "See More",
+													"url": "/menu"
+												}
+											}
+										]
+									},
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h6 style='text-align:center;'>Website designed by <a href=''>Aurailus Design</a>.</h6><p style='text-align:center;'>© Shinglemill Pub & Bistro, 2021.</p>"
+										}
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		}
+	}
+}

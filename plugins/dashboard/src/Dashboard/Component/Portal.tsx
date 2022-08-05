@@ -13,6 +13,7 @@ import { tw, merge } from '../Twind';
 interface Props {
 	[prop: string]: unknown;
 
+	z?: number;
 	to?: HTMLElement;
 	as?: string | FunctionalComponent<any> | ComponentClass<any, any>;
 
@@ -30,7 +31,8 @@ export default forwardRef<HTMLDivElement, Props>(function Portal(
 
 	useEffect(() => {
 		root.className = merge(tw`Portal~(fixed top-0 left-0 w-0 h-0)`, props.wrapperClass);
-	}, [props.wrapperClass, root]);
+		if (props.z) root.style.zIndex = props.z.toString();
+	}, [props.wrapperClass, root, props.z]);
 
 	useEffect(() => {
 		const parent = props.to ?? document.querySelector('.AS_ROOT') ?? document.body;

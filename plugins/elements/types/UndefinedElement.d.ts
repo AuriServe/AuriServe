@@ -1,1 +1,1 @@
-export default function UndefinedElement(props: any): import("preact").VNode<any>;
+export default function UndefinedElement(props: any): any;

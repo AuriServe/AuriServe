@@ -10,8 +10,8 @@ import { Node, isIncludeNode, ElementNode, Include } from './Interface';
 
 const { log, database: db } = as.core;
 
-db.exec('DROP TABLE pages');
-db.exec('DROP TABLE includes');
+db.exec('DROP TABLE IF EXISTS pages');
+db.exec('DROP TABLE IF EXISTS includes');
 
 db.prepare(
 	'CREATE TABLE IF NOT EXISTS pages (content TEXT, includes TEXT)'

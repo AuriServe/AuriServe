@@ -100,7 +100,9 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 			class={props.class}
 			style={props.style}>
 			<input
-				ref={refs(autofillRef, ref, (elem) => ctx.setFieldRef(path, elem))}
+				ref={refs(autofillRef, ref, props.fieldRef, (elem) =>
+					ctx.setFieldRef(path, elem)
+				)}
 				id={id}
 				type={props.type}
 				name={path}

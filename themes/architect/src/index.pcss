@@ -4,3 +4,55 @@
 #page {
 	@apply selection:bg-primary-100 selection:text-black;
 }
+
+.NavSection {
+	@apply border-t-4 border-primary-500 !px-16 !py-1 !pb-11.5rem;
+
+	h1 {
+		margin: 0 !important;
+		font-size: 1.75rem !important;
+		line-height: 1.75rem !important;
+	}
+
+	.base\:columns .inner {
+		align-items: center !important;
+		justify-items: flex-end;
+	}
+}
+
+.icon {
+	@apply !w-18 !h-18;
+	filter: none !important;
+
+	.image {
+		@apply p-3 drop-shadow-md;
+	}
+
+	&.on-accent .image {
+		@apply bg-white;
+	}
+
+	&.on-white .image {
+		@apply bg-secondary-100;
+	}
+}
+
+.category-blurb {
+	.base\:text {
+		h4 {
+			@apply !text-xl !m-0;
+		}
+
+		p {
+			@apply !my-0.5;
+		}
+	}
+
+	.base\:image.icon {
+		@apply !w-14 !h-14;
+
+		.image {
+			@apply p-3;
+		}
+	}
+}

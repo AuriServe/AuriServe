@@ -1,4 +1,4 @@
-import { traverse } from 'common';
+import { traversePath } from 'common';
 
 interface Context {
 	theme: any;
@@ -30,7 +30,7 @@ directives.push([
 						const [path, wanted] = arg.split(/(?:==|!=)/g);
 						const eq = arg.includes('==');
 						try {
-							const val = traverse(ctx.theme, path);
+							const val = traversePath(ctx.theme, path);
 							if (eq) return val === wanted;
 							return val !== wanted;
 						} catch (e) {

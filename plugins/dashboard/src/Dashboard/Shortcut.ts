@@ -95,21 +95,21 @@ registerShortcut({
 	action: ({ navigate }) => navigate('/settings/'),
 });
 
-registerShortcut({
-	identifier: 'dashboard:manage_overview',
-	title: 'Manage Overview',
-	aliases: [
-		'overview settings',
-		'site name',
-		'name',
-		'description',
-		'favicon',
-		'address',
-	],
-	description: 'Edit basic site appearance settings.',
-	icon: Icon.home,
-	action: ({ navigate }) => navigate('/settings/overview/'),
-});
+// registerShortcut({
+// 	identifier: 'dashboard:manage_overview',
+// 	title: 'Manage Overview',
+// 	aliases: [
+// 		'overview settings',
+// 		'site name',
+// 		'name',
+// 		'description',
+// 		'favicon',
+// 		'address',
+// 	],
+// 	description: 'Edit basic site appearance settings.',
+// 	icon: Icon.home,
+// 	action: ({ navigate }) => navigate('/settings/overview/'),
+// });
 
 registerShortcut({
 	identifier: 'dashboard:shortcut_palette',
@@ -134,18 +134,18 @@ registerShortcut({
 	},
 });
 
-registerShortcut({
-	identifier: 'dashboard:toggle_dark_mode',
-	title: 'Toggle Dark Mode',
-	aliases: ['dark mode', 'light mode', 'color theme', 'theme'],
-	description: 'Toggle between light and dark mode.',
-	icon: Icon.theme,
-	action: () => {
-		document.documentElement.classList.add('AS_TRANSITION_THEME');
-		setTimeout(() => document.documentElement.classList.toggle('dark'), 50);
-		setTimeout(
-			() => document.documentElement.classList.remove('AS_TRANSITION_THEME'),
-			300
-		);
-	},
-});
+// registerShortcut({
+// 	identifier: 'dashboard:toggle_dark_mode',
+// 	title: 'Toggle Dark Mode',
+// 	aliases: ['dark mode', 'light mode', 'color theme', 'theme'],
+// 	description: 'Toggle between light and dark mode.',
+// 	icon: Icon.theme,
+// 	action: () => {
+// 		document.documentElement.classList.add('AS_TRANSITION_THEME');
+// 		setTimeout(() => document.documentElement.classList.toggle('dark'), 50);
+// 		setTimeout(
+// 			() => document.documentElement.classList.remove('AS_TRANSITION_THEME'),
+// 			300
+// 		);
+// 	},
+// });

@@ -76,7 +76,7 @@ export default function ToggleField(props: Props) {
 	return (
 		<label
 			class={merge(
-				tw`flex-(& col) px-2.5 py-3 rounded border-(2 gray-input) relative isolate
+				tw`flex-(& col) px-2.5 py-3 min-h-13 rounded border-(2 gray-input) relative isolate
 					cursor-${props.disabled ? 'auto' : 'pointer'}`,
 				props.class
 			)}
@@ -84,7 +84,7 @@ export default function ToggleField(props: Props) {
 			<div class={tw`flex gap-3`}>
 				{props.icon && <Svg src={props.icon} size={6} class={tw`shrink-0 -mr-0.5`} />}
 				<input
-					ref={refs(ref, (elem) => ctx.setFieldRef(path, elem))}
+					ref={refs(ref, props.fieldRef, (elem) => ctx.setFieldRef(path, elem))}
 					id={id}
 					type='checkbox'
 					disabled={disabled}

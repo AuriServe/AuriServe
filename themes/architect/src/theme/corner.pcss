@@ -3,6 +3,11 @@
 	--r: calc(var(--corner-size) * @theme(corner.size)px);
 	overflow: hidden;
 
+	&.no\-corners {
+		border-radius: 0 !important;
+		clip-path: none !important;
+	}
+
 	@if (corner.style == none) {
 		border-radius: 0;
 	}

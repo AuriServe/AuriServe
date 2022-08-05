@@ -1,7 +1,7 @@
 import path from 'path';
 import as from 'auriserve';
 import CleanCSS from 'clean-css';
-import { promises as fs } from 'fs';
+import { promises as fs, constants as fsc } from 'fs';
 
 import Theme from './Theme';
 import ThemeLoader from './ThemeLoader';
@@ -19,6 +19,8 @@ export default class ThemeManager {
 	}
 
 	async init() {
+		fs.access(this.buildDir, fsc.F_OK).then(() => true).catch(() => fs.mkdir(this.buildDir));
+
 		// db
 		// 	.prepare(
 		// 		`CREATE TABLE IF NOT EXISTS themes (

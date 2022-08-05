@@ -1,15 +1,17 @@
-import { h, createContext } from 'preact';
-import { useState, useEffect, useCallback } from 'preact/hooks';
+import { h, createContext, Fragment } from 'preact';
+import { useState, useCallback, useEffect } from 'preact/hooks';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Title from './Title';
 import Sidebar from './Sidebar';
 import { getPages } from '../Page';
-import { getShortcut } from '../Shortcut';
 import CommandPalette from './ShortcutPalette';
-import { Page, LoginPage, UnknownPage } from './Page';
+import { getShortcut, Shortcut } from '../Shortcut';
+import { Page, LoginPage, UnknownPage, LoadingPage, ResetPasswordPage } from './Page';
 
 import { tw } from '../Twind';
+import { executeQuery } from '../Main';
+import { QUERY_INFO } from '../Graph';
 
 type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
@@ -52,8 +54,8 @@ export default function App() {
 	);
 
 	useEffect(() => {
-		if (state === 'QUERYING') setState('AUTH');
-	}, [state]);
+		if (state === 'QUERYING') executeQuery(QUERY_INFO).then(() => setState('AUTH')).catch(() => setState('LOGIN'));
+	}, [ state ]);
 
 	return (
 		<AppContext.Provider value={{ data, mergeData }}>
@@ -62,24 +64,26 @@ export default function App() {
 				AS_ROOT ${state !== 'LOGIN' && 'pl-14'} grid min-h-screen font-sans theme-blue
 				bg-gray-(100 dark:900) text-gray-(800 dark:100)
 				icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
-				{state === 'LOGIN' ? (
-					<LoginPage onLogin={() => setState('AUTH')} />
-				) : (
-					<Router basename='/dashboard'>
+				<Router basename='/dashboard'>
+					{state === 'AUTH' && <Fragment>
 						<CommandPalette />
 						<Sidebar
-							shortcuts={[
-								getShortcut('dashboard:page_home')!,
-								// getShortcut('page-editor:pages')!,
-								// getShortcut('dashboard:page_routes')!,
-								// getShortcut('dashboard:page_media')!,
-								'spacer',
-								getShortcut('dashboard:page_settings')!,
-								getShortcut('dashboard:shortcut_palette')!,
-								getShortcut('dashboard:log_out')!,
-							]}
+							shortcuts={
+								[
+									getShortcut('tax_calculator:edit_calculator'),
+									// getShortcut('page-editor:pages')!,
+									// getShortcut('dashboard:page_routes')!,
+									// getShortcut('dashboard:page_media')!,
+									'spacer',
+									// getShortcut('dashboard:page_settings')!,
+									getShortcut('dashboard:shortcut_palette'),
+									getShortcut('dashboard:log_out'),
+								].filter(Boolean) as (Shortcut | 'spacer')[]
+							}
 						/>
-						<Routes>
+					</Fragment>}
+					<Routes>
+						{state === 'AUTH' && <Fragment>
 							{[...getPages().entries()].map(
 								([key, { path, title, component: Component }]) => (
 									<Route
@@ -94,10 +98,15 @@ export default function App() {
 									/>
 								)
 							)}
-							<Route path='*' element={<UnknownPage />} />
-						</Routes>
-					</Router>
-				)}
+						</Fragment>}
+						{state !== 'QUERYING' && <Route path='/reset_password/:token' element={
+							<ResetPasswordPage onReset={() => setState('AUTH')}/>} />}
+						{state === 'LOGIN' && <Route path='*' element={
+							<LoginPage onLogin={() => setState('AUTH')} />} />}
+						{state === 'AUTH' && <Route path='*' element={<UnknownPage />} />}
+						{state === 'QUERYING' && <Route path='*' element={<LoadingPage />} />}
+					</Routes>
+				</Router>
 			</div>
 		</AppContext.Provider>
 	);

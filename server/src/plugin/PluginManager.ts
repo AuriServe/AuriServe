@@ -1,6 +1,6 @@
 import path from 'path';
 import Express from 'express';
-import { Database, Statement } from '../SQLite';
+import { Database } from '../SQLite';
 
 import Log from '../Log';
 import Plugin from './Plugin';
@@ -31,10 +31,6 @@ export default class Plugins {
 	/** The plugin loader which discovers and watches the plugins. */
 	private loader: PluginLoader;
 
-	private DATABASE_ADD_PLUGIN: Statement<string> = this.database.prepare(
-		'INSERT OR IGNORE INTO plugins(identifier, enabled) VALUES(?, 0)'
-	);
-
 	/** A map of callback identifiers to callbacks. */
 	private callbacks: Map<PluginEvent, ((event?: any) => void)[]> = new Map();
 
@@ -55,22 +51,22 @@ export default class Plugins {
 				`CREATE TABLE IF NOT EXISTS plugins (
 					identifier TEXT PRIMARY KEY,
 					enabled INTEGER NOT NULL DEFAULT FALSE
-				) STRICT`
+				)`
 			)
 			.run();
 
 		// TODO: Stupid dumb fake query
-		this.database.prepare('DELETE FROM plugins').run();
+		// this.database.prepare('DELETE FROM plugins').run();
 
 		await this.loader.refresh();
 
 		// TODO: Stupid dumb fake query
-		this.database
-			.prepare(
-				`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-base', 1), ('themes', 0), ('pages', 0), ('dashboard', 1), ('hydrated', 1), ('page-editor', 0),
-					('analytics', 0), ('users', 1), ('tax_calculator', 1)`
-			)
-			.run();
+		// this.database
+		// 	.prepare(
+		// 		`INSERT OR REPLACE INTO plugins(identifier, enabled) VALUES('routes', 1), ('preact', 1), ('elements', 1), ('elements-base', 1), ('themes', 0), ('pages', 0), ('dashboard', 1), ('hydrated', 1), ('page-editor', 0),
+		// 		('analytics', 0), ('users', 1), ('tax_calculator', 1)`
+		// 	)
+		// 	.run();
 
 		const enabled = this.database
 			.prepare(`SELECT identifier FROM plugins WHERE enabled = 1`)
@@ -82,7 +78,10 @@ export default class Plugins {
 
 	addPlugin(plugin: Plugin) {
 		this.plugins.set(plugin.manifest.identifier, plugin);
-		this.DATABASE_ADD_PLUGIN.run(plugin.manifest.identifier);
+
+		this.database
+			.prepare('INSERT OR IGNORE INTO plugins(identifier, enabled) VALUES(?, 0)')
+			.run(plugin.manifest.identifier);
 	}
 
 	reloadPlugin(_identifier: string) {
@@ -90,15 +89,16 @@ export default class Plugins {
 	}
 
 	/** Enables only the plugins specified. */
-	async setEnabled(identifiers: string[]) {
-		this.database.prepare('UPDATE plugins SET enabled = 0').run();
-		if (identifiers.length)
-			this.database.exec(`
+	async setEnabled(identifiers: string[], sync = true) {
+		if (sync) {
+			this.database.prepare('UPDATE plugins SET enabled = 0').run();
+			if (identifiers.length)
+				this.database.exec(`
 				UPDATE plugins SET enabled = 1 WHERE identifier IN (${identifiers
 					.map((i) => `'${i}'`)
 					.join(', ')})`);
+		}
 
-		this.plugins.set;
 		const disableOrder = pluginDependencyOrder(
 			[...this.plugins.values()]
 				.filter((plugin) => plugin.isEnabled())
@@ -159,7 +159,7 @@ export default class Plugins {
 	}
 
 	async cleanup() {
-		await this.setEnabled([]);
+		await this.setEnabled([], false);
 		this.plugins.clear();
 	}
 

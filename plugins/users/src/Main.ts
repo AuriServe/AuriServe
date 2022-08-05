@@ -14,69 +14,26 @@ import {
 
 export * from './API';
 
-const { database: db } = as.core;
-
-db.exec(`DROP TABLE IF EXISTS users`);
-db.exec(`DROP TABLE IF EXISTS roles`);
-db.exec(`DROP TABLE IF EXISTS userRoles`);
-db.exec(`DROP TABLE IF EXISTS userEmails`);
-// db.exec(`DROP TABLE IF EXISTS userTokens`);
-
-db.exec(
-	`CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY,
-		identifier TEXT UNIQUE NOT NULL,
-		name TEXT NOT NULL,
-		password TEXT NOT NULL
-	) STRICT`
-);
-
-db.exec(
-	`CREATE TABLE IF NOT EXISTS userEmails (
-		email TEXT PRIMARY KEY,
-		user INTEGER
-	) STRICT`
-);
-
-db.exec(
-	`CREATE TABLE IF NOT EXISTS userRoles (
-		role TEXT,
-		user INTEGER NOT NULL
-	) STRICT`
-);
-
-db.exec(
-	`CREATE TABLE IF NOT EXISTS userTokens (
-		token TEXT PRIMARY KEY,
-		user INTEGER NOT NULL,
-		expires INTEGER NOT NULL
-	) STRICT`
-);
-
-db.exec(
-	`CREATE TABLE IF NOT EXISTS roles (
-		identifier TEXT UNIQUE,
-		name TEXT,
-		ind INTEGER,
-		permissions TEXT
-	)`
-);
+const { database } = as.core;
+import { init as databaseInit, getRoles } from './Database';
+databaseInit();
 
 as.users = {
-	roles: [],
+	roles: getRoles(),
 	permissions: new Map(),
 	permissionCategories: new Map(),
 
 	async createUser(identifier: string, name: string, email: string, password: string) {
-		const id = db
+		const id = database
 			.prepare('INSERT INTO users(identifier, name, password) VALUES(?, ?, ?)')
 			.run(identifier, name, await as.users.hashPassword(password)).lastInsertRowid;
-		db.prepare('INSERT INTO userEmails(email, user) VALUES(?, ?)').run(email, id);
+		database.prepare('INSERT INTO userEmails(email, user) VALUES(?, ?)').run(email, id);
 	},
 
 	deleteUser(identifier: string) {
 		return (
-			db.prepare('DELETE FROM users WHERE identifier = ?').run(identifier).changes > 0
+			database.prepare('DELETE FROM users WHERE identifier = ?').run(identifier).changes >
+			0
 		);
 	},
 
@@ -93,14 +50,14 @@ as.users = {
 		let user: DBUser | undefined;
 
 		if (identity.includes('@')) {
-			user = db
+			user = database
 				.prepare(
 					`SELECT id, password as hash FROM users INNER JOIN userEmails
 					ON users.id = userEmails.user WHERE userEmails.email = ?`
 				)
 				.get(identity);
 		} else {
-			user = db
+			user = database
 				.prepare(`SELECT id, password as hash FROM users WHERE identifier = ?`)
 				.get(identity);
 		}
@@ -114,35 +71,63 @@ as.users = {
 		const token = nanoid(24);
 		const expires = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 31; // 1 month from now
 
-		db.prepare(`INSERT INTO userTokens(token, user, expires) VALUES (?, ?, ?)`).run(
-			token,
-			user.id,
-			expires
-		);
+		database
+			.prepare(`INSERT INTO userTokens(token, user, expires) VALUES (?, ?, ?)`)
+			.run(token, user.id, expires);
 
 		return token;
 	},
 
 	userIDFromToken(token: Token): Promise<string> {
 		const { user: id } =
-			db
+			database
 				.prepare(
 					`UPDATE userTokens SET expires = strftime('%s', 'now') + 60 * 60 * 24 * 31 WHERE token = ? AND expires > strftime('%s', 'now') RETURNING user`
 				)
 				.get(token) ?? {};
 
-		assert(id, 'Invalid token.');
+		assert(id != null, 'Invalid token.');
 		return id;
 	},
 
+	async createPasswordResetToken(identifier: string): Promise<string> {
+		const id = database.prepare('SELECT id FROM users WHERE identifier = ?').get(identifier).id;
+
+		const token = nanoid(24);
+		const expires = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 3; // 3 days from now
+
+		database
+			.prepare(`INSERT INTO userPasswordResetTokens(token, user, expires) VALUES (?, ?, ?)`)
+			.run(token, id, expires);
+
+		return token;
+	},
+
+	async resetPassword(token: string, password: string): Promise<Token> {
+		const { user, expires } =
+			database.prepare(`DELETE FROM userPasswordResetTokens WHERE token = ? RETURNING user, expires`)
+			.get(token) ?? {};
+
+		assert(expires > Date.now() / 1000, 'This token has expired.');
+
+		const identifier = database
+			.prepare('UPDATE users SET password = ? WHERE id = ? RETURNING identifier')
+			.get(await as.users.hashPassword(password), user).identifier;
+
+		assert(identifier, 'Invalid token.');
+
+		database.prepare('DELETE FROM userTokens WHERE user = ?').run(user);
+		return await as.users.getAuthToken(identifier, password);
+	},
+
 	listUsers(): User[] {
-		const emails: { email: string; user: number }[] = db
+		const emails: { email: string; user: number }[] = database
 			.prepare(`SELECT email, user FROM userEmails`)
 			.all();
-		const roles: { role: string; user: number }[] = db
+		const roles: { role: string; user: number }[] = database
 			.prepare(`SELECT role, user FROM userRoles`)
 			.all();
-		const users: (User & { id: number })[] = db
+		const users: (User & { id: number })[] = database
 			.prepare(`SELECT id, identifier, name FROM users`)
 			.all();
 
@@ -159,16 +144,16 @@ as.users = {
 	getUser(token: Token): User {
 		const userID = as.users.userIDFromToken(token);
 
-		const { identifier, name } = db
+		const { identifier, name } = database
 			.prepare('SELECT identifier, name FROM users WHERE id = ?')
 			.get(userID) as { identifier: string; name: string };
 
-		const emails = db
+		const emails = database
 			.prepare('SELECT email FROM userEmails WHERE user = ?')
 			.all(userID)
 			.map(({ email }) => email) as string[];
 
-		const roles = db
+		const roles = database
 			.prepare('SELECT role FROM userRoles WHERE user = ?')
 			.all(userID)
 			.map(({ role }) => role) as string[];
@@ -177,13 +162,13 @@ as.users = {
 	},
 
 	getUserPermissions(token: Token): Set<string> {
-		const userID = db
+		const userID = database
 			.prepare('SELECT user FROM userTokens WHERE token = ?')
 			.get(token)?.user;
 
 		assert(userID, 'Invalid token.');
 
-		const roles: string[] = db
+		const roles: string[] = database
 			.prepare(`SELECT role FROM userRoles WHERE user = ?`)
 			.all(userID)
 			.map((r) => r.role);
@@ -274,46 +259,5 @@ as.users.addPermission({
 	description: 'Bypass permissions and role heirarchy. Use with caution.',
 	category: 'administration',
 });
-
-// Test data
-
-(async () => {
-	await as.users.createUser('aurailus', 'Aurailus', 'me@auri.xyz', 'password');
-	await as.users.createUser('zythia', 'Zythia', 'zythia.woof@gmail.com', 'password');
-	await as.users.createUser('piescorch', 'Elliot', 'mail@example.com', 'password');
-	await as.users.createUser('lore', 'Lore', 'maila@example.com', 'password');
-	await as.users.createUser('choir', 'Jason', 'mailb@example.com', 'password');
-
-	await as.users.createUser('aurailus_', 'Aurailus', '_me@auri.xyz', 'password');
-	await as.users.createUser('zythia_', 'Zythia', '_zythia.woof@gmail.com', 'password');
-	await as.users.createUser('piescorch_', 'Elliot', '_mail@example.com', 'password');
-	await as.users.createUser('lore_', 'Lore', '_maila@example.com', 'password');
-	await as.users.createUser('choir_', 'Jason', '_mailb@example.com', 'password');
-
-	await as.users.createUser('aurailus__', 'Aurailus', '__me@auri.xyz', 'password');
-	await as.users.createUser('zythia__', 'Zythia', '__zythia.woof@gmail.com', 'password');
-	await as.users.createUser('piescorch__', 'Elliot', '__mail@example.com', 'password');
-	await as.users.createUser('lore__', 'Lore', '__maila@example.com', 'password');
-	await as.users.createUser('choir__', 'Jason', '__mailb@example.com', 'password');
-
-	try {
-		as.users.addRole('administrator', 0, 'Administrator', ['administrator']);
-		as.users.addRole('moderator', 100, 'Moderator', ['view_audit_log']);
-		as.users.addRole('editor', 100, 'Editor', ['view_pages', 'view_users', 'view_permissions']);
-		as.users.addRole('@aurailus', 0, 'Auri', ['administrator']);
-		as.users.addRole('@john', 0, 'John', ['view_audit_log']);
-		as.users.addRole('_everyone', 0, 'Everyone', []);
-	} catch (e) {
-		console.warn(e);
-	}
-
-	// db.exec(`INSERT INTO userRoles(role, user) VALUES('administrator', 1)`);
-	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 1)`);
-	// db.exec(`INSERT INTO userRoles(role, user) VALUES('@aurailus', 1)`);
-
-	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 2)`);
-})();
-
-// end test data
 
 as.core.once('cleanup', () => as.unexport('users'));

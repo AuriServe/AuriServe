@@ -2,14 +2,34 @@
 	"content": {
 		"element": "base:section",
 		"props": {
-			"class": "inverted"
+			"class": "inverted",
+			"style": "padding: 9rem 4rem; background: url(/media/banner.jpg) no-repeat center center; background-size: cover;"
 		},
 		"children": [
 			{
-				"element": "base:text",
+				"element": "base:columns",
 				"props": {
-					"content": "<h1 style='text-align: center;'>Hey there gamer</h1>"
-				}
+					"columns": "64px:1fr",
+					"maxWidth": 1300,
+					"gap": 16
+				},
+				"children": [
+					{
+						"element": "base:image",
+						"props": {
+							"imgStyle": "background-color: rgba(255, 255, 255, 0.15); padding: 8px;",
+							"aspect": 1,
+							"url": "/media/icon_home.svg"
+						}
+					},
+					{
+						"element": "base:text",
+						"props": {
+							"style": "align-self: center;",
+							"content": "<h1>Home</h1>"
+						}
+					}
+				]
 			}
 		]
 	}

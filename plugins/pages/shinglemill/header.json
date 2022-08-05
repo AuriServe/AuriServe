@@ -1,0 +1,16 @@
+{
+	"content": {
+		"element": "base:section",
+		"props": {
+			"class": "inverted"
+		},
+		"children": [
+			{
+				"element": "base:text",
+				"props": {
+					"content": "<h1 style='text-align: center;'>Hey there gamer</h1>"
+				}
+			}
+		]
+	}
+}

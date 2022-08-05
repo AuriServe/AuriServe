@@ -4,10 +4,7 @@ import App from './Component/App';
 
 import * as Icon from './Icon';
 import { registerSettings } from './Settings';
-import {
-	OverviewSettings,
-	UserSettings /*, PermissionSettings*/,
-} from './Component/Page';
+import { OverviewSettings, UserSettings, PermissionSettings } from './Component/Page';
 
 registerSettings({
 	identifier: 'dashboard:overview',
@@ -26,14 +23,14 @@ registerSettings({
 	component: UserSettings,
 });
 
-// registerSettings({
-// 	identifier: 'dashboard:permissions',
-// 	title: 'Permissions',
-// 	path: 'permissions',
-// 	icon: Icon.role,
-// 	permissions: ['view_permissions'],
-// 	component: PermissionSettings,
-// });
+registerSettings({
+	identifier: 'dashboard:permissions',
+	title: 'Permissions',
+	path: 'permissions',
+	icon: Icon.role,
+	permissions: ['view_permissions'],
+	component: PermissionSettings,
+});
 
 render(h(App, {}), document.getElementById('root')!);
 
@@ -75,6 +72,7 @@ export { refs, elementBounds } from './Util';
 export * as Icon from './Icon';
 export { default as EventEmitter } from './EventEmitter';
 
+export * as Graph from './Graph';
 export { useData, executeQuery } from './Graph';
 export { registerPage, unregisterPage } from './Page';
 export { registerShortcut, unregisterShortcut } from './Shortcut';

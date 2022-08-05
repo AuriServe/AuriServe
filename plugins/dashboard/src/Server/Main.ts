@@ -6,8 +6,10 @@ import './API';
 import { User } from 'users';
 import { assert, isType } from 'common';
 
-const { router, log: Log } = as.core;
+import { getSiteInfo } from './Database';
 import './Permissions';
+
+const { router, log: Log } = as.core;
 
 const schema = `
 	scalar Date
@@ -27,7 +29,6 @@ const schema = `
 	type Info {
 		name: String!
 		domain: String!
-		favicon: ID
 		description: String!
 	}
 
@@ -70,6 +71,8 @@ const schema = `
 		roles: [Role!]
 		permissions: [Permission!]
 		permissionCategories: [PermissionCategory!]
+
+		createPasswordResetToken(identifier: String!): String!
 	}
 `;
 
@@ -131,12 +134,7 @@ as.dashboard = {
 			this.schema = buildSchema([...this.schemaStrings.values()].join('\n'));
 
 			as.dashboard.gqlResolver = {
-				info: {
-					name: 'The Shinglemill',
-					domain: 'shinglemill.ca',
-					description: 'hey there hey there',
-					favicon: undefined,
-				},
+				info: getSiteInfo(),
 				user: (_: any, ctx: Ctx) => ({ ...ctx.user, permissions: ctx.permissions }),
 				roles: (_: any, ctx: Ctx) => {
 					const roles = [...as.users.roles.values()];
@@ -153,6 +151,9 @@ as.dashboard = {
 					as.users.permissionCategories.values()
 				),
 				users: gate(['view_users'], () => as.users.listUsers()),
+				createPasswordResetToken: gate(['administrator'], (ctx: any) =>
+					as.users.createPasswordResetToken(ctx.identifier ?? '')
+				)
 			};
 
 			this.routeHandlers.push(
@@ -181,6 +182,24 @@ as.dashboard = {
 						);
 
 						res.send(token);
+					} catch (e) {
+						if ((e as Error).name === 'AssertError') {
+							res.status(401).send((e as Error).message);
+						} else {
+							Log.warn('Unhandled error in auth handler: ', e);
+							res.sendStatus(400);
+						}
+					}
+				})
+			);
+
+			this.routeHandlers.push(
+				router.post('/dashboard/res/reset_password', async (req, res) => {
+					try {
+						assert(isType(req.body.token, 'string') && isType(req.body.password, 'string'),
+							'Missing required information');
+
+						res.send(await as.users.resetPassword(req.body.token, req.body.password));
 					} catch (e) {
 						if ((e as Error).name === 'AssertError') {
 							res.status(401).send((e as Error).message);

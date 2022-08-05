@@ -11,7 +11,7 @@ declare global {
 	}
 }
 
-const themePath = path.join(__dirname, '../../../site-data/edsraku/themes');
+const themePath = path.join(__dirname, '../../../server/site-data/themes');
 const themes = new ThemeManager(themePath);
 themes.init();
 

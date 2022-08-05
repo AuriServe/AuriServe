@@ -1,35 +1,43 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 import Card from '../Card';
 import Form, { Field } from '../Form';
 
 import { tw } from '../../Twind';
 import * as Icon from '../../Icon';
+import EventEmitter from '../../EventEmitter';
+import { SettingsEvent } from '../../Settings';
 
 interface OverviewData {
 	name: string;
 	address: string;
 	description: string;
-	favicon: string | null;
-	themeColor: string | null;
-	visibility: 'visible' | 'hidden';
-	money: number;
-	percent: number;
 }
 
-export default function OverviewSettings() {
-	const [data, setData] = useState<OverviewData>({
+export default function OverviewSettings({
+	event,
+	setDirty,
+}: {
+	event: EventEmitter<SettingsEvent>;
+	setDirty: (dirty: boolean) => void;
+}) {
+	const [initialData] = useState<OverviewData>({
 		name: 'The Shinglemill',
 		address: 'www.shinglemill.ca',
 		description:
 			'The Shinglemill Pub and Bistro is a favourite restaurant for locals and visitors alike, located on pristine Powell Lake.',
-		favicon: null,
-		themeColor: null,
-		visibility: 'visible',
-		money: 99999,
-		percent: 0.15,
 	});
+
+	const [data, setData] = useState<OverviewData>(JSON.parse(JSON.stringify(initialData)));
+
+	setDirty(JSON.stringify(data) !== JSON.stringify(initialData));
+
+	useEffect(() => {
+		return event.bind('undo', () => setData(JSON.parse(JSON.stringify(initialData))));
+	}, [event, initialData]);
+
+	console.log(data);
 
 	return (
 		<Card>
@@ -39,7 +47,10 @@ export default function OverviewSettings() {
 				subtitle='Basic site appearance, search engine optimization.'
 			/>
 			<Card.Body>
-				<Form class={tw`p-2`} initialValue={data} onSubmit={setData}>
+				<Form<OverviewData>
+					class={tw`p-2`}
+					value={data}
+					onChange={(data) => setData(data as OverviewData)}>
 					<div class={tw`flex-(& row) gap-8`}>
 						<div class={tw`w-64 shrink-0`}>
 							<p class={tw`font-medium mb-1`}>Site Metadata</p>
@@ -69,7 +80,7 @@ export default function OverviewSettings() {
 						</div>
 					</div>
 
-					<div class={tw`flex-(& row) gap-8 pt-4 mt-6 mb-1`}>
+					{/* <div class={tw`flex-(& row) gap-8 pt-4 mt-6 mb-1`}>
 						<div class={tw`w-64 shrink-0`}>
 							<p class={tw`font-medium mb-1`}>Site Appearance</p>
 							<p class={tw`text-(gray-300 sm)`}>
@@ -91,15 +102,20 @@ export default function OverviewSettings() {
 							<Field.Option
 								path='visibility'
 								description='The visibility of your site to search engines.'
-								options={{ visible: 'Visible', hidden: 'Hidden' }}
+								options={
+									new Map([
+										['visible', 'Visible'],
+										['hidden', 'Hidden'],
+									])
+								}
 							/>
 							{/* <Field.Toggle
 								path='visibility'
 								label='Allow site to appear in search results'
 								description='If your site is not visible to search engines, it will be harder to find.'
-							/> */}
+							/>
 						</div>
-					</div>
+					</div> */}
 				</Form>
 			</Card.Body>
 		</Card>

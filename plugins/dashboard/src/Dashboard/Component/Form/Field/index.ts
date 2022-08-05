@@ -1,3 +1,5 @@
+import { Ref } from 'preact';
+
 import NumberField from './NumberField';
 import { TextField, PasswordField } from './TextField';
 import ToggleField from './ToggleField';
@@ -22,6 +24,7 @@ export type FieldProps<InputType, OutputType = InputType> = {
 	id?: string;
 	style?: any;
 	class?: string;
+	fieldRef?: Ref<HTMLElement>;
 
 	label?: string;
 	description?: string;

@@ -1,0 +1,11 @@
+name: Media
+identifier: media
+description: Temporary plugin to expose static media.
+
+version: 0.0.1
+author: Auri
+
+depends:
+- routes ^0.0.1
+
+entry: build/main.js

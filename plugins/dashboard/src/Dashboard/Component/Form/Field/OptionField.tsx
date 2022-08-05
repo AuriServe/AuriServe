@@ -16,10 +16,7 @@ import * as Icon from '../../../Icon';
 import { merge, tw } from '../../../Twind';
 
 type Props = FieldProps<string | null> & {
-	options: Record<string, string>;
-
-	noneLabel?: string;
-	showNoneLabel?: boolean;
+	options: Map<string | null | boolean | number, string>;
 
 	hideLabel?: boolean;
 };
@@ -48,7 +45,7 @@ export default function OptionField(props: Props) {
 		context: {},
 		checks: [
 			{
-				condition: ({ value }) => required && !value,
+				condition: ({ value }) => required && value == null,
 				message: 'Please select an option',
 			},
 		],
@@ -95,10 +92,6 @@ export default function OptionField(props: Props) {
 	const numEntries = Object.keys(props.options).length + (required ? 0 : 1);
 	const hasScrollbar = numEntries > 5;
 
-	const options = required
-		? props.options
-		: { '': props.noneLabel ?? 'None', ...props.options };
-
 	return (
 		<Listbox
 			value={value.current}
@@ -112,7 +105,7 @@ export default function OptionField(props: Props) {
 					active={open}
 					onFocusIn={handleFocus}
 					onFocusOut={handleBlur}
-					populated={open || value.current != null || props.showNoneLabel}
+					populated={open || value.current != null || props.options.get(null) != null}
 					invalid={invalid}
 					hideLabel={props.hideLabel}
 					class={props.class}
@@ -120,17 +113,18 @@ export default function OptionField(props: Props) {
 					<Listbox.Button
 						id={id}
 						aria-description={props.description}
-						ref={refs(ref, (elem) => ctx.setFieldRef(path, elem))}
+						ref={refs(ref, props.fieldRef, (elem) => ctx.setFieldRef(path, elem))}
 						className={merge(
 							tw`peer w-full px-2.5 pr-10 rounded
 							${props.hideLabel ? 'pt-1.5 pb-1 h-10' : 'pt-6 pb-1 h-[3.25rem]'}
-							text-left !outline-none resize-none transition focus:shaduow-md
+							text-left !outline-none resize-none transition
 							bg-gray-100 dark:bg-gray-700/75 dark:focus:bg-gray-700
+							overflow-hidden truncate
 							${open && '!shadow-md dark:!bg-gray-700'}
 						`
 							// props.inputClass
 						)}>
-						{props.options[value.current!] ?? props.noneLabel ?? ''}
+						{props.options.get(value.current!) ?? props.options.get(null) ?? ''}
 					</Listbox.Button>
 					<Transition
 						show={open}
@@ -148,21 +142,21 @@ export default function OptionField(props: Props) {
 								className={tw`flex-row-reverse max-h-[14rem] overflow-auto outline-none
 									scroll-(gutter-gray-700 bar-(gray-400 hover-gray-300)) py-1.5 pl-2
 									${hasScrollbar ? 'pr-0.5' : 'pr-2'}`}>
-								{Object.entries(options).map(([value, label]) => (
+								{[...props.options.entries()].map(([value, label]) => (
 									<Listbox.Option
 										key={value}
-										value={value === '' ? null : value}
+										value={value}
 										className={({ active, selected }) =>
-											tw`py-2 px-2 flex rounded transition cursor-pointer duration-75
+											tw`py-2 px-2 flex rounded transition cursor-pointer duration-75 w-full
 											${active ? 'bg-accent-400/10 text-accent-200' : 'text-gray-200'}
 											${selected && 'font-medium !text-gray-100'}`
 										}>
 										{({ selected }: { selected: boolean }) => (
 											<Fragment>
-												<span class={tw`grow`}>{label}</span>
+												<span class={tw`grow overflow-hidden truncate`}>{label}</span>
 												{selected && (
 													<Svg
-														class={tw`icon-p-accent-200 icon-s-gray-500`}
+														class={tw`shrink-0 icon-p-accent-200 icon-s-gray-500`}
 														src={Icon.check}
 														size={6}
 													/>

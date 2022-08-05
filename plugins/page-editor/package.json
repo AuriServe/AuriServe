@@ -22,7 +22,6 @@
 		"@typescript-eslint/eslint-plugin": "^5.9.1",
 		"@typescript-eslint/parser": "^5.9.1",
 		"babel-loader": "^8.2.3",
-		"eslint-loader": "^4.0.2",
 		"fork-ts-checker-webpack-plugin": "^6.5.0",
 		"plugin-routes": "file:../routes",
 		"preact": "^10.6.5",
@@ -31,9 +30,9 @@
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
-		"pages": "file:../pages",
 		"common": "file:../../common/build",
 		"escape-html": "^1.0.3",
+		"pages": "file:../pages",
 		"vibin-hooks": "^0.2.1"
 	}
 }

@@ -1,7 +1,6 @@
 import { ComponentChildren, h } from 'preact';
 import { useContext, useRef, useState, useEffect } from 'preact/hooks';
 
-import Portal from '../Portal';
 import { TransitionGroup } from '../Transition';
 
 import Svg from '../Svg';
@@ -84,12 +83,18 @@ export default function FloatingDescription(props: Props) {
 				}
 
 				const bounds = elementBounds(meta!.elem!);
+				const parentBounds = elementBounds(
+					containerRef.current!.offsetParent! as HTMLElement
+				);
 				return {
 					path,
 					description,
 					error: meta!.error?.message ?? null,
-					top: `${Math.floor(bounds.top)}px`,
-					left: `${Math.floor(bounds.left + bounds.width) + (props.padding ?? 4) * 4}px`,
+					top: `${Math.floor(bounds.top) - parentBounds.top}px`,
+					left: `${
+						Math.floor(bounds.left + bounds.width - parentBounds.left) +
+						(props.padding ?? 4) * 4
+					}px`,
 				} as State;
 			});
 		});
@@ -101,11 +106,16 @@ export default function FloatingDescription(props: Props) {
 					if (oldState.path !== path) return oldState;
 					const meta = form.meta.current[path ?? '-'];
 					const bounds = elementBounds(meta!.elem!);
+					const parentBounds = elementBounds(
+						containerRef.current!.offsetParent! as HTMLElement
+					);
+
 					return {
 						...oldState,
-						top: `${Math.floor(bounds.top)}px`,
+						top: `${Math.floor(bounds.top - parentBounds.top)}px`,
 						left: `${
-							Math.floor(bounds.left + bounds.width) + (props.padding ?? 4) * 4
+							Math.floor(bounds.left + bounds.width - parentBounds.left) +
+							(props.padding ?? 4) * 4
 						}px`,
 						error: (error?.visible && error?.message) || null,
 					};
@@ -129,57 +139,55 @@ export default function FloatingDescription(props: Props) {
 	const show = state.description || state.error;
 
 	return (
-		<Portal wrapperClass={tw`absolute`}>
-			<div
-				ref={containerRef}
-				style={{ ...props.style, top: state.top, left: state.left }}
-				class={merge(
-					tw`FloatingDescription~(isolate absolute z-10 w-80 min-h-[2.5rem]
-						bg-gray-700 shadow-md rounded transition-all [transform-origin:left_center])
-					after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45)
-					${show ? 'delay-75' : 'opacity-0 scale-[98%] interact-none'}`,
-					props.class
-				)}>
-				<div class={tw`overflow-hidden h-full w-full relative`}>
-					<TransitionGroup
-						duration={175}
-						enter={tw`transition delay-75 duration-100 z-10`}
-						enterFrom={tw`opacity-0 -translate-y-1`}
-						exit={tw`transition duration-100`}
-						exitTo={tw`opacity-0 translate-y-1`}>
-						{show && (
-							<div
-								key={`${state.description}-${state.error}`}
-								ref={handleUpdateContainerHeight}
-								class={merge(tw`absolute top-0 left-0 w-full`, props.innerClass)}>
-								{state.description && (
-									<div class={tw`flex gap-2 p-2 pr-3 whitespace-pre-line`}>
+		<div
+			ref={containerRef}
+			style={{ ...props.style, top: state.top, left: state.left }}
+			class={merge(
+				tw`FloatingDescription~(isolate absolute z-10 w-80 min-h-[2.5rem]
+					bg-gray-700 shadow-md rounded transition-all [transform-origin:left_center])
+				after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45)
+				${show ? 'delay-75' : 'opacity-0 scale-[98%] interact-none'}`,
+				props.class
+			)}>
+			<div class={tw`overflow-hidden h-full w-full relative`}>
+				<TransitionGroup
+					duration={175}
+					enter={tw`transition delay-75 duration-100 z-10`}
+					enterFrom={tw`opacity-0 -translate-y-1`}
+					exit={tw`transition duration-100`}
+					exitTo={tw`opacity-0 translate-y-1`}>
+					{show && (
+						<div
+							key={`${state.description}-${state.error}`}
+							ref={handleUpdateContainerHeight}
+							class={merge(tw`absolute top-0 left-0 w-full`, props.innerClass)}>
+							{state.description && (
+								<div class={tw`flex gap-2 p-2 pr-3 whitespace-pre-line`}>
+									<Svg
+										src={Icon.info}
+										size={6}
+										class={tw`shrink-0 icon-p-accent-300 icon-s-gray-600 -mt-px`}
+									/>
+									{state.description}
+								</div>
+							)}
+							{state.error && (
+								<div class={tw`p-2 ${state.description && 'bg-gray-750 rounded-b'}`}>
+									<div
+										class={tw`flex gap-2 text-accent-300 theme-red whitespace-pre-line`}>
 										<Svg
-											src={Icon.info}
+											src={Icon.error}
 											size={6}
-											class={tw`shrink-0 icon-p-accent-300 icon-s-gray-600 -mt-px`}
+											class={tw`flex-shrink-0 icon-s-accent-400 icon-p-gray-900 -mt-px`}
 										/>
-										{state.description}
+										{state.error}
 									</div>
-								)}
-								{state.error && (
-									<div class={tw`p-2 ${state.description && 'bg-gray-750 rounded-b'}`}>
-										<div
-											class={tw`flex gap-2 text-accent-300 theme-red whitespace-pre-line`}>
-											<Svg
-												src={Icon.error}
-												size={6}
-												class={tw`flex-shrink-0 icon-s-accent-400 icon-p-gray-900 -mt-px`}
-											/>
-											{state.error}
-										</div>
-									</div>
-								)}
-							</div>
-						)}
-					</TransitionGroup>
-				</div>
+								</div>
+							)}
+						</div>
+					)}
+				</TransitionGroup>
 			</div>
-		</Portal>
+		</div>
 	);
 }

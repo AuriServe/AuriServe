@@ -118,11 +118,16 @@ export default function NumberInput(props: Props) {
 			},
 			{
 				condition: () => {
-					const decimalInd = textValue.current.indexOf('.');
-					const wholeEndInd = decimalInd === -1 ? textValue.current.length : decimalInd;
+					const decimalInd = textValue.current
+						.replace(new RegExp(`${separator}`, 'g'), '')
+						.indexOf('.');
+					const wholeEndInd =
+						decimalInd === -1
+							? textValue.current.replace(new RegExp(`${separator}`, 'g'), '').length
+							: decimalInd;
 					return wholeEndInd > maxWhole;
 				},
-				message: 'Must have at most ${maxWhole} digits.',
+				message: `Must have at most ${maxWhole} digits.`,
 				severity: 'change',
 			},
 			{
@@ -493,9 +498,10 @@ export default function NumberInput(props: Props) {
 			style={props.style}>
 			<span class={tw`sr-only`}>{props.prefix}</span>
 			<input
-				ref={bindRefs<HTMLInputElement>(
+				ref={bindRefs(
 					autofillRef,
-					(elem) => (refs.current.input = elem),
+					props.fieldRef,
+					(elem) => (refs.current.input = elem as HTMLInputElement),
 					(elem) => ctx.setFieldRef(path, elem)
 				)}
 				id={id}

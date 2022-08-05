@@ -1,9 +1,9 @@
-import { Fragment, h } from 'preact';
+import { h } from 'preact';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import Card from '../Card';
-import Tooltip from '../Tooltip';
+// import Tooltip from '../Tooltip';
 import TileLayout from '../TileLayout';
 
 import { tw } from '../../Twind';
@@ -11,6 +11,7 @@ import { getShortcuts } from '../../Shortcut';
 import { QUERY_INFO, useData } from '../../Graph';
 
 import * as Icon from '../../Icon';
+// import Tooltip from '../Tooltip';
 
 export default function MainPage() {
 	const location = useLocation();
@@ -18,8 +19,8 @@ export default function MainPage() {
 	const [{ info }] = useData(QUERY_INFO, []);
 
 	return (
-		<Fragment>
-			<div class={tw`text-center flex-(& col-reverse) my-12`}>
+		<div>
+			<div class={tw`text-center flex-(& col-reverse) mb-12 mt-20`}>
 				<h2 class={tw`text-(gray-(900 dark:100) 2xl) mt-1`}>{info?.name}</h2>
 				<h3
 					class={tw`text-(gray-(600 dark:300) xs) font-medium tracking-widest uppercase`}>
@@ -28,12 +29,15 @@ export default function MainPage() {
 			</div>
 
 			<TileLayout>
-				<TileLayout.Grid class={tw`mx-auto mb-6 mt-3 max-w-5xl`} gap={4} columns={3}>
+				<TileLayout.Grid
+					class={tw`mx-auto mb-6 mt-3 w-full max-w-5xl`}
+					gap={4}
+					columns={3}>
 					<TileLayout.Tile width={3} height={2}>
 						<div class={tw`flex-(& wrap) justify-center gap-4`}>
 							{[...getShortcuts().values()]
 								.reverse()
-								.slice(0, 6)
+								.slice(0, 3)
 								.map((s, i) => (
 									<Card
 										as='button'
@@ -70,24 +74,24 @@ export default function MainPage() {
 								))}
 						</div>
 					</TileLayout.Tile>
-					<TileLayout.Tile width={1} height={2}>
+					{/* <TileLayout.Tile width={1} height={2}>
 						<Card class={tw`h-full`}>
 							<Card.Body />
 						</Card>
 					</TileLayout.Tile>
-					<TileLayout.Tile width={2} height={4}>
-						<Card class={tw`h-full`}>
-							<Card.Body
-								class={tw`grid-(& rows-[repeat(auto-fit,3rem)] cols-[repeat(auto-fit,3rem)]) gap-1.5`}>
-								{Object.entries(Icon).map(([name, icon]) => (
-									<div key={name} class={tw`bg-gray-750 rounded w-12 h-12`}>
-										<Svg src={icon} size={6} class={tw`p-3`} />
-										<Tooltip offset={4} position='bottom' label={name} small />
-									</div>
-								))}
-							</Card.Body>
-						</Card>
-					</TileLayout.Tile>
+											<TileLayout.Tile width={2} height={4}>*/}
+					{/*<Card class={tw`h-full`}>
+						<Card.Body
+							class={tw`grid-(& rows-[repeat(auto-fit,3rem)] cols-[repeat(auto-fit,3rem)]) gap-1.5`}>
+							{Object.entries(Icon).map(([name, icon]) => (
+								<div key={name} class={tw`bg-gray-750 rounded w-12 h-12`}>
+									<Svg src={icon} size={6} class={tw`p-3`} />
+									<Tooltip offset={4} position='bottom' label={name} small />
+								</div>
+							))}
+						</Card.Body>
+					</Card>*/}
+					{/*</TileLayout.Tile>
 					<TileLayout.Tile width={1} height={2}>
 						<Card class={tw`h-full`} />
 					</TileLayout.Tile>
@@ -105,9 +109,9 @@ export default function MainPage() {
 						<Card class={tw`h-full`}>
 							<Tooltip position='right'>Hello</Tooltip>
 						</Card>
-					</TileLayout.Tile>
+					</TileLayout.Tile> */}
 				</TileLayout.Grid>
 			</TileLayout>
-		</Fragment>
+		</div>
 	);
 }

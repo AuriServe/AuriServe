@@ -44,7 +44,7 @@ as.routes = {
 		}
 
 		const routeRes = await as.routes.root.req(as.routes.createReq(req));
-		if (routeRes === null) {
+		if (routeRes == null) {
 			next();
 			return;
 		}
@@ -65,7 +65,7 @@ as.routes = {
 				errorMessage,
 			});
 
-			if (routeRes === null) res.sendStatus(404);
+			if (routeRes == null) res.sendStatus(404);
 			else res.send(routeRes);
 		};
 	},

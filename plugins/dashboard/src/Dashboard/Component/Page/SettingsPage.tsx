@@ -1,17 +1,26 @@
 import { h } from 'preact';
 // import { memo } from 'preact/compat';
 // import { useEffect, useRef } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
 import { NavLink as Link } from 'react-router-dom';
 
 import Svg from '../Svg';
+import { SavePrompt } from '../SavePrompt';
+import { getSettings, SettingsEvent } from '../../Settings';
 
 import { tw } from '../../Twind';
-import { getSettings } from '../../Settings';
+import EventEmitter from '../../EventEmitter';
 import { QUERY_SELF_USER, useData } from '../../Graph';
-import { useMemo } from 'preact/hooks';
 
 export default function SettingsPage() {
 	const [{ user }] = useData(QUERY_SELF_USER, []);
+	const [dirty, setDirty] = useState<boolean>(false);
+
+	const [dirtySet, event] = useMemo(() => {
+		const dirty = new Set();
+		const emitter = new EventEmitter<SettingsEvent>();
+		return [dirty, emitter];
+	}, []);
 
 	const settings = useMemo(() => {
 		if (!user) return null;
@@ -27,6 +36,16 @@ export default function SettingsPage() {
 	}, [...(user?.permissions ?? [])]);
 
 	if (!settings) return null;
+
+	const handleSetDirty = (identifier: string, dirty: boolean) => {
+		if (dirty) dirtySet.add(identifier);
+		else dirtySet.delete(identifier);
+		setDirty(dirtySet.size > 0);
+	};
+
+	const handleUndo = () => {
+		event.emit('undo');
+	};
 	// const location = useLocation();
 	// const navigate = useNavigate();
 
@@ -129,9 +148,21 @@ export default function SettingsPage() {
 			</div>
 			<div class={tw`w-full max-w-4xl p-6 pb-16 space-y-12`}>
 				{[...settings.values()].map(({ identifier, component: Component }) => (
-					<Component key={identifier} />
+					<Component
+						key={identifier}
+						event={event}
+						setDirty={(dirty) => handleSetDirty(identifier, dirty)}
+					/>
 				))}
 				<div class='h-48' />
+				<SavePrompt
+					dirty={dirty}
+					saving={false}
+					onSave={() => {
+						/** */
+					}}
+					onUndo={handleUndo}
+				/>
 			</div>
 			<div class={tw`w-48 flex-shrink hidden 2xl:block`} />
 		</div>

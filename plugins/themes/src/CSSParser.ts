@@ -1,4 +1,4 @@
-import { traverse, convertColor, Color } from 'common';
+import { traversePath, convertColor, Color } from 'common';
 
 function colorToFormat(color: Color, format: string): string {
 	let formattedColor;
@@ -45,7 +45,7 @@ directives.push([
 
 		const format = (rawFormat ?? 'hex') as 'rgb' | 'hsv' | 'hex';
 
-		const colors = traverse(ctx.theme, themePath) as { [key: number]: Color };
+		const colors = traversePath(ctx.theme, themePath) as { [key: number]: Color };
 		return Object.entries(colors)
 			.map(([weight, color]) => `${prop}-${weight}: ${colorToFormat(color, format)};`)
 			.join('\n');
@@ -56,13 +56,13 @@ directives.push([
 	/\/\*\s*@theme(?:\(([a-z-.,\s]+)*\))*\s*\*\//gim,
 	function theme(ctx, _, strArgs) {
 		const [themePath, format] = strArgs
-			.split(',')
-			.filter(Boolean)
-			.map((arg: string) => arg.trim());
+		.split(',')
+		.filter(Boolean)
+		.map((arg: string) => arg.trim());
 
 		let value;
 		try {
-			value = traverse(ctx.theme, themePath);
+			value = traversePath(ctx.theme, themePath);
 		} catch (e) {
 			console.log(`Couldn't find theme value '${themePath}'`);
 			return 'INVALID_THEME_VALUE';
@@ -99,7 +99,7 @@ directives.push([
 						const [path, wanted] = arg.split(/(?:==|!=)/g);
 						const eq = arg.includes('==');
 						try {
-							const val = traverse(ctx.theme, path);
+							const val = traversePath(ctx.theme, path);
 							if (eq) return val === wanted;
 							return val !== wanted;
 						} catch (e) {
@@ -119,7 +119,9 @@ directives.push([
 export default function parseCSS(css: string, theme: any) {
 	directives.forEach(
 		([regex, replacer]) =>
-			(css = css.replace(regex, (...match) => replacer({ theme }, ...match)))
+			(css = css.replace(regex, (...match) => {
+				return replacer({ theme }, ...match)
+			}))
 	);
 	return css;
 }

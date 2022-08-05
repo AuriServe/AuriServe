@@ -72,6 +72,10 @@ export default interface API {
 
 	userIDFromToken(token: Token): Promise<string>;
 
+	createPasswordResetToken(identifier: string): Promise<string>;
+
+	resetPassword(token: string, password: string): Promise<Token>;
+
 	listUsers(): User[];
 	getUser(token: string): User;
 	getUserPermissions(token: string): Set<string>;

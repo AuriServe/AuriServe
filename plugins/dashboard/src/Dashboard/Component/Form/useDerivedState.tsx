@@ -96,7 +96,7 @@ export default function useDerivedState<T>(
 				rerender();
 			}
 		});
-	}, [path, ctx, value, rerender]);
+	}, [path, ctx.event, ctx.value, value, rerender]);
 
 	const onFocus = (evt: any) => {
 		props.onFocus?.(evt.target);

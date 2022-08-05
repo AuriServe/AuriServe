@@ -1,7 +1,14 @@
 import { assert } from 'common';
 import { FunctionalComponent } from 'preact';
 
+import EventEmitter from './EventEmitter';
+
 export const settings: Map<string, Settings> = new Map();
+
+export interface SettingsEvent {
+	save: () => void;
+	undo: () => void;
+}
 
 export interface Settings {
 	identifier: string;
@@ -9,7 +16,10 @@ export interface Settings {
 	path: string;
 	icon: string;
 	permissions?: string[];
-	component: FunctionalComponent<any>;
+	component: FunctionalComponent<{
+		event: EventEmitter<SettingsEvent>;
+		setDirty: (dirty: boolean) => void;
+	}>;
 }
 
 export function registerSettings(s: Settings) {

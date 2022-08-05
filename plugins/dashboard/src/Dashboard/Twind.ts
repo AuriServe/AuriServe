@@ -255,6 +255,10 @@ const config = defineConfig({
 				min: 'min-content',
 				max: 'max-content',
 			},
+			minHeight: {
+				12: '3rem',
+				13: '3.25rem'
+			},
 			maxHeight: {
 				128: '32rem',
 			},

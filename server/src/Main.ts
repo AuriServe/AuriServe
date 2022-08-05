@@ -18,7 +18,7 @@ import connect, { Database } from './SQLite';
 import PluginManager from './plugin/PluginManager';
 
 const DEFAULT_CONF_PATH = 'site-data';
-const DEFAULT_CONF_FILE = 'windmill.yaml';
+const DEFAULT_CONF_FILE = 'config.yaml';
 
 export interface ServerConfig {
 	port: number;

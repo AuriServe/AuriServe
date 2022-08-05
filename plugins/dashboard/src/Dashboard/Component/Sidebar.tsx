@@ -8,6 +8,7 @@ import { UnstyledButton } from './Button';
 
 import { tw } from '../Twind';
 import * as icon from '../Icon';
+import { Button } from '../Main';
 
 interface SidebarLinkProps {
 	label: string;
@@ -46,14 +47,16 @@ export default function Sidebar({ shortcuts }: Props) {
 		<aside
 			class={tw`fixed z-30 w-14 h-full inset-0 icon-(p-accent-300 s-accent-100) bg-accent-600`}>
 			<nav class={tw`flex-(& col) h-full`}>
-				<Svg
-					src={icon.auriserve}
-					size={10}
-					role='heading'
-					aria-level='1'
-					aria-label='AuriServe'
-					class={tw`m-2 animate-rocket icon-p-accent-100 icon-s-accent-300`}
-				/>
+				<Button.Unstyled to='/'>
+					<Svg
+						src={icon.auriserve}
+						size={10}
+						role='heading'
+						aria-level='1'
+						aria-label='AuriServe'
+						class={tw`m-2 animate-rocket icon-p-accent-100 icon-s-accent-300`}
+					/>
+				</Button.Unstyled>
 
 				<div class={tw`w-3/5 h-1 my-2 mx-auto rounded bg-accent-400`} />
 

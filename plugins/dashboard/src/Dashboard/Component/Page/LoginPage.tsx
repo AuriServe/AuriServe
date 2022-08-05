@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function LoginPage({ onLogin }: Props) {
-	const userInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+	const userInputRef = useRef<HTMLElement | null>(null);
 
 	const [state, setState] = useState<'input' | 'pending' | 'auth'>('input');
 	const [, setWarning] = useState<string>('');
@@ -53,7 +53,9 @@ export default function LoginPage({ onLogin }: Props) {
 			assert(typeof err === 'string', 'Error message must be a string.');
 			setState('input');
 			setWarning(err);
-			window.requestAnimationFrame(() => userInputRef.current!.select());
+			window.requestAnimationFrame(() =>
+				(userInputRef.current! as HTMLInputElement).select()
+			);
 		}
 	};
 
@@ -101,6 +103,7 @@ export default function LoginPage({ onLogin }: Props) {
 								initialValue={{ identity: '', password: '' }}
 								onSubmit={handleSubmit}>
 								<Field.Text
+									fieldRef={userInputRef}
 									path='identity'
 									label='Username or Email'
 									description='Please enter your username or a linked email address.'

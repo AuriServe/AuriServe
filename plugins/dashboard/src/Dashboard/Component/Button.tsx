@@ -106,7 +106,7 @@ const BaseButton = forwardRef<HTMLElement, Props>(function BaseButton(props, ref
 			{props.icon && !props.iconRight && <Svg src={props.icon} size={6} />}
 			{props.label && (
 				<span
-					class={tw`text-xs mt-px -mb-px ${props.iconOnly && 'sr-only'}`}
+					class={tw`text-xs whitespace-pre mt-px -mb-px ${props.iconOnly && 'sr-only'}`}
 					style={
 						props.icon
 							? {

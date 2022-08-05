@@ -60,6 +60,9 @@ export interface Props<T> {
 	/** Whether or not fields should be disabled. */
 	disabled?: boolean;
 
+	/** Don't show floating description. */
+	noDescription?: boolean;
+
 	hooks?: MutableRef<FormHooks<T>>;
 	onChange?: (value: DeepPartial<T>) => void;
 	onSubmit?: (value: T) => void;
@@ -118,7 +121,9 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		) as DeepPartial<ValueType>
 	);
 
-	const { onChange: propsOnChange } = props;
+	const propsOnChange = useRef<((value: DeepPartial<ValueType>) => void) | null>();
+	propsOnChange.current = props.onChange;
+
 	const event = useMemo(() => {
 		const event = new EventEmitter<EventType>();
 		event.bind('change', (path, newValue) => {
@@ -129,7 +134,7 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 			const container = traversePath(newData, buildPath(...pathArr));
 			container[key] = newValue;
 			value.current = newData;
-			propsOnChange?.(newData);
+			propsOnChange.current?.(newData);
 		});
 
 		event.bind('validity', (path, error) => {
@@ -137,7 +142,7 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		});
 
 		return event;
-	}, [propsOnChange]);
+	}, []);
 
 	const setValue = useCallback(
 		(newValue: DeepPartial<ValueType>) => {
@@ -145,16 +150,20 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 				const dirtyPaths = findPathsToRefresh(value.current as any, newValue as any);
 				value.current = newValue;
 				event.emit('refresh', dirtyPaths);
-				propsOnChange?.(newValue);
+				propsOnChange.current?.(newValue);
 			}
 		},
-		[event, propsOnChange]
+		[event]
 	);
 
 	const setFieldRef = useCallback(
 		<T extends HTMLElement>(path: string, elem: T | null) => {
-			if (!meta.current[path]) meta.current[path] = { elem, error: null };
-			else meta.current[path]!.elem = elem;
+			if (elem) {
+				if (!meta.current[path]) meta.current[path] = { elem: null, error: null };
+				meta.current[path]!.elem = elem;
+			} else {
+				delete meta.current[path];
+			}
 		},
 		[]
 	);
@@ -173,22 +182,20 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 		e?.stopPropagation();
 
 		event.emit('submit');
+		// console.log("we're gonna submit", value.current);
 
 		let foundError = false;
-		for (const field of Object.values(meta.current)) {
+		for (const [path, field] of Object.entries(meta.current)) {
 			if (field?.error) {
+				console.warn('error on field', path);
 				field.elem?.focus();
 				foundError = true;
 				break;
 			}
 		}
 
-		if (foundError) {
-			console.warn('couldn\'t submit due to error');
-			return;
-		}
-
-		props.onSubmit?.({ ...value.current } as ValueType);
+		if (foundError) return;
+		props.onSubmit?.(JSON.parse(JSON.stringify(value.current)));
 	};
 
 	if (props.hooks) props.hooks.current = { setValue, submit: handleSubmit };
@@ -203,7 +210,7 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 					tabIndex={-1}
 					disabled={props.disabled}
 				/>
-				<FloatingDescription position='right' />
+				{!props.noDescription && <FloatingDescription position='right' />}
 			</form>
 		</FormContext.Provider>
 	);

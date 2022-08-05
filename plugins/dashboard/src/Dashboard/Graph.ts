@@ -121,7 +121,7 @@ export async function executeQuery<T = any>(
 }
 
 /** Queries basic site info. */
-export const QUERY_INFO = `info { name, description, favicon, domain }`;
+export const QUERY_INFO = `info { name, description, domain }`;
 
 /** Queries all permissions. */
 export const QUERY_PERMISSIONS = `permissions { identifier, name, description, category, default }`;
@@ -213,5 +213,13 @@ export const MUTATE_PLUGINS = `
 export const MUTATE_PAGE = `
 	mutation UpdatePage($path: String!, $content: String!) {
 		page(path: $path, content: $content)
+	}
+`;
+
+/** Gets a password reset token. */
+// TODO: This should be a mutation but the GraphQL api doesn't support mutations.
+export const MUTATE_CREATE_PASSWORD_RESET_TOKEN = `
+	query CreatePasswordResetToken($identifier: String!) {
+		createPasswordResetToken(identifier: $identifier)
 	}
 `;
