@@ -14,7 +14,7 @@
 					{
 						"element": "base:columns",
 						"props": {
-							"columns": "100px:auto:1fr",
+							"columns": "300px:1fr",
 							"maxWidth": 1300,
 							"gap": 16
 						},
@@ -22,26 +22,18 @@
 							{
 								"element": "base:image",
 								"props": {
-									"imgClass": "no-corners",
-									"url": "/media/logo_black.svg"
-								}
-							},
-							{
-								"element": "base:text",
-								"props": {
-									"content": "<h1>MEGATECH<br>ENGINEERING</h1>"
+									"imgClass": "no-corners no-shadow",
+									"url": "/media/logo.svg"
 								}
 							},
 							{
 								"element": "base:navigation",
 								"props": {
 									"entries": [
-										{ "label": "Home", "to": "/" },
-										{ "label": "Design", "to": "/design" },
-										{ "label": "Fabrication", "to": "/fabrication" },
-										{ "label": "Industries", "to": "/industries" },
-										{ "label": "Equipment", "to": "/equipment" },
-										{ "label": "About Us", "to": "/about" }
+										{ "label": "Features", "to": "/" },
+										{ "label": "Demo", "to": "/design" },
+										{ "label": "Testimonials", "to": "/fabrication" },
+										{ "label": "Request a Quote", "to": "/industries" }
 									]
 								}
 							}

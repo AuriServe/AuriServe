@@ -6,7 +6,7 @@ import { h, FunctionalComponent } from 'preact';
  * Rehydration should be done on the client with the hydrate() function.
  */
 
-export default function hydrated<PS, PH = PS>(
+export default function hydrate<PS, PH = PS>(
 	identifier: string,
 	Component: FunctionalComponent<PS | PH>,
 	transformProps?: (props: PS) => PH

@@ -41,6 +41,84 @@
 	}
 }
 
+.base\:testimonial {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+
+	& > .testimonial-image {
+		width: 256px;
+		aspect-ratio: 1;
+		object-fit: cover;
+	}
+
+	& > .testimonial-content {
+		width: 100%;
+	}
+}
+
+.base\:carousel {
+	display: grid;
+	position: relative;
+
+	& > * {
+		width: 100%;
+	}
+
+	& > .button-arrow {
+		width: 48px;
+		height: 48px;
+		filter: brightness(50%);
+		position: absolute;
+		top: calc(50% - 24px);
+
+		background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpY29uLWNoZXZlcm9uLWxlZnQtY2lyY2xlIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4yMDMiIGNsYXNzPSJwcmltYXJ5Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEzLjcgMTUuM2ExIDEgMCAwIDEtMS40IDEuNGwtNC00YTEgMSAwIDAgMSAwLTEuNGw0LTRhMSAxIDAgMCAxIDEuNCAxLjRMMTAuNDIgMTJsMy4zIDMuM3oiIGNsYXNzPSJzZWNvbmRhcnkiLz48L3N2Zz4=");
+		background-size: cover;
+
+		&:first-of-type {
+			left: 0;
+		}
+
+		&:last-of-type {
+			right: 0;
+			transform: scaleX(-1);
+		}
+	}
+
+	& > .carousel-items {
+		position: relative;
+		display: grid;
+
+		& > .hydrated\:static > .carousel-item {
+			position: absolute;
+			top: 0;
+
+			&.transition-left {
+				opacity: 0;
+				transform: translateX(-12px);
+			}
+
+			&.transition-right {
+				opacity: 0;
+				transform: translateX(12px);
+			}
+		}
+	}
+
+	&.static > .carousel-items > .hydrated\:static {
+		& > .carousel-item:not(:first-child) {
+			display: none;
+		}
+	}
+
+	&:not(.static) > .carousel-items > .hydrated\:static {
+		& > .carousel-item:not(.active) {
+			display: none;
+		}
+	}
+}
+
 /* .ImageView
 	width: 100%
 	height: auto

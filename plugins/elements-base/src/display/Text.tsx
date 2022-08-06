@@ -10,7 +10,7 @@ interface Props {
 
 const identifier = 'base:text';
 
-function Text(props: Props) {
+export function Text(props: Props) {
 	return (
 		<div
 			style={props.style}

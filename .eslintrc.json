@@ -31,6 +31,7 @@
 
 		// General Rules
 
+		"no-debugger": 0,
 		"prefer-const": 1,
 		"constructor-super": 2,
 		"no-caller": 2,

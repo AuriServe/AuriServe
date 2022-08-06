@@ -1,8 +1,8 @@
 import Static from './Static';
-import hydrated from './Hydrated';
+import hydrate from './Hydrate';
 
 export default interface API {
-	hydrated: typeof hydrated;
+	hydrate: typeof hydrate;
 	Static: typeof Static;
 }
 

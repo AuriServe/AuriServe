@@ -20,15 +20,12 @@
 						"include": 2
 					},
 					{
-						"include": 1
-					},
-					{
 						"element": "base:section",
 						"children": [
 							{
 								"element": "base:columns",
 								"props": {
-									"columns": "1.8fr:(300px, 1fr)",
+									"columns": "1.5fr:max-content:420px",
 									"layoutChildren": "center",
 									"minWidth": 900,
 									"maxWidth": 1300,
@@ -44,13 +41,13 @@
 											{
 												"element": "base:text",
 												"props": {
-													"content": "<h2>Allow us to introduce ourselves.</h2><p>Megatech specializes in the design and fabrication of materials transport and handling systems, such as truck dumpers, screw conveyors, pneumatic conveyors, and more. Not only do we deliver time-tested, reliable equipment that we've designed and developed for over 40 years, but we put that expertise into designing to suit your needs, whether they be a small conveyor or an entire site.</p>"
+													"content": "<h2>Taxes can be scary.</h2><p>To the average person, the calculations that go into their municipal taxes can seem <strong>esoteric and downright unreadable</strong>, which can make it easy to feel anxious, frustrated, and upset.</p><p>The Tax Calculator solves that problem, so that your residents can see exactly where their money is going. Allow your residents to calculate their taxes in an official, easy-to-use manner, and <strong>build trust and connection</strong> between your city and your residents.</p>"
 												}
 											},
 											{
 												"element": "base:columns",
 												"props": {
-													"columns": "max-content:max-content:max-content",
+													"columns": "max-content:max-content",
 													"minWidth": 500,
 													"gap": 16
 												},
@@ -58,7 +55,15 @@
 													{
 														"element": "base:button",
 														"props": {
-															"label": "Browse Our Services",
+															"label": "Request a Quote",
+															"url": "/design"
+														}
+													},
+													{
+														"element": "base:button",
+														"props": {
+															"class": "ghost",
+															"label": "More Information",
 															"url": "/design"
 														}
 													}
@@ -67,12 +72,24 @@
 										]
 									},
 									{
-										"element": "base:image",
+										"element": "base:container"
+									},
+									{
+										"element": "base:container",
 										"props": {
-											"width": 500,
-											"lightbox": true,
-											"url": "/media/img_4.jpg"
-										}
+											"style": "height: 100%; position: relative; bottom: -96px;"
+										},
+										"children": [
+												{
+													"element": "base:image",
+													"props": {
+														"width": 420,
+														"class": "no-corners no-shadow",
+														"style": "position: absolute; width: 100%; bottom: 0;",
+														"url": "/media/calculator.jpg"
+													}
+												}
+										]
 									}
 								]
 							}
@@ -104,21 +121,13 @@
 												"element": "base:image",
 												"props": {
 													"class": "icon on-accent",
-													"url": "/media/icon_design.svg"
+													"url": "/media/icon_seamless.svg"
 												}
 											},
 											{
 												"element": "base:text",
 												"props": {
-													"content": "<h3>Design & Engineering</h3><p>Whether you have a problem to be solved or a design to be fleshed out, our sales and engineering teams have experience and expertise to complement your own.</p>"
-												}
-											},
-											{
-												"element": "base:button",
-												"props": {
-													"class": "BottomMarginSmall ghost",
-													"label": "See More",
-													"url": "/menu"
+													"content": "<h3>Seamless</h3><p>Whether on a 40-inch television or a mobile phone screen, the calculator seamlessly adapts to the available real-estate.</p>"
 												}
 											}
 										]
@@ -134,21 +143,13 @@
 												"element": "base:image",
 												"props": {
 													"class": "icon on-accent",
-													"url": "/media/icon_fabrication.svg"
+													"url": "/media/icon_dynamic.svg"
 												}
 											},
 											{
 												"element": "base:text",
 												"props": {
-													"content": "<h3>Fabrication</h3><p>From equipment designed to solve a particular problem, to fabrication from customer-supplied drawings, our team is here to meet your specific needs.</p>"
-												}
-											},
-											{
-												"element": "base:button",
-												"props": {
-													"class": "BottomMarginSmall ghost",
-													"label": "See More",
-													"url": "/menu"
+													"content": "<h3>Dynamic</h3><p>A powerful administration page lets you configure the rates & fees, regions, appearance, and more to flawlessly integrate with your municipality.</p>"
 												}
 											}
 										]
@@ -164,21 +165,13 @@
 												"element": "base:image",
 												"props": {
 													"class": "icon on-accent",
-													"url": "/media/icon_repair.svg"
+													"url": "/media/icon_secure.svg"
 												}
 											},
 											{
 												"element": "base:text",
 												"props": {
-													"content": "<h3>Repair</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>"
-												}
-											},
-											{
-												"element": "base:button",
-												"props": {
-													"class": "BottomMarginSmall ghost",
-													"label": "See More",
-													"url": "/menu"
+													"content": "<h3>Secure</h3><p>The calculator is built from the ground up with modern languages and frameworks, and your data is secured through powerful encryption standards.</p>"
 												}
 											}
 										]
@@ -201,7 +194,7 @@
 									{
 										"element": "base:text",
 										"props": {
-											"content": "<h3>You can count on us.</h3><p>We have decades of experience in project management, engineering, design development and steel fabrication, across a variety of industries.</p>"
+											"content": "<h3>Features</h3><p>Here's a quick overview of the features the Tax Calculator can offer your municipality.</p><p>Curious about a specific feature? Don't hesitate to reach out to us using our contact form below.</p>"
 										}
 									},
 									{
@@ -223,13 +216,13 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_repair.svg"
+															"url": "/media/icon_check_1.svg"
 														}
 													},
 													{
 														"element": "base:text",
 														"props": {
-															"content": "<h4>Environmental Services</h4><p>Including recycling plants and wastewater treatment plants</p>"
+															"content": "<h4>Customizable Rates & Fees</h4><p>Rates and Flat Fees can be added and removed as needed, and can even be categorized into groups.</p>"
 														}
 													}
 												]
@@ -247,13 +240,13 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_repair.svg"
+															"url": "/media/icon_check_3.svg"
 														}
 													},
 													{
 														"element": "base:text",
 														"props": {
-															"content": "<h4>Marine Industries</h4><p>With projects such as barge and ferry loading ramps as well as fender panels</p>"
+															"content": "<h4>Multiple Regions</h4><p>Each distinct tax area can have its own Region, which can each have their own Rates, Fees, and Conditions.</p>"
 														}
 													}
 												]
@@ -271,13 +264,13 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_repair.svg"
+															"url": "/media/icon_check_2.svg"
 														}
 													},
 													{
 														"element": "base:text",
 														"props": {
-															"content": "<h4>Pulp and Paper Facilities</h4><p>Requiring unique and reliable custom equipment for demanding materials</p>"
+															"content": "<h4>Conditional Rates & Fees</h4><p>Rates and Fees can be associated with toggle or dropdown conditions, and only get calculated if those conditions are met.</p>"
 														}
 													}
 												]
@@ -295,13 +288,13 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_repair.svg"
+															"url": "/media/icon_check_5.svg"
 														}
 													},
 													{
 														"element": "base:text",
 														"props": {
-															"content": "<h4>Mining and Mineral Processing</h4><p>Dealing with coal, potash, zinc, cadmium, sulfur, cement, etc.</p>"
+															"content": "<h4>Comparison & Insights</h4><p>Taxes can be compared between current and previous years, and the calculator provides insights to help understand the data.</p>"
 														}
 													}
 												]
@@ -319,13 +312,13 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_repair.svg"
+															"url": "/media/icon_check_3.svg"
 														}
 													},
 													{
 														"element": "base:text",
 														"props": {
-															"content": "<h4>Bulk Handling</h4><p>Working with others to develop storage silos, conveyors, dumpers, and shiploaders</p>"
+															"content": "<h4>Themable</h4><p>Accent color, background style, and more can be customized, allowing the calculator to match your city's identity.</p>"
 														}
 													}
 												]
@@ -343,16 +336,92 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_repair.svg"
+															"url": "/media/icon_check_6.svg"
 														}
 													},
 													{
 														"element": "base:text",
 														"props": {
-															"content": "<h4>Infrastructure</h4><p>from bridge floorbeams and columns, to park and boardwalk fixtures of all sizes</p>"
+															"content": "<h4>Embeddable</h4><p>Depending on your needs, the calculator can be embedded right into your website, or linked to as a standalone page.</p>"
 														}
 													}
 												]
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "accent callout pad-small"
+						},
+						"children": [
+							{
+
+								"element": "base:columns",
+								"props": {
+									"columns": "1fr",
+									"maxWidth": 1300
+								},
+								"children": [
+									{
+										"element": "base:html",
+										"props": {
+											"html": "<iframe src='/calculator/demo' style='width: 100%; height: 800px;'></iframe>"
+										}
+									}
+								]
+							}
+						]
+					}, {
+						"element": "base:section",
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"columns": "1fr",
+									"layoutChildren": "center",
+									"minWidth": 900,
+									"maxWidth": 1300
+								},
+								"children": [
+									{
+										"element": "base:carousel",
+										"props": {
+											"interval": 5000,
+											"speed": 350,
+											"pagination": "arrows"
+										},
+										"children": [
+											{
+												"element": "base:testimonial",
+												"props": {
+													"image": "/media/tim.png",
+													"name": "Tim Wall",
+													"title": "Owner, Avid Fitness",
+													"content": "Auri Collings' work was prompt and very responsive. She listened as I made requests for changes on my website, a truly remarkable trait. <strong>My website performs perfectly, without any issues.</strong> I definitely recommend her services to others, and would use Aurailus Design again should the opportunity arise."
+												}
+											},
+											{
+												"element": "base:testimonial",
+												"props": {
+													"image": "/media/ed.png",
+													"name": "Ed Oldfield",
+													"title": "Raku Artist, Ed's Raku",
+													"content": "I have known Auri Collings for a number of years and her passion for technology, programming, and design is second to none. The creativity and quality of her work is at the level that I would like my work to be viewed. Auri listened to my vision for the website, offered suggestions, completed the work in a timely manner, and created a user friendly website which I am extremely happy with. Auri has my unequivocal recommendation for anyone looking for quality website design. <strong>I think she is the best there is in the business.</strong>"
+												}
+											},
+											{
+												"element": "base:testimonial",
+												"props": {
+													"image": "/media/shannon.png",
+													"name": "Shannon Miller",
+													"title": "RHIP, Powell River Hearing",
+													"content": "Auri Collings created an informative and visually appealing website for Powell River Hearing. She guided me through the development stages in a very professional and knowledgeable manner. The website is easy to read and understand, and her expertise in web design helped to bring attention to the key messages that I want my viewers to focus on. <strong>She completed updates and revisions promptly to ensure that she was providing me with an up to date website that really targets the population I serve.</strong> I highly recommend Aurailus Design for your next website."
+												}
 											}
 										]
 									}

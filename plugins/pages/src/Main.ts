@@ -74,9 +74,7 @@ as.pages = {
 
 		for (const section of Object.values(page.content.sections)) resolveIncludes(section);
 
-		// console.log('be4');
 		log.perfStart(perfName);
-		// console.log('afr');
 
 		const [injectHead, injectBodyStart, injectBodyEnd, populatedLayout] =
 			await Promise.all([
@@ -174,6 +172,24 @@ as.pages.registerLayout(
 
 	as.routes.setRoot(new PageRoute('/', id as number));
 })();
+
+
+let clientPlugins: string[] = [];
+
+// TODO: An event should exist for all plugins loaded.
+setTimeout(async () => {
+	const paths = [ ...as.core.plugins.values()].filter(plugin => plugin.entry.client)
+		.map(plugin => `${plugin.identifier}/${plugin.entry.client}`);
+
+	log.info(`Found client plugins: ${paths.map(path => `'${path}'`).join(', ')}`);
+
+	clientPlugins = await Promise.all(paths.map(pluginPath => fs.readFile(path.join(__dirname, '../../', pluginPath), 'utf8')));
+}, 500);
+
+
+as.pages.addInjector('head', () => {
+	return clientPlugins.map(plugin => `<script>${plugin}</script>`).join('\n');
+});
 
 as.core.once('cleanup', () => as.unexport('pages'));
 

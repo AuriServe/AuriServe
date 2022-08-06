@@ -3,7 +3,7 @@
 		"element": "base:section",
 		"props": {
 			"class": "inverted",
-			"style": "padding: 9rem 4rem; background: url(/media/banner.jpg) no-repeat center center; background-size: cover;"
+			"style": "padding: 9rem 4rem; background: url(/media/background-large.svg) no-repeat center center; background-size: cover;"
 		},
 		"children": [
 			{

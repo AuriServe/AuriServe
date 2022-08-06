@@ -2,13 +2,13 @@ import path from 'path';
 import as from 'auriserve';
 
 import Static from './Static';
-import hydrated from './Hydrated';
+import hydrate from './Hydrate';
 
 import './API';
 import './Style.pcss';
 
 as.hydrated = {
-	hydrated,
+	hydrate,
 	Static,
 };
 

@@ -9,4 +9,6 @@ depends:
 - hydrated ^0.0.1
 - preact ^1
 
-entry: build/server.js
+entry:
+  server: build/server.js
+  client: build/client.js
