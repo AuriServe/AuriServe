@@ -15,7 +15,7 @@
 						"element": "base:columns",
 						"props": {
 							"columns": "300px:1fr",
-							"maxWidth": 1300,
+							"maxWidth": 1100,
 							"gap": 16
 						},
 						"children": [
@@ -33,7 +33,7 @@
 										{ "label": "Features", "to": "/" },
 										{ "label": "Demo", "to": "/design" },
 										{ "label": "Testimonials", "to": "/fabrication" },
-										{ "label": "Request a Quote", "to": "/industries" }
+										{ "label": "Get in Contact", "to": "/industries" }
 									]
 								}
 							}

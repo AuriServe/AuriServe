@@ -25,11 +25,13 @@ window.__AURISERVE.hydrated.Static = Static;
 // @ts-ignore
 window.__AURISERVE.hydrated.hydrate = function(identifier: string, element: FunctionalComponent) {
 	window.setTimeout(() => {
+		console.log(identifier);
 		document.querySelectorAll(`[data-element="${identifier}"]`).forEach(elem => {
+			console.log(elem);
 			const script = elem.querySelector(':scope > script') as HTMLScriptElement;
 			const props = JSON.parse(script.innerText);
 			script.remove();
 			preactHydrate(h(element, props), elem);
-		}, 50);
+		}, 200);
 	});
 }

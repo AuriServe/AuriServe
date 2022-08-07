@@ -38,24 +38,30 @@ function RawCarousel(props: Props) {
 		container.children[0].classList.add('active');
 		items.style.height = `${container.children[0].clientHeight}px`;
 
+		let cycling = true;
 		let interval: number;
 
-		setTimeout(() => {
-			const observer = new IntersectionObserver((entries) => {
-				if (!entries[0].isIntersecting) return;
+		const observer = new IntersectionObserver((entries) => {
+			const intersecting = entries[0].isIntersecting;
+			if (intersecting && !interval && cycling) {
 				interval = setInterval(() => {
 					move(1, 'right', false);
 				}, props.interval) as any as number;
-				observer.disconnect();
-			}, { threshold: 0.5 });
-
-			observer.observe(elem);
-		}, 100);
-
-		function move(offset: number, direction: 'left' | 'right', user: boolean) {
-			if (user && interval) {
+			}
+			else if (!intersecting && interval && cycling) {
 				clearInterval(interval);
 				interval = 0;
+			}
+		}, { threshold: 0.5 });
+
+		observer.observe(elem);
+
+		function move(offset: number, direction: 'left' | 'right', user: boolean) {
+			if (user && cycling) {
+				clearInterval(interval);
+				interval = 0;
+				cycling = false;
+				observer.disconnect();
 			}
 
 			const prevElem = container.children[active] as HTMLElement;
@@ -89,13 +95,13 @@ function RawCarousel(props: Props) {
 			}, props.speed);
 		}
 
-		const buttons = [...elem.querySelectorAll('.button-arrow')] as HTMLElement[];
+		const buttons = Array.prototype.slice.call(elem.querySelectorAll('.button-arrow') as any) as HTMLElement[];
 
 		if (buttons.length) {
 			buttons[0].addEventListener('click', () => move(-1, 'left', true));
 			buttons[1].addEventListener('click', () => move(1, 'right', true));
 		}
-	}, []);
+	}, [ props.interval, props.speed ]);
 
 	return (
 		<div

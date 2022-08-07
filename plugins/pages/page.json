@@ -28,7 +28,7 @@
 									"columns": "1.5fr:max-content:420px",
 									"layoutChildren": "center",
 									"minWidth": 900,
-									"maxWidth": 1300,
+									"maxWidth": 1100,
 									"gap": 64
 								},
 								"children": [
@@ -55,7 +55,7 @@
 													{
 														"element": "base:button",
 														"props": {
-															"label": "Request a Quote",
+															"label": "Get in Contact",
 															"url": "/design"
 														}
 													},
@@ -106,7 +106,7 @@
 								"props": {
 									"columns": "1fr:1fr:1fr",
 									"minWidth": 900,
-									"maxWidth": 1300,
+									"maxWidth": 1100,
 									"gap": 64
 								},
 								"children": [
@@ -186,9 +186,9 @@
 							{
 								"element": "base:columns",
 								"props": {
-									"columns": "1fr:2fr",
-									"maxWidth": 1300,
-									"gap": 32
+									"columns": "0.9fr:2fr",
+									"maxWidth": 1100,
+									"gap": 64
 								},
 								"children": [
 									{
@@ -364,13 +364,13 @@
 								"element": "base:columns",
 								"props": {
 									"columns": "1fr",
-									"maxWidth": 1300
+									"maxWidth": 1100
 								},
 								"children": [
 									{
 										"element": "base:html",
 										"props": {
-											"html": "<iframe src='/calculator/demo' style='width: 100%; height: 800px;'></iframe>"
+											"html": "<iframe id='taxcalc_frame' src='/calculator/demo' scrolling='no' style='width: 100%; transition: height 100ms;'></iframe><script>window.addEventListener('message', (message) => { if (typeof message.data != 'number') return; document.getElementById('taxcalc_frame').style.height = `${message.data}px`; });</script>"
 										}
 									}
 								]
@@ -384,14 +384,15 @@
 								"props": {
 									"columns": "1fr",
 									"layoutChildren": "center",
+									"gap": 96,
 									"minWidth": 900,
-									"maxWidth": 1300
+									"maxWidth": 1100
 								},
 								"children": [
 									{
 										"element": "base:carousel",
 										"props": {
-											"interval": 5000,
+											"interval": 10000,
 											"speed": 350,
 											"pagination": "arrows"
 										},
@@ -424,6 +425,61 @@
 												}
 											}
 										]
+									},
+									{
+										"element": "base:columns",
+										"props": {
+											"columns": "1fr:1fr:1fr",
+											"gap": "32",
+											"layoutChildren": "center",
+											"maxWidth": 996
+										},
+										"children": [
+											{
+												"element": "base:image",
+												"props": {
+													"url": "/media/logo_powell_river.png",
+													"alt": "City of Powell River",
+													"aspect": 2
+												}
+											},
+											{
+												"element": "base:image",
+												"props": {
+													"url": "/media/logo_ladysmith.png",
+													"alt": "Town of Ladysmith",
+													"aspect": 2
+												}
+											},
+											{
+												"element": "base:image",
+												"props": {
+													"url": "/media/logo_qathet.png",
+													"alt": "qathet Regional District",
+													"aspect": 2
+												}
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": "accent callout"
+						},
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"maxWidth": 700,
+									"gap": 32
+								},
+								"children": [
+									{
+										"element": "tax_calculator:quote_generator"
 									}
 								]
 							}
@@ -438,7 +494,33 @@
 							{
 								"element": "base:columns",
 								"props": {
-									"maxWidth": 1300,
+									"maxWidth": 1100,
+									"gap": 32
+								},
+								"children": [
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h3>Get in Contact</h3>"
+										}
+									},
+									{
+										"element": "tax_calculator:contact_form"
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"class": ""
+						},
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"maxWidth": 1100,
 									"gap": 32
 								},
 								"children": [
@@ -446,7 +528,7 @@
 										"element": "base:columns",
 										"props": {
 											"columns": "1.5fr:1fr:1fr",
-											"maxWidth": 1300,
+											"maxWidth": 1100,
 											"gap": 32
 										},
 										"children": [
