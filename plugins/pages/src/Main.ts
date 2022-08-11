@@ -97,6 +97,7 @@ as.pages = {
 				<meta charset='utf-8'/>
 				<meta name='description' content='${escapeHtml(page.metadata.description)}'>
 				<meta name='viewport' content='width=device-width, initial-scale=1'>
+				${page.metadata.index === false ? `<meta name='robots' content='noindex'>` : ''}
 				<title>${escapeHtml(page.metadata.title)}</title>
 				${injectHead}
 			</head>
@@ -146,35 +147,26 @@ as.pages.registerLayout(
 );
 
 (async () => {
-	const page = await fs.readFile(path.join(__dirname, '..', 'page.json'), 'utf8');
-	const include = await fs.readFile(path.join(__dirname, '..', 'header.json'), 'utf8');
-	const include2 = await fs.readFile(path.join(__dirname, '..', 'navigation.json'), 'utf8');
+	const home = await fs.readFile(path.join(__dirname, '..', 'home.json'), 'utf8');
+	const unsubscribe = await fs.readFile(path.join(__dirname, '..', 'unsubscribe.json'), 'utf8');
 
 	db.prepare('DELETE FROM pages').run();
 	db.prepare('DELETE FROM includes').run();
 
-	const { lastInsertRowid: id } = db.prepare<{ content: string; includes: string }>(
-		'INSERT INTO pages (content, includes) VALUES (@content, @includes)'
-	).run({
-		content: page,
-		includes: JSON.stringify([ 1, 2 ]),
-	});
+	const { lastInsertRowid: homeID } = db.prepare<string>(
+		'INSERT INTO pages (content, includes) VALUES (?, \'[]\')'
+	).run(home);
 
-	db.prepare('INSERT INTO includes (content, includes) VALUES (@content, @includes)').run({
-		content: include,
-		includes: JSON.stringify([]),
-	});
+	const { lastInsertRowid: unsubscribeID } = db.prepare<string>(
+		'INSERT INTO pages (content, includes) VALUES (?, \'[]\')'
+	).run(unsubscribe);
 
-	db.prepare('INSERT INTO includes (content, includes) VALUES (@content, @includes)').run({
-		content: include2,
-		includes: JSON.stringify([]),
-	});
-
-	as.routes.setRoot(new PageRoute('/', id as number));
+	const root = new PageRoute('/', homeID as number);
+	root.add('unsubscribe', new PageRoute('/unsubscribe', unsubscribeID as number));
+	as.routes.setRoot(root);
 })();
 
-
-let clientPlugins: string[] = [];
+const buildPath = path.join(__dirname, '../../../server/site-data/plugins/client.js');
 
 // TODO: An event should exist for all plugins loaded.
 setTimeout(async () => {
@@ -183,13 +175,16 @@ setTimeout(async () => {
 
 	log.info(`Found client plugins: ${paths.map(path => `'${path}'`).join(', ')}`);
 
-	clientPlugins = await Promise.all(paths.map(pluginPath => fs.readFile(path.join(__dirname, '../../', pluginPath), 'utf8')));
+	await fs.writeFile(buildPath,
+		(await Promise.all(paths.map(pluginPath => fs.readFile(path.join(__dirname, '../../', pluginPath), 'utf8'))))
+			.join('\n'));
 }, 500);
 
-
-as.pages.addInjector('head', () => {
-	return clientPlugins.map(plugin => `<script>${plugin}</script>`).join('\n');
+as.core.router.get('/client.js', async (_, res) => {
+	res.send(await fs.readFile(buildPath, 'utf8'));
 });
+
+as.pages.addInjector('head', () => `<script defer src='/client.js'></script>`);
 
 as.core.once('cleanup', () => as.unexport('pages'));
 

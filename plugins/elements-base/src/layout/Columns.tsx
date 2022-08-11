@@ -9,6 +9,7 @@ export type Props = {
 	columns?: string;
 	reverseVertical?: boolean;
 	layoutChildren?: 'start' | 'end' | 'stretch' | 'center';
+	justifyChildren?: 'start' | 'end' | 'center' | 'space-between' | 'space-around';
 
 	style?: any;
 	class?: string;
@@ -62,7 +63,7 @@ export function Columns(props: Props) {
 					dangerouslySetInnerHTML={{
 						__html: `@media(max-width:${toCSSUnit(
 							props.minWidth
-						)}){.base\\:columns.${identifier}>.base\\:columns-columns{display:flex}}`,
+						)}){.base\\:columns.${identifier}>.inner{display:flex}}`,
 					}}
 				/>
 			)}
@@ -78,6 +79,7 @@ export function Columns(props: Props) {
 							: props.layoutChildren === 'end'
 							? 'flex-end'
 							: props.layoutChildren ?? 'stretch',
+					justifyContent: props.justifyChildren
 				}}>
 				{props.children}
 			</div>

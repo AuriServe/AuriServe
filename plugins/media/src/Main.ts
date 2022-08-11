@@ -4,7 +4,7 @@ import { assert } from 'common';
 import { Request, Response } from 'auriserve/router';
 import { promises as fs, constants as fsc } from 'fs';
 
-const { log, router } = as.core;
+const { router } = as.core;
 
 router.get('/media/:path', async (req: Request, res: Response) => {
 	const file = req.params.path;

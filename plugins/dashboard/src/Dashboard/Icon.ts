@@ -30,6 +30,7 @@ export { default as globe } from '@res/icon/globe.svg';
 export { default as heart } from '@res/icon/heart.svg';
 export { default as home } from '@res/icon/home.svg';
 export { default as image } from '@res/icon/image.svg';
+export { default as inbox } from '@res/icon/inbox.svg';
 export { default as info } from '@res/icon/info.svg';
 export { default as insights } from '@res/icon/insights.svg';
 export { default as launch } from '@res/icon/launch.svg';

@@ -1,6 +1,7 @@
 export interface Metadata {
 	title?: string;
 	description?: string;
+	index?: boolean;
 }
 
 export interface Page {

@@ -1,7 +1,7 @@
 {
 	"metadata": {
-		"title": "Contact",
-		"description": "hey"
+		"title": "Aurailus Design Tax Calculator",
+		"description": "A modern, responsive residential tax calculator for the residents of your city."
 	},
 	"content": {
 		"layout": "default",
@@ -17,78 +17,43 @@
 				},
 				"children": [
 					{
-						"include": 2
-					},
-					{
-						"element": "base:section",
+						"element": "base:float",
+						"props": {
+							"threshold": 40
+						},
 						"children": [
 							{
-								"element": "base:columns",
+								"element": "base:section",
 								"props": {
-									"columns": "1.5fr:max-content:420px",
-									"layoutChildren": "center",
-									"minWidth": 900,
-									"maxWidth": 1100,
-									"gap": 64
+									"class": "NavSection"
 								},
 								"children": [
 									{
-										"element": "base:stack",
+										"element": "base:columns",
 										"props": {
-											"gap": 8
+											"columns": "200px:1fr",
+											"maxWidth": 1100,
+											"gap": 16
 										},
 										"children": [
 											{
-												"element": "base:text",
+												"element": "base:image",
 												"props": {
-													"content": "<h2>Taxes can be scary.</h2><p>To the average person, the calculations that go into their municipal taxes can seem <strong>esoteric and downright unreadable</strong>, which can make it easy to feel anxious, frustrated, and upset.</p><p>The Tax Calculator solves that problem, so that your residents can see exactly where their money is going. Allow your residents to calculate their taxes in an official, easy-to-use manner, and <strong>build trust and connection</strong> between your city and your residents.</p>"
+													"imgClass": "no-corners no-shadow",
+													"url": "/media/logo.svg"
 												}
 											},
 											{
-												"element": "base:columns",
+												"element": "base:navigation",
 												"props": {
-													"columns": "max-content:max-content",
-													"minWidth": 500,
-													"gap": 16
-												},
-												"children": [
-													{
-														"element": "base:button",
-														"props": {
-															"label": "Get in Contact",
-															"url": "/design"
-														}
-													},
-													{
-														"element": "base:button",
-														"props": {
-															"class": "ghost",
-															"label": "More Information",
-															"url": "/design"
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"element": "base:container"
-									},
-									{
-										"element": "base:container",
-										"props": {
-											"style": "height: 100%; position: relative; bottom: -96px;"
-										},
-										"children": [
-												{
-													"element": "base:image",
-													"props": {
-														"width": 420,
-														"class": "no-corners no-shadow",
-														"style": "position: absolute; width: 100%; bottom: 0;",
-														"url": "/media/calculator.jpg"
-													}
+													"entries": [
+														{ "label": "Features", "to": "#features" },
+														{ "label": "Demo", "to": "#demo" },
+														{ "label": "Testimonials", "to": "#testimonials" },
+														{ "label": "Get in Contact", "to": "#contact" }
+													]
 												}
+											}
 										]
 									}
 								]
@@ -98,7 +63,45 @@
 					{
 						"element": "base:section",
 						"props": {
-							"class": "accent callout"
+							"class": "background header"
+						},
+						"children": [
+							{
+								"element": "base:columns",
+								"props": {
+									"columns": "350px:1fr",
+									"layoutChildren": "center",
+									"class": "card",
+									"maxWidth": 1100,
+									"minWidth": 800,
+									"gap": 64
+								},
+								"children": [
+									{
+										"element": "base:container",
+										"children": [
+											{
+												"element": "base:image",
+												"props": {
+													"url": "/media/calculator.png"
+												}
+											}
+										]
+									},
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<h2>You don't have to dread taxes.</h2><p>To the average person, the calculations that go into their municipal taxes can seem <strong>esoteric and downright unreadable</strong>, which can make it easy to feel frustrated and upset.</p><p>With the Aurailus Design Tax Calculator, your residents can see exactly where their money is going, and you can <strong>build trust and connection</strong> between your city and your residents.</p>"
+										}
+									}
+								]
+							}
+						]
+					},
+					{
+						"element": "base:section",
+						"props": {
+							"id": "features"
 						},
 						"children": [
 							{
@@ -127,7 +130,7 @@
 											{
 												"element": "base:text",
 												"props": {
-													"content": "<h3>Seamless</h3><p>Whether on a 40-inch television or a mobile phone screen, the calculator seamlessly adapts to the available real-estate.</p>"
+													"content": "<h3>Seamless</h3><p>Whether on an ultrawide monitor or a mobile phone, the calculator adapts to the available real-estate to deliver a seamless experience.</p>"
 												}
 											}
 										]
@@ -182,12 +185,16 @@
 					},
 					{
 						"element": "base:section",
+						"props": {
+							"class": "accent callout"
+						},
 						"children": [
 							{
 								"element": "base:columns",
 								"props": {
 									"columns": "0.9fr:2fr",
 									"maxWidth": 1100,
+									"minWidth": 900,
 									"gap": 64
 								},
 								"children": [
@@ -201,7 +208,8 @@
 										"element": "base:columns",
 										"props": {
 											"columns": "1fr:1fr",
-											"gap": 32
+											"gap": 32,
+											"minWidth": 600
 										},
 										"children": [
 											{
@@ -356,11 +364,11 @@
 					{
 						"element": "base:section",
 						"props": {
-							"class": "accent callout pad-small"
+							"id": "demo",
+							"class": "pad-small pad-x-none"
 						},
 						"children": [
 							{
-
 								"element": "base:columns",
 								"props": {
 									"columns": "1fr",
@@ -370,7 +378,7 @@
 									{
 										"element": "base:html",
 										"props": {
-											"html": "<iframe id='taxcalc_frame' src='/calculator/demo' scrolling='no' style='width: 100%; transition: height 100ms;'></iframe><script>window.addEventListener('message', (message) => { if (typeof message.data != 'number') return; document.getElementById('taxcalc_frame').style.height = `${message.data}px`; });</script>"
+											"html": "<iframe src='/calculator/demo' scrolling='no' style='width: 100%; border: none; margin-top: 48px;' onload='javascript:(e => { e.contentWindow.postMessage(\"height_req\", \"*\"); window.addEventListener(\"message\", m => { e.style.height = `${m.data}px`; }); })(this);'>Sorry, your browser is not supported.</iframe>"
 										}
 									}
 								]
@@ -378,13 +386,17 @@
 						]
 					}, {
 						"element": "base:section",
+						"props": {
+							"id": "testimonials",
+							"class": "callout accent"
+						},
 						"children": [
 							{
 								"element": "base:columns",
 								"props": {
 									"columns": "1fr",
 									"layoutChildren": "center",
-									"gap": 96,
+									"gap": 64,
 									"minWidth": 900,
 									"maxWidth": 1100
 								},
@@ -425,14 +437,14 @@
 												}
 											}
 										]
-									},
-									{
+									},{
 										"element": "base:columns",
 										"props": {
 											"columns": "1fr:1fr:1fr",
-											"gap": "32",
-											"layoutChildren": "center",
-											"maxWidth": 996
+											"gap": 16,
+											"class": "logos",
+											"justifyChildren": "space-between",
+											"maxWidth": 950
 										},
 										"children": [
 											{
@@ -468,16 +480,21 @@
 					{
 						"element": "base:section",
 						"props": {
-							"class": "accent callout"
+							"class": "pad-medium"
 						},
 						"children": [
 							{
 								"element": "base:columns",
 								"props": {
-									"maxWidth": 700,
-									"gap": 32
+									"maxWidth": 900
 								},
 								"children": [
+									{
+										"element": "base:text",
+										"props": {
+											"content": "<br/><h3>Simple, Transparent Pricing</h3><p>The Tax Calculator is billed at a single annual rate based on your municipality's population."
+										}
+									},
 									{
 										"element": "tax_calculator:quote_generator"
 									}
@@ -488,7 +505,8 @@
 					{
 						"element": "base:section",
 						"props": {
-							"class": "inverted callout"
+							"id": "contact",
+							"class": "background callout contact"
 						},
 						"children": [
 							{
@@ -514,68 +532,28 @@
 					{
 						"element": "base:section",
 						"props": {
-							"class": ""
+							"class": "inverted pad-medium"
 						},
-						"children": [
-							{
-								"element": "base:columns",
+						"children": [{
+							"element": "base:columns",
+							"props": {
+								"maxWidth": 1100,
+								"minWidth": 600,
+								"class": "footer",
+								"columns": "auto:auto"
+							},
+							"children": [{
+								"element": "base:text",
 								"props": {
-									"maxWidth": 1100,
-									"gap": 32
-								},
-								"children": [
-									{
-										"element": "base:columns",
-										"props": {
-											"columns": "1.5fr:1fr:1fr",
-											"maxWidth": 1100,
-											"gap": 32
-										},
-										"children": [
-											{
-												"element": "base:columns",
-												"props": {
-													"columns": "1fr:1fr",
-													"gap": 16
-												},
-												"children": [
-													{
-														"element": "base:text",
-														"props": {
-															"content": "<p><strong><a href='#'>Home</a></strong><br><strong><a href='#'>Design</a></strong><br><strong><a href='#'>Fabrication</a></strong><br><strong><a href='#'>Industries</a></strong><br><strong></p>"
-														}
-													},
-													{
-														"element": "base:text",
-														"props": {
-															"content": "<p><strong><a href='#'>Equipment</a></strong><br><a href='#'>About Us</a></strong><br><strong><a href='#'>Contact</a></strong></p>"
-														}
-													}
-												]
-											},
-											{
-												"element": "base:text",
-												"props": {
-													"content": "<p><strong>Megatech Engineering Ltd.</strong><br>19609 96 Ave<br>Langley, BC<br>Canada V1M 3C9</p>"
-												}
-											},
-											{
-												"element": "base:text",
-												"props": {
-													"content": "<p><strong>Lower Mainland:</strong> <a href='#'>Phone</a> &bullet; <a href='#'>Fax</a> &bullet; <a href='#'>Email</a></p><p><strong>Nanaimo Office:</strong> <a href='#'>Phone</a> &bullet; <a href='#'>Fax</a> &bullet; <a href='#'>Email</a></p><p><strong>Toll Free:</strong> <a href='#'>Phone</a> &bullet; <a href='#'>Fax</a></p>"
-												}
-											}
-										]
-									},
-									{
-										"element": "base:text",
-										"props": {
-											"content": "<h6 style='text-align:center;'>Website designed by <a href=''>Aurailus Design</a>.</h6>"
-										}
-									}
-								]
-							}
-						]
+									"content": "<h6>Copyright <a href='https://aurailus.design' target='_blank'>Aurailus Design</a>, 2022.</h6>"
+								}
+							}, {
+								"element": "base:text",
+								"props": {
+									"content": "<p><strong><a href='/dashboard/'>Client Dashboard</a></strong></p>"
+								}
+							}]
+						}]
 					}
 				]
 			}

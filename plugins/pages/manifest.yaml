@@ -10,4 +10,4 @@ depends:
 - elements ^0.0.1
 - routes ^0.0.1
 
-entry: dist/main.js
+entry: build/main.js
