@@ -7,6 +7,6 @@ author: Auri
 
 depends:
 - pages ^0.0.1 ?
-- elements ^0.0.1 ?
+- elements ^0.0.1
 
-entry: build/main.js
+entry: build/server.js

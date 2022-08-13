@@ -20,7 +20,7 @@ export default class Plugins {
 	readonly routerApi: RouterApi;
 
 	/** The plugin API registry. */
-	readonly apiRegistry: Map<string, any> = new Map();
+	readonly apiRegistry: Map<string, Record<string, any>> = new Map();
 
 	/** A map of plugins indexed by their identifiers. */
 	readonly plugins: Map<string, Plugin> = new Map();

@@ -3,7 +3,10 @@ import { merge } from 'common';
 import { useEffect, useRef } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 
-import as from 'auriserve';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { hydrate, Static } = require('hydrated');
+
+// import as from 'auriserve';
 
 interface Props {
 	width?: number;
@@ -17,7 +20,7 @@ interface Props {
 	children?: ComponentChildren;
 }
 
-const { hydrate, Static } = as.hydrated;
+// const { hydrate, Static } = as.hydrated;
 
 const identifier = 'base:carousel';
 

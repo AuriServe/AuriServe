@@ -9,7 +9,7 @@ depends:
 - users ^0.0.1
 - routes ^0.0.1
 
-entry: dist/server.js
+entry: build/server.js
 
 watch:
-- dist/main.js
+- build/dashboard.js

@@ -1,8 +1,8 @@
-import as from 'auriserve';
+import auriserve from 'auriserve';
 
-import Role from './Role';
+import type { Role } from './Roles';
 
-const { database } = as.core;
+const { database } = auriserve;
 
 export function init() {
 	/***** Reset data (DEVELOPMENT ONLY) *****/
@@ -108,7 +108,7 @@ export function getRoles(): Role[] {
 // 		as.users.addRole('administrator', 0, 'Administrator', ['administrator']);
 // 		as.users.addRole('moderator', 100, 'Moderator', ['view_audit_log']);
 // 		as.users.addRole('editor', 100, 'Editor', ['view_pages', 'view_users', 'view_permissions']);
-// 		as.users.addRole('@aurailus', 0, 'Auri', ['administrator']);
+// 		as.users.addRole('@aurailus', 0, 'Auri', ['(administrator']);
 // 		as.users.addRole('@john', 0, 'John', ['view_audit_log']);
 // 		as.users.addRole('_everyone', 0, 'Everyone', []);
 // 	} catch (e) {

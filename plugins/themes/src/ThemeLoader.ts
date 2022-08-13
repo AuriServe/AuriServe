@@ -1,5 +1,5 @@
 import path from 'path';
-import as from 'auriserve';
+import auriserve from 'auriserve';
 import { assert } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 
@@ -7,7 +7,7 @@ import Theme from './Theme';
 import { Manifest } from './Manifest';
 import ThemeManager from './ThemeManager';
 
-const { YAML, Watcher, log: Log } = as.core;
+const { YAML, Watcher, log: Log } = auriserve;
 
 export default class ThemeLoader {
 	/** A map of theme source watchers indexed by their identifiers. */

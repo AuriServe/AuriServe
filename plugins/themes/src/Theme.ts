@@ -1,5 +1,5 @@
 import path from 'path';
-import as from 'auriserve';
+import auriserve from 'auriserve';
 import { promises as fs } from 'fs';
 
 import { ParsedManifest } from './Manifest';
@@ -7,7 +7,7 @@ import parseCSS from './CSSParser';
 import parseHTML from './HTMLParser';
 import ThemeManager from './ThemeManager';
 
-const { log } = as.core;
+const { log } = auriserve;
 
 export default class Theme {
 	private options: any;

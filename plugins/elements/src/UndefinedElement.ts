@@ -1,7 +1,4 @@
-import as from 'auriserve';
-const {
-	preact: { h },
-} = as.preact;
+import { h } from 'preact';
 
 const style = {
 	'margin': '8px',

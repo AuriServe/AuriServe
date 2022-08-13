@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 
 import Log from '../Log';
 import Watcher from '../Watcher';
+import * as Require from '../Require';
 import { parse, stringify } from '../YAML';
 import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
@@ -38,9 +39,14 @@ export default class Plugin {
 				)
 			);
 
-			delete require.cache[entryPath];
+			// TODO: Is this necessary?
 			(global as any)._CONTEXT = this.createContext();
-			require(entryPath);
+
+			Require.override((path) => this.manager.apiRegistry.get(path));
+			const exports = Require.refresh(entryPath);
+			if (Object.keys(exports).length) this.manager.apiRegistry.set(this.manifest.identifier, exports);
+			Require.restore();
+
 			delete (global as any)._CONTEXT;
 		}
 
@@ -53,6 +59,7 @@ export default class Plugin {
 		this.events.clear();
 		this.enabled = false;
 		this.manager.manifests.delete(this.manifest.identifier);
+		this.manager.apiRegistry.delete(this.manifest.identifier);
 		return true;
 	}
 
@@ -128,6 +135,6 @@ export default class Plugin {
 			),
 		};
 
-		return core.api;
+		return core;
 	}
 }

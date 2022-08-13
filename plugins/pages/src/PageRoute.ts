@@ -1,8 +1,10 @@
-import as from 'auriserve';
+import auriserve from 'auriserve';
+import { BaseRoute } from 'routes';
+
+import { buildPage } from './PageBuilder';
 import { Include, Page } from './Interface';
 
-const { database: db } = as.core;
-const { BaseRoute } = as.routes;
+const { database: db } = auriserve;
 
 export default class PageRoute extends BaseRoute {
 	constructor(path: string, readonly pageId: number) {
@@ -24,6 +26,6 @@ export default class PageRoute extends BaseRoute {
 		const includes = new Map<number, Include>();
 		rawIncludes.forEach(({ rowid, content }) => includes.set(rowid, JSON.parse(content)));
 
-		return await as.pages.buildPage(JSON.parse(content) as Page, includes);
+		return await buildPage(JSON.parse(content) as Page, includes);
 	}
 }

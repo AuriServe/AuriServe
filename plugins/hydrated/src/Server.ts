@@ -1,22 +1,12 @@
 import path from 'path';
-import as from 'auriserve';
+import auriserve from 'auriserve';
+import { addStylesheet, removeStylesheet } from 'elements';
 
-import Static from './Static';
-import hydrate from './Hydrate';
-
-import './API';
 import './Style.pcss';
 
-as.hydrated = {
-	hydrate,
-	Static,
-};
-
-const { addStylesheet, removeStylesheet } = as.elements;
 const styles = path.join(__dirname, 'style.css');
-
 addStylesheet(styles);
-as.core.once('cleanup', () => {
-	as.unexport('hydrated');
-	removeStylesheet(styles);
-});
+auriserve.once('cleanup', () => removeStylesheet(styles));
+
+export { default as Static } from './Static';
+export { default as hydrate } from './Hydrate';

@@ -77,7 +77,7 @@ function logFunction(level: string, color: string) {
 				`[ \u001B[${color}m${level
 					.toUpperCase()
 					.padEnd(5)}\u001B[0m ] \u001B[${color}m${util.format(...args)}\u001b[0m`,
-				...args.slice(1)
+				// ...args.slice(1)
 			);
 		}
 	};

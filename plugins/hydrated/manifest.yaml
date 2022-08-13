@@ -6,7 +6,7 @@ version: 0.0.1
 author: Auri
 depends:
 - elements ^0.0.1
-- preact ^1
+- auriserve-preact ^1
 
 entry:
   server: build/server.js

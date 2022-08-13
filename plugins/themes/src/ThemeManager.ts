@@ -1,6 +1,6 @@
 import path from 'path';
-import as from 'auriserve';
 import CleanCSS from 'clean-css';
+import { stylesheets } from 'elements';
 import { promises as fs, constants as fsc } from 'fs';
 
 import Theme from './Theme';
@@ -65,9 +65,7 @@ export default class ThemeManager {
 		let style = (
 			await Promise.all([
 				fs.readFile(path.join(__dirname, 'reset.css'), 'utf8'),
-				...(as.has('elements')
-					? [...as.elements.stylesheets].map((filePath) => fs.readFile(filePath, 'utf8'))
-					: []),
+				...[...stylesheets].map((filePath) => fs.readFile(filePath, 'utf8')),
 				...[...this.themes.values()].map((theme) => theme.buildCSS()),
 			])
 		).join('\n');

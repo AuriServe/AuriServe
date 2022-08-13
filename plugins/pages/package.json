@@ -2,7 +2,7 @@
 	"name": "@auriserve/plugin-pages",
 	"version": "0.0.1",
 	"description": "Renders pages using Elements and Themes.",
-	"types": "types/Main.d.ts",
+	"types": "types/Server.d.ts",
 	"author": "Auri <me@auri.xyz>",
 	"license": "UNLICENSED",
 	"scripts": {
@@ -12,18 +12,19 @@
 	"sideEffects": false,
 	"devDependencies": {
 		"@babel/core": "^7.16.7",
+		"@babel/plugin-transform-react-jsx": "^7.18.10",
 		"@babel/preset-env": "^7.16.8",
 		"@babel/preset-typescript": "^7.16.7",
+		"@types/elements": "file:../elements",
 		"@types/escape-html": "^1.0.1",
-		"@types/plugin-elements": "file:../elements",
-		"@types/plugin-routes": "file:../routes",
+		"@types/routes": "file:../routes",
 		"@typescript-eslint/eslint-plugin": "^5.9.1",
 		"@typescript-eslint/parser": "^5.9.1",
 		"babel-loader": "^8.2.3",
 		"fork-ts-checker-webpack-plugin": "^6.5.0",
-		"plugin-routes": "file:../routes",
 		"ts-loader": "^9.2.6",
-		"webpack-cli": "^4.9.1"
+		"webpack-cli": "^4.10.0",
+		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",

@@ -6,8 +6,8 @@ version: 0.0.1
 author: Auri
 
 depends:
-- preact ^1
-- elements ^0.0.1
 - routes ^0.0.1
+- elements ^0.0.1
+- auriserve-preact ^1
 
-entry: build/main.js
+entry: build/server.js
