@@ -83,7 +83,9 @@
 											{
 												"element": "base:image",
 												"props": {
-													"url": "/media/calculator.png"
+													"url": "/media/calculator.webp",
+													"aspect": 0.921,
+													"lazy": false
 												}
 											}
 										]
@@ -124,7 +126,8 @@
 												"element": "base:image",
 												"props": {
 													"class": "icon on-accent",
-													"url": "/media/icon_seamless.svg"
+													"url": "/media/icon_seamless.svg",
+													"aspect": 1
 												}
 											},
 											{
@@ -146,7 +149,8 @@
 												"element": "base:image",
 												"props": {
 													"class": "icon on-accent",
-													"url": "/media/icon_dynamic.svg"
+													"url": "/media/icon_dynamic.svg",
+													"aspect": 1
 												}
 											},
 											{
@@ -168,7 +172,8 @@
 												"element": "base:image",
 												"props": {
 													"class": "icon on-accent",
-													"url": "/media/icon_secure.svg"
+													"url": "/media/icon_secure.svg",
+													"aspect": 1
 												}
 											},
 											{
@@ -224,7 +229,8 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_check_1.svg"
+															"aspect": 1,
+															"url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmlld0JveD0iMCAwIDI0IDI0IgogICBjbGFzcz0iaWNvbi1jaGVjayIKICAgdmVyc2lvbj0iMS4xIgogICBpZD0ic3ZnNiIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaWNvbl9jaGVja18xLnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4yIChkYzJhZWRhZjAzLCAyMDIyLTA1LTE1KSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXc4IgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp6b29tPSI2MC44MzMzMzMiCiAgICAgaW5rc2NhcGU6Y3g9IjExLjAxMzY5OSIKICAgICBpbmtzY2FwZTpjeT0iMTIuMDE2NDM4IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnNiIgLz4KICA8Y2lyY2xlCiAgICAgY3g9IjEyIgogICAgIGN5PSIxMiIKICAgICByPSIxMCIKICAgICBjbGFzcz0icHJpbWFyeSIKICAgICBpZD0iY2lyY2xlMiIKICAgICBzdHlsZT0iZmlsbDojZmU2MWQwO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MC4yMTY0MTc1NyIgLz4KICA8cGF0aAogICAgIGNsYXNzPSJzZWNvbmRhcnkiCiAgICAgZD0iTTEwIDE0LjU5bDYuMy02LjNhMSAxIDAgMCAxIDEuNCAxLjQybC03IDdhMSAxIDAgMCAxLTEuNCAwbC0zLTNhMSAxIDAgMCAxIDEuNC0xLjQybDIuMyAyLjN6IgogICAgIGlkPSJwYXRoNCIKICAgICBzdHlsZT0iZmlsbDojZmU2MWQwO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MSIgLz4KPC9zdmc+Cg=="
 														}
 													},
 													{
@@ -248,7 +254,8 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_check_3.svg"
+															"aspect": 1,
+															"url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmlld0JveD0iMCAwIDI0IDI0IgogICBjbGFzcz0iaWNvbi1jaGVjayIKICAgdmVyc2lvbj0iMS4xIgogICBpZD0ic3ZnNiIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaWNvbl9jaGVja18yLnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4yIChkYzJhZWRhZjAzLCAyMDIyLTA1LTE1KSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXc4IgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp6b29tPSI2MC44MzMzMzMiCiAgICAgaW5rc2NhcGU6Y3g9IjExLjAxMzY5OSIKICAgICBpbmtzY2FwZTpjeT0iMTIuMDE2NDM4IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnNiIgLz4KICA8Y2lyY2xlCiAgICAgY3g9IjEyIgogICAgIGN5PSIxMiIKICAgICByPSIxMCIKICAgICBjbGFzcz0icHJpbWFyeSIKICAgICBpZD0iY2lyY2xlMiIKICAgICBzdHlsZT0iZmlsbDojZGY2NGQ2O2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MC4yMTY0MTc1NyIgLz4KICA8cGF0aAogICAgIGNsYXNzPSJzZWNvbmRhcnkiCiAgICAgZD0iTTEwIDE0LjU5bDYuMy02LjNhMSAxIDAgMCAxIDEuNCAxLjQybC03IDdhMSAxIDAgMCAxLTEuNCAwbC0zLTNhMSAxIDAgMCAxIDEuNC0xLjQybDIuMyAyLjN6IgogICAgIGlkPSJwYXRoNCIKICAgICBzdHlsZT0iZmlsbDojZGY2NGQ2O2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MSIgLz4KPC9zdmc+Cg=="
 														}
 													},
 													{
@@ -272,7 +279,8 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_check_2.svg"
+															"aspect": 1,
+															"url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmlld0JveD0iMCAwIDI0IDI0IgogICBjbGFzcz0iaWNvbi1jaGVjayIKICAgdmVyc2lvbj0iMS4xIgogICBpZD0ic3ZnNiIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaWNvbl9jaGVja18zLnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4yIChkYzJhZWRhZjAzLCAyMDIyLTA1LTE1KSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXc4IgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp6b29tPSI2MC44MzMzMzMiCiAgICAgaW5rc2NhcGU6Y3g9IjExLjAxMzY5OSIKICAgICBpbmtzY2FwZTpjeT0iMTIuMDE2NDM4IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnNiIgLz4KICA8Y2lyY2xlCiAgICAgY3g9IjEyIgogICAgIGN5PSIxMiIKICAgICByPSIxMCIKICAgICBjbGFzcz0icHJpbWFyeSIKICAgICBpZD0iY2lyY2xlMiIKICAgICBzdHlsZT0iZmlsbDojYmQ2NWRjO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MC4yMTY0MTc1NyIgLz4KICA8cGF0aAogICAgIGNsYXNzPSJzZWNvbmRhcnkiCiAgICAgZD0iTTEwIDE0LjU5bDYuMy02LjNhMSAxIDAgMCAxIDEuNCAxLjQybC03IDdhMSAxIDAgMCAxLTEuNCAwbC0zLTNhMSAxIDAgMCAxIDEuNC0xLjQybDIuMyAyLjN6IgogICAgIGlkPSJwYXRoNCIKICAgICBzdHlsZT0iZmlsbDojYmQ2NWRjO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MSIgLz4KPC9zdmc+Cg=="
 														}
 													},
 													{
@@ -296,7 +304,8 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_check_5.svg"
+															"aspect": 1,
+															"url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmlld0JveD0iMCAwIDI0IDI0IgogICBjbGFzcz0iaWNvbi1jaGVjayIKICAgdmVyc2lvbj0iMS4xIgogICBpZD0ic3ZnNiIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaWNvbl9jaGVja180LnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4yIChkYzJhZWRhZjAzLCAyMDIyLTA1LTE1KSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXc4IgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp6b29tPSI2MC44MzMzMzMiCiAgICAgaW5rc2NhcGU6Y3g9IjExLjAxMzY5OSIKICAgICBpbmtzY2FwZTpjeT0iMTIuMDE2NDM4IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnNiIgLz4KICA8Y2lyY2xlCiAgICAgY3g9IjEyIgogICAgIGN5PSIxMiIKICAgICByPSIxMCIKICAgICBjbGFzcz0icHJpbWFyeSIKICAgICBpZD0iY2lyY2xlMiIKICAgICBzdHlsZT0iZmlsbDojOTk2NWUyO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MC4yMTY0MTc1NyIgLz4KICA8cGF0aAogICAgIGNsYXNzPSJzZWNvbmRhcnkiCiAgICAgZD0iTTEwIDE0LjU5bDYuMy02LjNhMSAxIDAgMCAxIDEuNCAxLjQybC03IDdhMSAxIDAgMCAxLTEuNCAwbC0zLTNhMSAxIDAgMCAxIDEuNC0xLjQybDIuMyAyLjN6IgogICAgIGlkPSJwYXRoNCIKICAgICBzdHlsZT0iZmlsbDojOTk2NWUyO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MSIgLz4KPC9zdmc+Cg=="
 														}
 													},
 													{
@@ -320,7 +329,8 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_check_3.svg"
+															"aspect": 1,
+															"url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmlld0JveD0iMCAwIDI0IDI0IgogICBjbGFzcz0iaWNvbi1jaGVjayIKICAgdmVyc2lvbj0iMS4xIgogICBpZD0ic3ZnNiIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaWNvbl9jaGVja181LnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4yIChkYzJhZWRhZjAzLCAyMDIyLTA1LTE1KSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXc4IgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp6b29tPSI2MC44MzMzMzMiCiAgICAgaW5rc2NhcGU6Y3g9IjExLjAxMzY5OSIKICAgICBpbmtzY2FwZTpjeT0iMTIuMDE2NDM4IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnNiIgLz4KICA8Y2lyY2xlCiAgICAgY3g9IjEyIgogICAgIGN5PSIxMiIKICAgICByPSIxMCIKICAgICBjbGFzcz0icHJpbWFyeSIKICAgICBpZD0iY2lyY2xlMiIKICAgICBzdHlsZT0iZmlsbDojNmU2NGU3O2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MC4yMTY0MTc1NyIgLz4KICA8cGF0aAogICAgIGNsYXNzPSJzZWNvbmRhcnkiCiAgICAgZD0iTTEwIDE0LjU5bDYuMy02LjNhMSAxIDAgMCAxIDEuNCAxLjQybC03IDdhMSAxIDAgMCAxLTEuNCAwbC0zLTNhMSAxIDAgMCAxIDEuNC0xLjQybDIuMyAyLjN6IgogICAgIGlkPSJwYXRoNCIKICAgICBzdHlsZT0iZmlsbDojNmU2NGU3O2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MSIgLz4KPC9zdmc+Cg=="
 														}
 													},
 													{
@@ -344,7 +354,8 @@
 														"element": "base:image",
 														"props": {
 															"class": "icon on-white",
-															"url": "/media/icon_check_6.svg"
+															"aspect": 1,
+															"url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmlld0JveD0iMCAwIDI0IDI0IgogICBjbGFzcz0iaWNvbi1jaGVjayIKICAgdmVyc2lvbj0iMS4xIgogICBpZD0ic3ZnNiIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaWNvbl9jaGVja182LnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS4yIChkYzJhZWRhZjAzLCAyMDIyLTA1LTE1KSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcwogICAgIGlkPSJkZWZzMTAiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXc4IgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp6b29tPSI2MC44MzMzMzMiCiAgICAgaW5rc2NhcGU6Y3g9IjExLjAxMzY5OSIKICAgICBpbmtzY2FwZTpjeT0iMTIuMDE2NDM4IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnNiIgLz4KICA8Y2lyY2xlCiAgICAgY3g9IjEyIgogICAgIGN5PSIxMiIKICAgICByPSIxMCIKICAgICBjbGFzcz0icHJpbWFyeSIKICAgICBpZD0iY2lyY2xlMiIKICAgICBzdHlsZT0iZmlsbDojMjM2MmVkO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MC4yMTY0MTc1NyIgLz4KICA8cGF0aAogICAgIGNsYXNzPSJzZWNvbmRhcnkiCiAgICAgZD0iTTEwIDE0LjU5bDYuMy02LjNhMSAxIDAgMCAxIDEuNCAxLjQybC03IDdhMSAxIDAgMCAxLTEuNCAwbC0zLTNhMSAxIDAgMCAxIDEuNC0xLjQybDIuMyAyLjN6IgogICAgIGlkPSJwYXRoNCIKICAgICBzdHlsZT0iZmlsbDojMjM2MmVkO2ZpbGwtb3BhY2l0eToxO29wYWNpdHk6MSIgLz4KPC9zdmc+Cg=="
 														}
 													},
 													{
@@ -412,7 +423,7 @@
 											{
 												"element": "base:testimonial",
 												"props": {
-													"image": "/media/tim.png",
+													"image": "/media/testimonial_tim.webp",
 													"name": "Tim Wall",
 													"title": "Owner, Avid Fitness",
 													"content": "Auri Collings' work was prompt and very responsive. She listened as I made requests for changes on my website, a truly remarkable trait. <strong>My website performs perfectly, without any issues.</strong> I definitely recommend her services to others, and would use Aurailus Design again should the opportunity arise."
@@ -421,7 +432,7 @@
 											{
 												"element": "base:testimonial",
 												"props": {
-													"image": "/media/ed.png",
+													"image": "/media/testimonial_ed.webp",
 													"name": "Ed Oldfield",
 													"title": "Raku Artist, Ed's Raku",
 													"content": "I have known Auri Collings for a number of years and her passion for technology, programming, and design is second to none. The creativity and quality of her work is at the level that I would like my work to be viewed. Auri listened to my vision for the website, offered suggestions, completed the work in a timely manner, and created a user friendly website which I am extremely happy with. Auri has my unequivocal recommendation for anyone looking for quality website design. <strong>I think she is the best there is in the business.</strong>"
@@ -430,7 +441,7 @@
 											{
 												"element": "base:testimonial",
 												"props": {
-													"image": "/media/shannon.png",
+													"image": "/media/testimonial_shannon.webp",
 													"name": "Shannon Miller",
 													"title": "RHIP, Powell River Hearing",
 													"content": "Auri Collings created an informative and visually appealing website for Powell River Hearing. She guided me through the development stages in a very professional and knowledgeable manner. The website is easy to read and understand, and her expertise in web design helped to bring attention to the key messages that I want my viewers to focus on. <strong>She completed updates and revisions promptly to ensure that she was providing me with an up to date website that really targets the population I serve.</strong> I highly recommend Aurailus Design for your next website."
@@ -450,7 +461,7 @@
 											{
 												"element": "base:image",
 												"props": {
-													"url": "/media/logo_powell_river.png",
+													"url": "/media/logo_powell_river.webp",
 													"alt": "City of Powell River",
 													"aspect": 2
 												}
@@ -458,7 +469,7 @@
 											{
 												"element": "base:image",
 												"props": {
-													"url": "/media/logo_ladysmith.png",
+													"url": "/media/logo_ladysmith.webp",
 													"alt": "Town of Ladysmith",
 													"aspect": 2
 												}
@@ -466,7 +477,7 @@
 											{
 												"element": "base:image",
 												"props": {
-													"url": "/media/logo_qathet.png",
+													"url": "/media/logo_qathet.webp",
 													"alt": "qathet Regional District",
 													"aspect": 2
 												}

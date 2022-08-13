@@ -161,11 +161,11 @@ async function init() {
 			users.createPasswordResetToken(ctx.identifier ?? ''));
 
 	routeHandlers.push(
-		router.get('/dashboard/res/main.js', (_, res) => {
+		router.get('/dashboard/res/dashboard.js', (_, res) => {
 			res.sendFile(path.join(__dirname, '..', 'build', 'dashboard.js'));
 		}),
 
-		router.get('/dashboard/res/main.js.map', (_, res) => {
+		router.get('/dashboard/res/dashboard.js.map', (_, res) => {
 			res.sendFile(path.join(__dirname, '..', 'build', 'dashboard.js.map'));
 		}),
 
@@ -235,7 +235,7 @@ async function init() {
 		}),
 
 		router.get('/dashboard/res/:path', (req, res) => {
-			res.sendFile(path.join(__dirname, '..', 'res', 'Dashboard', req.params.path));
+			res.sendFile(path.join(__dirname, '..', 'res', 'dashboard', req.params.path));
 		})
 	);
 
@@ -272,7 +272,7 @@ async function init() {
 						<title>Dashboard</title>
 						<meta name='description' content='Website dashboard.'/>
 
-						<script src='/dashboard/res/main.js' defer></script>
+						<script src='/dashboard/res/dashboard.js' defer></script>
 						${dashboardPlugins
 							.map(
 								(plugin) =>

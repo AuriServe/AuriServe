@@ -19,6 +19,8 @@ interface Props {
 	lightbox?: boolean;
 	protect?: boolean;
 
+	lazy?: boolean;
+
 	width?: number | string;
 	height?: number | string;
 
@@ -82,7 +84,7 @@ function Image(props: Props) {
 						props.imgClass
 					)}
 					alt={props.alt ?? ''}
-					loading='lazy'
+					loading={(props.lazy ?? true) ? 'lazy' : undefined}
 				/>
 				{state !== 'STATIC' && state !== 'LOADED' && (
 					<img

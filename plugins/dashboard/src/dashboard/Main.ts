@@ -1,3 +1,4 @@
+import './Preact';
 import { h, render } from 'preact';
 
 import App from './Component/App';
@@ -76,25 +77,4 @@ export { registerPage, unregisterPage } from './Page';
 export { registerShortcut, unregisterShortcut } from './Shortcut';
 export { registerSettings, unregisterSettings } from './Settings';
 
-import * as Preact from 'preact';
-// eslint-disable-next-line
-// @ts-ignore
-global.__AS_PREACT = Preact;
-
-// eslint-disable-next-line
-// @ts-ignore
-global.__AURISERVE_PREACT_H = Preact.h;
-
 render(h(App, {}), document.getElementById('root')!);
-
-console.log('set preact h');
-
-import * as PreactCompat from 'preact/compat';
-// eslint-disable-next-line
-// @ts-ignore
-global.__AS_PREACT_COMPAT = PreactCompat;
-
-import * as PreactHooks from 'preact/hooks';
-// eslint-disable-next-line
-// @ts-ignore
-global.__AS_PREACT_HOOKS = PreactHooks;

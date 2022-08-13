@@ -13,7 +13,6 @@ export interface Config {
 	mode?: 'development' | 'production';
 	manifestPath?: string;
 	tsConfigPath?: string;
-	// eslintConfigPath?: string;
 
 	tsx?: boolean;
 
@@ -21,6 +20,7 @@ export interface Config {
 
 	noServerPreactAlias?: boolean;
 	noClientPreactAlias?: boolean;
+	noDashboardPreactAlias?: boolean;
 
 	baseConfig?: Record<string, any>;
 	exportConfigs?: Record<string, boolean | string | Record<string, any>>;
@@ -57,14 +57,14 @@ export default function generate(conf: Config = {}) {
 
 		resolve: {
 			extensions: ['.ts', '.tsx', '.js', '.jsx'],
+			alias: conf.tsx ? {
+				'react': 'preact/compat',
+				'react-dom': 'preact/compat'
+			} : {}
 		},
 
 		plugins: [
-			new ForkTsCheckerPlugin({
-				typescript: { configFile: conf.tsConfigPath },
-				// eslint: { files: './**/*.{ts,tsx}' }
-				// eslint: { files: './**/*.{ts,tsx}' }
-			}),
+			new ForkTsCheckerPlugin({ typescript: { configFile: conf.tsConfigPath } }),
 			new ESLintWebpackPlugin({})
 		],
 
@@ -224,7 +224,9 @@ export default function generate(conf: Config = {}) {
 			entry: './dashboard/Main.ts',
 
 			output: {
-				filename: 'dashboard.js'
+				filename: 'dashboard.js',
+				library: `__ASP_${manifest.identifier.replace(/-/g, '_').toUpperCase()}`,
+				libraryTarget: 'window'
 			},
 
 			resolve: {
@@ -234,23 +236,21 @@ export default function generate(conf: Config = {}) {
 			},
 
 			externals: {
-				'dashboard': 'Dashboard',
-				// TODO: Improve this
-				'preact': '__AS_PREACT',
-				'preact/hooks': '__AS_PREACT_HOOKS',
-				'react': '__AS_PREACT_COMPAT',
-				'react-dom': '__AS_PREACT_COMPAT',
+				...(conf.tsx && !conf.noDashboardPreactAlias ? {
+					'preact': '__AS_PREACT',
+					'preact/hooks': '__AS_PREACT_HOOKS',
+					'preact/compat': '__AS_PREACT',
+				} : {}),
+				...Object.fromEntries(dependencies.map(dep => [ dep, `__ASP_${dep.replace(/-/g, '_').toUpperCase()}` ]))
 			}
 		}, typeof conf.exportConfigs.dashboard === 'object' ? conf.exportConfigs.dashboard : {}));
 		delete conf.exportConfigs.dashboard;
 	}
 
 	configs.push(...Object.entries(conf.exportConfigs).map(([ identifier, conf ]) => {
-		if (typeof conf === 'boolean') throw new Error(`Cannot boolean-export unknown config '${identifier}'.`);
-
 		return merge(baseConfig, {
 			name: identifier,
-			entry: `./${identifier}/Main.ts`,
+			entry: typeof conf === 'string' ? conf : `./${identifier}/Main.ts`,
 			output: {
 				filename: `${identifier}.js`
 			},
@@ -259,7 +259,7 @@ export default function generate(conf: Config = {}) {
 					'@res': resolve(callingDir, `res/${identifier}`)
 				}
 			}
-		}, conf);
+		}, typeof conf === 'object' ? conf : {});
 	}));
 
 	return configs;
