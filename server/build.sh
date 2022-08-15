@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir build
 cd build
 
 if [ ! -f "sqlite3.node" ]; then
@@ -17,4 +18,5 @@ cd ../
 
 eslint src/**/*.ts & tsc --project tsconfig.json &&
 nexe --build --make="-j$(nproc 2> /dev/null || echo 1)" --name AuriServe --output build/AuriServe;
+
 npm run clean
