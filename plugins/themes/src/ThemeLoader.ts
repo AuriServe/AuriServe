@@ -1,13 +1,11 @@
 import path from 'path';
-import auriserve from 'auriserve';
 import { assert } from 'common';
+import { YAML, Watcher, log } from 'auriserve';
 import { promises as fs, constants as fsc } from 'fs';
 
 import Theme from './Theme';
 import { Manifest } from './Manifest';
 import ThemeManager from './ThemeManager';
-
-const { YAML, Watcher, log: Log } = auriserve;
 
 export default class ThemeLoader {
 	/** A map of theme source watchers indexed by their identifiers. */
@@ -34,7 +32,7 @@ export default class ThemeLoader {
 			)
 		).filter(Boolean) as string[];
 
-		Log.debug(`Themes: Found ${themeDirs.map((dir) => `'${dir}'`).join(', ')}.`);
+		log.debug(`Themes: Found ${themeDirs.map((dir) => `'${dir}'`).join(', ')}.`);
 
 		await Promise.all(themeDirs.map((dir) => this.parseTheme(dir)));
 	}
@@ -88,7 +86,7 @@ export default class ThemeLoader {
 		);
 
 		watcher.bind(async () => {
-			Log.debug(`Theme '${identifier}' source files changed, reloading.`);
+			log.debug(`Theme '${identifier}' source files changed, reloading.`);
 			this.manager.reloadTheme(identifier);
 		});
 

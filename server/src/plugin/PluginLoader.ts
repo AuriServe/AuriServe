@@ -2,10 +2,10 @@ import path from 'path';
 import { assert, AssertError, assertSchema, Version } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 
-import YAML from '../YAML';
 import Plugin from './Plugin';
-import Logger from '../Log';
-import Watcher from '../Watcher';
+import YAML from '../util/YAML';
+import Logger from '../util/Log';
+import Watcher from '../util/Watcher';
 import PluginManager from './PluginManager';
 import { Manifest, EntryTree } from './Manifest';
 

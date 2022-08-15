@@ -1,10 +1,10 @@
 import path from 'path';
 import Express from 'express';
-import { Database } from '../SQLite';
 
-import Log from '../Log';
+import Log from '../util/Log';
 import Plugin from './Plugin';
 import RouterApi from './RouterApi';
+import { Database } from '../util/SQLite';
 import PluginLoader from './PluginLoader';
 import { ParsedManifest } from './Manifest';
 import pluginDependencyOrder from './pluginDependencyOrder';

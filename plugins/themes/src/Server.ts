@@ -1,11 +1,11 @@
 import path from 'path';
-import auriserve from 'auriserve';
+import auriserve, { dataPath } from 'auriserve';
 import { promises as fs } from 'fs';
 import { addInjector, removeInjector} from 'pages';
 
 import ThemeManager from './ThemeManager';
 
-const themePath = path.join(__dirname, '../../../server/site-data/themes');
+const themePath = path.join(dataPath, 'themes');
 export const themes = new ThemeManager(themePath);
 themes.init();
 

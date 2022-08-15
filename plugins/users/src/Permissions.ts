@@ -1,10 +1,8 @@
-import auriserve from 'auriserve';
+import { database } from 'auriserve';
 import { assert, titleCase } from 'common';
 
 import { Token } from './Users';
 import { roles } from './Roles';
-
-const { database } = auriserve;
 
 export interface Permission {
 	identifier: string;

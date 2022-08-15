@@ -1,8 +1,6 @@
-import auriserve from 'auriserve';
+import { database } from 'auriserve';
 
 import type { Role } from './Roles';
-
-const { database } = auriserve;
 
 export function init() {
 	/***** Reset data (DEVELOPMENT ONLY) *****/

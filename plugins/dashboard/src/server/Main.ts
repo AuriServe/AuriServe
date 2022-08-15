@@ -1,7 +1,7 @@
 import path from 'path';
 import * as users from 'users';
-import auriserve from 'auriserve';
 import { RequestHandler } from 'auriserve/router';
+import auriserve, { router, log } from 'auriserve';
 import { graphql, buildSchema, GraphQLResolveInfo, GraphQLSchema } from 'graphql';
 
 import { User } from 'users';
@@ -9,8 +9,6 @@ import { assert, isType } from 'common';
 
 import { getSiteInfo } from './Database';
 import './Permissions';
-
-const { router, log: Log } = auriserve;
 
 const baseSchema = `
 	scalar Date
@@ -186,7 +184,7 @@ async function init() {
 				if ((e as Error).name === 'AssertError') {
 					res.status(401).send((e as Error).message);
 				} else {
-					Log.warn('Unhandled error in auth handler: ', e);
+					log.warn('Unhandled error in auth handler: ', e);
 					res.sendStatus(400);
 				}
 			}
@@ -202,7 +200,7 @@ async function init() {
 				if ((e as Error).name === 'AssertError') {
 					res.status(401).send((e as Error).message);
 				} else {
-					Log.warn('Unhandled error in auth handler: ', e);
+					log.warn('Unhandled error in auth handler: ', e);
 					res.sendStatus(400);
 				}
 			}
@@ -228,7 +226,7 @@ async function init() {
 				if ((e as Error).name === 'AssertError') {
 					res.status(401).send((e as Error).message);
 				} else {
-					Log.warn('Unhandled error in gql handler: ', e);
+					log.warn('Unhandled error in gql handler: ', e);
 					res.sendStatus(400);
 				}
 			}

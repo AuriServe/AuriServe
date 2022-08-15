@@ -12,9 +12,9 @@ import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
 import { server as WebSocketServer } from 'websocket';
 
-import Log from './Log';
-import { parse } from './YAML';
-import connect, { Database } from './SQLite';
+import Log from './util/Log';
+import { parse } from './util/YAML';
+import connect, { Database } from './util/SQLite';
 import PluginManager from './plugin/PluginManager';
 
 const DEFAULT_CONF_PATH = 'site-data';

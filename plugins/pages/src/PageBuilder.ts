@@ -1,13 +1,11 @@
+import { log } from 'auriserve';
 import { assert } from 'common';
-import auriserve from 'auriserve';
 import escapeHtml from 'escape-html';
 import { renderTree } from 'elements';
 
 import { registeredLayouts } from './Layouts';
 import { registeredInjectors } from './Injectors';
 import { ElementNode, Include, isIncludeNode, Node, Page } from './Interface';
-
-const { log } = auriserve;
 
 const getSectionRegex = (section: string) => {
 	return new RegExp(

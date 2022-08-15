@@ -1,9 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { assert } from 'common';
 import { nanoid } from 'nanoid';
-import auriserve from 'auriserve';
-
-const { database } = auriserve;
+import { database } from 'auriserve';
 
 export interface User {
 	identifier: string;

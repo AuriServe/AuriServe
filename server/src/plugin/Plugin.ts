@@ -1,12 +1,12 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
-import Log from '../Log';
-import Watcher from '../Watcher';
-import * as Require from '../Require';
-import { parse, stringify } from '../YAML';
+import Log from '../util/Log';
+import Watcher from '../util/Watcher';
+import * as Require from '../util/Require';
 import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
+import { parse, stringify } from '../util/YAML';
 
 type EventFn = (event: any) => void;
 type EventProps = { once: boolean };
