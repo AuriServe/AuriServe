@@ -5,15 +5,15 @@ import App from './Component/App';
 
 import * as Icon from './Icon';
 import { registerSettings } from './Settings';
-import { OverviewSettings, UserSettings, PermissionSettings } from './Component/Page';
+import { UserSettings } from './Component/Page';
 
-registerSettings({
-	identifier: 'dashboard:overview',
-	title: 'Overview',
-	path: 'overview',
-	icon: Icon.home,
-	component: OverviewSettings,
-});
+// registerSettings({
+// 	identifier: 'dashboard:overview',
+// 	title: 'Overview',
+// 	path: 'overview',
+// 	icon: Icon.home,
+// 	component: OverviewSettings,
+// });
 
 registerSettings({
 	identifier: 'dashboard:users',
@@ -24,14 +24,14 @@ registerSettings({
 	component: UserSettings,
 });
 
-registerSettings({
-	identifier: 'dashboard:permissions',
-	title: 'Permissions',
-	path: 'permissions',
-	icon: Icon.role,
-	permissions: ['view_permissions'],
-	component: PermissionSettings,
-});
+// registerSettings({
+// 	identifier: 'dashboard:permissions',
+// 	title: 'Permissions',
+// 	path: 'permissions',
+// 	icon: Icon.role,
+// 	permissions: ['view_permissions'],
+// 	component: PermissionSettings,
+// });
 
 export { useLocation, useNavigate } from 'react-router-dom';
 

@@ -9,7 +9,6 @@ depends:
 - users ^0.0.1
 - routes ^0.0.1
 
-entry: build/server.js
-
-watch:
-- build/dashboard.js
+entry:
+  server: build/server.js
+  dashboard: build/dashboard.js

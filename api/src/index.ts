@@ -1,7 +1,7 @@
 import type { Database } from 'better-sqlite3';
 
 import type Log from './log';
-import type YAML from './yaml';
+import type Yaml from './yaml';
 import type Router from './router';
 import type { PluginManifest } from './plugin';
 import type { WatcherConstructor } from './watcher';
@@ -16,7 +16,7 @@ export interface API {
 	log: Log;
 
 	/** YAML parsing and stringifying. */
-	YAML: YAML;
+	YAML: Yaml;
 
 	/** Currently loaded plugin manifests. */
 	plugins: Map<string, PluginManifest>;
@@ -26,6 +26,12 @@ export interface API {
 
 	/** Provides access to the underlying MySQL database, for high-preformance data storage. */
 	database: Database;
+
+	/** The auriserve config file. */
+	config: Record<string, any>;
+
+	/** The path to the site-data folder. */
+	dataPath: string;
 
 	/** Binds a callback to an event. */
 	on(event: string, cb: (event: any) => void): void;
@@ -52,5 +58,28 @@ if (!api) {
 	);
 }
 
-/** The AuriServe API Registry. */
 export default api;
+
+export const router = api.router;
+
+export const log = api.log;
+
+export const YAML: Yaml = api.YAML;
+
+export const plugins = api.plugins;
+
+export const Watcher = api.Watcher;
+
+export const database: Database = api.database;
+
+export const config = api.config;
+
+export const dataPath = api.dataPath;
+
+export const on = api.on;
+
+export const once = api.once;
+
+export const off = api.off;
+
+export const emit = api.emit;

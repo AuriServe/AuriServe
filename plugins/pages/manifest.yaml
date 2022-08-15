@@ -10,4 +10,5 @@ depends:
 - elements ^0.0.1
 - auriserve-preact ^1
 
-entry: build/server.js
+entry:
+  server: build/server.js

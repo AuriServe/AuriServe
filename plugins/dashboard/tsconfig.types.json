@@ -6,6 +6,6 @@
 	},
 	"extends": "../../tsconfig.json",
 	"include": [
-		"src/server/**/*.ts"
+		"src/Types.ts"
 	],
 }

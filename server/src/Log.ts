@@ -38,22 +38,6 @@ import util from 'util';
 
 // const logger = log4js.getLogger();
 
-// const activePerfs: Map<string, [number, number]> = new Map();
-
-// const perfStart = (identifier: string) => {
-// 	activePerfs.set(identifier, process.hrtime());
-// };
-
-// const perfEnd = (identifier: string) => {
-// 	const perf = activePerfs.get(identifier);
-// 	if (!perf) logger.warn("Attempted to perf invalid identifier '%s'.", identifier);
-// 	else {
-// 		const elapsed = process.hrtime(perf)[1] / 1000000;
-// 		(logger as any).perf('%s took %s ms.', identifier, elapsed.toFixed(3));
-// 		activePerfs.delete(identifier);
-// 	}
-// };
-
 // export default {
 // 	perf: (logger as any).perf.bind(logger),
 // 	perfStart,
@@ -87,10 +71,27 @@ function setLevel(level: string) {
 	currentLevel = levels.indexOf(level.toUpperCase());
 }
 
+const activePerfs: Map<string, [number, number]> = new Map();
+
+function perfStart(identifier: string) {
+	activePerfs.set(identifier, process.hrtime());
+};
+
+function perfEnd(identifier: string) {
+	const perf = activePerfs.get(identifier);
+	const fn = logFunction('debug', '93');
+	if (!perf) fn("Attempted to perf invalid identifier '%s'.", identifier);
+	else {
+		const elapsed = process.hrtime(perf)[1] / 1000000;
+		fn('%s took %s ms.', identifier, elapsed.toFixed(3));
+		activePerfs.delete(identifier);
+	}
+};
+
 export default {
-	perf: logFunction('trace', '93'),
-	perfStart: logFunction('trace', '93'),
-	perfEnd: logFunction('trace', '93'),
+	perf: logFunction('debug', '93'),
+	perfStart,
+	perfEnd,
 	info: logFunction('info', '92'),
 	debug: logFunction('debug', '96'),
 	error: logFunction('error', '91'),
@@ -99,3 +100,4 @@ export default {
 	trace: logFunction('trace', '93'),
 	setLogLevel: setLevel,
 };
+

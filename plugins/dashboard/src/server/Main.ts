@@ -241,7 +241,7 @@ async function init() {
 
 	setTimeout(() => {
 		const dashboardPlugins = [...auriserve.plugins.values()].filter(
-			(p) => p.entry.dashboard
+			(p) => p.entry.dashboard && p.identifier !== 'dashboard'
 		);
 
 		for (const plugin of dashboardPlugins) {

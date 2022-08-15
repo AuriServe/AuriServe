@@ -96,43 +96,12 @@ export default class Plugin {
 			YAML: { parse, stringify },
 			plugins: this.manager.manifests,
 			Watcher,
+			config: this.manager.config,
+			dataPath: this.manager.dataPath,
 			on: this.on.bind(this),
 			once: this.once.bind(this),
 			off: this.off.bind(this),
 			emit: this.manager.emit.bind(this.manager),
-			api: new Proxy(
-				{},
-				{
-					get: (_, req) => {
-						switch (req) {
-							case 'core':
-								return core;
-							case 'has':
-								return (identifier: string) => this.manager.apiRegistry.has(identifier);
-							case 'export':
-								return (identifier: string, api: any) =>
-									this.manager.apiRegistry.set(identifier, api);
-							case 'unexport':
-								return (identifier: string) => {
-									if (!this.manager.apiRegistry.has(identifier)) return false;
-									this.manager.apiRegistry.delete(identifier);
-									return true;
-								};
-							default: {
-								if (!this.manager.apiRegistry.has(req.toString()))
-									throw new Error(
-										`Required API '${req.toString()}' has not been exported.`
-									);
-								return this.manager.apiRegistry.get(req.toString());
-							}
-						}
-					},
-					set: (_, identifier, api) => {
-						this.manager.apiRegistry.set(identifier.toString(), api);
-						return true;
-					},
-				}
-			),
 		};
 
 		return core;

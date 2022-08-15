@@ -123,8 +123,6 @@ export default function UserSettings() {
 	const listedUsers = (expanded ? users : users?.slice(0, 6)) ?? [];
 	const [selectedUser, setSelectedUser] = useState<string>('');
 
-	console.log(selectedUser);
-
 	return (
 		<Card>
 			<Card.Header

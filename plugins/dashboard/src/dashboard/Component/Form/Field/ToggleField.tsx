@@ -12,7 +12,7 @@ import { tw, merge } from '../../../Twind';
 
 type Props = FieldProps<boolean> & {
 	icon?: string;
-	toggleLeft?: boolean;
+	// toggleLeft?: boolean;
 	// rounded?: boolean;
 };
 
@@ -82,7 +82,7 @@ export default function ToggleField(props: Props) {
 			)}
 			style={props.style}>
 			<div class={tw`flex gap-3`}>
-				{props.icon && <Svg src={props.icon} size={6} class={tw`shrink-0 -mr-0.5`} />}
+				{props.icon && <Svg src={props.icon} size={6} class={tw`shrink-0 -mr-0.5 z-10`} />}
 				<input
 					ref={refs(ref, props.fieldRef, (elem) => ctx.setFieldRef(path, elem))}
 					id={id}

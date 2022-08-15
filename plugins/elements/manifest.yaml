@@ -7,4 +7,5 @@ author: Auri
 depends:
 - auriserve-preact ^1
 
-entry: build/server.js
+entry:
+  server: build/server.js

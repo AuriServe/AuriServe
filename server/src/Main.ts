@@ -21,6 +21,8 @@ const DEFAULT_CONF_PATH = 'site-data';
 const DEFAULT_CONF_FILE = 'config.yaml';
 
 export interface ServerConfig {
+	[ key: string ]: any;
+
 	port: number;
 	dataPath: string;
 	logLevel: string;
@@ -84,6 +86,7 @@ export default class Server {
 
 		// Initialize plugins.
 		this.plugins = new PluginManager(
+			this.conf,
 			this.conf.dataPath,
 			true,
 			this.express,
@@ -130,23 +133,21 @@ export default class Server {
 
 	/** Creates a configuration object from a configuration path and command line arguments. */
 	private createConfig(confPath: string, args: minimist.ParsedArgs): ServerConfig {
-		let rawConf: any;
+		let conf: ServerConfig;
 
 		try {
-			rawConf = parse(fs.readFileSync(confPath, 'utf8'));
+			conf = parse(fs.readFileSync(confPath, 'utf8'));
 		} catch (_) {
 			throw new AssertError(`Could not read config file '${confPath}'.`);
 		}
 
-		const conf: Partial<ServerConfig> = {};
-
-		let dataPath = rawConf.data_path ?? '.';
+		let dataPath = conf.data_path ?? '.';
 		if (!path.isAbsolute(dataPath))
 			dataPath = path.join(path.dirname(confPath), dataPath);
 		conf.dataPath = dataPath;
 
-		conf.logLevel = rawConf.log_level || args.log_level || 'info';
-		conf.port = rawConf.port || args.port || 80;
+		conf.logLevel = conf.log_level || args.log_level || 'info';
+		conf.port = conf.port || args.port || 80;
 
 		return conf as ServerConfig;
 	}

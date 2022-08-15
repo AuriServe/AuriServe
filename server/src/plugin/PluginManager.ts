@@ -35,7 +35,8 @@ export default class Plugins {
 	private callbacks: Map<PluginEvent, ((event?: any) => void)[]> = new Map();
 
 	constructor(
-		dataPath: string,
+		readonly config: Record<string, any>,
+		readonly dataPath: string,
 		watch: boolean,
 		app: Express.Application,
 		readonly database: Database

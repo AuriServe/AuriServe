@@ -22,14 +22,21 @@ export interface Config {
 	noClientPreactAlias?: boolean;
 	noDashboardPreactAlias?: boolean;
 
-	baseConfig?: Record<string, any>;
-	exportConfigs?: Record<string, boolean | string | Record<string, any>>;
+	base?: Record<string, any>;
+	export?: Record<string, boolean | string | Record<string, any>> | string[];
+}
+
+function normalizeExport(name: string, def: boolean | string | object, callingDir: string):
+	Record<string, any> {
+	if (typeof def === 'object') return def;
+	if (typeof def === 'string') return { entry: def };
+	const capitalName = name.charAt(0).toUpperCase() + name.slice(1);
+	return { entry: fs.existsSync(path.join(callingDir, `./src/${name}/Main.ts`))
+		? `./${name}/Main.ts` : `./${capitalName}.ts` };
 }
 
 export default function generate(conf: Config = {}) {
 	conf.mode ??= minimst(process.argv.slice(2)).mode ?? 'development';
-
-	conf.exportConfigs ??= { server: true };
 
 	const callingDir = path.dirname(callsite()[1].getFileName());
 
@@ -41,6 +48,15 @@ export default function generate(conf: Config = {}) {
 
 	const manifest: any = load(fs.readFileSync(conf.manifestPath, 'utf8'), { schema: FAILSAFE_SCHEMA });
 	const dependencies = ((manifest.depends as string[]) ?? []).map(dep => dep.split(' ')[0]);
+
+	conf.export ??= Object.keys(typeof manifest.entry === 'string' ? { server : true } : manifest.entry);
+	if (Array.isArray(conf.export)) conf.export = Object.fromEntries(conf.export.map(key => [key, true]));
+
+
+	conf.export = Object.fromEntries(Object.entries(conf.export).map(([name, def]) =>
+		[name, normalizeExport(name, def, callingDir)]));
+
+	console.log(`Generating webpack configs for ${Object.keys(conf.export!).join(', ')}.\n`);
 
 	const configs = [];
 
@@ -64,7 +80,6 @@ export default function generate(conf: Config = {}) {
 		},
 
 		plugins: [
-			new ForkTsCheckerPlugin({ typescript: { configFile: conf.tsConfigPath } }),
 			new ESLintWebpackPlugin({})
 		],
 
@@ -122,16 +137,12 @@ export default function generate(conf: Config = {}) {
 		optimization: {
 			usedExports: true,
 		}
-	}, conf.baseConfig ?? {});
+	}, conf.base ?? {});
 
-	if (conf.exportConfigs.server) {
-		if (typeof conf.exportConfigs.server === 'string')
-			conf.exportConfigs.server = { entry: conf.exportConfigs.server };
-
+	if (conf.export.server) {
 		configs.push(merge(baseConfig, {
 			name: 'server',
 			target: 'node',
-			entry: './server/Main.ts',
 
 			output: {
 				filename: 'server.js',
@@ -174,21 +185,20 @@ export default function generate(conf: Config = {}) {
 				] : []
 			},
 
-			plugins: conf.postcss ? [
-				new MiniCSSExtractPlugin({ filename: 'style.css' })
-			] : []
-		}, typeof conf.exportConfigs.server === 'object' ? conf.exportConfigs.server : {}));
-		delete conf.exportConfigs.server;
+			plugins: [
+				...conf.postcss ? [
+					new MiniCSSExtractPlugin({ filename: 'style.css' })
+				] : [],
+				new ForkTsCheckerPlugin({ typescript: { configFile: conf.tsConfigPath } })
+			]
+		}, conf.export.server));
+		delete conf.export.server;
 	}
 
-	if (conf.exportConfigs.client) {
-		if (typeof conf.exportConfigs.client === 'string')
-			conf.exportConfigs.client = { entry: conf.exportConfigs.client };
-
+	if (conf.export.client) {
 		configs.push(merge(baseConfig, {
 			name: 'client',
 			target: 'web',
-			entry: './client/Main.ts',
 
 			output: {
 				filename: 'client.js',
@@ -210,18 +220,14 @@ export default function generate(conf: Config = {}) {
 				} : {}),
 				...Object.fromEntries(dependencies.map(dep => [ dep, `__ASP_${dep.replace(/-/g, '_').toUpperCase()}` ]))
 			}
-		}, typeof conf.exportConfigs.client === 'object' ? conf.exportConfigs.client : {}));
-		delete conf.exportConfigs.client;
+		}, conf.export.client));
+		delete conf.export.client;
 	}
 
-	if (conf.exportConfigs.dashboard) {
-		if (typeof conf.exportConfigs.dashboard === 'string')
-			conf.exportConfigs.dashboard = { entry: conf.exportConfigs.dashboard };
-
+	if (conf.export.dashboard) {
 		configs.push(merge(baseConfig, {
 			name: 'dashboard',
 			target: 'web',
-			entry: './dashboard/Main.ts',
 
 			output: {
 				filename: 'dashboard.js',
@@ -243,14 +249,13 @@ export default function generate(conf: Config = {}) {
 				} : {}),
 				...Object.fromEntries(dependencies.map(dep => [ dep, `__ASP_${dep.replace(/-/g, '_').toUpperCase()}` ]))
 			}
-		}, typeof conf.exportConfigs.dashboard === 'object' ? conf.exportConfigs.dashboard : {}));
-		delete conf.exportConfigs.dashboard;
+		}, conf.export.dashboard));
+		delete conf.export.dashboard;
 	}
 
-	configs.push(...Object.entries(conf.exportConfigs).map(([ identifier, conf ]) => {
+	configs.push(...Object.entries(conf.export).map(([ identifier, conf ]) => {
 		return merge(baseConfig, {
 			name: identifier,
-			entry: typeof conf === 'string' ? conf : `./${identifier}/Main.ts`,
 			output: {
 				filename: `${identifier}.js`
 			},
@@ -259,7 +264,7 @@ export default function generate(conf: Config = {}) {
 					'@res': resolve(callingDir, `res/${identifier}`)
 				}
 			}
-		}, typeof conf === 'object' ? conf : {});
+		}, conf);
 	}));
 
 	return configs;

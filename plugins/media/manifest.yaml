@@ -5,4 +5,5 @@ description: Temporary plugin to expose static media.
 version: 0.0.1
 author: Auri
 
-entry: build/server.js
+entry:
+  server: build/server.js

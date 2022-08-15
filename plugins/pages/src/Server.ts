@@ -1,56 +1,52 @@
-import path from 'path';
 import { setRoot } from 'routes';
-import auriserve from 'auriserve';
 import { promises as fs } from 'fs';
+import path, { resolve } from 'path';
+import { log, dataPath, plugins, router } from 'auriserve';
 
+import { cache, clearCache } from './Database';
 import PageRoute from './PageRoute';
 import { addInjector } from './Injectors';
-
-const { log, database: db } = auriserve;
-
-db.exec('DROP TABLE IF EXISTS pages');
-db.exec('DROP TABLE IF EXISTS includes');
-
-db.prepare(
-	'CREATE TABLE IF NOT EXISTS pages (content TEXT, includes TEXT)'
-).run();
-
-db.prepare(
-	'CREATE TABLE IF NOT EXISTS includes (content TEXT, includes TEXT)'
-).run();
 
 export { default as PageRoute } from './PageRoute';
 export { registeredLayouts, registerLayout, unregisterLayout } from './Layouts';
 export { registeredInjectors, addInjector, removeInjector } from './Injectors';
 export { buildPage, populateLayout } from './PageBuilder';
 
-// TEMP DEVELOPMENT CODE
+async function importPages(pagesPath: string) {
+	clearCache();
 
-(async () => {
-	const home = await fs.readFile(path.join(__dirname, '..', 'home.json'), 'utf8');
-	const unsubscribe = await fs.readFile(path.join(__dirname, '..', 'unsubscribe.json'), 'utf8');
+	async function getPages(dirPath: string): Promise<string[]> {
+		const items = await fs.readdir(dirPath, { withFileTypes: true });
+		const files = await Promise.all(items.map(async (item) => {
+			const res = resolve(dirPath, item.name);
+			return item.isDirectory() ? await getPages(res) : res;
+		}));
+		return Array.prototype.concat(...files);
+	}
 
-	db.prepare('DELETE FROM pages').run();
-	db.prepare('DELETE FROM includes').run();
+	const pages = await getPages(pagesPath);
 
-	const { lastInsertRowid: homeID } = db.prepare<string>(
-		'INSERT INTO pages (content, includes) VALUES (?, \'[]\')'
-	).run(home);
+	pages.forEach(page => cache(page));
 
-	const { lastInsertRowid: unsubscribeID } = db.prepare<string>(
-		'INSERT INTO pages (content, includes) VALUES (?, \'[]\')'
-	).run(unsubscribe);
+	const root = new PageRoute('/', path.join(pagesPath, 'index.json'));
 
-	const root = new PageRoute('/', homeID as number);
-	root.add('unsubscribe', new PageRoute('/unsubscribe', unsubscribeID as number));
+	pages.forEach(page => {
+		const pageName = page.split('/').pop()!.replace('.json', '');
+		if (pageName === 'index') return;
+		root.add(pageName, new PageRoute(`/${pageName}`, page));
+	})
+
 	setRoot(root);
-})();
+}
 
-const buildPath = path.join(__dirname, '../../../server/site-data/plugins/client.js');
+const pagesDir = path.join(dataPath, 'pages');
+importPages(pagesDir);
+
+const buildPath = path.join(dataPath, 'plugins/client.js');
 
 // TODO: An event should exist for all plugins loaded.
 setTimeout(async () => {
-	const paths = [ ...auriserve.plugins.values()].filter(plugin => plugin.entry.client)
+	const paths = [ ...plugins.values()].filter(plugin => plugin.entry.client)
 		.map(plugin => `${plugin.identifier}/${plugin.entry.client}`);
 
 	log.info(`Found client plugins: ${paths.map(path => `'${path}'`).join(', ')}`);
@@ -60,10 +56,8 @@ setTimeout(async () => {
 			.join('\n'));
 }, 500);
 
-auriserve.router.get('/client.js', async (_, res) => {
+router.get('/client.js', async (_, res) => {
 	res.send(await fs.readFile(buildPath, 'utf8'));
 });
 
 addInjector('head', () => `<script defer src='/client.js'></script>`);
-
-// END TEMP DEVELOPMENT CODE
