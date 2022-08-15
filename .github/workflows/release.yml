@@ -33,7 +33,7 @@ jobs:
       run: cd server; npm install; npm run build;
 
     - name: Zip Artifact
-      run: cd build; zip AuriServe AuriServe sqlite3.node
+      run: echo "Zip start"; ls; cd build; echo "Zip next"; ls; zip AuriServe AuriServe sqlite3.node
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2.2.2
