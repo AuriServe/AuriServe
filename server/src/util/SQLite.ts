@@ -9,7 +9,7 @@ export default function connect(dbPath: string, options: Options = {}) {
 		// eslint-disable-next-line
 		// @ts-ignore
 		nativeBinding: IS_NEXE
-			? path.resolve(path.join(__dirname, '../native/better_sqlite3.node'))
+			? path.resolve(path.join(__dirname, '../../sqlite3.node'))
 			: undefined,
 	});
 }

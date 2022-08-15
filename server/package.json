@@ -51,6 +51,7 @@
 		"@types/websocket": "^1.0.5",
 		"eslint": "^8.7.0",
 		"eslint-plugin-jsdoc": "^37.7.0",
+		"nexe": "^4.0.0-rc.1",
 		"nodemon": "^2.0.15"
 	},
 	"dependencies": {

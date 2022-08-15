@@ -1,8 +1,8 @@
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-dayjs.extend(relativeTime);
-dayjs.extend(advancedFormat);
+// import dayjs from 'dayjs';
+// import relativeTime from 'dayjs/plugin/relativeTime';
+// import advancedFormat from 'dayjs/plugin/advancedFormat';
+// dayjs.extend(relativeTime);
+// dayjs.extend(advancedFormat);
 
 /** Byte size tiers. */
 const tiers: string[] = [ 'B', 'KB', 'MB', 'GB' ];
@@ -48,9 +48,10 @@ export function vector(vec: { x?: number; y?: number; width?: number; height?: n
 
 export function date(date: Date | number) {
 	const d = date instanceof Date ? date : new Date(date);
-  if (Date.now() - +d < 1000 * 60 * 60 * 24 * 3) return dayjs(date).fromNow();
-  else if (d.getFullYear() === new Date().getFullYear()) return `on ${dayjs(date).format('MMMM Do')}`;
-  return `on ${dayjs(date).format('MMMM Do, YYYY')}`;
+  return d.toUTCString();
+  // if (Date.now() - +d < 1000 * 60 * 60 * 24 * 3) return dayjs(date).fromNow();
+  // else if (d.getFullYear() === new Date().getFullYear()) return `on ${dayjs(date).format('MMMM Do')}`;
+  // return `on ${dayjs(date).format('MMMM Do, YYYY')}`;
 }
 
 // export function fileNameToName(name: string, len?: number) {
