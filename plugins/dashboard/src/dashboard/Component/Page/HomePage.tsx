@@ -1,22 +1,62 @@
 import { h } from 'preact';
+import { useState } from 'preact/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import Card from '../Card';
 // import Tooltip from '../Tooltip';
 import TileLayout from '../TileLayout';
+import TreeView, { TreeRenderProps, TreeItem } from '../TreeView';
 
 import { tw } from '../../Twind';
 import { getShortcuts } from '../../Shortcut';
 import { QUERY_INFO, useData } from '../../Graph';
 
 import * as Icon from '../../Icon';
-// import Tooltip from '../Tooltip';
+
+interface TreeData {
+	icon: string;
+	name: string;
+}
+
+function TreeRenderItem(props: TreeRenderProps<TreeData>) {
+	return (
+		<div class={tw`rounded bg-gray-700 p-2 flex gap-2 ml-[${props.treeLevel * 16}px] mb-2`}>
+			<Svg src={props.icon} size={6}/>
+			<p>{props.name}</p>
+		</div>
+	)
+}
 
 export default function MainPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [{ info }] = useData(QUERY_INFO, []);
+
+	const [ treeData, setTreeData ] = useState<TreeItem<TreeData>>({
+		key: 'home',
+		name: 'Home',
+		icon: Icon.home,
+		children: [{
+			key: 'dashboard',
+			name: 'Dashboard',
+			icon: Icon.options,
+		}, {
+			key: 'analytics',
+			name: 'Analytics',
+			icon: Icon.pie_chart,
+			children: [{
+				key: 'users',
+				name: 'Users',
+				icon: Icon.users,
+			}]
+		}, {
+			key: 'log out',
+			name: 'Log out',
+			icon: Icon.logout
+		}]
+	});
+
 
 	return (
 		<div>
@@ -74,12 +114,14 @@ export default function MainPage() {
 								))}
 						</div>
 					</TileLayout.Tile>
-					{/* <TileLayout.Tile width={1} height={2}>
+					<TileLayout.Tile width={1} height={4}>
 						<Card class={tw`h-full`}>
-							<Card.Body />
+							<Card.Body>
+								<TreeView<TreeData> data={treeData} render={TreeRenderItem}/>
+							</Card.Body>
 						</Card>
 					</TileLayout.Tile>
-											<TileLayout.Tile width={2} height={4}>*/}
+											{/* <TileLayout.Tile width={2} height={4}> */}
 					{/*<Card class={tw`h-full`}>
 						<Card.Body
 							class={tw`grid-(& rows-[repeat(auto-fit,3rem)] cols-[repeat(auto-fit,3rem)]) gap-1.5`}>
