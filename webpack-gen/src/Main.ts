@@ -18,9 +18,7 @@ export interface Config {
 
 	postcss?: any;
 
-	noServerPreactAlias?: boolean;
-	noClientPreactAlias?: boolean;
-	noDashboardPreactAlias?: boolean;
+	noPreactAlias?: string[];
 
 	base?: Record<string, any>;
 	export?: Record<string, boolean | string | Record<string, any>> | string[];
@@ -150,7 +148,7 @@ export default function generate(conf: Config = {}) {
 			},
 
 			externals: {
-				...(conf.tsx && !conf.noServerPreactAlias ? {
+				...(conf.tsx && !conf.noPreactAlias?.includes('server') ? {
 					'preact': 'commonjs-module auriserve-preact',
 					'preact/hooks': 'commonjs-module auriserve-preact',
 					'preact/compat': 'commonjs-module auriserve-preact',
@@ -213,7 +211,7 @@ export default function generate(conf: Config = {}) {
 			},
 
 			externals: {
-				...(conf.tsx && !conf.noClientPreactAlias ? {
+				...(conf.tsx && !conf.noPreactAlias?.includes('client') ? {
 					'preact': '__ASP_AURISERVE_PREACT',
 					'preact/hooks': '__ASP_AURISERVE_PREACT',
 					'preact/compat': '__ASP_AURISERVE_PREACT',
@@ -242,7 +240,7 @@ export default function generate(conf: Config = {}) {
 			},
 
 			externals: {
-				...(conf.tsx && !conf.noDashboardPreactAlias ? {
+				...(conf.tsx && !conf.noPreactAlias?.includes('dashboard') ? {
 					'preact': '__AS_PREACT',
 					'preact/hooks': '__AS_PREACT_HOOKS',
 					'preact/compat': '__AS_PREACT',
