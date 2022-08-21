@@ -49,7 +49,7 @@ setTimeout(async () => {
 	const paths = [ ...plugins.values()].filter(plugin => plugin.entry.client)
 		.map(plugin => `${plugin.identifier}/${plugin.entry.client}`);
 
-	log.info(`Found client plugins: ${paths.map(path => `'${path}'`).join(', ')}`);
+	log.info(`Client Plugins: ${paths.map(path => `'${path.split('/')[0]}'`).join(', ')}`);
 
 	await fs.writeFile(buildPath,
 		(await Promise.all(paths.map(pluginPath => fs.readFile(path.join(__dirname, '../../', pluginPath), 'utf8'))))

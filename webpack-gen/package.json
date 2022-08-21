@@ -4,6 +4,7 @@
   "description": "Generates webpack configs for Auriserve.",
   "main": "build/Main.js",
   "types": "build/Main.d.ts",
+  "bin": "build/Main.js",
   "scripts": {
     "dev": "nodemon",
     "build": "tsc --project tsconfig.json"

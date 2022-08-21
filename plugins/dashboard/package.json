@@ -1,5 +1,5 @@
 {
-	"name": "plugin-dashboard",
+	"name": "@auriserve/plugin-dashboard",
 	"version": "0.0.1",
 	"description": "A Web-based dashboard for plugins.",
 	"author": "Auri <me@auri.xyz>",
@@ -14,9 +14,14 @@
 		"url": "git+https://github.com/AuriServe/AuriServe.git"
 	},
 	"scripts": {
-		"dev": "tsc --watch --project ./tsconfig.types.json > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts",
-		"build": "tsc --project ./tsconfig.types.json > /dev/null & webpack --mode=production --progress --config ./webpack.ts",
-		"analyze": "webpack --mode=production --analyze --progress --config webpack.ts"
+		"dev": "webpack-gen dev",
+		"build": "webpack-gen build"
+	},
+	"webpackGenConfig": {
+		"types": "tsconfig.types.json",
+		"noPreactAlias": [
+			"dashboard"
+		]
 	},
 	"bugs": {
 		"url": "https://github.com/AuriServe/AuriServe/issues"
@@ -32,14 +37,15 @@
 		"@types/routes": "file:../routes",
 		"babel-loader": "^8.2.5",
 		"css-minimizer-webpack-plugin": "^4.0.0",
+		"eslint-webpack-plugin": "^3.2.0",
 		"file-loader": "^6.2.0",
 		"fork-ts-checker-webpack-plugin": "^7.2.13",
 		"ts-loader": "^9.3.1",
+		"webpack": "^5.74.0",
 		"webpack-bundle-analyzer": "^4.5.0",
 		"webpack-cli": "^4.10.0",
-		"webpack-gen": "file:../../webpack-gen",
-		"webpack-livereload-plugin": "^3.0.2",
-		"webpack": "^5.74.0"
+		"webpack-gen": "../../webpack-gen",
+		"webpack-livereload-plugin": "^3.0.2"
 	},
 	"dependencies": {
 		"@headlessui/react": "^1.6.6",

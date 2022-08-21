@@ -5,7 +5,5 @@
 		"outDir": "types",
 	},
 	"extends": "../../tsconfig.json",
-	"include": [
-		"src/Types.ts"
-	],
+	"include": [ "src/Types.ts" ],
 }

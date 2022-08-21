@@ -6,8 +6,8 @@
 	"author": "Auri <me@auri.xyz>",
 	"license": "UNLICENSED",
 	"scripts": {
-		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts",
-		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts"
+		"dev": "webpack-gen dev",
+		"build": "webpack-gen build"
 	},
 	"sideEffects": false,
 	"devDependencies": {

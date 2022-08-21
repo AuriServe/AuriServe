@@ -10,3 +10,4 @@ plugins/analytics/data/geoip-city.dat
 plugins/analytics/data/geoip-city6.dat
 plugins/analytics/data/geoip-country.dat
 plugins/analytics/data/geoip-country6.dat
+plugins/client.js

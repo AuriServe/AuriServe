@@ -73,6 +73,10 @@ const baseSchema = `
 
 		createPasswordResetToken(identifier: String!): String!
 	}
+
+	type Mutation {
+		_: Boolean
+	}
 `;
 
 function trim(templateArgs: TemplateStringsArray, ...args: any[]) {
