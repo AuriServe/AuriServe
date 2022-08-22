@@ -7,8 +7,8 @@
 	"license": "MIT",
 	"sideEffects": false,
 	"scripts": {
-		"dev": "webpack-gen dev",
-		"build": "webpack-gen build"
+		"dev": "rm build/reset.css 2> /dev/null; ln -s reset.css build/reset.css; webpack-gen dev",
+		"build": "webpack-gen build; rm build/reset.css 2> /dev/null; cp reset.css build/reset.css;"
 	},
 	"devDependencies": {
 		"@types/clean-css": "^4.2.5",

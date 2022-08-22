@@ -2,12 +2,17 @@
 	"name": "root",
 	"description": "AuriServe root package. Use the scripts below to install, develop, and build AuriServe.",
 	"private": true,
-	"scripts": {},
+	"scripts": {
+		"clean": "node script.js clean",
+		"installAll": "node script.js install",
+		"cleanInstall": "node script.js cleanInstall",
+		"build": "node script.js build",
+		"cleanBuild": "node script.js cleanBuild",
+		"update": "node script.js update",
+		"audit": "node script.js audit"
+	},
 	"devDependencies": {
-		"@types/node": "^18.7.2",
-		"@types/webpack": "^5.28.0",
-		"@typescript-eslint/eslint-plugin": "^5.33.0",
-		"@typescript-eslint/parser": "^5.33.0",
+		"@typescript-eslint/eslint-plugin": "^5.34.0",
 		"eslint": "^8.21.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-jsdoc": "^39.3.6",
@@ -18,7 +23,6 @@
 		"ts-node": "^10.9.1",
 		"tslib": "^2.4.0",
 		"typescript": "^4.7.4",
-		"webpack": "^5.74.0",
-		"webpack-cli": "^4.10.0"
+		"webpack-gen": "^1.0.6"
 	}
 }
