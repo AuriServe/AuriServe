@@ -1,6 +1,6 @@
 name: Preact
 identifier: auriserve-preact
-description: Exposes a Preact instance to plugins.
+description: Exposes a Preact instance to AuriServe plugins.
 
 version: 1.0.0
 author: Auri

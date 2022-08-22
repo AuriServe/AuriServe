@@ -7,8 +7,8 @@ import { merge } from 'webpack-merge';
 
 import Config from './Config';
 import generate from './Generator';
-import { webpack } from 'webpack';
 import { exec } from 'child_process';
+import { MultiStats, webpack } from 'webpack';
 
 export type { default as Config } from './Config';
 export { default as generate } from './Generator';
@@ -31,10 +31,25 @@ const config = merge(packageConfig, cliConfig);
 
 if (config.types !== false) config.types = config.tsConfigPath || path.resolve('tsconfig.json');
 
+function webpackOutput(err: Error | null | undefined, stats: MultiStats | undefined) {
+	const info = stats!.stats.map(stat => ({
+		name: stat.compilation.name,
+		duration: stat.compilation.endTime - stat.compilation.startTime,
+		successful: !stat.hasErrors()
+	}));
+
+	console.log(`\x1b[92mBuilt ${info.length} configuration${info.length !== 1 ? 's' : ''}: ${
+		info.map(info => `\x1b[${info.successful ? '92' : '91'}m${info.name} (${info.duration}ms)\x1b[92m`).join(', ')}.\x1b[0m`);
+
+	stats!.stats.forEach(stat => {
+		if (stat.hasErrors() || stat.hasWarnings()) console.log(stat.toString({ colors: true }));
+	});
+
+	if (err) console.error(err.message);
+}
+
 switch (option) {
 	default:
-		console.error(`Unknown action '${option}'`);
-		break;
 	case '':
 		break;
 	case 'generate': {
@@ -44,12 +59,12 @@ switch (option) {
 		break;
 	}
 	case 'dev':
-		webpack(generate(config)).watch({ aggregateTimeout: 100 }, (err) => { if (err) console.error(err.message); });
+		webpack(generate(config)).watch({ aggregateTimeout: 100 }, webpackOutput);
 		if (config.types && fs.existsSync(config.types))
 			exec(`tsc --watch --project ${config.tsTypesConfigPath} --declaration --emitDeclarationOnly --outDir types`);
 		break;
 	case 'build':
-		webpack(generate({ ...config, mode: 'production' })).run((err) => { if (err) console.error(err.message); });
+		webpack(generate({ ...config, mode: 'production' })).run(webpackOutput);
 		if (config.types && fs.existsSync(config.types))
 			exec(`tsc --project ${config.tsTypesConfigPath} --declaration --emitDeclarationOnly --outDir types`);
 		break;

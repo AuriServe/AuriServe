@@ -1,26 +1,16 @@
 {
 	"name": "@auriserve/plugin-routes",
 	"version": "0.0.1",
-	"description": "Routing Plugin for AuriServe",
+	"description": "Adds routing functionality to AuriServe",
 	"types": "types/Server.d.ts",
-	"author": "Auri <me@auri.xyz>",
+	"author": "Auri Collings <me@auri.xyz>",
 	"license": "UNLICENSED",
-	"scripts": {
-		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts; fg",
-		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts & wait"
-	},
 	"sideEffects": false,
+	"scripts": {
+		"dev": "webpack-gen dev",
+		"build": "webpack-gen build"
+	},
 	"devDependencies": {
-		"@babel/core": "^7.18.10",
-		"@babel/plugin-transform-react-jsx": "^7.18.10",
-		"@babel/preset-env": "^7.18.10",
-		"@babel/preset-typescript": "^7.18.6",
-		"@typescript-eslint/eslint-plugin": "^5.33.0",
-		"@typescript-eslint/parser": "^5.33.0",
-		"babel-loader": "^8.2.5",
-		"fork-ts-checker-webpack-plugin": "^7.2.13",
-		"ts-loader": "^9.3.1",
-		"webpack-cli": "^4.10.0",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {

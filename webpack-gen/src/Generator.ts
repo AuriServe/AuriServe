@@ -31,6 +31,10 @@ export default function generate(conf: Config = {}, toFile = false) {
 		return `<REGEX@${regex.toString()}>` as any as RegExp;
 	}
 
+	function relativeToGen(rel: string) {
+		return path.join(path.dirname(__dirname), rel);
+	}
+
 	conf.mode ??= minimst(process.argv.slice(2)).mode ?? 'development';
 
 	const callingDir = path.resolve('./');
@@ -51,7 +55,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 	conf.export = Object.fromEntries(Object.entries(conf.export).map(([name, def]) =>
 		[name, normalizeExport(name, def, callingDir)]));
 
-	console.log(`Generating webpack configs for ${Object.keys(conf.export!).join(', ')}.\n`);
+	console.log(`\x1b[92mGenerating configurations for ${Object.keys(conf.export!).join(', ')}.\n\x1b[0m`);
 
 	const configs = [];
 
@@ -74,6 +78,10 @@ export default function generate(conf: Config = {}, toFile = false) {
 			} : {}
 		},
 
+		resolveLoader: {
+			modules: [ 'node_modules', path.join(path.dirname(__dirname), 'node_modules') ]
+		},
+
 		plugins: [
 			runtimeImport('eslint-webpack-plugin', 'new $({})')
 		],
@@ -88,7 +96,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 						cacheDirectory: true,
 						presets: [
 							[
-								'@babel/preset-typescript',
+								relativeToGen('node_modules/@babel/preset-typescript'),
 								{
 									isTSX: conf.tsx,
 									allExtensions: true,
@@ -96,7 +104,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 								}
 							],
 							[
-								'@babel/preset-env',
+								relativeToGen('node_modules/@babel/preset-env'),
 								{
 									targets: {
 										node: '10.20.1'
@@ -106,7 +114,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 						],
 						plugins: conf.tsx ? [
 							[
-								'@babel/plugin-transform-react-jsx',
+								relativeToGen('node_modules/@babel/plugin-transform-react-jsx'),
 								{
 									pragma: '__AURISERVE.h'
 								}
@@ -182,7 +190,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 
 			plugins: [
 				...conf.postcss ? [
-					runtimeImport('mini-css-extract-plugin', `new $({ filename: 'StyleSheet.css' })`)
+					runtimeImport('mini-css-extract-plugin', `new $({ filename: 'style.css' })`)
 				] : [],
 				runtimeImport('fork-ts-checker-webpack-plugin',
 					`new $({ typescript: { configFile: '${conf.tsConfigPath}' }})`)
