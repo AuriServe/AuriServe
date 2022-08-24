@@ -11,7 +11,11 @@
 		"build": "webpack-gen build"
 	},
 	"webpackGenConfig": {
-		"postcss": true
+		"postcss": true,
+		"export": {
+			"client": "./Client.ts",
+			"server": "./Server.tsx"
+		}
 	},
 	"devDependencies": {
 		"@types/elements": "file:../elements",
