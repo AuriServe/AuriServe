@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import Card from '../Card';
-// import Tooltip from '../Tooltip';
+import Tooltip from '../Tooltip';
 import TileLayout from '../TileLayout';
 import TreeView, { TreeRenderProps, TreeItem } from '../TreeView';
 
@@ -96,7 +96,7 @@ export default function MainPage() {
 						<div class={tw`flex-(& wrap) justify-center gap-4`}>
 							{[...getShortcuts().values()]
 								.reverse()
-								.slice(0, 3)
+								.slice(0, 6)
 								.map((s, i) => (
 									<Card
 										as='button'
@@ -140,25 +140,17 @@ export default function MainPage() {
 							</Card.Body>
 						</Card>
 					</TileLayout.Tile>
-											{/* <TileLayout.Tile width={2} height={4}> */}
-					{/*<Card class={tw`h-full`}>
-						<Card.Body
-							class={tw`grid-(& rows-[repeat(auto-fit,3rem)] cols-[repeat(auto-fit,3rem)]) gap-1.5`}>
-							{Object.entries(Icon).map(([name, icon]) => (
-								<div key={name} class={tw`bg-gray-750 rounded w-12 h-12`}>
-									<Svg src={icon} size={6} class={tw`p-3`} />
-									<Tooltip offset={4} position='bottom' label={name} small />
-								</div>
-							))}
-						</Card.Body>
-					</Card>*/}
-					{/*</TileLayout.Tile>
-					<TileLayout.Tile width={1} height={2}>
-						<Card class={tw`h-full`} />
-					</TileLayout.Tile>
-					<TileLayout.Tile width={1} height={2}>
+					<TileLayout.Tile width={2} height={4}>
 						<Card class={tw`h-full`}>
-							<Tooltip position='right'>Hello</Tooltip>
+							<Card.Body
+								class={tw`grid-(& rows-[repeat(auto-fit,3rem)] cols-[repeat(auto-fit,3rem)]) gap-1.5`}>
+								{Object.entries(Icon).map(([name, icon]) => (
+									<div key={name} class={tw`bg-gray-750 rounded w-12 h-12`}>
+										<Svg src={icon} size={6} class={tw`p-3`} />
+										<Tooltip offset={4} position='bottom' label={name} small />
+									</div>
+								))}
+							</Card.Body>
 						</Card>
 					</TileLayout.Tile>
 					<TileLayout.Tile width={1} height={2}>
@@ -170,7 +162,12 @@ export default function MainPage() {
 						<Card class={tw`h-full`}>
 							<Tooltip position='right'>Hello</Tooltip>
 						</Card>
-					</TileLayout.Tile> */}
+					</TileLayout.Tile>
+					<TileLayout.Tile width={1} height={2}>
+						<Card class={tw`h-full`}>
+							<Tooltip position='right'>Hello</Tooltip>
+						</Card>
+					</TileLayout.Tile>
 				</TileLayout.Grid>
 			</TileLayout>
 		</div>
