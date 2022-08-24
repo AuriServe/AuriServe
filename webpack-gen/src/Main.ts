@@ -61,11 +61,11 @@ switch (option) {
 	case 'dev':
 		webpack(generate(config)).watch({ aggregateTimeout: 100 }, webpackOutput);
 		if (config.types && fs.existsSync(config.types))
-			exec(`tsc --watch --project ${config.tsTypesConfigPath} --declaration --emitDeclarationOnly --outDir types`);
+			exec(`tsc --watch --project ${config.types} --declaration --emitDeclarationOnly --outDir types`);
 		break;
 	case 'build':
 		webpack(generate({ ...config, mode: 'production' })).run(webpackOutput);
 		if (config.types && fs.existsSync(config.types))
-			exec(`tsc --project ${config.tsTypesConfigPath} --declaration --emitDeclarationOnly --outDir types`);
+			exec(`tsc --project ${config.types} --declaration --emitDeclarationOnly --outDir types`);
 		break;
 }

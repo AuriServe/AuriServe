@@ -9,6 +9,9 @@
 		"dev": "webpack-gen dev",
 		"build": "webpack-gen build"
 	},
+	"webpackGenConfig": {
+		"types": true
+	},
 	"sideEffects": false,
 	"devDependencies": {
 		"@types/elements": "file:../elements",

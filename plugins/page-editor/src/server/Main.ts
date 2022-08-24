@@ -1,22 +1,22 @@
-import as from 'auriserve';
+import { addPermission, addPermissionCategory } from 'users';
 
-as.users.addPermissionCategory({
+addPermissionCategory({
 	identifier: 'pages',
 	icon: 'file',
 });
 
-as.users.addPermission({
+addPermission({
 	identifier: 'view-pages',
 	category: 'pages',
 });
 
-as.users.addPermission({
+addPermission({
 	identifier: 'edit-pages',
 	requires: ['view-pages'],
 	category: 'pages',
 });
 
-as.users.addPermission({
+addPermission({
 	identifier: 'manage-pages',
 	description: 'Add, remove, and reorganize pages.',
 	requires: ['view-pages', 'edit-pages'],

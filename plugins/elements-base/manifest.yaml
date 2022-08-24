@@ -4,6 +4,7 @@ description: Registers basic elements for use with the Auriserve Elements plugin
 
 version: 0.0.1
 author: Auri
+
 depends:
 - elements ^0.0.1
 - hydrated ^0.0.1
@@ -12,3 +13,4 @@ depends:
 entry:
   server: build/server.js
   client: build/client.js
+  dashboard: build/dashboard.js

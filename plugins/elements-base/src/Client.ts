@@ -1,6 +1,6 @@
-// import './layout/Carousel'
-import { Carousel } from './layout/Carousel';
+import { hydrateElement } from 'hydrated';
 
-function keep(_thing: any) { /* nothing */ };
+import Carousel from './page/layout/Carousel';
 
-keep(Carousel);
+hydrateElement(Carousel);
+

@@ -6,33 +6,23 @@
 	"author": "Auri <me@auri.xyz>",
 	"license": "UNLICENSED",
 	"scripts": {
-		"build": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=production --progress --config ./webpack.ts",
-		"dev": "tsc --watch --project ./tsconfig.json --declaration --emitDeclarationOnly --outDir types > /dev/null & webpack --mode=development --watch --progress --config ./webpack.ts"
+		"dev": "webpack-gen dev",
+		"build": "webpack-gen build"
 	},
 	"sideEffects": false,
 	"devDependencies": {
-		"@babel/core": "^7.16.7",
-		"@babel/plugin-transform-react-jsx": "^7.16.7",
-		"@babel/preset-env": "^7.16.8",
-		"@babel/preset-typescript": "^7.16.7",
+		"@types/elements": "file:../elements",
 		"@types/escape-html": "^1.0.1",
-		"@types/plugin-elements": "file:../elements",
-		"@types/plugin-routes": "file:../routes",
-		"@types/plugin-users": "file:../users",
-		"@typescript-eslint/eslint-plugin": "^5.9.1",
-		"@typescript-eslint/parser": "^5.9.1",
-		"babel-loader": "^8.2.3",
-		"fork-ts-checker-webpack-plugin": "^6.5.0",
-		"plugin-routes": "file:../routes",
+		"@types/pages": "file:../pages",
+		"@types/routes": "file:../routes",
+		"@types/users": "file:../users",
 		"preact": "^10.6.5",
-		"ts-loader": "^9.2.6",
-		"webpack-cli": "^4.9.1"
+		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
 		"common": "file:../../common/build",
 		"escape-html": "^1.0.3",
-		"pages": "file:../pages",
 		"vibin-hooks": "^0.2.1"
 	}
 }

@@ -9,3 +9,4 @@ depends:
 
 entry:
   server: build/server.js
+  dashboard: build/dashboard.js

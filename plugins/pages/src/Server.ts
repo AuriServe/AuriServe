@@ -11,6 +11,9 @@ export { default as PageRoute } from './PageRoute';
 export { registeredLayouts, registerLayout, unregisterLayout } from './Layouts';
 export { registeredInjectors, addInjector, removeInjector } from './Injectors';
 export { buildPage, populateLayout } from './PageBuilder';
+export { isComponentNode, isIncludeNode, isPopulatedIncludeNode } from './Interface';
+
+export type { Page, Include, Metadata, Node, ElementNode, IncludeNode, PopulatedIncludeNode } from './Interface';
 
 async function importPages(pagesPath: string) {
 	clearCache();

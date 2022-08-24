@@ -1,190 +1,192 @@
-.base\:columns {
-	width: 100%;
+#page {
+	.base\:columns {
+		width: 100%;
 
-	& > .inner {
+		& > .inner {
+			display: grid;
+			margin: 0 auto;
+			flex-direction: column;
+			grid-template-columns: 1fr;
+
+			& > * {
+				min-width: 0;
+			}
+		}
+
+		&.reverse > .inner {
+			flex-direction: column-reverse;
+		}
+	}
+
+	.base\:grid {
 		display: grid;
-		margin: 0 auto;
+	}
+
+	.base\:stack {
+		gap: 0;
+		width: 100%;
+		display: flex;
+		align-items: stretch;
 		flex-direction: column;
-		grid-template-columns: 1fr;
+	}
+
+	.base\:section-container {
+		> * {
+			&:first-child {
+				margin-top: 0 !important;
+			}
+
+			&:last-child {
+				margin-bottom: 0 !important;
+			}
+		}
+	}
+
+	.base\:testimonial {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
+
+		& > .testimonial-image {
+			width: 256px;
+			aspect-ratio: 1;
+			object-fit: cover;
+		}
+
+		& > .testimonial-content {
+			width: 100%;
+		}
+	}
+
+	.base\:carousel {
+		display: grid;
+		position: relative;
 
 		& > * {
-			min-width: 0;
-		}
-	}
-
-	&.reverse > .inner {
-		flex-direction: column-reverse;
-	}
-}
-
-.base\:grid {
-	display: grid;
-}
-
-.base\:stack {
-	gap: 0;
-	width: 100%;
-	display: flex;
-	align-items: stretch;
-	flex-direction: column;
-}
-
-.base\:section-container {
-	> * {
-		&:first-child {
-			margin-top: 0 !important;
+			width: 100%;
 		}
 
-		&:last-child {
-			margin-bottom: 0 !important;
-		}
-	}
-}
-
-.base\:testimonial {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 16px;
-
-	& > .testimonial-image {
-		width: 256px;
-		aspect-ratio: 1;
-		object-fit: cover;
-	}
-
-	& > .testimonial-content {
-		width: 100%;
-	}
-}
-
-.base\:carousel {
-	display: grid;
-	position: relative;
-
-	& > * {
-		width: 100%;
-	}
-
-	& > .button-arrow {
-		width: 48px;
-		height: 48px;
-		filter: brightness(50%);
-		position: absolute;
-		top: calc(50% - 24px);
-
-		background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpY29uLWNoZXZlcm9uLWxlZnQtY2lyY2xlIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4yMDMiIGNsYXNzPSJwcmltYXJ5Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEzLjcgMTUuM2ExIDEgMCAwIDEtMS40IDEuNGwtNC00YTEgMSAwIDAgMSAwLTEuNGw0LTRhMSAxIDAgMCAxIDEuNCAxLjRMMTAuNDIgMTJsMy4zIDMuM3oiIGNsYXNzPSJzZWNvbmRhcnkiLz48L3N2Zz4=");
-		background-size: cover;
-
-		&:first-of-type {
-			left: 0;
-		}
-
-		&:last-of-type {
-			right: 0;
-			transform: scaleX(-1);
-		}
-	}
-
-	& > .carousel-items {
-		position: relative;
-		display: grid;
-
-		& > .hydrated\:static > .carousel-item {
+		& > .button-arrow {
+			width: 48px;
+			height: 48px;
+			filter: brightness(50%);
 			position: absolute;
-			top: 0;
+			top: calc(50% - 24px);
 
-			&.transition-left {
-				opacity: 0;
-				transform: translateX(-12px);
+			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpY29uLWNoZXZlcm9uLWxlZnQtY2lyY2xlIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4yMDMiIGNsYXNzPSJwcmltYXJ5Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEzLjcgMTUuM2ExIDEgMCAwIDEtMS40IDEuNGwtNC00YTEgMSAwIDAgMSAwLTEuNGw0LTRhMSAxIDAgMCAxIDEuNCAxLjRMMTAuNDIgMTJsMy4zIDMuM3oiIGNsYXNzPSJzZWNvbmRhcnkiLz48L3N2Zz4=");
+			background-size: cover;
+
+			&:first-of-type {
+				left: 0;
 			}
 
-			&.transition-right {
-				opacity: 0;
-				transform: translateX(12px);
+			&:last-of-type {
+				right: 0;
+				transform: scaleX(-1);
+			}
+		}
+
+		& > .carousel-items {
+			position: relative;
+			display: grid;
+
+			& > .hydrated\:static > .carousel-item {
+				position: absolute;
+				top: 0;
+
+				&.transition-left {
+					opacity: 0;
+					transform: translateX(-12px);
+				}
+
+				&.transition-right {
+					opacity: 0;
+					transform: translateX(12px);
+				}
+			}
+		}
+
+		&.static > .carousel-items > .hydrated\:static {
+			& > .carousel-item:not(:first-child) {
+				display: none;
+			}
+		}
+
+		&:not(.static) > .carousel-items > .hydrated\:static {
+			& > .carousel-item:not(.active) {
+				display: none;
 			}
 		}
 	}
 
-	&.static > .carousel-items > .hydrated\:static {
-		& > .carousel-item:not(:first-child) {
-			display: none;
-		}
-	}
-
-	&:not(.static) > .carousel-items > .hydrated\:static {
-		& > .carousel-item:not(.active) {
-			display: none;
-		}
-	}
-}
-
-/* .ImageView
-	width: 100%
-	height: auto
-	overflow: auto
-	position: relative
-	isolation: isolate
-
-	.ImageView-Aspect
+	/* .ImageView
 		width: 100%
-		height: 0
-		margin: 0 auto
-		overflow: hidden
+		height: auto
+		overflow: auto
 		position: relative
+		isolation: isolate
 
-		object-fit: cover
-		object-position: 50% 50%
+		.ImageView-Aspect
+			width: 100%
+			height: 0
+			margin: 0 auto
+			overflow: hidden
+			position: relative
+
+			object-fit: cover
+			object-position: 50% 50%
+
+			img
+				object-fit: inherit
+				object-position: inherit
+
+				width: 100%
+				height: 100%
+				display: block
+				position: absolute
+
+			.ImageView-Preload
+				z-index: 1
+				filter: blur(8px)
+				will-change: opacity
+				transform: scale(1.1)
+
+				&.FadeOut
+					opacity: 0
+					transform: scale(1)
+					transition: opacity 500ms, transform 500ms
+
+			.ImageView-Image
+				transition: opacity 350ms
+
+				@keyframes FadeIn
+					from
+						transform: scale(1.1)
+
+					to
+						transform: scale(1)
+
+				&.Hide
+					opacity: 0
+
+				&.FadeIn
+					opacity: 1
+					animation: FadeIn 500ms forwards
+
+	.ImageView-Modal
+		position: fixed
+		z-index: 255
+		top: 0
+		left: 0
+		bottom: 0
+		right: 0
+
+		padding: 24px
+		backdrop-filter: brightness(50%) blur(16px)
 
 		img
-			object-fit: inherit
-			object-position: inherit
-
 			width: 100%
 			height: 100%
-			display: block
-			position: absolute
-
-		.ImageView-Preload
-			z-index: 1
-			filter: blur(8px)
-			will-change: opacity
-			transform: scale(1.1)
-
-			&.FadeOut
-				opacity: 0
-				transform: scale(1)
-				transition: opacity 500ms, transform 500ms
-
-		.ImageView-Image
-			transition: opacity 350ms
-
-			@keyframes FadeIn
-				from
-					transform: scale(1.1)
-
-				to
-					transform: scale(1)
-
-			&.Hide
-				opacity: 0
-
-			&.FadeIn
-				opacity: 1
-				animation: FadeIn 500ms forwards
-
-.ImageView-Modal
-	position: fixed
-	z-index: 255
-	top: 0
-	left: 0
-	bottom: 0
-	right: 0
-
-	padding: 24px
-	backdrop-filter: brightness(50%) blur(16px)
-
-	img
-		width: 100%
-		height: 100%
-		object-fit: contain */
+			object-fit: contain */
+}

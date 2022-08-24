@@ -1,4 +1,4 @@
-import { Page } from 'pages';
+import type { Page } from 'pages';
 
 const page: Page = {
 	metadata: {},
