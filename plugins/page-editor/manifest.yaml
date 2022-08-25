@@ -9,6 +9,7 @@ depends:
 - pages ^0.0.1
 - dashboard ^0.0.1
 - users ^0.0.1
+- elements ^0.0.1
 
 entry:
   server: build/server.js

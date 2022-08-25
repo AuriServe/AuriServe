@@ -1,3 +1,6 @@
+// import auriserve from 'auriserve';
+// import { promises as fs } from 'fs';
+// import { stylesheets } from 'elements';
 import { addPermission, addPermissionCategory } from 'users';
 
 addPermissionCategory({
@@ -22,3 +25,9 @@ addPermission({
 	requires: ['view-pages', 'edit-pages'],
 	category: 'pages',
 });
+
+// const route = auriserve.router.get('/dashboard/res/elements.css', async (_, res) => {
+// 	res.send((await Promise.all([...stylesheets.values()].map((style) => fs.readFile(style)))).join('\n'));
+// });
+//
+// auriserve.once('cleanup', () => auriserve.router.remove(route));

@@ -6,66 +6,147 @@ const page: Page = {
 		layout: 'default',
 		sections: {
 			main: {
-				element: 'Stack',
-				props: {
-					gap: 4,
-				},
-				children: [
-					{
-						element: 'Text',
+				element: 'base:stack',
+				children: [{
+					element: 'base:section',
+					children: [{
+						element: 'base:stack',
 						props: {
-							text: 'Hello World :)',
+							gap: 16
 						},
+						children: [{
+							element: 'base:text',
+							props: {
+								content: '<h1>Hi there</h1>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<h2>Another one</h2>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<p><em>And another one</em></p>',
+							}
+						}]
+					}]
+				}, {
+					element: 'base:section',
+					props: {
+						class: 'accent callout'
 					},
-					{
-						element: 'Text',
+					children: [{
+						element: 'base:stack',
 						props: {
-							text: 'How are you',
+							gap: 16
 						},
-					},
-					{
-						element: 'Text',
+						children: [{
+							element: 'base:text',
+							props: {
+								content: '<h1>Hi there</h1>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<h2>Another one</h2>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<p><em>And another one</em></p>',
+							}
+						}]
+					}]
+				}, {
+					element: 'base:section',
+					children: [{
+						element: 'base:stack',
 						props: {
-							text: 'Doing?',
+							gap: 16
 						},
+						children: [{
+							element: 'base:text',
+							props: {
+								content: '<h1>Hi there</h1>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<h2>Another one</h2>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<p><em>And another one</em></p>',
+							}
+						}]
+					}]
+				}, {
+					element: 'base:section',
+					props: {
+						class: 'inverted callout'
 					},
-					{
-						element: 'Stack',
+					children: [{
+						element: 'base:stack',
 						props: {
-							gap: 4,
-							horizontal: true,
+							gap: 16
 						},
-						children: [
-							{
-								element: 'Text',
-								props: {
-									text: 'Hello',
-								},
-							},
-							{
-								element: 'Text',
-								props: {
-									text: 'How',
-								},
-							},
-							{
-								element: 'Text',
-								props: {
-									text: 'are',
-								},
-							},
-							{
-								element: 'Text',
-								props: {
-									text: 'you',
-								},
-							},
-						],
-					},
-				],
-			},
-		},
-	},
+						children: [{
+							element: 'base:text',
+							props: {
+								content: '<h1>Hi there</h1>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<h2>Another one</h2>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<p><em>And another one</em></p>',
+							}
+						}]
+					}]
+				}, {
+					element: 'base:section',
+					children: [{
+						element: 'base:stack',
+						props: {
+							gap: 16
+						},
+						children: [{
+							element: 'base:text',
+							props: {
+								content: '<h1>Hi there</h1>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<h2>Another one</h2>',
+							}
+						},
+						{
+							element: 'base:text',
+							props: {
+								content: '<p><em>And another one</em></p>',
+							}
+						}]
+					}]
+				}]
+			}
+		}
+	}
 };
 
 export default page;

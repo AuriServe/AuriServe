@@ -71,8 +71,8 @@ export default function PagesPage() {
 	// 	: undefined;
 
 	return (
-		<div class={tw`-mb-14 h-screen flex`}>
-			<div class={tw`w-72 p-2.5 h-full bg-gray-800 flex-shrink-0 relative z-10 shadow`}>
+		<div class={tw`-mb-14 flex`}>
+			<div class={tw`w-72 p-2.5 h-full bg-gray-800 flex-shrink-0 z-10 shadow fixed top-0`}>
 				{/* <SectionHeader class='p-1' title='Configure Routes' icon='/admin/asset/icon/ext-file-color.svg'/>
 				<div class='border-b border-gray-600 mt-1.5 mb-2.5'/> */}
 				{!pages && <Spinner size={40} class={tw`mt-16 mx-auto animate-fadein-150`} />}
@@ -97,7 +97,9 @@ export default function PagesPage() {
 					</div>
 				)}
 			</div>
-			<Editor />
+			<div class={tw`ml-72 w-full grid`}>
+				<Editor />
+			</div>
 		</div>
 	);
 }

@@ -234,10 +234,6 @@ async function init() {
 					res.sendStatus(400);
 				}
 			}
-		}),
-
-		router.get('/dashboard/res/:path', (req, res) => {
-			res.sendFile(path.join(__dirname, '..', 'res', 'dashboard', req.params.path));
 		})
 	);
 
@@ -285,9 +281,13 @@ async function init() {
 					<body id='root'>
 					</body>
 				</html>`);
+			}),
+
+			router.get('/dashboard/res/:path', (req, res) => {
+				res.sendFile(path.join(__dirname, '..', 'res', 'dashboard', req.params.path));
 			})
 		);
-	});
+	}, 100);
 }
 
 function cleanup() {

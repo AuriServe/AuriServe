@@ -1,9 +1,9 @@
 import { h, VNode } from 'preact';
 import { renderToString } from 'preact-render-to-string'
 
-import { Node } from './Tree';
-import { elements } from './Elements';
-import UndefinedElement from './UndefinedElement';
+import { Node } from '../common/Tree';
+import { elements } from '../common/Elements';
+import UndefinedElement from '../common/UndefinedElement';
 
 export default async function renderTree(tree: Node): Promise<string> {
 

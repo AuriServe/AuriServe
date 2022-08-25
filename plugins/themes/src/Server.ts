@@ -1,5 +1,5 @@
 import path from 'path';
-import auriserve, { dataPath } from 'auriserve';
+import auriserve, { dataPath, router } from 'auriserve';
 import { promises as fs } from 'fs';
 import { addInjector, removeInjector} from 'pages';
 
@@ -14,10 +14,15 @@ const headInjector = addInjector('head', async () =>
 );
 
 const styleInjector = addInjector('head', () =>
-	fs.readFile(path.join(themes.buildDir, 'head.html'), 'utf8')
+fs.readFile(path.join(themes.buildDir, 'head.html'), 'utf8')
 );
+
+const route = auriserve.router.get('/dashboard/res/theme.css', async (_, res) => {
+	res.sendFile(path.join(themes.buildDir, 'style.css'));
+});
 
 auriserve.once('cleanup', () => {
 	removeInjector('head', headInjector);
 	removeInjector('head', styleInjector);
+	router.remove(route);
 });
