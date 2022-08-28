@@ -8,11 +8,16 @@ const style = {
 	'min-height': '128px',
 
 	'background-color': 'white',
+	'color': 'black',
 	'border': '2px solid #ccc',
 	'border-radius': '8px',
 };
 
-export default function UndefinedElement(props: any) {
+interface Props {
+	elem: string;
+}
+
+export default function UndefinedElement(props: Props) {
 	return h(
 		'div',
 		{ class: 'UndefinedElement', style },

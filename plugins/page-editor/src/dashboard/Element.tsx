@@ -1,9 +1,9 @@
 import { Node } from 'pages';
+import { tw } from 'dashboard';
 import { assert } from 'common';
-import { elements } from 'elements';
 import { h, createContext } from 'preact';
 import { useRef, useContext } from 'preact/hooks';
-import { tw } from 'dashboard';
+import { elements, UndefinedElement } from 'elements';
 
 // import ElementMenu from './ElementMenu';
 import { EditorContext } from './Editor';
@@ -29,14 +29,10 @@ export interface Props {
 export default function Element({ node, path }: Props) {
 	const editor = useContext(EditorContext);
 
-	assert('element' in node, 'Not a component node');
-	const Elem = elements.get(node.element).component;
-	assert(Elem, 'Element not found');
+	assert('element' in node, 'Not an element node');
+	const Elem = elements.get(node.element)?.component;
 
-	const ctx = {
-		path,
-		setProps: (props: any) => console.warn(props),
-	};
+	const ctx = { path, setProps: (props: any) => console.warn(props) };
 
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +56,10 @@ export default function Element({ node, path }: Props) {
 	// const handleInteractEnd = () => {
 	// 	setIntState(null);
 	// };
+
+	if (!Elem) {
+		return <UndefinedElement elem={node.element} />;
+	}
 
 	function handleClick(evt: Event) {
 		console.log('hi!');

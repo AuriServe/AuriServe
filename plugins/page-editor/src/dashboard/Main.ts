@@ -2,12 +2,6 @@ import { registerPage, registerShortcut, Icon } from 'dashboard';
 
 import PagesPage from './PagesPage';
 
-fetch('/dashboard/res/theme.css').then(r => r.text()).then(css => {
-	const style = document.createElement('style');
-	style.innerHTML = css;
-	document.head.appendChild(style);
-});
-
 registerPage({
 	identifier: 'page-editor:pages',
 	title: 'Pages',

@@ -138,6 +138,12 @@ export const QUERY_USERS = `users { identifier, name, emails, roles }`;
 /** Queries all roles. */
 export const QUERY_ROLES = `roles { identifier, name, permissions }`;
 
+export const QUERY_PAGE = `query($path: String!) {
+	page(path: $path) { path, description, index, layout, serialized }
+}`;
+
+export const QUERY_LAYOUT = `query($identifier: String!) { layout(identifier: $identifier) }`;
+
 /** Queries site quotas. */
 // export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;
 
@@ -153,73 +159,52 @@ export const QUERY_ROLES = `roles { identifier, name, permissions }`;
 // /** Queries all pages. */
 // export const QUERY_PAGES = `pages ${Query.PageMeta}`;
 
-/** Queries a page. */
-// export const QUERY_PAGE = `
-// 	query GetPage($path: String!) {
-// 		page(path: $path) ${Query.Page}
+// /** Mutates basic site info. */
+// export const MUTATE_INFO = `
+// 	mutation UpdateInfo($info: InputInfo!) {
+// 		info(info: $info) { domain }
 // 	}
 // `;
 
-// /** Queries a page. */
-// export const QUERY_INCLUDE = `
-// 	query GetInclude($path: String!) {
-// 		include(path: $path) ${Query.Include}
+// /** Mutates developer settings. */
+// export const MUTATE_DEVELOPER = `
+// 	mutation UpdateDeveloper($info: InputDeveloper!) {
+// 		developer(developer: $developer)
 // 	}
 // `;
 
-// /** Queries a layout. */
-// export const QUERY_LAYOUT = `
-// 	query GetLayout($name: String!) {
-// 		layout(name: $name) ${Query.Layout}
+// /** Mutation that deletes specified media items. */
+// export const MUTATE_DELETE_MEDIA = `
+// 	mutation DeleteMedia($media: [ID!]!) {
+// 		delete_media(media: $media)
 // 	}
 // `;
 
-/** Mutates basic site info. */
-export const MUTATE_INFO = `
-	mutation UpdateInfo($info: InputInfo!) {
-		info(info: $info) { domain }
-	}
-`;
+// /** Mutates enabled themes. */
+// export const MUTATE_THEMES = `
+// 	mutation UpdateEnabledThemes($enabled: [String!]!) {
+// 		enabled_themes(enabled: $enabled)
+// 	}
+// `;
 
-/** Mutates developer settings. */
-export const MUTATE_DEVELOPER = `
-	mutation UpdateDeveloper($info: InputDeveloper!) {
-		developer(developer: $developer)
-	}
-`;
+// /** Mutates enabled plugins. */
+// export const MUTATE_PLUGINS = `
+// 	mutation UpdateEnabledPlugins($enabled: [String!]!) {
+// 		enabled_plugins(enabled: $enabled)
+// 	}
+// `;
 
-/** Mutation that deletes specified media items. */
-export const MUTATE_DELETE_MEDIA = `
-	mutation DeleteMedia($media: [ID!]!) {
-		delete_media(media: $media)
-	}
-`;
-
-/** Mutates enabled themes. */
-export const MUTATE_THEMES = `
-	mutation UpdateEnabledThemes($enabled: [String!]!) {
-		enabled_themes(enabled: $enabled)
-	}
-`;
-
-/** Mutates enabled plugins. */
-export const MUTATE_PLUGINS = `
-	mutation UpdateEnabledPlugins($enabled: [String!]!) {
-		enabled_plugins(enabled: $enabled)
-	}
-`;
-
-/** Mutates a page. */
-export const MUTATE_PAGE = `
-	mutation UpdatePage($path: String!, $content: String!) {
-		page(path: $path, content: $content)
-	}
-`;
+// /** Mutates a page. */
+// export const MUTATE_PAGE = `
+// 	mutation UpdatePage($path: String!, $content: String!) {
+// 		page(path: $path, content: $content)
+// 	}
+// `;
 
 /** Gets a password reset token. */
 // TODO: This should be a mutation but the GraphQL api doesn't support mutations.
 export const MUTATE_CREATE_PASSWORD_RESET_TOKEN = `
-	query CreatePasswordResetToken($identifier: String!) {
+	mutation($identifier: String!) {
 		createPasswordResetToken(identifier: $identifier)
 	}
 `;

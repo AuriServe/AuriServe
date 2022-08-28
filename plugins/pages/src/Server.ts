@@ -3,9 +3,9 @@ import { promises as fs } from 'fs';
 import path, { resolve } from 'path';
 import { log, dataPath, plugins, router } from 'auriserve';
 
-import { cache, clearCache } from './Database';
 import PageRoute from './PageRoute';
 import { addInjector } from './Injectors';
+import { cache, clearCache } from './Database';
 
 export { default as PageRoute } from './PageRoute';
 export { registeredLayouts, registerLayout, unregisterLayout } from './Layouts';
@@ -64,3 +64,5 @@ router.get('/client.js', async (_, res) => {
 });
 
 addInjector('head', () => `<script defer src='/client.js'></script>`);
+
+export { getPage } from './Database';

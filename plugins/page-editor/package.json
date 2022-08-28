@@ -11,6 +11,7 @@
 	},
 	"sideEffects": false,
 	"devDependencies": {
+		"@types/dashboard": "file:../dashboard",
 		"@types/elements": "file:../elements",
 		"@types/escape-html": "^1.0.1",
 		"@types/pages": "file:../pages",

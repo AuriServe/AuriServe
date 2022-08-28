@@ -14,7 +14,8 @@
 		"postcss": true,
 		"export": {
 			"client": "./Client.ts",
-			"server": "./Server.tsx"
+			"server": "./Server.tsx",
+			"dashboard": "./Dashboard.ts"
 		}
 	},
 	"devDependencies": {

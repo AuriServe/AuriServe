@@ -7,6 +7,8 @@ export type { CreateHandle, EffectCallback, Inputs, MutableRef, Reducer, Ref, St
 export { useCallback, useContext, useDebugValue, useEffect, useErrorBoundary,
 	useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'preact/hooks';
 
+export { createFactory, createPortal, forwardRef, memo } from 'preact/compat';
+
 export { renderToString } from 'preact-render-to-string';
 
 import { h } from 'preact';

@@ -19,7 +19,11 @@
 	}
 
 	.base\:grid {
-		display: grid;
+		width: 100%;
+
+		& > .hydrated\:static > .contents  {
+			display: grid;
+		}
 	}
 
 	.base\:stack {
@@ -57,6 +61,38 @@
 		& > .testimonial-content {
 			width: 100%;
 		}
+	}
+
+	.ProseMirror {
+		&.ProseMirror-focused {
+			outline: none;
+			position: relative;
+
+			p, h2, h3, h4, h5, h6 {
+				&::before {
+					all: initial;
+
+					position: absolute;
+					background-color: #60A5FA;
+					font-family: 'sans-serif';
+					/* top: 8px; */
+					color: white;
+					font-weight: bold;
+					text-align: center;
+					right: calc(100% + 16px);
+					padding: 2px 8px;
+					border-radius: 4px;
+				}
+			}
+
+			p::before { content: 'p' }
+			h2::before { content: 'h1' }
+			h3::before { content: 'h2' }
+			h4::before { content: 'h3' }
+			h5::before { content: 'h4' }
+			h6::before { content: 'h5' }
+		}
+
 	}
 
 	.base\:carousel {

@@ -21,6 +21,8 @@
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
+		"@tiptap/react": "^2.0.0-beta.114",
+		"@tiptap/starter-kit": "^2.0.0-beta.191",
 		"auriserve": "file:../../api/build",
 		"common": "file:../../common/build"
 	}

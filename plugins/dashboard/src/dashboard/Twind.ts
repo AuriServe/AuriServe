@@ -443,7 +443,7 @@ tw(css`
 	}
 
 	${
-		/* Animations for watching for Autofill events. */
+		/* Animations for watching for Autofill events. *//*
 		['Start', 'Cancel']
 			.map(
 				(type) => `@keyframes onAutoFill${type} {
@@ -451,16 +451,17 @@ tw(css`
 			to { --v: 0 }
 		}`
 			)
-			.join('\n')
+			.join('\n')*/
+			''
 	}
 
-	input:autofill {
+	${/*input:autofill {
 		animation: onAutoFillStart 0s 1;
 	}
 
 	input:not(:autofill) {
 		animation: onAutoFillCancel 0s 1;
-	}
+	}*/''}
 `);
 
 export { merge } from 'common';

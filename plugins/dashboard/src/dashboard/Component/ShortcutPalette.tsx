@@ -92,6 +92,7 @@ export default function ShortcutPalette() {
 	useLayoutEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
 			if (e.code === 'ArrowDown' || e.code === 'ArrowUp') {
+				if (!open) return;
 				e.preventDefault();
 				e.stopPropagation();
 				e.stopImmediatePropagation();
@@ -108,7 +109,7 @@ export default function ShortcutPalette() {
 			window.removeEventListener('keydown', onKeyDown);
 			setActive(0);
 		};
-	}, [...results, results.length]); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [...results, results.length, open]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const handleTriggerAction = (ind: number) => {
 		results[ind]?.action({ location, navigate });

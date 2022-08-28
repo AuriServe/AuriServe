@@ -1,6 +1,7 @@
 import { h } from 'preact';
-// import { forwardRef } from 'preact/compat';
 import type { ComponentChildren } from 'preact';
+
+import { randomIdentifier } from '../../common/util';
 
 export type Props = {
 	maxWidth?: number;
@@ -34,8 +35,6 @@ export function parseColumns(raw?: string): string {
 	return columns.map(parseColumn).join(' ');
 }
 
-const randomIdentifier = () => `i${Math.random().toString(36).substring(7)}`;
-
 export const toCSSUnit = (val: number | string) =>
 	typeof val === 'string' ? val : `${val}px`;
 
@@ -51,7 +50,7 @@ export const toCSSUnit = (val: number | string) =>
  * Example: "(200px, 400px):3fr"
  */
 
-export function Columns(props: Props) {
+function Columns(props: Props) {
 	const identifier = props.minWidth ? randomIdentifier() : '';
 	return (
 		<div
@@ -87,7 +86,4 @@ export function Columns(props: Props) {
 	);
 }
 
-export default {
-	identifier: 'base:columns',
-	component: Columns,
-};
+export default { identifier: 'base:columns', component: Columns, };

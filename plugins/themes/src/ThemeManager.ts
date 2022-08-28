@@ -62,7 +62,7 @@ export default class ThemeManager {
 	}
 
 	async buildThemes() {
-		let style = (
+		const style = (
 			await Promise.all([
 				fs.readFile(path.join(__dirname, 'reset.css'), 'utf8'),
 				...[...stylesheets].map((filePath) => fs.readFile(filePath, 'utf8')),
@@ -74,9 +74,9 @@ export default class ThemeManager {
 			await Promise.all([...this.themes.values()].map((theme) => theme.buildHead()))
 		).join('\n');
 
-		style = new CleanCSS({
-			level: { 1: { specialComments: 'none' }, 2: { all: true } },
-		}).minify(style).styles;
+		// style = new CleanCSS({
+		// 	level: { 1: { specialComments: 'none' }, 2: { all: true } },
+		// }).minify(style).styles;
 
 		await Promise.all([
 			fs.writeFile(path.join(this.buildDir, 'style.css'), style),

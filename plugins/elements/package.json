@@ -2,7 +2,7 @@
 	"name": "@auriserve/plugin-elements",
 	"version": "0.0.1",
 	"description": "Adds a registry for Elements, which are Preact components that can be used to build pages.",
-	"types": "types/Server.d.ts",
+	"types": "types/server/Main.d.ts",
 	"author": "Auri Collings <me@auri.xyz>",
 	"license": "MIT",
 	"sideEffects": false,

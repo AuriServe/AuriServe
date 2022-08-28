@@ -14,9 +14,9 @@ export function Text(props: Props) {
 	return (
 		<div
 			style={props.style}
-			class={merge(identifier, props.class)}
-			dangerouslySetInnerHTML={{ __html: props.content ?? '' }}
-		/>
+			class={merge(identifier, props.class)}>
+			<div class={'element-prose'} dangerouslySetInnerHTML={{ __html: props.content ?? '' }}/>
+		</div>
 	);
 }
 
