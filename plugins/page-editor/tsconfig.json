@@ -1,4 +1,4 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": [ "src/**/*.ts", "src/dashboard/LayoutRenderer.tsx" ],
+	"include": [ "src/**/*.ts", "src/dashboard/LayoutRenderer.tsx", "src/dashboard/PageEditor.tsx", "src/dashboard/Overlay.tsx" ],
 }

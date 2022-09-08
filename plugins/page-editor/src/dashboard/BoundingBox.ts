@@ -3,7 +3,7 @@ import { elementBounds } from 'dashboard';
 export type BoundingBox = { top: number; left: number; width: number; height: number };
 export type PositionBox = { top: number; left: number; bottom: number; right: number };
 
-export default function getBoundingBox(wrapper: HTMLDivElement): BoundingBox {
+export default function getBoundingBox(wrapper: HTMLElement): BoundingBox {
 	const elemBounds = (Array.from(wrapper.children) as HTMLElement[])
 		.map((elem) => elementBounds(elem))
 		.map(({ top, left, width, height }) => ({

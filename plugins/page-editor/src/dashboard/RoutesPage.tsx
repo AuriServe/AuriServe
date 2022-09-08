@@ -1,11 +1,9 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
+import { tw, Svg, Icon } from 'dashboard';
 
-import Editor from './Editor';
+import { PageEditorFrame } from './PageEditor';
 
-// eslint-disable-next-line
-// @ts-ignore
-import { tw, Svg, Spinner, Icon } from 'dashboard';
 
 interface Page {
 	path: string;
@@ -41,7 +39,7 @@ function PageItem({ page }: PageItemProps) {
 	);
 }
 
-export default function PagesPage() {
+export default function RoutesPage() {
 	// const [{ pages: rawPages, info }] = useData([QUERY_PAGES, QUERY_INFO], []);
 
 	const [pages] = useState<Page[]>([
@@ -72,33 +70,20 @@ export default function PagesPage() {
 
 	return (
 		<div class={tw`-mb-14 flex`}>
-			<div class={tw`w-72 p-2.5 h-full bg-gray-800 flex-shrink-0 z-10 shadow fixed top-0`}>
-				{/* <SectionHeader class='p-1' title='Configure Routes' icon='/admin/asset/icon/ext-file-color.svg'/>
-				<div class='border-b border-gray-600 mt-1.5 mb-2.5'/> */}
+			{/* <div class={tw`w-72 p-2.5 h-full bg-gray-800 flex-shrink-0 z-10 shadow`}>
 				{!pages && <Spinner size={40} class={tw`mt-16 mx-auto animate-fadein-150`} />}
 				{pages && (
 					<div class={tw`animate-fadein-150`}>
-						{/* <TreeView
-							itemHeight={44}
-							items={pages}
-							setItems={setPages}
-							dragClass={tw`rounded shadow-lg interact-none`}
-							renderItem={({ data, dragging }) => (
-								<PageItem page={data} dragging={dragging} />
-							)}
-						/> */}
 						<div class={tw`p-1 flex-(& col) gap-3`}>
 							{pages.map((page, i) => (
 								<PageItem key={i} page={page} />
 							))}
 						</div>
-						{/* <div class={tw`border-b-2 border-gray-600 mb-1.5 mt-2`} /> */}
-						{/* <PrimaryButton label='Add Route' /> */}
 					</div>
 				)}
-			</div>
-			<div class={tw`ml-72 w-full grid`}>
-				<Editor />
+			</div> */}
+			<div class={tw`w-full grid`}>
+				<PageEditorFrame/>
 			</div>
 		</div>
 	);

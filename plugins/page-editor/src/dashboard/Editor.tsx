@@ -1,58 +1,28 @@
 import { Page, Node } from 'pages';
 import { h, createContext } from 'preact';
-import { useAsyncEffect } from 'vibin-hooks';
-import { useState, useMemo, useCallback } from 'preact/hooks';
-import { traversePath, buildPath, splitPath, assert } from 'common';
-import { tw, TransitionGroup, executeQuery, Graph } from 'dashboard';
+import { tw, TransitionGroup } from 'dashboard';
+import { useState, useMemo, useCallback, useContext, useEffect } from 'preact/hooks';
+import { setPath, traversePath, buildPath, splitPath, assert } from 'common';
 
-import { BoundingBox } from './BoundingBox';
+import ElementMenu from './ElementMenu';
 import LayoutRenderer from './LayoutRenderer';
-
-let onStylesheetLoad: Set<() => void> | null = new Set();
-
-/**
- * Loads the page stylesheet asynchronously, returing a promise that resolves when the stylesheet is loaded.
- * Will not load the stylesheet again if it has already been loaded, or is currently loading.
- * All calls to this function will resolve on load, even if it has already been triggered.
- */
-
-async function loadStylesheet(): Promise<void> {
-	if (onStylesheetLoad == null) return;
-
-	const callback = new Promise<void>((resolve) => onStylesheetLoad!.add(resolve));
-	const first = onStylesheetLoad.size === 1;
-
-	if (first) fetch('/dashboard/res/theme.css').then(r => r.text()).then(css => {
-		const style = document.createElement('style');
-		style.innerHTML = css;
-		document.head.appendChild(style);
-		onStylesheetLoad!.forEach(cb => cb());
-		onStylesheetLoad = null;
-	});
-
-	return callback;
-}
-
-async function getPageAndLayout(path: string): Promise<[ Page, string ]> {
-	const { page: pageRaw } = await executeQuery(Graph.QUERY_PAGE, { path });
-	if (!pageRaw) throw new Error('Page not found.');
-
-	const page = JSON.parse(pageRaw.serialized);
-	const { layout } = await executeQuery(Graph.QUERY_LAYOUT, { identifier: pageRaw.layout });
-
-	return [ page, layout ];
-}
+import getBoundingBox, { BoundingBox } from './BoundingBox';
 
 export interface EditorContextData {
 	page: Page;
+	hovered: string | null,
+	focused: string | null;
 
 	placing: boolean;
 	clipboard: string | null;
 
-	hoverElement: (path: string, bounds: BoundingBox) => void;
+	setProps: (path: string, props: any) => void;
+
+	hoverElement: (path: string) => void;
 	unhoverElement: (path: string) => void;
-	focusElement: (path: string, bounds: BoundingBox) => void;
+	focusElement: (path: string) => void;
 	unfocusElement: (path: string) => void;
+	openElementMenu: (path: string, x: number, y: number) => void;
 
 	copyNode: (path: string) => void;
 	pasteNode: (path: string, position: 'before' | 'after' | 'over') => void;
@@ -63,27 +33,33 @@ export interface EditorContextData {
 
 export const EditorContext = createContext<EditorContextData>(null as any);
 
-export default function Editor() {
-	const [page, setPage] = useState<Page | null>(null);
-	const [layout, setLayout] = useState<string | null>(null);
+export function useEditor() {
+	return useContext(EditorContext);
+}
+
+function padBounds(bounds: BoundingBox, padding: number) {
+	return {
+		top: bounds.top - padding,
+		left: bounds.left - padding,
+		width: bounds.width + padding * 2,
+		height: bounds.height + padding * 2
+	};
+}
+
+interface Props {
+	layout: string;
+	initialPage: Page;
+}
+
+export default function Editor({ initialPage, layout }: Props) {
+	const [page, setPage] = useState<Page>(initialPage);
 
 	const [placing, setPlacing] = useState<boolean>(false);
 	const [clipboard, setClipboard] = useState<string | null>(null);
 
-	const [hovered, setHovered] = useState<{ path: string, bounds: BoundingBox } | null>(null);
-	const [focused, setFocused] = useState<{ path: string, bounds: BoundingBox } | null>(null);
-
-	useAsyncEffect(async (abort) => {
-		const [ [ page, layout ] ] = await Promise.all([
-			getPageAndLayout('/home/auri/Code/AuriServe/server/site-data/pages/index.json'),
-			loadStylesheet()
-		]);
-
-		if (abort.aborted) return;
-
-		setPage(page);
-		setLayout(layout);
-	}, []);
+	const [hovered, setHovered] = useState<string | null>(null);
+	const [focused, setFocused] = useState<string | null>(null);
+	const [menu, setMenu] = useState<{ path: string, x: number, y: number } | null>(null);
 
 	const startPlace = useCallback((e: MouseEvent) => {
 		e.preventDefault();
@@ -104,7 +80,6 @@ export default function Editor() {
 
 	const addNode = useCallback(
 		(path: string) => {
-			assert(page, 'Cannot add node on an unloaded page.');
 			const newPage = { ...page };
 
 			const parentPathSegs = splitPath(path);
@@ -127,7 +102,6 @@ export default function Editor() {
 
 	const removeNode = useCallback(
 		(path: string) => {
-			assert(page, 'Cannot remove node on an unloaded page.');
 			const newPage = { ...page };
 
 			const parentPathSegs = splitPath(path);
@@ -137,48 +111,39 @@ export default function Editor() {
 
 			const children: Node[] = traversePath(newPage, parentPath);
 			children.splice(ind as number, 1);
+			setFocused(null);
+			setMenu(null);
+			setHovered(hovered => hovered === path ? null : hovered);
 			setPage(newPage);
 		},
 		[page]
 	);
 
-	const focusElement = useCallback((path: string, bounds: BoundingBox) => {
-		setFocused(focused => {
-			if (focused?.path === path) return focused;
-			// console.log('focus:', path);
-			return { path, bounds };
-		});
+	const focusElement = useCallback((path: string) => {
+		setFocused(path);
 	}, []);
 
 	const unfocusElement = useCallback((path: string) => {
 		setFocused(focused => {
-			if (focused?.path !== path) {
-				console.error(path);
-				return focused;
-			}
-			// console.log('unfocus:', path);
+			assert(focused === path, 'Tried to unfocus an element that was not focused.');
 			return null;
 		});
 	}, []);
 
-	const hoverElement = useCallback((path: string, bounds: BoundingBox) => {
-		setHovered(hovered => {
-			if (hovered?.path === path) return hovered;
-			// console.log('hover:', path);
-			return { path, bounds };
-		});
+	const hoverElement = useCallback((path: string) => {
+		setHovered(path);
 	}, []);
 
 	const unhoverElement = useCallback((path: string) => {
 		setHovered(hovered => {
-			if (hovered?.path !== path) {
-				console.warn(path);
-				return hovered;
-			}
-
-			// console.log('unhover:', path);
+			assert(hovered === path, 'Tried to unhover an element that was not hovered.')
 			return null;
 		});
+	}, []);
+
+	const openElementMenu = useCallback((path: string, x: number, y: number) => {
+		setFocused(path);
+		setMenu({ path, x, y });
 	}, []);
 
 	const copyNode = useCallback(
@@ -191,9 +156,6 @@ export default function Editor() {
 
 	const pasteNode = useCallback(
 		(target: string, position: 'before' | 'over' | 'after') => {
-			assert(page, 'Cannot paste node on an unloaded page.');
-			console.log('paste', target, position);
-
 			const newPage = { ...page };
 
 			const parentPathSegs = splitPath(target);
@@ -203,24 +165,73 @@ export default function Editor() {
 
 			const children: Node[] = traversePath(newPage, parentPath);
 			if (position === 'over') children.splice(ind as number, 1, JSON.parse(clipboard!));
-			else
-				children.splice(position === 'before' ? ind : ind + 1, 0, JSON.parse(clipboard!));
+			else children.splice(position === 'before' ? ind : ind + 1, 0, JSON.parse(clipboard!));
 
 			setPage(newPage);
 		},
 		[clipboard, page]
 	);
 
+	const setProps = useCallback((path: string, props: any) => {
+		setPage(page => {
+			delete props.children;
+			const newPage = { ...page };
+			setPath(newPage, `${path}.props`, props);
+			return newPage;
+		});
+	}, []);
+
+	useEffect(() => {
+		const callback = (e: KeyboardEvent) => {
+			if (e.key === 'Delete') {
+				setFocused(focused => {
+					if (focused) removeNode(focused);
+					return null;
+				});
+			}
+			if (e.key === 'c' && e.ctrlKey) {
+				setFocused(focused => {
+					if (focused) copyNode(focused);
+					return focused;
+				});
+			}
+			if (e.key === 'v' && e.ctrlKey) {
+				setFocused(focused => {
+					if (focused) pasteNode(focused, 'over');
+					return focused;
+				});
+			}
+			if (e.key === 'x' && e.ctrlKey) {
+				setFocused(focused => {
+					if (focused) {
+						copyNode(focused);
+						removeNode(focused);
+					}
+					return null;
+				});
+			}
+		}
+
+		window.addEventListener('keydown', callback);
+		return () => window.removeEventListener('keydown', callback);
+
+	}, [ copyNode, pasteNode, removeNode ]);
+
 	const ctxData: EditorContextData = useMemo(
 		() => ({
 			placing,
-			page: page!,
+			page,
+			hovered,
+			focused,
 			clipboard,
+
+			setProps,
 
 			hoverElement,
 			unhoverElement,
 			focusElement,
 			unfocusElement,
+			openElementMenu,
 
 			copyNode,
 			pasteNode,
@@ -228,62 +239,50 @@ export default function Editor() {
 			addNode,
 			removeNode,
 		}),
-		[hoverElement, unhoverElement, focusElement, unfocusElement,
-			addNode, removeNode, copyNode, pasteNode, clipboard, placing, page]
+		[ setProps, hoverElement, unhoverElement, focusElement, unfocusElement, openElementMenu,
+			addNode, removeNode, copyNode, pasteNode, clipboard, placing, page, hovered, focused ]
 	);
 
-	if (!page || !layout) {
-		return <p>Loading... </p>;
-	}
-
 	return (
-		<div class={tw`gap-4 flex flex-col w-full`} onMouseUp={handleEndPlace}>
-			<div
+		<div class={tw`gap-4 flex flex-col w-full -mb-14`} onMouseUp={handleEndPlace} id='editor'>
+			{/* <div
 				class={tw`shrink-0 w-12 h-12 bg-gray-300 rounded cursor-grab`}
 				onMouseDown={startPlace}
-			/>
+			/> */}
 			<EditorContext.Provider value={ctxData}>
 				<LayoutRenderer layout={layout} page={page}/>
+				{menu && <ElementMenu
+					path={menu.path}
+					onClose={() => setMenu(null)}
+					position={{ left: menu.x, top: menu.y }}
+				/>}
+				<TransitionGroup
+					duration={75}
+					enterFrom={tw`opacity-0 scale-[103%]`}
+					enter={tw`transition duration-75`}
+				>
+					{hovered && hovered !== focused && (
+						<div
+							key={hovered}
+							class={tw`absolute border-(2 accent-500/30) rounded-lg interact-none`}
+							style={padBounds(getBoundingBox(document.getElementById(hovered)!), 4)}
+						/>
+					)}
+				</TransitionGroup>
+				<TransitionGroup
+					duration={75}
+					enterFrom={tw`opacity-0 scale-[103%]`}
+					enter={tw`transition duration-75`}
+					invertExit>
+					{focused && (
+						<div
+							key={focused}
+							class={tw`absolute border-(2 accent-400) ring-(& accent-500/25) rounded-lg interact-none`}
+							style={padBounds(getBoundingBox(document.getElementById(focused)!), 8)}
+						/>
+					)}
+				</TransitionGroup>
 			</EditorContext.Provider>
-				{/* */}
-			<TransitionGroup
-				duration={300}
-				enterFrom={tw`opacity-0 scale-[99.5%]`}
-				enter={tw`transition duration-75 delay-150`}
-				exit={tw`!opacity-0 !duration-[0ms] !delay-[0ms]`}
-				exitFrom={tw`!opacity-0 !duration-[0ms] !delay-[0ms]`}
-			>
-				{hovered && hovered.path !== focused?.path && (
-					<div
-						key={hovered.path}
-						class={tw`absolute border-(2 accent-500/25) rounded-lg interact-none`}
-						style={{
-							top: hovered.bounds.top - 4,
-							left: hovered.bounds.left - 4,
-							width: hovered.bounds.width + 8,
-							height: hovered.bounds.height + 8,
-						}}
-					/>
-				)}
-			</TransitionGroup>
-			<TransitionGroup
-				duration={150}
-				enterFrom={tw`opacity-0 scale-[99.5%]`}
-				enter={tw`transition duration-150`}
-				invertExit>
-				{focused && (
-					<div
-						key={focused.path}
-						class={tw`absolute border-(2 accent-400) ring-(& accent-500/25) rounded-lg interact-none`}
-						style={{
-							top: focused.bounds.top - 8,
-							left: focused.bounds.left - 8,
-							width: focused.bounds.width + 16,
-							height: focused.bounds.height + 16,
-						}}
-					/>
-				)}
-			</TransitionGroup>
 		</div>
 	);
 }

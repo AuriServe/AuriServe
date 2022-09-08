@@ -77,4 +77,6 @@ export { registerPage, unregisterPage } from './Page';
 export { registerShortcut, unregisterShortcut } from './Shortcut';
 export { registerSettings, unregisterSettings } from './Settings';
 
+export { AppContext } from './Component/App';
+
 render(h(App, {}), document.getElementById('root')!);

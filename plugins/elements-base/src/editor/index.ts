@@ -7,7 +7,7 @@ export { default as Testimonial } from '../page/display/Testimonial';
 export { default as Text } from './display/Text';
 
 export { default as Carousel } from '../page/layout/Carousel';
-export { default as Columns } from '../page/layout/Columns';
+export { default as Columns } from './layout/Columns';
 export { default as Grid } from '../page/layout/Grid';
 export { default as Stack } from '../page/layout/Stack';
 

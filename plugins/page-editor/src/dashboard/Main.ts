@@ -1,19 +1,32 @@
 import { registerPage, registerShortcut, Icon } from 'dashboard';
 
-import PagesPage from './PagesPage';
+import RoutesPage from './RoutesPage';
+import PageEditor from './PageEditor';
 
 registerPage({
-	identifier: 'page-editor:pages',
-	title: 'Pages',
-	path: '/pages',
-	component: PagesPage,
+	identifier: 'page-editor:routes',
+	title: 'Routes',
+	path: '/routes',
+	component: RoutesPage,
 });
 
 registerShortcut({
-	identifier: 'page-editor:pages',
+	identifier: 'page-editor:routes',
 	icon: Icon.file,
-	title: 'View Pages',
+	title: 'View Routes',
 	aliases: ['go pages'],
-	description: 'View and edit site pages.',
-	action: ({ navigate }: any) => navigate('/pages/'),
+	description: 'View and edit site routes.',
+	action: ({ navigate }: any) => navigate('/routes/'),
 });
+
+registerPage({
+	identifier: 'page-editor:page_editor_contents',
+	title: 'Page Editor Contents',
+	path: '/page_editor_contents',
+	component: PageEditor
+});
+
+export { default as Overlay } from './Overlay';
+export { default as SnapPoint } from './SnapPoint';
+export { useEditor } from './Editor';
+export { useElement } from './Element';

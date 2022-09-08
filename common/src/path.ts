@@ -41,6 +41,12 @@ export function buildPath(...segs: (string | number)[]): string {
 		);
 }
 
+export function setPath(object: any, path: string, value: any) {
+	const segs = splitPath(path);
+	segs.slice(0, -1).forEach((seg) => (object = descend(seg, object)));
+	object[segs[segs.length - 1]] = value;
+}
+
 export function splitPath(path: string): (string | number)[] {
 	return path
 		.replace(/\[/g, '.[')

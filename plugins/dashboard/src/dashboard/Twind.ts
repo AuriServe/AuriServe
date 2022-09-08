@@ -397,45 +397,32 @@ tw(css`
 		)
 		.join('\n')}
 
-	svg, svg > * {
-		transition: all 75ms ease-in-out;
-	}
+	svg, svg > * { @apply transition-all duration-75; }
 
-	html.AS_APP {
+	html {
 		overflow-x: hidden;
-		overflow-y: scroll;
 		-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 	}
 
 	@media (pointer: fine) {
-		html.AS_APP body::-webkit-scrollbar,
-		html.AS_APP body *::-webkit-scrollbar {
+		html.custom_scroll {
+			overflow-y: scroll;
+		}
+
+		html.custom_scroll::-webkit-scrollbar, html body *::-webkit-scrollbar {
 			@apply w-[14px] h-[14px];
 			background-color: var(--scroll-gutter);
 		}
 
-		body::-webkit-scrollbar-thumb,
-		body *::-webkit-scrollbar-thumb {
+		html.custom_scroll::-webkit-scrollbar-thumb, html body *::-webkit-scrollbar-thumb {
 			@apply rounded-full border-(4 solid);
 			border-color: var(--scroll-gutter);
 			background-color: var(--scroll-bar);
 		}
 
-		body::-webkit-scrollbar-thumb:hover,
-		body *::-webkit-scrollbar-thumb:hover {
+		html.custom_scroll::-webkit-scrollbar-thumb:hover, html body *::-webkit-scrollbar-thumb:hover {
 			background-color: var(--scroll-bar-hover);
 		}
-	}
-
-	.AS_TRANSITION_THEME,
-	.AS_TRANSITION_THEME *,
-	.AS_TRANSITION_THEME *::before,
-	.AS_TRANSITION_THEME *::after {
-		transition: all 0.25s 0s !important;
-	}
-
-	.AS_ROOT {
-		@apply font-sans;
 	}
 
 	*::selection {

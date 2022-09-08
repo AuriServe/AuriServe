@@ -4,39 +4,20 @@ import type { ComponentChildren } from 'preact';
 import { randomIdentifier } from '../../common/util';
 
 export type Props = {
-	maxWidth?: number;
-	minWidth?: number;
-	gap?: number;
-	columns?: string;
 	reverseVertical?: boolean;
-	layoutChildren?: 'start' | 'end' | 'stretch' | 'center';
-	justifyChildren?: 'start' | 'end' | 'center' | 'space-between' | 'space-around';
+
+	layoutChildren?: 'flex-start' | 'flex-end' | 'stretch' | 'center';
+	justifyChildren?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
+
+	gap?: number;
+	minWidth?: number;
+	maxWidth?: number;
+	columns?: { min?: string; width: string }[];
 
 	style?: any;
 	class?: string;
 	children?: ComponentChildren;
 };
-
-const parseMinMax = (min: string, natural: string) => `minmax(${min}, ${natural})`;
-
-const parseColumn = (raw: string) =>
-	raw.startsWith('(')
-		? parseMinMax(
-				...(raw.substring(1, raw.length - 1).split(',') as unknown as [string, string])
-		  )
-		: raw;
-
-export function parseColumns(raw?: string): string {
-	if (!raw) return 'repeat(auto-fit, 1fr)';
-	const columns = raw
-		.replace(/ /g, '')
-		.split(':')
-		.filter((s) => s);
-	return columns.map(parseColumn).join(' ');
-}
-
-export const toCSSUnit = (val: number | string) =>
-	typeof val === 'string' ? val : `${val}px`;
 
 /**
  * Renders a horizontal row of columns, with their own responsive sizes.
@@ -52,6 +33,10 @@ export const toCSSUnit = (val: number | string) =>
 
 function Columns(props: Props) {
 	const identifier = props.minWidth ? randomIdentifier() : '';
+
+	const gridColumnString = (props.columns ?? [{ width: '1fr' }]).map(({ min, width }) =>
+		min ? `minmax(${min}, ${width})` : width).join(' ');
+
 	return (
 		<div
 			class={['base:columns', identifier, props.class, props.reverseVertical && 'reverse']
@@ -60,24 +45,17 @@ function Columns(props: Props) {
 			{props.minWidth && (
 				<style
 					dangerouslySetInnerHTML={{
-						__html: `@media(max-width:${toCSSUnit(
-							props.minWidth
-						)}){.base\\:columns.${identifier}>.inner{display:flex}}`,
+						__html: `@media(max-width:${props.minWidth}px){.base\\:columns.${identifier}>.inner{display:flex}}`,
 					}}
 				/>
 			)}
 			<div
 				class='inner'
 				style={{
-					maxWidth: props.maxWidth && toCSSUnit(props.maxWidth),
-					gap: props.gap && toCSSUnit(props.gap),
-					gridTemplateColumns: parseColumns(props.columns),
-					alignItems:
-						props.layoutChildren === 'start'
-							? 'flex-start'
-							: props.layoutChildren === 'end'
-							? 'flex-end'
-							: props.layoutChildren ?? 'stretch',
+					gap: `${props.gap}px`,
+					maxWidth: props.maxWidth && `${props.maxWidth}px`,
+					gridTemplateColumns: gridColumnString,
+					alignItems: props.layoutChildren ?? 'stretch',
 					justifyContent: props.justifyChildren
 				}}>
 				{props.children}

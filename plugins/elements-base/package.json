@@ -14,6 +14,8 @@
 		"postcss": true
 	},
 	"devDependencies": {
+		"@types/dashboard": "file:../dashboard",
+		"@types/page-editor": "file:../page-editor",
 		"@types/elements": "file:../elements",
 		"@types/hydrated": "file:../hydrated",
 		"@types/routes": "file:../routes",

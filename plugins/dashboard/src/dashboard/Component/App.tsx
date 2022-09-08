@@ -15,14 +15,22 @@ import { QUERY_INFO } from '../Graph';
 
 type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
+function setHijackScrollbar(hijack: boolean) {
+	document.documentElement.classList[hijack ? 'add' : 'remove']('custom_scroll',
+		...tw`scroll-(gutter-gray-900 bar-(gray-500 hover-gray-400)`.split(' ')
+	);
+}
+
 document.documentElement.classList.add('dark');
-document.documentElement.classList.add(
-	...tw`scroll-(gutter-gray-900 bar-(gray-500 hover-gray-400)`.split(' ')
-);
+setHijackScrollbar(true);
+
 /** Defines the content of the App Context. */
 export interface AppContextData {
 	data: Partial<any>;
 	mergeData(data: Partial<any>): void;
+
+	setShowChrome: (show: boolean) => void;
+	setHijackScrollbar: (hijack: boolean) => void;
 }
 
 /** The App Context containing graph data. */
@@ -31,6 +39,8 @@ export const AppContext = createContext<AppContextData>({
 	mergeData: () => {
 		throw 'Accessed default AppContext';
 	},
+	setShowChrome: () => void(0),
+	setHijackScrollbar: () => void(0)
 });
 
 /**
@@ -40,6 +50,8 @@ export const AppContext = createContext<AppContextData>({
  */
 
 export default function App() {
+	const [ showChrome, setShowChrome ] = useState(true);
+
 	const [data, setData] = useState<Partial<any>>({});
 	const [state, setState] = useState<AppState>(() =>
 		window.localStorage.getItem('token') ? 'QUERYING' : 'LOGIN'
@@ -58,14 +70,14 @@ export default function App() {
 	}, [ state ]);
 
 	return (
-		<AppContext.Provider value={{ data, mergeData }}>
+		<AppContext.Provider value={{ data, mergeData, setShowChrome, setHijackScrollbar }}>
 			<div
 				class={tw`
-				AS_ROOT ${state !== 'LOGIN' && 'pl-14'} grid min-h-screen font-sans theme-blue
+				${state !== 'LOGIN' && showChrome && 'pl-14'} grid min-h-screen font-sans theme-blue
 				bg-gray-(100 dark:900) text-gray-(800 dark:100)
 				icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
 				<Router basename='/dashboard'>
-					{state === 'AUTH' && <Fragment>
+					{state === 'AUTH' && showChrome && <Fragment>
 						<CommandPalette />
 						<Sidebar
 							shortcuts={

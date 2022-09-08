@@ -30,9 +30,10 @@ const ElementRenderer = memo(function ElementRenderer(props: { page: Page, point
 
 	return (
 		<Fragment>
-			{Object.entries(props.points).map(([ identifier, node ]) => createPortal(
-				<Element node={props.page.content.sections[identifier]} path={`content.sections.${identifier}`} />,
-				node))}
+			{Object.entries(props.points)
+				.filter(([ identifier ]) => identifier in props.page.content.sections)
+				.map(([ identifier, node ]) => createPortal(
+					<Element node={props.page.content.sections[identifier]} path={`content.sections.${identifier}`} />, node))}
 		</Fragment>
 	);
 }, (prev, next) => prev.page === next.page && prev.points === next.points);
