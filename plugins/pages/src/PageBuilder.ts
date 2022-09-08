@@ -5,7 +5,7 @@ import { renderTree } from 'elements';
 
 import { registeredLayouts } from './Layouts';
 import { registeredInjectors } from './Injectors';
-import { ElementNode, Include, isIncludeNode, Node, Page } from './Interface';
+import { Include, isIncludeNode, Node, Page } from './Interface';
 
 const getSectionRegex = (section: string) => {
 	return new RegExp(
@@ -25,7 +25,9 @@ export async function buildPage(page: Page, includes = new Map()): Promise<strin
 			for (const [ k, v ] of Object.entries(include.content)) (node as any)[k] = v;
 		}
 
-		for (const child of (node as ElementNode).children ?? []) resolveIncludes(child);
+		for (const children of Object.values((Array.isArray(node.children) ? { _: node.children } : node.children) ?? {})) {
+			for (const child of children) resolveIncludes(child);
+		}
 	}
 
 	for (const section of Object.values(page.content.sections)) resolveIncludes(section);

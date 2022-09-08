@@ -19,7 +19,7 @@ export interface Include {
 export interface ElementNode {
 	element: string;
 	props?: Record<string, any>;
-	children?: Node[];
+	children?: Node[] | Record<string, Node[]>;
 }
 
 export interface IncludeNode {

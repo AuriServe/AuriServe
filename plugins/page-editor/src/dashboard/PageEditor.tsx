@@ -72,9 +72,9 @@ export function PageEditorFrame() {
 	return (
 		<div class={tw`flex cols-2`}>
 			<iframe class={tw`w-full h-full`} src='/dashboard/page_editor_contents'/>
-			<div class={tw`w-72 shrink-0 flex-(& col) bg-gray-800 p-4 gap-2`}>
+			{/* <div class={tw`w-72 shrink-0 flex-(& col) bg-gray-800 p-4 gap-2`}>
 				<p>Happy</p>
-			</div>
+			</div> */}
 		</div>
 
 	);

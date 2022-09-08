@@ -29,7 +29,7 @@ export default function Element({ node, path }: Props) {
 	const editor = useEditor();
 
 	assert('element' in node, 'Not an element node');
-	const Elem = elements.get(node.element)?.component;
+	const element = elements.get(node.element);
 
 	const editorSetProps = editor.setProps;
 	const setProps = useCallback((props: any) => editorSetProps(path, props), [ path, editorSetProps ]);
@@ -43,9 +43,17 @@ export default function Element({ node, path }: Props) {
 
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
-	if (!Elem) {
+	if (!element) {
 		return <UndefinedElement elem={node.element} />;
 	}
+
+	const ElementComponent = element.component;
+
+	const children = node.children ? (Array.isArray(node.children) ?
+		node.children.map((child, i) => <Element key={i} node={child} path={`${path}.children[${i}]`} />) :
+		Object.fromEntries(Object.entries(node.children!).map(([ key, children ], i) => [
+			key, children.map((child, j) => <Element key={j} node={child} path={`${path}.children[${i}][${j}]`} />)
+		]))) : undefined;
 
 	function handleClick(evt: Event) {
 		evt.preventDefault();
@@ -78,11 +86,7 @@ export default function Element({ node, path }: Props) {
 		<ElementContext.Provider value={ctx}>
 			<div class={tw`dash_elem_container A~(contents)`} ref={wrapperRef} id={path}
 				onClick={handleClick} onMouseOver={handleOver} onMouseOut={handleOut} onContextMenu={handleContextMenu}>
-				<Elem {...(node.props as any)}>
-					{(node.children ?? []).map((child, i) => (
-						<Element key={i} node={child} path={`${path}.children[${i}]`} />
-					))}
-				</Elem>
+				<ElementComponent {...(node.props as any)} children={children}/>
 			</div>
 		</ElementContext.Provider>
 	);

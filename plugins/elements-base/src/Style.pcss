@@ -18,6 +18,21 @@
 		}
 	}
 
+	.base\:column_fancy {
+		width: 100%;
+
+		& > .columns {
+			display: grid;
+			margin: 0 auto;
+
+			& > .column {
+				min-width: 0;
+				display: flex;
+				flex-direction: column;
+			}
+		}
+	}
+
 	.base\:grid {
 		width: 100%;
 

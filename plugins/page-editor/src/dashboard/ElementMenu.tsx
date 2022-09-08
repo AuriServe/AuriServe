@@ -21,7 +21,7 @@ export default function ElementMenu(props: Props) {
 	return (
 		<Menu active={!!props.position} position={props.position} onClose={props.onClose}>
 			<Menu.Header>
-				<Menu.Shortcut icon={Icon.widget_add} label='Add Element' />
+				<Menu.Shortcut icon={Icon.widget_add} label='Add Element' onClick={() => {/**/}}/>
 				<Menu.Header.Spacer width={4} />
 				<Menu.Shortcut
 					icon={Icon.trash}
