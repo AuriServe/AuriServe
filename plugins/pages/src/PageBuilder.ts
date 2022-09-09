@@ -3,9 +3,10 @@ import { assert } from 'common';
 import escapeHtml from 'escape-html';
 import { renderTree } from 'elements';
 
+import { getDocument } from './Database';
 import { registeredLayouts } from './Layouts';
 import { registeredInjectors } from './Injectors';
-import { Include, isIncludeNode, Node, Page } from './Interface';
+import { Document, PageDocument, isIncludeNode, Node, isIncludeDocument } from './Interface';
 
 const getSectionRegex = (section: string) => {
 	return new RegExp(
@@ -14,19 +15,28 @@ const getSectionRegex = (section: string) => {
 	);
 };
 
-export async function buildPage(page: Page, includes = new Map()): Promise<string> {
+export async function buildPage(page: PageDocument): Promise<string> {
 	const perfName = `Building page '${page.metadata.title ?? 'Untitled'}'`;
 
-	function resolveIncludes(node: Node): void {
+	function resolveIncludes(node: Node, includeProps: Record<string, Record<string, any>> = {}): void {
 		while (isIncludeNode(node)) {
-			const include: Include | undefined = includes.get(node.include);
-			assert(include, 'Include not found');
+			const include: Document | null = getDocument(node.include);
+			assert(include && isIncludeDocument(include), `Included document '${node.include}' doesn't exist.`);
 			delete (node as any).include;
+			if (node.props) includeProps = { ...includeProps, ...node.props };
+			delete (node as any).props;
 			for (const [ k, v ] of Object.entries(include.content)) (node as any)[k] = v;
 		}
 
+		if (node.exposeAs) {
+			node.props = { ...node.props, ...includeProps[node.exposeAs] ?? {} };
+			delete includeProps[node.exposeAs];
+		}
+
 		for (const children of Object.values((Array.isArray(node.children) ? { _: node.children } : node.children) ?? {})) {
-			for (const child of children) resolveIncludes(child);
+			for (const child of children) {
+				resolveIncludes(child, includeProps);
+			}
 		}
 	}
 

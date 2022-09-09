@@ -12,6 +12,7 @@ export { default as attach } from '@res/icon/attach.svg';
 export { default as auriserve } from '@res/icon/auriserve.svg';
 export { default as browse } from '@res/icon/browse.svg';
 export { default as calculator } from '@res/icon/calculator.svg';
+export { default as calendar } from '@res/icon/calendar.svg';
 export { default as check } from '@res/icon/check.svg';
 export { default as credit_card } from '@res/icon/credit_card.svg';
 export { default as close } from '@res/icon/close.svg';

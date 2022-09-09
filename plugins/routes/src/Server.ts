@@ -1,64 +1,37 @@
 import auriserve from 'auriserve';
 import type { Request, Response, NextFunction } from 'auriserve/router';
 
-import type Req from './Req';
-import { Route } from './Route';
+import { Req, Route } from './Route';
+import { HTMLRoute } from './HTMLRoute';
+import { DirectoryRoute } from './DirectoryRoute';
 
 /** The route interface. */
-export type { Route } from './Route';
+export type { Route, Req } from './Route';
 
-/** An abstract route class that can be extended with a custom `render` function. */
-export { BaseRoute } from './Route';
+export { BaseRoute } from './BaseRoute';
+export { HTMLRoute } from './HTMLRoute';
+export { DirectoryRoute } from './DirectoryRoute';
 
 /** The root Route. */
-let root: Route | null = null;;
+export const root: Route  = new DirectoryRoute('/');
 
-/** The error Route. */
-let error: Route | null;
+/** The error Route. */ // eslint-disable-next-line prefer-const
+export let error: Route | null = new HTMLRoute('/', 'Error 404!');
 
 /** Creates a Routes Req object from an Express Request. */
 export function createReq(req: Request): Req {
 	return {
-		path: req.path.split('/').filter(Boolean).join('/'),
+		path: `/${req.path.split('/').filter(Boolean).join('/')}`,
 		query: req.query,
 		body: req.body,
 	};
 }
 
-/** Returns the route at the specified path, or null. */
-export async function get(path: string): Promise<Route | null> {
-	if (!root) return null;
-	return await root.get(path.split('/').filter(Boolean).join('/'));
-}
-
-/** Returns the root route. */
-export async function getRoot(): Promise<Route | null> {
-	return await get('/');
-};
-
-/** Sets the root route. */
-export function setRoot(newRoot: Route | null): void {
-	root = newRoot;
-}
-
-/** Sets the error route. */
-export function setErrorRoute(route: Route | null): void {
-	error = route;
-};
-
 /** Handles a GET request and sends the render result of a Route if there is one at the specified path. */
 export async function handleGet(req: Request, res: Response, next: NextFunction): Promise<void> {
-	if (!root) {
-		next();
-		return;
-	}
-
+	if (!root) return next();
 	const routeRes = await root.req(createReq(req));
-	if (routeRes == null) {
-		next();
-		return;
-	}
-
+	if (routeRes == null) return next();
 	res.send(routeRes);
 };
 
@@ -86,7 +59,7 @@ export function getErrorHandler(
 
 auriserve.router.get('*', handleGet);
 const handle404 = getErrorHandler(404);
-setTimeout(() => auriserve.router.get('*', handle404), 1);
+// setTimeout(() => auriserve.router.get('*', handle404), 1);
 
 auriserve.once('cleanup', () => {
 	auriserve.router.remove(handle404);

@@ -1,0 +1,14 @@
+name: Calendar
+identifier: calendar
+description: iCal-based calendars for AuriServe.
+
+version: 0.0.1
+author: Auri
+
+depends:
+  - dashboard 0.0.1
+
+entry:
+  server: build/server.js
+  dashboard: build/dashboard.js
+  # client: build/client.js

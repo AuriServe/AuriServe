@@ -1,7 +1,6 @@
-import { promises as fs } from 'fs';
 import { database } from 'auriserve';
 
-import { Page } from './Interface';
+import { Document } from './Interface';
 
 database.prepare('CREATE TABLE IF NOT EXISTS pages (path TEXT PRIMARY KEY, content TEXT)').run();
 
@@ -18,9 +17,8 @@ export function clearCache() {
  * @param path - The absolute path to the page file.
  */
 
-export async function cache(path: string) {
-	const page = await fs.readFile(path, 'utf8');
-	database.prepare('INSERT OR IGNORE INTO pages (path, content) VALUES (?, ?)').run(path, page);
+export async function cache(path: string, pageStr: string) {
+	database.prepare('INSERT OR IGNORE INTO pages (path, content) VALUES (?, ?)').run(path, pageStr);
 }
 
 /**
@@ -30,7 +28,7 @@ export async function cache(path: string) {
  * @returns the page.
  */
 
-export function getPage(path: string): Page | null {
+export function getDocument(path: string): Document | null {
 	const content = database.prepare('SELECT content FROM pages WHERE path = ?').get(path)?.content;
 	return content ? JSON.parse(content) : null;
 }

@@ -1,19 +1,17 @@
-import type Req from './Req';
+export interface Req {
+    /** Arbitrary values passed by e.g. error routes. */
+    [key: string]: any;
+    /** The sanitized URL path. */
+    path: string;
+    /** Parsed URL Query parameters. */
+    query: Record<string, string>;
+    /** Body content, if any. */
+    body: string;
+}
 export interface Route {
     getPath(): string;
     canAdd(): boolean;
     add(pathSegment: string, route: Route): Route;
     get(path: string): Promise<Route | null>;
     req(req: Req): Promise<string | null>;
-}
-export declare abstract class BaseRoute implements Route {
-    protected path: string;
-    protected children: Map<string, Route>;
-    constructor(path: string);
-    getPath(): string;
-    canAdd(): boolean;
-    add(pathSegment: string, route: Route): Route;
-    get(path: string): Promise<Route | null>;
-    req(req: Req): Promise<string | null>;
-    abstract render(req: Req): Promise<string>;
 }

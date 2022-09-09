@@ -1,4 +1,4 @@
-import { setRoot } from 'routes';
+import { DirectoryRoute, root } from 'routes';
 import { promises as fs } from 'fs';
 import path, { resolve } from 'path';
 import { log, dataPath, plugins, router } from 'auriserve';
@@ -11,9 +11,10 @@ export { default as PageRoute } from './PageRoute';
 export { registeredLayouts, registerLayout, unregisterLayout } from './Layouts';
 export { registeredInjectors, addInjector, removeInjector } from './Injectors';
 export { buildPage, populateLayout } from './PageBuilder';
-export { isComponentNode, isIncludeNode, isPopulatedIncludeNode } from './Interface';
+export { isElementNode, isIncludeNode } from './Interface';
 
-export type { Page, Include, Metadata, Node, ElementNode, IncludeNode, PopulatedIncludeNode } from './Interface';
+export type { Document, PageDocument, IncludeDocument, PageMetadata, IncludeMetadata,
+	Node, ElementNode, IncludeNode } from './Interface';
 
 async function importPages(pagesPath: string) {
 	clearCache();
@@ -27,19 +28,25 @@ async function importPages(pagesPath: string) {
 		return Array.prototype.concat(...files);
 	}
 
-	const pages = await getPages(pagesPath);
+	const pages = (await getPages(pagesPath)).map((page) => path.relative(pagesPath, page));
+	await Promise.all(pages.map(async (page) => cache(page, await fs.readFile(path.join(pagesPath, page), 'utf8'))));
 
-	pages.forEach(page => cache(page));
+	for (const page of pages.filter(page => !page.startsWith('includes'))) {
+		const pathSegments = page.replace(/.json$/, '').split('/');
+		const lastSegment = pathSegments.pop()!;
 
-	const root = new PageRoute('/', path.join(pagesPath, 'index.json'));
+		let parent = root;
+		for (let i = 0; i < pathSegments.length; i++) {
+			let child = await parent.get(pathSegments[i]);
+			if (!child) {
+				child = new DirectoryRoute(`${parent.getPath()}/${pathSegments[i]}`);
+				parent.add(pathSegments[i], child);
+			}
+			parent = child;
+		}
 
-	pages.forEach(page => {
-		const pageName = page.split('/').pop()!.replace('.json', '');
-		if (pageName === 'index') return;
-		root.add(pageName, new PageRoute(`/${pageName}`, page));
-	})
-
-	setRoot(root);
+		parent.add(lastSegment, new PageRoute(`${parent.getPath()}/${lastSegment}`, page));
+	}
 }
 
 const pagesDir = path.join(dataPath, 'pages');
@@ -65,4 +72,4 @@ router.get('/client.js', async (_, res) => {
 
 addInjector('head', () => `<script defer src='/client.js'></script>`);
 
-export { getPage } from './Database';
+export { getDocument } from './Database';

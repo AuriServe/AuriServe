@@ -1,0 +1,30 @@
+{
+	"name": "@auriserve/plugin-calendar",
+	"version": "0.0.1",
+	"description": "iCal-based calendars for AuriServe.",
+	"author": "Auri Collings <me@auri.xyz>",
+	"homepage": "https://github.com/AuriServe",
+	"license": "AGPL-3.0-only",
+	"types": "types/Types.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"dev": "webpack-gen dev",
+		"build": "webpack-gen build"
+	},
+	"devDependencies": {
+		"@types/ical": "^0.8.0",
+		"preact": "^10.10.2",
+		"vibin-hooks": "^0.3.0",
+		"webpack-gen": "file:../../webpack-gen",
+		"@types/dashboard": "file:../dashboard"
+	},
+	"dependencies": {
+		"auriserve": "file:../../api/build",
+		"common": "file:../../common/build",
+		"ical": "^0.8.0",
+		"ics": "^2.40.0",
+		"rrule": "^2.7.1"
+	}
+}

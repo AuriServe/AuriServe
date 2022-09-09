@@ -25,18 +25,18 @@ function Entries({ entries }: { entries: NavEntry[] }) {
 		<ul>
 			{entries.map((entry) => {
 				if (typeof entry === 'string')
-					return <li class='Navigation-ItemSeparator' aria-hidden='true' />;
+					return <li class='separator' aria-hidden='true' />;
 
 				return (
-					<li key={entry.to} class='Navigation-Item'>
-						{!entry.to && <span class='Navigation-ItemLabel'>{entry.label}</span>}
+					<li key={entry.to} class={merge('item', entry.entries && 'has-entries')}>
+						{!entry.to && <span class='label'>{entry.label}</span>}
 						{entry.to && (
 							<a
 								rel='noreferrer noopener'
 								href={entry.to}
 								target={entry.target === 'new' ? '_blank' : undefined}
 								class={merge(
-									'Navigation-ItemLabel' /*, entry.to === activePath && 'Active'*/
+									'label' /*, entry.to === activePath && 'Active'*/
 								)}>
 								{entry.label}
 								{entry.target === 'new' && (

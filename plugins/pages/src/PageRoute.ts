@@ -1,18 +1,37 @@
-import { BaseRoute } from 'routes';
+import { Req, Route } from 'routes';
 
-import { getPage } from './Database';
+import { getDocument } from './Database';
 import { buildPage } from './PageBuilder';
+import { isPageDocument } from './Interface';
 
-export default class PageRoute extends BaseRoute {
-	constructor(path: string, readonly filePath: string) {
-		super(path);
+export default class PageRoute implements Route {
+	protected path: string;
+	protected page: string;
+
+	constructor(path: string, page: string) {
+		this.path = path.replace(/^\/?(.*)\/?$/, '$1');
+		this.page = page;
 	}
 
-	async render() {
-		const page = getPage(this.filePath);
-		if (page) {
-			return await buildPage(page!);
-		}
-		return '404';
+	getPath() {
+		return this.path;
+	}
+
+	canAdd() {
+		return false;
+	}
+
+	add(_pathSegment: string, _route: Route): Route {
+		throw new Error('Cannot accept children.');
+	}
+
+	async get(_path: string): Promise<Route | null> {
+		return null;
+	}
+
+	async req(_req: Req): Promise<string | null> {
+		const page = getDocument(this.page);
+		if (page && isPageDocument(page)) return await buildPage(page);
+		return null;
 	}
 }

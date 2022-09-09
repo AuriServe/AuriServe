@@ -1,6 +1,16 @@
-import { assert } from 'common';
+export interface Req {
+	/** Arbitrary values passed by e.g. error routes. */
+	[key: string]: any;
 
-import type Req from './Req';
+	/** The sanitized URL path. */
+	path: string;
+
+	/** Parsed URL Query parameters. */
+	query: Record<string, string>;
+
+	/** Body content, if any. */
+	body: string;
+}
 
 export interface Route {
 	getPath(): string;
@@ -12,44 +22,4 @@ export interface Route {
 	get(path: string): Promise<Route | null>;
 
 	req(req: Req): Promise<string | null>;
-}
-
-export abstract class BaseRoute implements Route {
-	protected path: string;
-	protected children: Map<string, Route> = new Map();
-
-	constructor(path: string) {
-		this.path = path.replace(/^\/?(.*)\/?$/, '$1');
-	}
-
-	getPath() {
-		return this.path;
-	}
-
-	canAdd() {
-		return true;
-	}
-
-	add(pathSegment: string, route: Route) {
-		assert(
-			pathSegment.indexOf('/') === -1,
-			`Path segment '${pathSegment}' cannot contain slashes.`
-		);
-		this.children.set(pathSegment, route);
-		return route;
-	}
-
-	async get(path: string): Promise<Route | null> {
-		if (path === this.path) return this;
-		const childSegment = path.substring(this.path.length).split('/')[0];
-		return (await this.children.get(childSegment)?.get(path)) ?? null;
-	}
-
-	async req(req: Req): Promise<string | null> {
-		if (this.path === req.path) return this.render(req);
-		const childSegment = req.path.substring(this.path.length).split('/')[0];
-		return (await this.children.get(childSegment)?.req(req)) ?? null;
-	}
-
-	abstract render(req: Req): Promise<string>;
 }

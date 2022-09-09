@@ -37,6 +37,7 @@ function RawGrid(props: Props) {
 
 	useLayoutEffect(() => updateMoreToReveal(), [ revealedCount, updateMoreToReveal ]);
 
+	console.log(moreToReveal);
 	return (
 		<div class={`${identifier} ${randomID} ${props.class ?? ''}`} ref={ref}>
 			{revealedCount != null && <style dangerouslySetInnerHTML={{ __html:
