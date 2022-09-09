@@ -51,10 +51,10 @@ export default function CalendarPage() {
 				<div class={tw`grow bg-gray-900 grid-(& cols-7 rows-5) gap-1.5 p-2 pt-0`}>
 					{Array.from(Array(7 * 5).keys()).map((_, i) => <div key={i}
 						class={tw`relative rounded-md p-2 pt-9 flex-(& col) gap-2 ${(i < 4 || i > 7 * 4 + 2) ? 'bg-gray-800/25' : 'bg-gray-800/50'}`}>
-						<p class={tw`absolute top-2 left-2 w-5 h-5 mr-auto pt-px text-gray-200 text-center font-bold text-sm
+						<p class={tw`absolute top-2 left-2 w-5 h-5 mr-auto pt-px text-gray-100 text-center font-bold text-sm
 							${i === 9 && `rounded-full bg-accent-400 text-gray-900
 							ring-(& accent-500/25 offset-gray-900)`}`}>{i}</p>
-						{i < 7 && <p class={tw`absolute top-2.5 left-10 pt-px text-gray-500 font-bold text-xs uppercase tracking-widest`}>
+						{i < 7 && <p class={tw`absolute top-2.5 left-10 pt-px text-gray-300 font-bold text-xs uppercase tracking-widest`}>
 							{WEEKDAYS[i]}
 						</p>}
 						{EVENTS.filter(event => event.ind === i).map(event => <div key={event.title} class={tw`
