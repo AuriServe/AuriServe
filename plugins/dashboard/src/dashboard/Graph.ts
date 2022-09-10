@@ -202,7 +202,6 @@ export const QUERY_LAYOUT = `query($identifier: String!) { layout(identifier: $i
 // `;
 
 /** Gets a password reset token. */
-// TODO: This should be a mutation but the GraphQL api doesn't support mutations.
 export const MUTATE_CREATE_PASSWORD_RESET_TOKEN = `
 	mutation($identifier: String!) {
 		createPasswordResetToken(identifier: $identifier)

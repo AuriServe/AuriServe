@@ -1,19 +1,34 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { dataPath } from 'auriserve';
+import { gqlResolver, extendGQLSchema } from 'dashboard';
 
-import { parseICAL, populateACAL } from '../common/Calendar';
-
+import { parseICAL } from './LoadCalendar';
 
 parseICAL(path.join(dataPath, 'birthdays.ics')).then(calendar => {
-	populateACAL(calendar);
+	// populateACAL(calendar);
 	fs.writeFile(path.join(dataPath, 'birthdays.acal.json'), JSON.stringify(calendar, null, 2));
 });
 
 parseICAL(path.join(dataPath, 'calendar.ics')).then(calendar => {
-	populateACAL(calendar);
+	// populateACAL(calendar);
 	fs.writeFile(path.join(dataPath, 'calendar.acal.json'), JSON.stringify(calendar, null, 2));
 });
+
+parseICAL(path.join(dataPath, 'classes.ics')).then(calendar => {
+	// populateACAL(calendar);
+	fs.writeFile(path.join(dataPath, 'classes.acal.json'), JSON.stringify(calendar, null, 2));
+});
+
+extendGQLSchema(`
+	extend type Query {
+		calendar(name: String!): String
+	}
+`);
+
+gqlResolver.calendar = ({ name }: { name: string }) => {
+	return fs.readFile(path.join(dataPath, `${name}.acal.json`), 'utf8');
+};
 
 // (async () => {()
 // 	const calPath = path.join(dataPath, 'cal.ics');
