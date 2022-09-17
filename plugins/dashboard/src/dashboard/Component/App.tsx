@@ -119,6 +119,7 @@ export default function App() {
 						{state === 'QUERYING' && <Route path='*' element={<LoadingPage />} />}
 					</Routes>
 				</Router>
+				<div id='portal' class={tw`absolute top-0 left-0 w-0 h-0`}/>
 			</div>
 		</AppContext.Provider>
 	);

@@ -1,16 +1,17 @@
 import { database } from 'auriserve';
 
-import type { Role } from './Roles';
+import { Role } from './Roles';
+// import {  } from './Users';
 
 export function init() {
 	/***** Reset data (DEVELOPMENT ONLY) *****/
 
-	// database.exec(`DROP TABLE IF EXISTS userPasswordResetTokens`);
 	// database.exec(`DROP TABLE IF EXISTS users`);
 	// database.exec(`DROP TABLE IF EXISTS roles`);
 	// database.exec(`DROP TABLE IF EXISTS userRoles`);
 	// database.exec(`DROP TABLE IF EXISTS userEmails`);
 	// database.exec(`DROP TABLE IF EXISTS userTokens`);
+	// database.exec(`DROP TABLE IF EXISTS userPasswordResetTokens`);
 
 	/* Holds users' identifiers, names, and passwords. */
 	database.exec(
@@ -18,7 +19,8 @@ export function init() {
 			id INTEGER PRIMARY KEY,
 			identifier TEXT UNIQUE NOT NULL,
 			name TEXT NOT NULL,
-			password TEXT NOT NULL
+			password TEXT NOT NULL,
+			data TEXT NOT NULL
 		) STRICT`
 	);
 
@@ -84,38 +86,38 @@ export function getRoles(): Role[] {
 // Test data
 
 // (async () => {
-// 	await as.users.createUser('aurailus', 'Aurailus', 'me@auri.xyz', 'password');
-// 	await as.users.createUser('zythia', 'Zythia', 'zythia.woof@gmail.com', 'password');
-// 	await as.users.createUser('piescorch', 'Elliot', 'mail@example.com', 'password');
-// 	await as.users.createUser('lore', 'Lore', 'maila@example.com', 'password');
-// 	await as.users.createUser('choir', 'Jason', 'mailb@example.com', 'password');
+// 	await createUser('aurailus', 'Aurailus', 'me@auri.xyz', 'password');
+// // 	await as.users.createUser('zythia', 'Zythia', 'zythia.woof@gmail.com', 'password');
+// // 	await as.users.createUser('piescorch', 'Elliot', 'mail@example.com', 'password');
+// // 	await as.users.createUser('lore', 'Lore', 'maila@example.com', 'password');
+// // 	await as.users.createUser('choir', 'Jason', 'mailb@example.com', 'password');
 
-// 	await as.users.createUser('aurailus_', 'Aurailus', '_me@auri.xyz', 'password');
-// 	await as.users.createUser('zythia_', 'Zythia', '_zythia.woof@gmail.com', 'password');
-// 	await as.users.createUser('piescorch_', 'Elliot', '_mail@example.com', 'password');
-// 	await as.users.createUser('lore_', 'Lore', '_maila@example.com', 'password');
-// 	await as.users.createUser('choir_', 'Jason', '_mailb@example.com', 'password');
+// // 	await as.users.createUser('aurailus_', 'Aurailus', '_me@auri.xyz', 'password');
+// // 	await as.users.createUser('zythia_', 'Zythia', '_zythia.woof@gmail.com', 'password');
+// // 	await as.users.createUser('piescorch_', 'Elliot', '_mail@example.com', 'password');
+// // 	await as.users.createUser('lore_', 'Lore', '_maila@example.com', 'password');
+// // 	await as.users.createUser('choir_', 'Jason', '_mailb@example.com', 'password');
 
-// 	await as.users.createUser('aurailus__', 'Aurailus', '__me@auri.xyz', 'password');
-// 	await as.users.createUser('zythia__', 'Zythia', '__zythia.woof@gmail.com', 'password');
-// 	await as.users.createUser('piescorch__', 'Elliot', '__mail@example.com', 'password');
-// 	await as.users.createUser('lore__', 'Lore', '__maila@example.com', 'password');
-// 	await as.users.createUser('choir__', 'Jason', '__mailb@example.com', 'password');
+// // 	await as.users.createUser('aurailus__', 'Aurailus', '__me@auri.xyz', 'password');
+// // 	await as.users.createUser('zythia__', 'Zythia', '__zythia.woof@gmail.com', 'password');
+// // 	await as.users.createUser('piescorch__', 'Elliot', '__mail@example.com', 'password');
+// // 	await as.users.createUser('lore__', 'Lore', '__maila@example.com', 'password');
+// // 	await as.users.createUser('choir__', 'Jason', '__mailb@example.com', 'password');
 
-// 	try {
-// 		as.users.addRole('administrator', 0, 'Administrator', ['administrator']);
-// 		as.users.addRole('moderator', 100, 'Moderator', ['view_audit_log']);
-// 		as.users.addRole('editor', 100, 'Editor', ['view_pages', 'view_users', 'view_permissions']);
-// 		as.users.addRole('@aurailus', 0, 'Auri', ['(administrator']);
-// 		as.users.addRole('@john', 0, 'John', ['view_audit_log']);
-// 		as.users.addRole('_everyone', 0, 'Everyone', []);
-// 	} catch (e) {
-// 		console.warn(e);
-// 	}
+// // 	try {
+// 		addRole('administrator', 0, 'Administrator', ['administrator']);
+// // 		as.users.addRole('moderator', 100, 'Moderator', ['view_audit_log']);
+// // 		as.users.addRole('editor', 100, 'Editor', ['view_pages', 'view_users', 'view_permissions']);
+// // 		as.users.addRole('@aurailus', 0, 'Auri', ['(administrator']);
+// // 		as.users.addRole('@john', 0, 'John', ['view_audit_log']);
+// // 		as.users.addRole('_everyone', 0, 'Everyone', []);
+// // 	} catch (e) {
+// // 		console.warn(e);
+// // 	}
 
-// 	// db.exec(`INSERT INTO userRoles(role, user) VALUES('administrator', 1)`);
-// 	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 1)`);
-// 	// db.exec(`INSERT INTO userRoles(role, user) VALUES('@aurailus', 1)`);
+// 	database.exec(`INSERT INTO userRoles(role, user) VALUES('administrator', 1)`);
+// // 	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 1)`);
+// // 	// db.exec(`INSERT INTO userRoles(role, user) VALUES('@aurailus', 1)`);
 
-// 	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 2)`);
+// // 	db.exec(`INSERT INTO userRoles(role, user) VALUES('editor', 2)`);
 // })();

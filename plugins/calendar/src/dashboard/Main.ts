@@ -16,6 +16,3 @@ registerShortcut({
 	description: 'Edit calendar events.',
 	action: ({ navigate }: any) => navigate('/calendar/'),
 });
-
-
-console.log('gonig!');

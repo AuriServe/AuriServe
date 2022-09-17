@@ -29,6 +29,7 @@
 	"devDependencies": {
 		"@types/routes": "file:../routes",
 		"@types/users": "file:../users",
+		"@types/ws": "^8.5.3",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
@@ -40,6 +41,7 @@
 		"preact": "^10.10.2",
 		"react-router-dom": "^6.3.0",
 		"twind": "^1.0.0-next.35",
-		"vibin-hooks": "^0.3.0"
+		"vibin-hooks": "^0.3.0",
+		"ws": "^8.8.1"
 	}
 }

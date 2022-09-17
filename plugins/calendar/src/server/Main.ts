@@ -5,24 +5,18 @@ import { gqlResolver, extendGQLSchema } from 'dashboard';
 
 import { parseICAL } from './LoadCalendar';
 
-parseICAL(path.join(dataPath, 'birthdays.ics')).then(calendar => {
-	// populateACAL(calendar);
-	fs.writeFile(path.join(dataPath, 'birthdays.acal.json'), JSON.stringify(calendar, null, 2));
-});
+// const calendars = [ 'birthdays', 'calendar', 'classes', 'testing' ];
+const calendars = [ [ 'maxcameron', 'Max Cameron' ], [ 'testing', 'Test Calendar' ], [ 'calendar', 'Personal' ] ];
 
-parseICAL(path.join(dataPath, 'calendar.ics')).then(calendar => {
-	// populateACAL(calendar);
-	fs.writeFile(path.join(dataPath, 'calendar.acal.json'), JSON.stringify(calendar, null, 2));
-});
-
-parseICAL(path.join(dataPath, 'classes.ics')).then(calendar => {
-	// populateACAL(calendar);
-	fs.writeFile(path.join(dataPath, 'classes.acal.json'), JSON.stringify(calendar, null, 2));
-});
+// calendars.forEach(async ([ name ]) => {
+// 	const calendar = await parseICAL(path.join(dataPath, `${name}.ics`));
+// 	fs.writeFile(path.join(dataPath, `${name}.acal.json`), JSON.stringify(calendar, null, 2));
+// });
 
 extendGQLSchema(`
 	extend type Query {
-		calendar(name: String!): String
+		calendar(name: String!): String,
+		calendars: [[String!]!]!,
 	}
 `);
 
@@ -30,14 +24,4 @@ gqlResolver.calendar = ({ name }: { name: string }) => {
 	return fs.readFile(path.join(dataPath, `${name}.acal.json`), 'utf8');
 };
 
-// (async () => {()
-// 	const calPath = path.join(dataPath, 'cal.ics');
-
-// 	const calFile = await fs.readFile(calPath, 'utf8');
-
-// 	const cal = ical.parseICS(calFile);
-
-// 	await fs.writeFile(path.join(dataPath, 'cal.json'), JSON.stringify(cal, null, 2));
-
-// 	console.log(cal['ccq3cd9p6os36b9pc4pjcb9kchh30b9oc9j36b9k64sj4dj475gj2e35cg@google.com']);
-// })();
+gqlResolver.calendars = calendars;

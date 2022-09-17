@@ -35,7 +35,7 @@ export default forwardRef<HTMLDivElement, Props>(function Portal(
 	}, [props.wrapperClass, root, props.z]);
 
 	useEffect(() => {
-		const parent = props.to ?? document.querySelector('.AS_ROOT') ?? document.body;
+		const parent = props.to ?? document.querySelector('#portal') ?? document.body;
 		parent.appendChild(root);
 		return () => parent.removeChild(root);
 	}, [props.to, root]);

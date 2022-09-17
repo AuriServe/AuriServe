@@ -1,7 +1,8 @@
 import path from 'path';
 import * as users from 'users';
+import { WebSocketServer } from 'ws';
 import { RequestHandler } from 'auriserve/router';
-import auriserve, { router, log } from 'auriserve';
+import auriserve, { router, log, config } from 'auriserve';
 import { graphql, buildSchema, GraphQLResolveInfo, GraphQLSchema } from 'graphql';
 
 import { User } from 'users';
@@ -311,3 +312,10 @@ export function extendGQLSchema(schema: string) {
 
 setImmediate(() => init());
 auriserve.once('cleanup', () => cleanup());
+
+if (config.debug) {
+	log.info('[Dashboard] Starting Debug Websocket Server.');
+	const wss = new WebSocketServer({ port: 11148 });
+	wss.on('connection', (ws) => auriserve.once('cleanup', () => ws.close()));
+	auriserve.once('cleanup', () => wss.close());
+}

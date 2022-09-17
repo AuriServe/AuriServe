@@ -5,9 +5,14 @@ import readline from 'readline';
 
 import { Calendar, Event } from '../common/Calendar';
 
-function parseDate2(date: string) {
+function parseStartDate(date: string) {
 	const match = /^(\d{4})(\d{2})(\d{2})$/gm.exec(date)!;
 	return +new Date(+match[1], +match[2] - 1, +match[3]);
+}
+
+function parseEndDate(date: string) {
+	const match = /^(\d{4})(\d{2})(\d{2})$/gm.exec(date)!;
+	return +new Date(+match[1], +match[2] - 1, +match[3] - 1, 23, 59, 59, 999);
 }
 
 /**
@@ -16,7 +21,7 @@ function parseDate2(date: string) {
  * @returns a unix timestamp (with milliseconds).
  */
 
-function parseDate(date: string) {
+function parseTimestamp(date: string) {
 	const match = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?$/gm.exec(date)!;
 	return Date.UTC(+match[1], +match[2] - 1, +match[3], +match[4], +match[5], +match[6]);
 }
@@ -42,7 +47,7 @@ export function parseICAL(calPath: string): Promise<Calendar> {
 	const fileStream = fs.createReadStream(calPath);
 	const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
 
-	const events: Event[] = [];
+	const events: Record<string, Event> = {};
 
 	/**
 	 * Skips an unknown block of lines, from the current line
@@ -114,24 +119,22 @@ export function parseICAL(calPath: string): Promise<Calendar> {
 					switch (type) {
 					case undefined:
 					case 'TZID':
-						start = parseDate(value);
+						start = parseTimestamp(value);
 						break;
 					case 'VALUE':
 						assert(typeValue === 'DATE', 'Unknown DTSTART type');
-						start = parseDate2(value);
-						// start = parseDate(`${value}T000000Z`);
+						start = parseStartDate(value);
 					}
 					break;
 				case 'DTEND':
 					switch (type) {
 					case undefined:
 					case 'TZID':
-						end = parseDate(value);
+						end = parseTimestamp(value);
 						break;
 					case 'VALUE':
 						assert(typeValue === 'DATE', 'Unknown DTEND type');
-						end = parseDate2(value);
-						// end = parseDate(`${value}T000000Z`);
+						end = parseEndDate(value);
 					}
 					break;
 				case 'RRULE':
@@ -150,7 +153,7 @@ export function parseICAL(calPath: string): Promise<Calendar> {
 
 			if (line === 'END:VEVENT') {
 				assert(uid != null && start != null && end != null, 'Missing required fields.');
-				events.push({ uid, start, end, title, description, location, rrule });
+				events[uid] = { uid, start, end, title, description, location, rrule, category: '0' };
 				yield;
 				return delegate();
 			}
@@ -218,7 +221,7 @@ export function parseICAL(calPath: string): Promise<Calendar> {
 		once(rl, 'close').then(() => {
 			if (accLine) doLine(accLine);
 
-			resolve({ events });
+			resolve({ events, categories: { '0': { uid: '0', name: 'Uncategorized', color: 'blue' }} });
 		});
 	});
 }

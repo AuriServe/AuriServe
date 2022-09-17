@@ -11,6 +11,7 @@ interface Props {
 	labelId: string;
 
 	hideLabel?: boolean;
+	placeholderLabel?: boolean;
 
 	/**
 	 * Whether or not the input is populated. i.e. if the label should shrink.
@@ -56,15 +57,29 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
 
 	return tw`InputContainerLabel~(
 		absolute w-[calc(100%-1.5rem)] truncate transition-all interact-none
-		${
-			populated === undefined
-				? `${posActive} input-inactive:(${posInactive})`
-				: `${populated ? posActive : posInactive}`
+		${populated === undefined
+			? `${posActive} input-inactive:(${posInactive})`
+			: `${populated ? posActive : posInactive}`
 		}
-		${
-			active === undefined
-				? `${colInactive} peer-focus-input:!(${colActive})`
-				: `${active ? colActive : `${colInactive} peer-focus-input:!(${colActive})`}`
+		${active === undefined
+			? `${colInactive} peer-focus-input:!(${colActive})`
+			: `${active ? colActive : `${colInactive} peer-focus-input:!(${colActive})`}`
+		}
+	)`;
+}
+
+function getPlaceholderStyles(active?: boolean, populated?: boolean, isInvalid?: boolean) {
+	const pos = 'top-[9px] left-3 text-base';
+	const valid = 'text-(gray-((500 dark:300) peer-hover:(500 dark:200)))';
+	const invalid = 'text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:(800 dark:300))';
+
+	const style = isInvalid ? invalid : valid
+
+	return tw`InputContainerLabel~(
+		absolute w-[calc(100%-1.5rem)] truncate transition-all interact-none
+		${populated === undefined
+			? `${pos} ${style} hidden peer-placeholder-shown:block`
+			: `${populated ? '' : `${pos} ${style}`}`
 		}
 	)`;
 }
@@ -89,7 +104,9 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 				class={
 					props.hideLabel
 						? tw`sr-only`
-						: getLabelStyles(props.active, props.populated, props.invalid)
+						: props.placeholderLabel
+							? getPlaceholderStyles(props.active, props.populated, props.invalid)
+							: getLabelStyles(props.active, props.populated, props.invalid)
 				}>
 				{props.label}
 			</label>
@@ -97,10 +114,9 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 				class={tw`
 					absolute bottom-0 w-full h-0.5 rounded-b transition-all
 					opacity-0 scale-x-75 [transform-origin:25%]
-					${
-						props.active !== undefined
-							? props.active && 'opacity-100 scale-x-100'
-							: 'peer-focus:(opacity-100 scale-x-100)'
+					${props.active !== undefined
+						? props.active && 'opacity-100 scale-x-100'
+						: 'peer-focus:(opacity-100 scale-x-100)'
 					}
 					${props.active && '!opacity-100 !scale-x-100'}
 					${props.invalid ? 'bg-red-(700/75 dark:300)' : 'bg-accent-(500 dark:400)'}`}

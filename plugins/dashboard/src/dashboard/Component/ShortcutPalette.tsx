@@ -137,6 +137,7 @@ export default function ShortcutPalette() {
 					</label>
 					<input
 						id='shortcut_input'
+						autoComplete='off'
 						ref={inputRef}
 						class={tw`p-4 w-full bg-gray-700 rounded-lg mb-4 !outline-none shadow-md pointer-events-auto pl-14`}
 						type='text'

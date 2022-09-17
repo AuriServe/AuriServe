@@ -14,8 +14,8 @@ export type Token = string;
 
 export async function createUser(identifier: string, name: string, email: string, password: string) {
 	const id = database
-		.prepare('INSERT INTO users(identifier, name, password) VALUES(?, ?, ?)')
-		.run(identifier, name, await hashPassword(password)).lastInsertRowid;
+		.prepare('INSERT INTO users(identifier, name, password, data) VALUES (?, ?, ?, ?)')
+		.run(identifier, name, await hashPassword(password), '').lastInsertRowid;
 	database.prepare('INSERT INTO userEmails(email, user) VALUES(?, ?)').run(email, id);
 }
 
@@ -148,4 +148,17 @@ export function getUser(token: Token): User {
 		.map(({ role }) => role) as string[];
 
 	return { identifier, name, emails, roles };
+}
+
+export function getUserData(identifier: string): Record<string, any> | null {
+	const data = database
+		.prepare('SELECT data FROM users WHERE identifier = ?')
+		.get(identifier).data;
+	return data ? JSON.parse(data) : null;
+}
+
+export function setUserData(identifier: string, data: Record<string, any>) {
+	database
+		.prepare('UPDATE users SET data = ? WHERE identifier = ?')
+		.run(JSON.stringify(data), identifier);
 }

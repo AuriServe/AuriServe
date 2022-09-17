@@ -7,4 +7,5 @@ export { permissions, permissionCategories, addPermission, addPermissionCategory
 
 export type { Token, User } from './Users';
 export { createUser, deleteUser, getUser, getAuthToken, checkPassword,
-	createPasswordResetToken, hashPassword, listUsers, resetPassword, userIDFromToken } from './Users';
+	createPasswordResetToken, hashPassword, listUsers, resetPassword, userIDFromToken,
+	getUserData, setUserData } from './Users';

@@ -4,12 +4,14 @@ import NumberField from './NumberField';
 import { TextField, PasswordField } from './TextField';
 import ToggleField from './ToggleField';
 import OptionField from './OptionField';
+import DateTimeField from './DateTimeField';
 import type { ValidityError } from '../useValidity';
 
 export { default as NumberField } from './NumberField';
 export { TextField, PasswordField } from './TextField';
 export { default as ToggleField } from './ToggleField';
 export { default as OptionField } from './OptionField';
+export { default as DateTimeField } from './DateTimeField';
 
 export const Field = {
 	Number: NumberField,
@@ -17,6 +19,7 @@ export const Field = {
 	Password: PasswordField,
 	Toggle: ToggleField,
 	Option: OptionField,
+	DateTime: DateTimeField
 };
 
 /** Basic field props for a form field. */

@@ -80,3 +80,13 @@ export { registerSettings, unregisterSettings } from './Settings';
 export { AppContext } from './Component/App';
 
 render(h(App, {}), document.getElementById('root')!);
+
+const DEBUG_SOCKET_ADDRESS = `ws://${location.hostname}:11148`;
+const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
+socket.addEventListener('open', () => {
+	socket.addEventListener('close', () => (function awaitServerAndReload() {
+		const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
+		socket.addEventListener('open', () => window.location.reload());
+		socket.addEventListener('error', () => setTimeout(awaitServerAndReload, 100));
+	})());
+});

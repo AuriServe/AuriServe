@@ -51,16 +51,18 @@ import util from 'util';
 // 	setLogLevel: (level: string) => (logger.level = level),
 // };
 
-const levels = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
-let currentLevel = levels.indexOf('INFO');
+const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
+const labels = ['TRACE', 'DEBUG', 'INFO.', 'WARN.', 'ERROR', 'FATAL'];
+let currentLevel = levels.indexOf('info');
 
 function logFunction(level: string, color: string) {
 	return (...args: any[]) => {
-		if (levels.indexOf(level.toUpperCase()) >= currentLevel) {
+		const index = levels.indexOf(level);
+		if (index >= currentLevel) {
 			console.log(
-				`[ \u001B[${color}m${level
+				`[\u001B[${color}m${labels[index]
 					.toUpperCase()
-					.padEnd(5)}\u001B[0m ] \u001B[${color}m${util.format(...args)}\u001b[0m`,
+					.padEnd(5)}\u001B[0m] \u001B[${color}m${util.format(...args)}\u001b[0m`,
 				// ...args.slice(1)
 			);
 		}
@@ -68,7 +70,7 @@ function logFunction(level: string, color: string) {
 }
 
 function setLevel(level: string) {
-	currentLevel = levels.indexOf(level.toUpperCase());
+	currentLevel = levels.indexOf(level);
 }
 
 const activePerfs: Map<string, [number, number]> = new Map();

@@ -6,10 +6,10 @@ function descend(seg: number | string, object: any) {
 			Array.isArray(object),
 			`Invalid Array index into Value '${JSON.stringify(object)}'.`
 		);
-		assert(
-			object.length > seg,
-			`Index '${seg}' is missing in Array '${JSON.stringify(object)}'.`
-		);
+		// assert(
+		// 	object.length > seg,
+		// 	`Index '${seg}' is missing in Array '${JSON.stringify(object)}'.`
+		// );
 		return object[seg];
 	}
 
@@ -17,10 +17,10 @@ function descend(seg: number | string, object: any) {
 		object !== undefined && typeof object === 'object',
 		`Value is not an object: '${object}'.`
 	);
-	assert(
-		seg in object,
-		`Object is missing property '${seg}': '${JSON.stringify(object)}'.`
-	);
+	// assert(
+	// 	seg in object,
+	// 	`Object is missing property '${seg}': '${JSON.stringify(object)}'.`
+	// );
 	return object[seg];
 }
 

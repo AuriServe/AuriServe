@@ -13,6 +13,11 @@ import { tw, merge } from '../../../Twind';
 
 type Props = FieldProps<string | null> & {
 	hideLabel?: boolean;
+	placeholderLabel?: boolean;
+
+	multiline?: boolean;
+	minRows?: number;
+	maxRows?: number;
 
 	minLength?: number;
 	maxLength?: number;
@@ -24,6 +29,7 @@ type Props = FieldProps<string | null> & {
 
 function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 	const ref = useRef<HTMLElement>(null);
+	const preRef = useRef<HTMLPreElement>(null);
 
 	useEffect(() => {
 		// Autofocus on first render if the autofocus prop is set.
@@ -80,6 +86,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 
 	const handleChange = ({ target }: any) => {
 		const newValue: string | null = required ? target.value : target.value || null;
+		if (preRef.current) preRef.current.innerText = `${newValue ?? ''}\n`;
 		value.current = newValue;
 		validate(newValue);
 		props.onChange?.(newValue);
@@ -91,15 +98,29 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 		stateOnBlur(evt);
 	};
 
+	const Tag = props.multiline ? 'textarea' : 'input';
+
 	return (
 		<InputContainer
 			hideLabel={props.hideLabel}
+			placeholderLabel={props.placeholderLabel}
 			label={label}
 			labelId={id}
 			invalid={invalid}
 			class={props.class}
 			style={props.style}>
-			<input
+			{Tag === 'textarea' && <pre aria-hidden={true} ref={preRef}
+				class={merge(tw`relative font-sans !opacity-0 interact-none text-accent-500
+					w-full overflow-auto px-1.5 whitespace-pre-line break-words
+					${(props.hideLabel || props.placeholderLabel) ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}`,
+					autofillClasses)}
+				style={{
+					minHeight: props.minRows && `${props.minRows * 1.5 + 1}rem`,
+					maxHeight: props.maxRows && `${props.maxRows * 1.5 + 1}rem`,
+				}}>
+				{`${value.current}\n`}
+			</pre>}
+			<Tag
 				ref={refs(autofillRef, ref, props.fieldRef, (elem) =>
 					ctx.setFieldRef(path, elem)
 				)}
@@ -109,12 +130,14 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 				disabled={disabled}
 				readonly={readonly}
 				placeholder=' '
-				autocomplete={props.completion}
+				autocomplete={props.completion ?? 'off'}
 				aria-description={props.description}
 				class={merge(
 					tw`peer w-full px-1.5 !outline-none rounded
-						${props.hideLabel ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}
-						${props.hideLabel && invalid && '!text-red-300'}`,
+						${(props.hideLabel || props.placeholderLabel) ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}
+						${(props.hideLabel || props.placeholderLabel) && invalid && '!text-red-300'}
+						${props.multiline && `absolute top-0 left-0 w-full h-full resize-none !transition-none
+							scroll-bar-gray-500 scroll-bar-hover-gray-400 scroll-gutter-gray-input focus:scroll-gutter-gray-700`}`,
 					autofillClasses
 				)}
 				value={value.current ?? ''}
