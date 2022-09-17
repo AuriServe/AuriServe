@@ -4,8 +4,10 @@ description: Adds a registry for Elements, which are Preact components that can 
 
 version: 0.0.1
 author: Auri
+type: library
+
 depends:
-- auriserve-preact ^1
+  auriserve-preact: ^1
 
 entry:
   server: build/server.js

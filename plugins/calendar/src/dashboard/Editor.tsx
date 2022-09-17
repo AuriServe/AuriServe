@@ -91,7 +91,7 @@ export default function EditEvent(props: Props) {
 						<Button.Tertiary small icon={Icon.external} iconOnly label='Expand'
 							onClick={() => setExpanded(!expanded)}/>
 						<div class={tw`w-0.5 bg-gray-500`}/>
-						{props.changed
+						{(props.changed || props.isNew)
 							? <Button.Secondary key='save' type='submit' small icon={Icon.save} iconOnly label='Save'/>
 							: <Button.Tertiary key='save' type='submit' small icon={Icon.save} iconOnly label='Save'/>}
 						{!props.isNew && <Button.Tertiary small icon={Icon.trash} iconOnly label='Delete'

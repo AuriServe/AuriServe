@@ -67,4 +67,8 @@ export default class Version {
 		if (patch !== this.patch) return patchFuzzy ? this.patch >= patch : false;
 		return true;
 	}
+
+	toString(): string {
+		return `${this.major}.${this.minor}.${this.patch}`;
+	}
 }

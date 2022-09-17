@@ -5,15 +5,26 @@ import App from './Component/App';
 
 import * as Icon from './Icon';
 import { registerSettings } from './Settings';
-import { UserSettings } from './Component/Page';
+import { UserSettings, PermissionSettings, AppearanceSettings, OverviewSettings, PluginsSettings }
+	from './Component/Page';
 
-// registerSettings({
-// 	identifier: 'dashboard:overview',
-// 	title: 'Overview',
-// 	path: 'overview',
-// 	icon: Icon.home,
-// 	component: OverviewSettings,
-// });
+registerSettings({
+	identifier: 'dashboard:overview',
+	title: 'Overview',
+	path: 'overview',
+	icon: Icon.info,
+	permissions: [],
+	component: OverviewSettings,
+});
+
+registerSettings({
+	identifier: 'dashboard:appearance',
+	title: 'Appearance',
+	path: 'appearance',
+	icon: Icon.theme,
+	permissions: [],
+	component: AppearanceSettings,
+});
 
 registerSettings({
 	identifier: 'dashboard:users',
@@ -24,14 +35,23 @@ registerSettings({
 	component: UserSettings,
 });
 
-// registerSettings({
-// 	identifier: 'dashboard:permissions',
-// 	title: 'Permissions',
-// 	path: 'permissions',
-// 	icon: Icon.role,
-// 	permissions: ['view_permissions'],
-// 	component: PermissionSettings,
-// });
+registerSettings({
+	identifier: 'dashboard:permissions',
+	title: 'Permissions',
+	path: 'permissions',
+	icon: Icon.role,
+	permissions: ['view_permissions'],
+	component: PermissionSettings,
+});
+
+registerSettings({
+	identifier: 'dashboard:plugins',
+	title: 'Plugins',
+	path: 'plugins',
+	icon: Icon.plugin,
+	permissions: [],
+	component: PluginsSettings,
+});
 
 export { useLocation, useNavigate } from 'react-router-dom';
 
@@ -84,9 +104,14 @@ render(h(App, {}), document.getElementById('root')!);
 const DEBUG_SOCKET_ADDRESS = `ws://${location.hostname}:11148`;
 const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
 socket.addEventListener('open', () => {
-	socket.addEventListener('close', () => (function awaitServerAndReload() {
-		const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
-		socket.addEventListener('open', () => window.location.reload());
-		socket.addEventListener('error', () => setTimeout(awaitServerAndReload, 100));
-	})());
+	socket.addEventListener('close', () => {
+		let attempts = 0;
+		(function awaitServerAndReload() {
+			const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
+			socket.addEventListener('open', () => window.location.reload());
+			socket.addEventListener('error', () => {
+				if (++attempts < 20) setTimeout(awaitServerAndReload, 100);
+			});
+		})();
+	});
 });

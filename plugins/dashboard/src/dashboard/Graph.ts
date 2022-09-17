@@ -8,6 +8,57 @@ import { AppContext, AppContextData } from './Component/App';
 /** The GQL endpoint to query. */
 const ENDPOINT = '/dashboard/res/gql';
 
+export interface GraphData {
+	user: {
+		name: string;
+		identifier: string;
+		roles: string[];
+		permissions: string[];
+	};
+	info: {
+		name: string;
+		domain: string;
+		description: string;
+		favicon: string;
+	};
+	permissions: {
+		identifier: string;
+		name: string;
+		description: string;
+		category: string;
+		default: boolean;
+	}[];
+	permissionCategories: {
+		identifier: string;
+		name: string;
+		description: string;
+		icon: string;
+		priority: number;
+	}[];
+	roles: {
+		identifier: string;
+		name: string;
+		permissions: string[];
+	}[];
+	users: {
+		identifier: string;
+		name: string;
+		emails: string[];
+		roles: string[];
+	}[];
+	plugins: {
+		name: string;
+		identifier: string;
+		description: string;
+		icon: string;
+		version: string;
+		author: string;
+		type: string;
+		depends: { identifier: string, version: string }[];
+		enabled: boolean;
+	}[];
+}
+
 /**
  * A result provided by the useData hook.
  * It is an array containing (in the following order):
@@ -15,48 +66,7 @@ const ENDPOINT = '/dashboard/res/gql';
  * - and a function that can be called to refresh the cache.
  */
 
-type UseDataResult = [
-	Partial<{
-		user: {
-			name: string;
-			identifier: string;
-			roles: string[];
-			permissions: string[];
-		};
-		info: {
-			name: string;
-			domain: string;
-			description: string;
-			favicon: string;
-		};
-		permissions: {
-			identifier: string;
-			name: string;
-			description: string;
-			category: string;
-			default: boolean;
-		}[];
-		permissionCategories: {
-			identifier: string;
-			name: string;
-			description: string;
-			icon: string;
-			priority: number;
-		}[];
-		roles: {
-			identifier: string;
-			name: string;
-			permissions: string[];
-		}[];
-		users: {
-			identifier: string;
-			name: string;
-			emails: string[];
-			roles: string[];
-		}[];
-	}>,
-	() => void
-];
+type UseDataResult = [ Partial<GraphData>, () => void ];
 
 /**
  * A hook that provides access to the cached App data, and can refresh subsets of data if supplied with queries.
@@ -130,7 +140,7 @@ export const QUERY_PERMISSIONS = `permissions { identifier, name, description, c
 export const QUERY_PERMISSION_CATEGORIES = `permissionCategories { identifier, name, description, icon, priority }`;
 
 /** Queries the current user. */
-export const QUERY_SELF_USER = `user { identifier, name, emails, roles, permissions }`;
+export const QUERY_SELF_USER = `user { identifier, name, emails, roles, permissions, theme }`;
 
 /** Queries all users. */
 export const QUERY_USERS = `users { identifier, name, emails, roles }`;
@@ -143,6 +153,9 @@ export const QUERY_PAGE = `query($path: String!) {
 }`;
 
 export const QUERY_LAYOUT = `query($identifier: String!) { layout(identifier: $identifier) }`;
+
+export const QUERY_PLUGINS = `plugins { identifier, name, description, icon version,
+	author, type, depends { identifier, version }, enabled }`;
 
 /** Queries site quotas. */
 // export const QUERY_QUOTAS = `quotas ${Query.Quotas}`;

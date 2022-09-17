@@ -1,13 +1,14 @@
 name: Dashboard
 identifier: dashboard
 description: A Web-based dashboard for plugins.
+icon: launch
 
 version: 0.0.1
 author: Auri
 
 depends:
-- users ^0.0.1
-- routes ^0.0.1
+  users: ^0.0.1
+  routes: ^0.0.1
 
 entry:
   server: build/server.js

@@ -2,7 +2,7 @@ import path from 'path';
 import * as users from 'users';
 import { WebSocketServer } from 'ws';
 import { RequestHandler } from 'auriserve/router';
-import auriserve, { router, log, config } from 'auriserve';
+import auriserve, { router, log, config, plugins } from 'auriserve';
 import { graphql, buildSchema, GraphQLResolveInfo, GraphQLSchema } from 'graphql';
 
 import { User } from 'users';
@@ -26,6 +26,10 @@ const baseSchema = `
 		y: Float!
 	}
 
+	type Dashboard {
+		theme: String!
+	}
+
 	type Info {
 		name: String!
 		domain: String!
@@ -38,6 +42,7 @@ const baseSchema = `
 		emails: [String!]!
 		roles: [String!]
 		permissions: [String!]
+		theme: String
 	}
 
 	type Role {
@@ -62,21 +67,40 @@ const baseSchema = `
 		priority: Int!
 	}
 
+	type PluginDependency {
+		identifier: String!
+		version: String!
+	}
+
+	type Plugin {
+		name: String!
+		identifier: String!
+		description: String!
+		icon: String
+
+		version: String!
+		author: String!
+		type: String!
+
+		depends: [PluginDependency!]!
+
+		enabled: Boolean!
+	}
+
 	type Query {
 		info: Info!
 		user: User!
 
-		users: [User!]
+		users: [User!]!
+		plugins: [Plugin!]
 
 		roles: [Role!]
 		permissions: [Permission!]
 		permissionCategories: [PermissionCategory!]
-
-		createPasswordResetToken(identifier: String!): String!
 	}
 
 	type Mutation {
-		_: Boolean
+		createPasswordResetToken(identifier: String!): String!
 	}
 `;
 
@@ -129,6 +153,7 @@ function gate<T = any>(
 	};
 }
 
+let wss: WebSocketServer | null = null;
 let schema: GraphQLSchema | null = null;
 const schemaStrings = new Set([baseSchema]);
 const routeHandlers: RequestHandler[] = [];
@@ -141,7 +166,7 @@ async function init() {
 
 	gqlResolver.info = getSiteInfo();
 
-	gqlResolver.user = (_: any, ctx: Ctx) => ({ ...ctx.user, permissions: ctx.permissions }),
+	gqlResolver.user = (_: any, ctx: Ctx) => ({ ...ctx.user, permissions: ctx.permissions, theme: 'purple' }),
 
 	gqlResolver.roles = (_: any, ctx: Ctx) => {
 		const roles = [...users.roles.values()];
@@ -162,6 +187,20 @@ async function init() {
 
 	gqlResolver.createPasswordResetToken = gate(['administrator'], (ctx: any) =>
 			users.createPasswordResetToken(ctx.identifier ?? ''));
+
+	gqlResolver.plugins = gate(['view_plugins'], () => {
+		return [...plugins.values()].map(plugin => ({
+			name: plugin.name,
+			identifier: plugin.identifier,
+			description: plugin.description,
+			icon: plugin.icon,
+			version: plugin.version.toString(),
+			author: plugin.author,
+			type: plugin.type ?? 'plugin',
+			depends: Object.entries(plugin.depends ?? {}).map(([identifier, version]) => ({ identifier, version })),
+			enabled: true
+		}));
+	});
 
 	routeHandlers.push(
 		router.get('/dashboard/res/dashboard.js', (_, res) => {
@@ -213,7 +252,7 @@ async function init() {
 
 		router.post('/dashboard/res/gql', async (req, res) => {
 			try {
-				const token = req.headers.token;
+				const token = req.headers.token as string;
 				assert(token && typeof token === 'string', 'Missing required information.');
 				const user = users.getUser(token);
 				const permissions = users.getRolePermissions(user.roles);
@@ -264,7 +303,8 @@ async function init() {
 				res.sendFile(path.join(__dirname, '..', 'res', 'dashboard', req.params.path));
 			}),
 
-			router.get(['/dashboard', '/dashboard/*'], (_, res) => {
+			router.get(['/dashboard', '/dashboard/*'], (req, res) => {
+				const safe = req.query.safe != null;
 				res.status(200).send(trim`
 				<!DOCTYPE html>
 				<html lang='en' class='AS_APP dark'>
@@ -276,11 +316,8 @@ async function init() {
 						<meta name='description' content='Website dashboard.'/>
 
 						<script src='/dashboard/res/dashboard.js' defer></script>
-						${dashboardPlugins
-							.map(
-								(plugin) =>
-									`<script src='/dashboard/res/plugin/${plugin.identifier}' defer></script>`
-							)
+						${!safe && dashboardPlugins
+							.map((plugin) => `<script src='/dashboard/res/plugin/${plugin.identifier}' defer></script>`)
 							.join('\n')}
 					</head>
 					<body id='root'>
@@ -288,6 +325,13 @@ async function init() {
 				</html>`);
 			})
 		);
+
+		if (config.debug && !wss) {
+			log.info('[Dashboard] Starting Debug Websocket Server.');
+			wss = new WebSocketServer({ port: 11148 });
+			wss.on('connection', (ws) => auriserve.once('cleanup', () => ws.close()));
+			auriserve.once('cleanup', () => wss!.close());
+		}
 	}, 100);
 }
 
@@ -312,10 +356,3 @@ export function extendGQLSchema(schema: string) {
 
 setImmediate(() => init());
 auriserve.once('cleanup', () => cleanup());
-
-if (config.debug) {
-	log.info('[Dashboard] Starting Debug Websocket Server.');
-	const wss = new WebSocketServer({ port: 11148 });
-	wss.on('connection', (ws) => auriserve.once('cleanup', () => ws.close()));
-	auriserve.once('cleanup', () => wss.close());
-}

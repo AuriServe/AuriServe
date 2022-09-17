@@ -1,12 +1,14 @@
-name: Hydrated Elements
+name: Hydrated
 identifier: hydrated
-description: API for registering Hydrated elements.
+description: Exposes an API for Elements to use client-side hydration.
 
 version: 0.0.1
 author: Auri
+type: library
+
 depends:
-- elements ^0.0.1
-- auriserve-preact ^1
+  elements: ^0.0.1
+  auriserve-preact: ^1
 
 entry:
   server: build/server.js

@@ -46,7 +46,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 	conf.tsx ??= true;
 
 	const manifest: any = load(fs.readFileSync(conf.manifestPath, 'utf8'), { schema: FAILSAFE_SCHEMA });
-	const dependencies = ((manifest.depends as string[]) ?? []).map(dep => dep.split(' ')[0]);
+	const dependencies = Object.keys((manifest.depends as Record<string, string>) ?? {});
 
 	conf.export ??= Object.keys(typeof manifest.entry === 'string' ? { server : true } : manifest.entry);
 	if (Array.isArray(conf.export)) conf.export = Object.fromEntries(conf.export.map(key => [key, true]));

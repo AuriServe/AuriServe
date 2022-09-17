@@ -68,10 +68,13 @@ export default class PluginLoader {
 					name: 'string',
 					identifier: 'string',
 					description: 'string',
+					icon: ['undefined', 'string'],
 
 					author: 'string',
 					version: 'string',
-					depends: ['undefined', 'string[]'],
+					type: ['undefined', 'string'],
+
+					depends: ['undefined', 'any'],
 
 					entry: 'any',
 					watch: ['undefined', 'string[]'],
@@ -117,15 +120,10 @@ export default class PluginLoader {
 				)
 			);
 
-			const depends = (manifest.depends ?? []).map((str) => {
-				const [identifier, version] = str.split(' ');
-				return { identifier, version };
-			});
-
 			const version = new Version(manifest.version);
 
 			this.manager.addPlugin(
-				new Plugin(this.manager, { ...manifest, version, depends, entry, watch })
+				new Plugin(this.manager, { ...manifest, version, entry, watch })
 			);
 		} catch (e) {
 			if (e instanceof AssertError) {

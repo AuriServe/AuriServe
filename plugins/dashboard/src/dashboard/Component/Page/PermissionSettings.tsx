@@ -88,11 +88,7 @@ function RoleButton(props: {
 	);
 }
 
-export default function PermissionSettings({
-	setDirty,
-}: {
-	setDirty: (dirty: boolean) => void;
-}) {
+export default function PermissionSettings() {
 	const [{ user, roles: rawRoles, permissions, permissionCategories }] = useData(
 		[QUERY_SELF_USER, QUERY_ROLES, QUERY_PERMISSIONS, QUERY_PERMISSION_CATEGORIES],
 		[]
@@ -151,7 +147,7 @@ export default function PermissionSettings({
 	}
 
 	const handleAddRole = () => {
-		setDirty(true);
+		// setDirty(true);
 		const newRoles = [...roles];
 		newRoles.push({
 			name: 'New Role',
@@ -164,13 +160,13 @@ export default function PermissionSettings({
 	};
 
 	const handleRemoveRole = () => {
-		setDirty(true);
+		// setDirty(true);
 		const newRoles = roles.filter((role) => role.identifier !== current);
 		setRoles(newRoles);
 	};
 
 	const handleSetRole = (data: any) => {
-		setDirty(true);
+		// setDirty(true);
 		const newRoles = [...roles];
 		newRoles[newRoles.findIndex((role) => role.identifier === current)] = data;
 		console.log(newRoles);

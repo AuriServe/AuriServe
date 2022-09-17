@@ -1,13 +1,12 @@
 import { h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 
 import Card from '../Card';
 import Form, { Field } from '../Form';
 
 import { tw } from '../../Twind';
 import * as Icon from '../../Icon';
-import EventEmitter from '../../EventEmitter';
-import { SettingsEvent } from '../../Settings';
+// import EventEmitter from '../../EventEmitter';
 
 interface OverviewData {
 	name: string;
@@ -15,13 +14,7 @@ interface OverviewData {
 	description: string;
 }
 
-export default function OverviewSettings({
-	event,
-	setDirty,
-}: {
-	event: EventEmitter<SettingsEvent>;
-	setDirty: (dirty: boolean) => void;
-}) {
+export default function OverviewSettings() {
 	const [initialData] = useState<OverviewData>({
 		name: 'The Shinglemill',
 		address: 'www.shinglemill.ca',
@@ -31,11 +24,11 @@ export default function OverviewSettings({
 
 	const [data, setData] = useState<OverviewData>(JSON.parse(JSON.stringify(initialData)));
 
-	setDirty(JSON.stringify(data) !== JSON.stringify(initialData));
+	// setDirty(JSON.stringify(data) !== JSON.stringify(initialData));
 
-	useEffect(() => {
-		return event.bind('undo', () => setData(JSON.parse(JSON.stringify(initialData))));
-	}, [event, initialData]);
+	// useEffect(() => {
+	// 	return event.bind('undo', () => setData(JSON.parse(JSON.stringify(initialData))));
+	// }, [event, initialData]);
 
 	console.log(data);
 
@@ -48,7 +41,6 @@ export default function OverviewSettings({
 			/>
 			<Card.Body>
 				<Form<OverviewData>
-					class={tw`p-2`}
 					value={data}
 					onChange={(data) => setData(data as OverviewData)}>
 					<div class={tw`flex-(& row) gap-8`}>
@@ -72,6 +64,8 @@ export default function OverviewSettings({
 								patternHint='Please enter a valid website address.'
 							/>
 							<Field.Text
+								multiline
+								minRows={3}
 								path='description'
 								description='A short description of your website, used in search results.'
 								optional

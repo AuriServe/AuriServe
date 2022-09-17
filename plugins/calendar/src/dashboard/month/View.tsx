@@ -82,15 +82,7 @@ export default function MonthView(props: Props) {
 					<Button.Secondary small icon={Icon.save} label='Save' onClick={props.onSave}/>
 				</div>}
 			</div>
-			<div class={tw`relative grow h-full overflow-hidden group rounded-lg`}>
-				<div class={tw`absolute z-20 top-0 left-2 right-2 grid-(& cols-7) interact-none`}>
-					{[ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ].map(day =>
-						<p key={day} class={tw`mt-2 ml-10 pt-px text-gray-300 font-bold text-xs uppercase tracking-widest`}>
-							{day}
-						</p>
-					)}
-				</div>
-
+			<div class={tw`relative grow h-full overflow-hidden group rounded-lg isolate`}>
 				{cellHeight !== 0 && rows.map((date) =>
 					<div key={+date} class={tw`absolute w-full transition duration-150 px-2`} style={{
 						transform: `translateY(${Math.floor((+date / 1000 / 60 / 60 / 24 / 7) -
@@ -107,6 +99,13 @@ export default function MonthView(props: Props) {
 						/>
 					</div>
 				)}
+				<div aria-hidden class={tw`absolute top-0 left-2 right-2 grid-(& cols-7) interact-none`}>
+					{[ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ].map(day =>
+						<p key={day} class={tw`mt-2 ml-10 pt-px text-gray-300 font-bold text-xs uppercase tracking-widest`}>
+							{day}
+						</p>
+					)}
+				</div>
 			</div>
 		</div>
 	);

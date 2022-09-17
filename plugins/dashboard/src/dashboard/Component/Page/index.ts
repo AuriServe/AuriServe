@@ -5,6 +5,8 @@ export { default as UnknownPage } from './UnknownPage';
 export { default as LoadingPage } from './LoadingPage';
 export { default as SettingsPage } from './SettingsPage';
 export { default as UserSettings } from './UserSettings';
+export { default as PluginsSettings } from './PluginsSettings';
 export { default as OverviewSettings } from './OverviewSettings';
 export { default as ResetPasswordPage } from './ResetPasswordPage';
 export { default as PermissionSettings } from './PermissionSettings';
+export { default as AppearanceSettings } from './AppearanceSettings';

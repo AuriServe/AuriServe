@@ -1,15 +1,16 @@
 name: Page Editor
 identifier: page-editor
 description: Dashboard plugin to allow for Visual Page Editing.
+icon: file
 
 version: 0.0.1
 author: Auri
 
 depends:
-- pages ^0.0.1
-- dashboard ^0.0.1
-- users ^0.0.1
-- elements ^0.0.1
+  pages: ^0.0.1
+  dashboard: ^0.0.1
+  users: ^0.0.1
+  elements: ^0.0.1
 
 entry:
   server: build/server.js

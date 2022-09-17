@@ -3,7 +3,7 @@ import { assert, Version } from 'common';
 interface InputPlugin {
 	identifier: string;
 	version: Version;
-	depends: { identifier: string; version: string }[];
+	depends: Record<string, string>;
 }
 
 interface PluginDependency {
@@ -22,15 +22,13 @@ export default function pluginDependencyOrder(input: InputPlugin[]) {
 		]) as [string, PluginDependency][]),
 	]);
 
+
 	for (const plugin of input) {
-		for (const parent of [
-			{ identifier: ROOT_IDENTIFIER, version: 'x' },
-			...plugin.depends,
-		]) {
-			const parentDep = plugins.get(parent.identifier);
+		for (const [ identifier, version ] of [ ...Object.entries(plugin.depends ?? {}), [ ROOT_IDENTIFIER, 'x' ] ]) {
+			const parentDep = plugins.get(identifier);
 			assert(
-				parentDep && parentDep.version.matches(parent.version),
-				`Plugin '${plugin.identifier}' is missing dependency '${parent.identifier} ${parent.version}'.`
+				parentDep && parentDep.version.matches(version),
+				`Plugin '${plugin.identifier}' is missing dependency '${identifier} ${version}'.`
 			);
 			parentDep.dependencies.push(plugin.identifier);
 		}

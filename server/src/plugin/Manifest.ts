@@ -8,21 +8,18 @@ export interface Manifest {
 	name?: string;
 	identifier: string;
 	description?: string;
+	icon?: string;
 
 	author: string;
 	version: string;
-	depends?: string[];
+	depends: Record<string, string>;
 
 	entry: string | EntryTree;
 	watch?: string[];
 }
 
-export type Dependency = { identifier: string; version: string };
-
-export type ParsedManifest = Omit<Manifest, 'entry' | 'watch' | 'depends' | 'version'> & {
+export type ParsedManifest = Omit<Manifest, 'entry' | 'watch' | 'version'> & {
 	version: Version;
-
-	depends: Dependency[];
 
 	entry: Record<string, string>;
 	watch: string[];

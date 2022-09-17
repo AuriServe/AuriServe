@@ -4,6 +4,7 @@ description: Exposes a Preact instance to AuriServe plugins.
 
 version: 1.0.0
 author: Auri
+type: library
 
 entry:
   server: build/server.js

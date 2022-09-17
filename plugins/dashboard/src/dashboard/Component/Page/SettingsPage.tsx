@@ -1,131 +1,71 @@
 import { h } from 'preact';
 // import { memo } from 'preact/compat';
 // import { useEffect, useRef } from 'preact/hooks';
-import { useMemo, useState } from 'preact/hooks';
-import { NavLink as Link } from 'react-router-dom';
+import { useMemo } from 'preact/hooks';
+import { useNavigate, useLocation, NavLink as Link } from 'react-router-dom';
 
 import Svg from '../Svg';
-import { SavePrompt } from '../SavePrompt';
-import { getSettings, SettingsEvent } from '../../Settings';
+import Button from '../Button';
+import Spinner from '../Spinner';
+import { getSettings } from '../../Settings';
 
 import { tw } from '../../Twind';
-import EventEmitter from '../../EventEmitter';
+import * as Icon from '../../Icon';
 import { QUERY_SELF_USER, useData } from '../../Graph';
 
 export default function SettingsPage() {
 	const [{ user }] = useData(QUERY_SELF_USER, []);
-	const [dirty, setDirty] = useState<boolean>(false);
 
-	const [dirtySet, event] = useMemo(() => {
-		const dirty = new Set();
-		const emitter = new EventEmitter<SettingsEvent>();
-		return [dirty, emitter];
-	}, []);
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const settings = useMemo(() => {
 		if (!user) return null;
-
 		if (user.permissions.includes('administrator')) return [...getSettings().values()];
-
 		return [...getSettings().values()].filter(
-			(setting) =>
-				setting.permissions?.findIndex((perm) => !user.permissions.includes(perm)) ??
-				-1 === -1
-		);
+			(setting) => (setting.permissions?.findIndex((perm) => !user.permissions.includes(perm)) ?? -1) === -1);
 		// eslint-disable-next-line
 	}, [...(user?.permissions ?? [])]);
 
-	if (!settings) return null;
+	if (!settings) return (
+		<div class={tw`grid place-content-center`}>
+			<Spinner/>
+		</div>
+	)
 
-	const handleSetDirty = (identifier: string, dirty: boolean) => {
-		if (dirty) dirtySet.add(identifier);
-		else dirtySet.delete(identifier);
-		setDirty(dirtySet.size > 0);
-	};
+	const slug = location.pathname.split('/').slice(2).shift() ?? '';
+	if (!slug && settings.length) navigate(`/settings/${settings[0].path}`, { replace: true });
+	const Component = slug && settings && settings.find(setting => setting.path === slug)?.component || null;
 
-	const handleUndo = () => {
-		event.emit('undo');
-	};
-	// const location = useLocation();
-	// const navigate = useNavigate();
-
-	// const ignoreScroll = useRef<{ state: boolean; timeout: any }>({
-	// 	state: false,
-	// 	timeout: 0,
-	// });
-	// const refs = useRef<Record<string, HTMLDivElement | null>>({});
-
-	// useEffect(() => {
-	// 	const section = location.pathname.split('/')[2];
-	// 	if (!section) navigate('/settings/overview/', { replace: true });
-	// 	const ref = refs.current[section];
-	// 	if (ref)
-	// 		setTimeout(
-	// 			() => window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'auto' }),
-	// 			200
-	// 		);
-	// });
-
-	// useEffect(() => {
-	// 	if ((location.state as any)?.scrollInitiated) return;
-	// 	const section = location.pathname.split('/')[2];
-	// 	if (!section && location.pathname.startsWith('/settings'))
-	// 		navigate('/settings/overview/', { replace: true });
-	// 	const ref = refs.current[section];
-	// 	if (!ref) return;
-
-	// 	window.scrollTo({ top: ref.offsetTop - 6 * 4, behavior: 'smooth' });
-	// 	ignoreScroll.current.state = true;
-	// 	clearTimeout(ignoreScroll.current.timeout);
-	// 	ignoreScroll.current.timeout = setTimeout(
-	// 		() => (ignoreScroll.current.state = false),
-	// 		750
-	// 	);
-	// }, [location, navigate]);
-
-	// useEffect(() => {
-	// 	let scrolled = false;
-	// 	const onScroll = () => (scrolled = true);
-	// 	window.addEventListener('scroll', onScroll);
-
-	// 	const interval = setInterval(() => {
-	// 		if (!scrolled || ignoreScroll.current.state) {
-	// 			scrolled = false;
-	// 			return;
-	// 		}
-	// 		scrolled = false;
-
-	// 		let lastSection = '';
-	// 		Object.entries(refs.current).some(([section, elem]) => {
-	// 			if (elem!.offsetTop > window.scrollY + 36 * 2) return true;
-
-	// 			lastSection = section;
-	// 			return false;
-	// 		});
-
-	// 		if (lastSection)
-	// 			navigate(`/settings/${lastSection}/`, {
-	// 				replace: true,
-	// 				state: { scrollInitiated: true },
-	// 			});
-	// 	}, 50);
-
-	// 	return () => {
-	// 		window.removeEventListener('scroll', onScroll);
-	// 		clearInterval(interval);
-	// 	};
-	// }, [navigate]);
+	if (!Component) return (
+		<div
+			class={tw`flex-(& col) justify-center items-center gap-2 animate-drop-fade-in`}>
+			<Svg src={Icon.target} size={12} class={tw`p-6 bg-gray-800 rounded-lg mb-4`} />
+			<p class={tw`leading-none text-xl text-gray-100 font-medium`}>Page not found.</p>
+			<p class={tw`text-gray-200`}>
+				The plugin responsible for this page may still be loading.
+			</p>
+			<Button.Secondary
+				to='/'
+				icon={Icon.home}
+				label='Go Home'
+				class={tw`mt-8 mb-32 dark:!ring-offset-gray-900`}
+			/>
+		</div>
+	)
 
 	return (
 		<div class={tw`w-full flex justify-center`}>
 			<div class={tw`w-full md:w-64 h-full pl-4 flex-shrink-0`}>
-				<ul class={tw`sticky top-6 flex-(& col) gap-2 mt-6`} role='navigation'>
+				<ul class={tw`sticky top-6 flex-(& col) gap-1 mt-6`} role='navigation'>
 					{[...settings.values()].map((setting) => (
 						<li key={setting.identifier}>
 							<Link
-								to={setting.path}
-								// activeClassName='!bg-neutral-800 shadow-md !text-accent-200 icon-p-accent-50 icon-s-accent-400'>
-								className={tw`flex gap-3 p-2 items-end rounded-md transition text-gray-200 hover:bg-gray-800/50`}>
+								to={`${setting.path}/`}
+								className={tw`flex gap-3 p-1.5 items-end rounded-md transition
+									${slug === setting.path
+										? 'text-accent-100 bg-gray-800 icon-p-accent-50 icon-s-accent-400'
+										: 'text-gray-200 hover:bg-gray-800/50'}`}>
 								<Svg src={setting.icon} size={6} class={tw`ml-0.5`} />
 								<p class={tw`leading-snug font-medium flex-grow`}>{setting.title}</p>
 								{/*{typeof notifications === 'number' && (
@@ -147,7 +87,10 @@ export default function SettingsPage() {
 				</ul>
 			</div>
 			<div class={tw`w-full max-w-4xl p-6 pb-16 space-y-12`}>
-				{[...settings.values()].map(({ identifier, component: Component }) => (
+				<div key={slug} class={tw`animate-fade-in`}>
+					<Component/>
+				</div>
+				{/* {[...settings.values()].map(({ identifier, component: Component }) => (
 					<Component
 						key={identifier}
 						event={event}
@@ -159,12 +102,11 @@ export default function SettingsPage() {
 					dirty={dirty}
 					saving={false}
 					onSave={() => {
-						/** */
-					}}
+						}}
 					onUndo={handleUndo}
-				/>
+				/> */}
 			</div>
-			<div class={tw`w-48 flex-shrink hidden 2xl:block`} />
+			<div class={tw`w-80 flex-shrink hidden 2xl:block`} />
 		</div>
 	);
 }

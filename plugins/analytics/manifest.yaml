@@ -1,6 +1,7 @@
 name: Analytics
 identifier: analytics
 description: Tracks analytics such as page views, demographics information, and more.
+icon: monitor
 
 version: 0.0.1
 author: Auri

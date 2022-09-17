@@ -7,7 +7,7 @@ import { Shortcut } from '../Shortcut';
 import { UnstyledButton } from './Button';
 
 import { tw } from '../Twind';
-import * as icon from '../Icon';
+import * as Icon from '../Icon';
 import { Button } from '../Main';
 
 interface SidebarLinkProps {
@@ -21,14 +21,11 @@ function SidebarLink({ label, icon, onClick }: SidebarLinkProps) {
 	return (
 		<UnstyledButton
 			onClick={onClick}
-			class={tw`group relative p-1 m-2 w-10 h-10 rounded !outline-none transition bg-(transparent hocus:accent-400/30)
+			class={tw`group relative p-1 mx-2 my-1 w-10 h-10 rounded !outline-none transition bg-(transparent hocus:accent-600/20)
+				icon-(p-(gray-100 hocus:accent-100) s-(gray-300 hocus:accent-300))
 				after:(absolute w-2 h-2 transition transform rotate-45 bg-gray-(50 dark:900) opacity-0
 					[clip-path:polygon(0_0,0%_100%,100%_100%)] top-[calc(50%-0.25rem)] left-[calc(100%+0.25rem+.5px)])`}>
-			<Svg
-				src={icon}
-				size={8}
-				class={tw`icon-p-accent-(200 group-hocus:100) icon-s-accent-(400 group-hocus:200)`}
-			/>
+			<Svg src={icon} size={8}/>
 
 			<Tooltip position='right' offset={20} label={label} />
 		</UnstyledButton>
@@ -45,20 +42,20 @@ export default function Sidebar({ shortcuts }: Props) {
 
 	return (
 		<aside
-			class={tw`fixed z-30 w-14 h-full inset-0 icon-(p-accent-300 s-accent-100) bg-accent-600`}>
+			class={tw`fixed z-30 w-14 h-full inset-0 icon-(p-accent-300 s-accent-100) bg-gray-700`}>
 			<nav class={tw`flex-(& col) h-full`}>
-				<Button.Unstyled to='/'>
-					<Svg
-						src={icon.auriserve}
-						size={10}
-						role='heading'
-						aria-level='1'
-						aria-label='AuriServe'
-						class={tw`m-2 animate-rocket icon-p-accent-100 icon-s-accent-300`}
-					/>
-				</Button.Unstyled>
-
-				<div class={tw`w-3/5 h-1 my-2 mx-auto rounded bg-accent-400`} />
+				<div class={tw`bg-accent-500/30 mb-1`}>
+					<Button.Unstyled to='/' class={tw`block`}>
+						<Svg
+							src={Icon.launch}
+							size={8}
+							role='heading'
+							aria-level='1'
+							aria-label='AuriServe'
+							class={tw`p-3 animate-rocket icon-p-accent-100 icon-s-accent-400`}
+						/>
+					</Button.Unstyled>
+				</div>
 
 				{shortcuts.map((shortcut, i) => {
 					if (shortcut === 'spacer') return <div key={i} class={tw`flex-grow`} />;
@@ -66,11 +63,13 @@ export default function Sidebar({ shortcuts }: Props) {
 						<SidebarLink
 							key={i}
 							label={shortcut.title}
-							icon={shortcut.icon ?? icon.shortcut}
+							icon={shortcut.icon ?? Icon.shortcut}
 							onClick={() => shortcut.action({ location, navigate })}
 						/>
 					);
 				})}
+
+				<div class={tw`h-1`}/>
 			</nav>
 		</aside>
 	);

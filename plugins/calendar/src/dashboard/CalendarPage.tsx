@@ -66,16 +66,6 @@ export default function CalendarPage() {
 			.then(({ calendar }) => setCalendar(populateACAL(JSON.parse(calendar))));
 	}, [ calendarName ]);
 
-	useEffect(() => {
-		if (!calendar) return;
-
-		const date = new Date();
-		date.setHours(0, 0, 0, 0);
-		handleClickCell(date);
-
-	// eslint-disable-next-line
-	}, [ calendar !== null ]);
-
 	function handleToggleCategory(uid: string) {
 		const newCalendar = { ...calendar } as PopulatedCalendar;
 		newCalendar.categories![uid].enabled = !newCalendar.categories![uid].enabled;
@@ -91,8 +81,8 @@ export default function CalendarPage() {
 
 	function handleEditingRevert() {
 		const newCalendar = { ...calendar! };
-		if (editing!.isNew) delete newCalendar.events[editing!.event.uid];
-		else newCalendar.events[editing!.event.uid] = editing!.initialEvent;
+		if (editing?.isNew) delete newCalendar.events[editing!.event.uid];
+		else if (editing) newCalendar.events[editing!.event.uid] = editing!.initialEvent;
 		setCalendar(newCalendar);
 		setEditing(null);
 	}
@@ -108,24 +98,7 @@ export default function CalendarPage() {
 		setEditing(null);
 	}
 
-	// function handleSaveEditor(event: PopulatedEvent) {
-	// 	const newCalendar = { ...calendar } as PopulatedCalendar;
-	// 	newCalendar.events![event.uid] = event as PopulatedEvent;
-	// 	setCalendar(newCalendar);
-	// 	setEditing(null);
-	// }
-
-	// function handleCloseEditor() {
-	// 	if (!editingNew) {
-	// 		const newCalendar = { ...calendar } as PopulatedCalendar;
-	// 		delete newCalendar.events![(editing as PopulatedEvent).uid];
-	// 		setCalendar(newCalendar);
-	// 	}
-	// 	setEditing(null);
-	// }
-
 	function handleClickCell(date: Date) {
-		console.log(editing);
 		if (!editing) {
 			const end = new Date(date);
 			end.setHours(23, 59);
@@ -152,11 +125,15 @@ export default function CalendarPage() {
 	}
 
 	function handleClickEvent(event: PopulatedEvent) {
-		if (editing?.changed) return;
-		if (event.uid === editing?.event?.uid) return;
-		if (editing) handleEditingRevert();
-
-		setEditing({ event: { ...event }, initialEvent: event, isNew: false, changed: false });
+		if (!editing?.changed) {
+			if (editing?.event?.uid !== event.uid) {
+				handleEditingRevert();
+				setEditing({ event: { ...event }, initialEvent: event, isNew: false, changed: false });
+			}
+			else {
+				handleEditingRevert();
+			}
+		}
 	}
 
 	return (
@@ -165,10 +142,8 @@ export default function CalendarPage() {
 				{calendar && <MonthView
 					calendar={calendar}
 					saved={saved}
+					activeEvent={editing?.event?.uid}
 					onSave={() => setSaved(true)}
-					// activeEvent={((editing && editing.uid) ?? undefined) as string | undefined}
-
-					// onStartAdd={)}
 					onClickCell={handleClickCell}
 					onClickEvent={handleClickEvent}
 				/>}

@@ -1,14 +1,15 @@
 name: Pages
 identifier: pages
 description: Renders pages using Elements and Themes.
+icon: file
 
 version: 0.0.1
 author: Auri
 
 depends:
-- routes ^0.0.1
-- elements ^0.0.1
-- auriserve-preact ^1
+  routes: ^0.0.1
+  elements: ^0.0.1
+  auriserve-preact: ^1
 
 entry:
   server: build/server.js

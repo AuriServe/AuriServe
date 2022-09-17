@@ -11,7 +11,7 @@ import { Page, LoginPage, UnknownPage, LoadingPage, ResetPasswordPage } from './
 
 import { tw } from '../Twind';
 import { executeQuery } from '../Main';
-import { QUERY_INFO } from '../Graph';
+import { QUERY_INFO, QUERY_SELF_USER } from '../Graph';
 
 type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
@@ -66,14 +66,19 @@ export default function App() {
 	);
 
 	useEffect(() => {
-		if (state === 'QUERYING') executeQuery(QUERY_INFO).then(() => setState('AUTH')).catch(() => setState('LOGIN'));
-	}, [ state ]);
+		if (state === 'QUERYING') executeQuery(`{ ${QUERY_INFO}, ${QUERY_SELF_USER} }`)
+			.then((data) => {
+				setState('AUTH');
+				mergeData(data);
+			})
+			.catch(() => setState('LOGIN'));
+	}, [ state, mergeData ]);
 
 	return (
 		<AppContext.Provider value={{ data, mergeData, setShowChrome, setHijackScrollbar }}>
 			<div
 				class={tw`
-				${state !== 'LOGIN' && showChrome && 'pl-14'} grid min-h-screen font-sans theme-blue
+				${state !== 'LOGIN' && showChrome && 'pl-14'} grid min-h-screen font-sans theme-${data.user?.theme ?? 'blue'}
 				bg-gray-(100 dark:900) text-gray-(800 dark:100)
 				icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
 				<Router basename='/dashboard'>
@@ -82,13 +87,16 @@ export default function App() {
 						<Sidebar
 							shortcuts={
 								[
+									getShortcut('dashboard:page_home'),
 									getShortcut('tax_calculator:edit_calculator'),
-									// getShortcut('page-editor:pages')!,
+									getShortcut('calendar:edit_calendar'),
+									getShortcut('page-editor:pages'),
 									// getShortcut('dashboard:page_routes')!,
 									// getShortcut('dashboard:page_media')!,
 									'spacer',
 									// getShortcut('dashboard:page_settings')!,
 									getShortcut('dashboard:shortcut_palette'),
+									getShortcut('dashboard:page_settings'),
 									getShortcut('dashboard:log_out'),
 								].filter(Boolean) as (Shortcut | 'spacer')[]
 							}
