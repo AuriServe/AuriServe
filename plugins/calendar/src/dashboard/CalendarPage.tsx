@@ -74,7 +74,9 @@ export default function CalendarPage() {
 
 	function handleEditingChange(event: PopulatedEvent) {
 		const newCalendar = { ...calendar! };
+		console.log(calendar);
 		newCalendar.events[editing!.event.uid] = event;
+		console.log(newCalendar);
 		setCalendar(newCalendar);
 		setEditing({ ...editing!, event, changed: true });
 	}

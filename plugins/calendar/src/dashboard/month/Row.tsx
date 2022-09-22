@@ -51,8 +51,6 @@ export default function Row(props: Props) {
 		}
 	}
 
-	console.log(eventMap);
-
 	let date = new Date(props.start);
 
 	const cells = [];

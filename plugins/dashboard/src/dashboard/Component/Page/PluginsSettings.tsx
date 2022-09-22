@@ -5,6 +5,7 @@ import Svg from '../Svg';
 import Card from '../Card';
 import Modal from '../Modal';
 import Button from '../Button';
+import SavePrompt from '../SavePrompt';
 
 import { tw } from '../../Twind';
 import * as Icon from '../../Icon';
@@ -55,18 +56,28 @@ function getDependencyPlugins(plugins: Plugin[], plugin: Plugin) {
 	return dependencies.sort(sortPlugins);
 }
 
+function PluginThumbnail({ plugin, class: className, large = false }:
+	{ plugin: Plugin, class?: string, large?: boolean }) {
+	return (
+		<div class={tw`aspect-video rounded-md bg-gray-500/25 grid place-content-center ${className}`}>
+			<Svg src={plugin.icon ? (Icon as any)[plugin.icon] : (plugin.type === 'library' ? Icon.library : Icon.plugin)}
+				size={large ? 12 : 8}/>
+		</div>
+	)
+}
+
 function SidebarPluginList({ plugins, label }: { plugins: Plugin[], label: string }) {
 	return (
 		<Fragment>
 			<p class={tw`mt-6 text-(xs gray-300) font-bold uppercase tracking-widest`}>{label}</p>
-			<ul class={tw`flex-(& col) gap-2 mt-2`}>
+			<ul class={tw`flex-(& col) gap-1.5 mt-2`}>
 				{plugins.length > 0
 					? plugins.map(({ identifier, version, name, icon, type, enabled }) => <li key={identifier}
 						class={tw`${enabled && 'bg-gray-input'} border-(2 gray-${enabled ? 'input' : '700'}) rounded flex gap-1`}>
 						<Svg src={icon ? (Icon as any)[icon] : (type === 'library' ? Icon.library : Icon.plugin)}
-							size={6} class={tw`p-1.5 m-1.5 bg-gray-${enabled ? '600' : '700'} rounded`}/>
+							size={6} class={tw`p-1.5 m-1 bg-gray-${enabled ? '600' : '700'} rounded`}/>
 						<div class={tw`flex-(& col)`}>
-							<p class={tw`text-gray-${enabled ? '100' : '200'} mt-1 -mb-0.5`}>{name}</p>
+							<p class={tw`text-gray-${enabled ? '100' : '200'} mt-0.5 -mb-0.5`}>{name}</p>
 							<p class={tw`text-(xs gray-${enabled ? '300' : '300'}) font-bold`}>{version}</p>
 						</div>
 					</li>)
@@ -83,7 +94,10 @@ function SidebarPluginList({ plugins, label }: { plugins: Plugin[], label: strin
 export default function PluginsSettings() {
 	const [ { plugins: dataPlugins = [] } ] = useData(QUERY_PLUGINS, []);
 	const [ plugins, setPlugins ] = useState<Plugin[]>([]);
-	useEffect(() => setPlugins(dataPlugins.sort(sortPlugins)), [ dataPlugins ]);
+	useEffect(() => setPlugins(JSON.parse(JSON.stringify(dataPlugins)).sort(sortPlugins)), [ dataPlugins ]);
+
+	const dirty = plugins.findIndex(({ enabled, identifier }) => enabled !==
+		dataPlugins.find(p => p.identifier === identifier)!.enabled) !== -1;
 
 	const [ hovered, setHovered ] = useState<string | null>('');
 	const [ confirmToggle, setConfirmToggle ] = useState<boolean>(false);
@@ -114,21 +128,32 @@ export default function PluginsSettings() {
 		}
 	}
 
+	function handleSave() {
+		window.location.reload();
+	}
+
+	function handleUndo() {
+		setPlugins(JSON.parse(JSON.stringify(dataPlugins)).sort(sortPlugins));
+	}
+
 	const ToggleButton = hoveredPlugin?.enabled ? Button.Secondary : Button.Tertiary;
+
+	const numPlugins = plugins.length;
+	const numEnabledPlugins = plugins.filter(({ enabled }) => enabled).length;
 
 	return (
 		<Card class={tw`relative`}>
 			<Card.Header
 				icon={Icon.plugin}
 				title='Plugins'
-				subtitle='Enable and disable plugins.'
+				subtitle={`${numPlugins} plugin${numPlugins !== 1 ? 's' : ''}, ${numEnabledPlugins} enabled.`}
 			/>
 			<Card.Body>
 				<ul>
 					{plugins.map(plugin => <li key={plugin.identifier}
 						class={tw`relative flex gap-3 p-2 rounded ${hovered === plugin.identifier && 'bg-gray-input'}`}
 						onMouseEnter={() => setHovered(plugin.identifier)}>
-						<div class={tw`w-32 aspect-video rounded-md bg-gray-600`}/>
+						<PluginThumbnail plugin={plugin} class={tw`w-32`}/>
 						<div class={tw`flex-(& col)`}>
 							<p>
 								<span class={tw`font-medium ${!plugin.enabled && 'text-gray-200'}`}>{plugin.name}</span> &nbsp;{' '}
@@ -147,14 +172,14 @@ export default function PluginsSettings() {
 				<Card key={hoveredPlugin.identifier}
 					class={tw`sticky w-full top-6 animate-fade-in`}>
 					<Card.Body class={tw`flex-(& col)`}>
-						<div class={tw`aspect-video rounded-md bg-gray-600`}/>
+						<PluginThumbnail plugin={hoveredPlugin} large/>
 
-						<div class={tw`flex gap-3 mt-3`}>
-							<ToggleButton small
+						<div class={tw`flex gap-2 mt-3`}>
+							<ToggleButton size={10}
 								icon={hoveredPlugin.enabled ? Icon.check : Icon.close_circle}
 								label={` ${hoveredPlugin.enabled ? 'Enabled' : 'Disabled'}`} class={tw`grow`}
 								onClick={() => setConfirmToggle(true)}/>
-							<Button.Tertiary small icon={Icon.options} label='Options' iconOnly/>
+							<Button.Tertiary size={10} icon={Icon.options} label='Options' iconOnly/>
 						</div>
 
 						<div class={tw`flex gap-3.5 mt-6`}>
@@ -246,6 +271,8 @@ export default function PluginsSettings() {
 					</div>
 				</Card>
 			</Modal>
+
+			<SavePrompt saving={false} dirty={dirty} onSave={handleSave} onUndo={handleUndo}/>
 		</Card>
 	);
 }

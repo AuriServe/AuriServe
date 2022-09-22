@@ -19,7 +19,7 @@ interface Props {
 	onUndo?: () => void;
 }
 
-export function SavePrompt(props: Props) {
+export default function SavePrompt(props: Props) {
 	const hideTimeout = useRef<number>(0);
 	// const lastState = usePrevious(props.state);
 

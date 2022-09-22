@@ -283,15 +283,17 @@ async function init() {
 		);
 
 		for (const plugin of dashboardPlugins) {
+			const basePath = `/dashboard/res/plugin/${plugin.identifier}/`;
 			routeHandlers.push(
-				router.get(`/dashboard/res/plugin/${plugin.identifier}`, (_, res) => {
+				router.get(`${basePath}*`, (req, res) => {
+					const reqPath = req.path.replace(basePath, '');
 					res.sendFile(
 						path.join(
 							__dirname,
 							'..',
 							'..',
 							plugin.identifier,
-							plugin.entry.dashboard
+							reqPath
 						)
 					);
 				})
@@ -317,7 +319,8 @@ async function init() {
 
 						<script src='/dashboard/res/dashboard.js' defer></script>
 						${!safe && dashboardPlugins
-							.map((plugin) => `<script src='/dashboard/res/plugin/${plugin.identifier}' defer></script>`)
+							.map((plugin) => `<script src='/dashboard/res/plugin/${plugin.identifier}/
+								${plugin.entry.dashboard}' defer></script>`)
 							.join('\n')}
 					</head>
 					<body id='root'>

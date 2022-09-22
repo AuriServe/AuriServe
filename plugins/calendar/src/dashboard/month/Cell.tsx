@@ -29,7 +29,7 @@ export default function Cell(props: Props) {
 
 	const eventElements = [];
 	for (const event of props.events.slice(0, 3)) {
-		if (event === Placeholder) {
+		if (!event || event === Placeholder) {
 			eventElements.push(<div class={tw`h-7`}/>);
 			continue;
 		}
