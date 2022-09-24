@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import Card from './Card';
 import Portal from './Portal';
 import { Transition } from './Transition';
+import useTrapFocus from './useTrapFocus';
 
 import { tw, merge } from '../Twind';
 
@@ -12,7 +13,7 @@ interface Props {
 
 	z?: number;
 
-	onClose?: (_: MouseEvent) => void;
+	onClose?: (_: MouseEvent | KeyboardEvent) => void;
 
 	style?: any;
 	class?: string;
@@ -20,7 +21,9 @@ interface Props {
 }
 
 export default function Modal(props: Props) {
+	const trapRef = useTrapFocus();
 	const overflowTimeoutRef = useRef<number>(0);
+
 	useEffect(() => {
 		const body = document.documentElement;
 		const root = document.querySelector('.AS_ROOT') as HTMLElement;
@@ -39,10 +42,25 @@ export default function Modal(props: Props) {
 		};
 	}, [props.active]);
 
+	const { onClose } = props;
+
+	useEffect(() => {
+		if (!props.onClose) return;
+
+		function handleKeyPress(evt: KeyboardEvent) {
+			if (evt.key === 'Escape') {
+				onClose?.(evt);
+			}
+		}
+
+		window.addEventListener('keydown', handleKeyPress);
+		return () => window.removeEventListener('keydown', handleKeyPress);
+	}, [ onClose ]);
+
 	return (
 		<Portal
 			z={props.z || 100}
-			onClick={props.onClose}>
+			onClick={onClose}>
 			<Transition show={props.active} duration={150} invertExit
 				class={tw`fixed h-full ml-14 flex-(& col) !w-[calc(100%-56px)] h-full items-center overflow-auto
 					justify-around bg-gray-50/80 dark:bg-[#081024cc] backdrop-filter backdrop-blur-md`}
@@ -60,6 +78,7 @@ export default function Modal(props: Props) {
 						enterFrom={tw`scale-[98%]`}
 						enterTo={tw`scale-100`}>
 						<Card
+							ref={trapRef}
 							class={merge(tw`h-min will-change-transform`, props.class)}
 							style={props.style}
 							onClick={(e: any) => e.stopPropagation()}>

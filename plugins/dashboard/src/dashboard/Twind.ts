@@ -211,10 +211,10 @@ const config = defineConfig({
 	],
 	variants: [
 		['focus-input', '&:focus'],
-		['focus', '&:focus-visible'],
+		['focus', '&:focus-visible,&.focus-visible'],
 
 		['disabled', '&[disabled]'],
-		['hocus', '&:hover,&:focus-visible'],
+		['hocus', '&:hover,&:focus-visible,&.focus-visible'],
 		[
 			'((group|peer)(~.+)?)-hocus',
 			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>

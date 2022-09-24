@@ -16,6 +16,8 @@ import * as Icon from '../../../Icon';
 import { merge, tw } from '../../../Twind';
 
 type Props = FieldProps<string | null> & {
+	above?: boolean;
+
 	options: Map<string | null | boolean | number, string>;
 
 	hideLabel?: boolean;
@@ -131,11 +133,10 @@ export default function OptionField(props: Props) {
 						duration={150}
 						invertExit
 						enter={tw`transition duration-150`}
-						enterFrom={tw`opacity-0 -translate-y-2`}>
+						enterFrom={tw`opacity-0 ${props.above ? '' : '-'}translate-y-2`}>
 						<div
 							class={tw`absolute z-50 left-0
-								bottom---[calc(100%+0.5rem)]
-								top-[calc(100%+0.5rem)]
+								${props.above ? 'bottom-[calc(100%+0.5rem)]' : 'top-[calc(100%+0.5rem)]'}
 								w-full py-0.5 pr-0.5 rounded shadow-md bg-gray-700 grid`}>
 							<Listbox.Options
 								static

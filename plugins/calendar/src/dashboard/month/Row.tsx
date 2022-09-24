@@ -17,12 +17,20 @@ interface Props {
 	onClickEvent?: (event: PopulatedEvent) => void;
 }
 
+function getDate(date: number) {
+	const dateObj = new Date(date);
+	dateObj.setHours(0, 0, 0, 0);
+	return +dateObj;
+}
+
 export default function Row(props: Props) {
 	const end = new Date(props.start.getFullYear(), props.start.getMonth(), props.start.getDate() + 6, 23, 59, 59, 999);
 
 	const events = useMemo(() => getEventsInRange(props.calendar, +props.start, +end)
 		.filter(event => props.calendar.categories[event.category].enabled)
-		.sort((a, b) => (b.end - b.start) - (a.end - a.start) || (a.title ?? '').localeCompare(b.title ?? '')),
+		.sort((a, b) => getDate(a.start) - getDate(b.start) || (
+			getDate(b.end) - getDate(b.start)) - (getDate(a.end) - getDate(a.start)) ||
+			(a.title ?? '').localeCompare(b.title ?? '')),
 		[ +props.start, +end, props.calendar ]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const eventMap: (PopulatedEvent | typeof Placeholder)[][] = [ [], [], [], [], [], [], [] ];

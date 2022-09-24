@@ -202,7 +202,7 @@ export default function PluginsSettings() {
 				</Card>
 			</div>}
 
-			<Modal active={confirmToggle && (hoveredPlugin?.enabled ?? false)}>
+			<Modal active={confirmToggle && (hoveredPlugin?.enabled ?? false)} onClose={() => setConfirmToggle(false)}>
 				<Card>
 					<Card.Body class={tw`flex gap-6 p-6 w-full max-w-xl`}>
 						<Svg src={hoveredPlugin?.icon ? (Icon as any)[hoveredPlugin!.icon] :
@@ -237,7 +237,7 @@ export default function PluginsSettings() {
 				</Card>
 			</Modal>
 
-			<Modal active={confirmToggle && (!hoveredPlugin?.enabled ?? false)}>
+			<Modal active={confirmToggle && (!hoveredPlugin?.enabled ?? false)} onClose={() => setConfirmToggle(false)}>
 				<Card>
 					<Card.Body class={tw`flex gap-6 p-6 w-full max-w-xl`}>
 						<Svg src={hoveredPlugin?.icon ? (Icon as any)[hoveredPlugin!.icon] :

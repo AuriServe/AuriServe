@@ -25,17 +25,25 @@ export interface EditingState {
 
 function Category(props: CategoryProps) {
 	return (
-		<button class={tw`flex gap-2 w-full items-center theme-${props.color}
+		<button class={tw`flex gap-1 p-0.5 w-full items-center theme-${props.color}
 			rounded transition duration-75 cursor-pointer group
 			hocus:bg-gray-750 active:bg-gray-700`} onClick={props.toggle}>
-			<div class={tw`w-8 h-8 p-1.5 relative`}>
-				<div class={tw`w-full h-full rounded-full transition duration-75
+			<div class={tw`w-7 h-7 relative`}>
+				<div class={tw`inset-0 absolute rounded-full transition
+					${props.enabled ? 'scale-[65%] bg-accent-400/25' : 'scale-50 bg-accent-400/50'}`}/>
+				<div class={tw`inset-0 absolute rounded-full transition bg-gray-(800 group-hocus:750 group-active:!700)
+					${props.enabled ? 'scale-[20%]' : 'scale-[32%]'}`}/>
+				<div class={tw`inset-0 absolute rounded-full transition bg-accent-400
+					${props.enabled ? 'scale-[38%] opacity-1' : 'scale-0 opacity-0'}`}/>
+
+				{/* <div class={tw`w-full h-full rounded-full transition duration-75
 					border-(2 ${props.enabled ? 'accent-500' : 'gray-200'})`}/>
 				<div class={tw`absolute inset-0 rounded-full transition duration-75
 					${props.enabled ? 'scale-[32%]' : 'scale-0'}
-					bg-${props.enabled ? 'accent-500' : 'gray-200'}`}/>
+					bg-${props.enabled ? 'accent-500' : 'gray-200'}`}/> */}
 			</div>
-			<p class={tw`font-medium text-sm transition duration-75
+
+			<p class={tw`font-medium text-sm transition duration-75 pt-px
 				${props.enabled ? 'text-gray-50' : 'text-gray-300'}`}>{props.name}
 			</p>
 		</button>
@@ -139,7 +147,7 @@ export default function CalendarPage() {
 	}
 
 	return (
-		<div class={tw`flex -mb-14`}>
+		<div class={tw`flex -mb-14 overflow-hidden`}>
 			<div class={tw`grow flex-(& col) pb-1 relative`}>
 				{calendar && <MonthView
 					calendar={calendar}

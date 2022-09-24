@@ -60,7 +60,7 @@ export default function ShortcutPalette() {
 		const onKeyDown = (e: KeyboardEvent) => {
 			if (
 				(e.code === 'KeyK' && e.ctrlKey) ||
-				e.code === 'Escape' ||
+				// e.code === 'Escape' ||
 				(e.code === 'KeyP' && e.ctrlKey && e.shiftKey)
 			) {
 				e.preventDefault();

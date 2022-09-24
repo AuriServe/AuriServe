@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { tw, Svg, Icon, Form, Field, Button, Modal, Card } from 'dashboard';
 
 import { PopulatedEvent } from '../common/Calendar';
@@ -37,21 +37,21 @@ export default function EditEvent(props: Props) {
 	const [ confirmClose, setConfirmClose ] = useState<'revert' | 'delete' | null>(null);
 	const [ attachFiles, setAttachFiles ] = useState<boolean>(false);
 
-	function handleSubmit() {
-		props.onSave();
-		// props.onSave(populateEvent(event as Event));
-	}
+	const { onRevert, onDelete, onSave, isNew } = props;
 
-	function handleClose(reason: 'revert' | 'delete') {
+	const handleSubmit = useCallback(() => {
+		onSave();
+	}, [ onSave ]);
+
+	const handleConfirmClose = useCallback((reason: 'revert' | 'delete') => {
+		(confirmClose ?? reason) === 'delete' ? onDelete() : onRevert();
+		setConfirmClose(null);
+	}, [ confirmClose, onDelete, onRevert ]);
+
+	const handleClose = useCallback((reason: 'revert' | 'delete') => {
 		if (!props.changed && reason !== 'delete') handleConfirmClose(reason);
 		else setConfirmClose(reason);
-	}
-
-	function handleConfirmClose(reason?: 'revert' | 'delete') {
-		if ((confirmClose ?? reason) === 'delete') props.onDelete();
-		else props.onRevert();
-		setConfirmClose(null);
-	}
+	}, [ props.changed, handleConfirmClose ]);
 
 	function handleChange(event: Partial<PopulatedEvent>) {
 		event.dates = [ event.start! ];
@@ -64,6 +64,24 @@ export default function EditEvent(props: Props) {
 		}
 	}
 
+	useEffect(() => {
+		if (confirmClose) return;
+
+		function handleKeyPress(evt: KeyboardEvent) {
+			if (evt.key === 'Escape') {
+				handleClose('revert');
+				evt.preventDefault();
+			}
+			else if (evt.key === 'Delete') {
+				handleClose(isNew ? 'revert' : 'delete');
+				evt.preventDefault();
+			}
+		}
+
+		window.addEventListener('keydown', handleKeyPress);
+		return () => window.removeEventListener('keydown', handleKeyPress);
+	}, [ handleClose, confirmClose, isNew ]);
+
 	// function handleStartChange(_date: Date | number | null) {
 	// 	/* I'd love to change the end date proportionally here but I can't because the DateTime input isn't getting the update. I need to convert these components into like svelte or something. */
 
@@ -75,10 +93,10 @@ export default function EditEvent(props: Props) {
 	// }
 
 	return (
-		<Form<PopulatedEvent>
+		<Form<PopulatedEvent & { imageAlignment: 'top' | 'center' | 'bottom' }>
 			class={tw`absolute flex left-0 right-0 mx-auto px-2 w-full bottom-2 interact-none transition-all
 				${expanded ? 'max-w-full duration-150' : 'max-w-3xl duration-300'} ${props.class}`}
-			initialValue={props.event}
+			initialValue={{ ...props.event, imageAlignment: 'top' }}
 			onChange={handleChange as any}
 			onSubmit={handleSubmit}>
 			<Card class={tw`flex flex-col w-full interact-auto !shadow-xl !shadow-gray-900
@@ -129,17 +147,31 @@ export default function EditEvent(props: Props) {
 								<Field.Option path='category' hideLabel options={categories}/>
 							</div>
 
-							<div class={tw`flex gap-3`}>
-								<Svg src={Icon.attach} size={6} class={tw`shrink-0 py-2`}/>
-								<button type='button' onClick={() => setAttachFiles(true)} class={tw`
+							<div class={tw`flex-(& col) grow gap-3`}>
+								<div class={tw`flex gap-3 grow`}>
+									<Svg src={Icon.attach} size={6} class={tw`shrink-0 py-2`}/>
+
+									<div class={tw`bg-gray-input w-full grow rounded`}>
+										<p class={tw`text-gray-300 p-2.5`}>Drag images or attachments here.</p>
+									</div>
+								</div>
+
+								<div class={tw`flex gap-3`}>
+									<Svg src={Icon.sort} size={6} class={tw`shrink-0 py-2`}/>
+
+									<Field.Option above path='imageAlignment' hideLabel options={new Map([ [ 'top', 'Top'], [ 'center', 'Center' ], [ 'bottom', 'Bottom' ]])}/>
+								</div>
+							</div>
+
+
+								{/* <button type='button' onClick={() => setAttachFiles(true)} class={tw`
 									h-10 rounded bg-gray-input p-2.5 pt-[9px] w-full text-left hocus:bg-gray-700
 									focus:(ring-(& gray-600 offset-2 offset-gray-800)) active:(ring-(& gray-600 offset-2 offset-gray-800))
 									transition`}>
 									{attachments.length
 										? <span class={tw`text-gray-100`}>{attachments.length} file{attachments.length !== 1 ? 's' : ''} attached.</span>
 										: <span class={tw`text-gray-300`}>Attach files...</span>}
-								</button>
-							</div>
+								</button> */}
 						</div>
 					</div>
 
@@ -152,7 +184,7 @@ export default function EditEvent(props: Props) {
 
 
 					{/* Delete Event Modal */}
-					<Modal active={confirmClose === 'delete'}>
+					<Modal active={confirmClose === 'delete'} onClose={() => setConfirmClose(null)}>
 						<Card>
 							<Card.Body class={tw`flex gap-6 p-6`}>
 								<Svg src={Icon.trash} size={8}
@@ -173,7 +205,7 @@ export default function EditEvent(props: Props) {
 					</Modal>
 
 					{/* Discard Changes Modal */}
-					<Modal active={confirmClose === 'revert'}>
+					<Modal active={confirmClose === 'revert'} onClose={() => setConfirmClose(null)}>
 						<Card>
 							<Card.Body class={tw`flex gap-6 p-6`}>
 								<Svg src={Icon.trash} size={8}

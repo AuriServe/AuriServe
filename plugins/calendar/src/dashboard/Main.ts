@@ -4,7 +4,7 @@ import CalendarPage from './CalendarPage';
 
 registerPage({
 	identifier: 'calendar:calendar',
-	title: 'Edit Calendar',
+	title: 'Calendar',
 	path: '/calendar',
 	component: CalendarPage,
 });
