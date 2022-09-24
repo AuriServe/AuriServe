@@ -55,8 +55,6 @@ function ExternalImage(props: ExternalProps) {
 	);
 }
 
-const VALID_SIZES = { 'sm': 480, 'md': 960, 'lg': 1920 } as const;
-
 function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 	const [ state, setState ] = useState<'static' | 'loading' | 'loaded_transition' | 'loaded'>('static');
 	useEffect(() => setState('loading'), []);
@@ -93,26 +91,37 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 				</Static>
 			}
 			{state !== 'static' && preferredSize &&
-				<picture>
-					{Object.entries(VALID_SIZES).filter(([ name ]) => name === preferredSize).map(([ name, size ]) => (
-						<source key={name} srcset={`/media/variants/${(props as ClientMediaProps).path}.${name}.webp ${size}w`}/>
-					))}
-					{Object.entries(VALID_SIZES).filter(([ name ]) => name === preferredSize).map(([ name, size ]) => (
-						<source key={name} srcset={`/media/variants/${(props as ClientMediaProps).path}.${name}.webp ${size}w`}/>
-					))}
-					<img
-						ref={state === 'loading' ? handleLoad : undefined}
-						style={style}
-						src={`/media/variants/${(props as ClientMediaProps).path}.lg.webp`}
-						alt={props.alt ?? ''}
-						loading={(props.lazy ?? true) ? 'lazy' : undefined}
-						class={merge('full', state !== 'loading' && 'loaded')}
-					/>
-				</picture>
+				<img
+					ref={state === 'loading' ? handleLoad : undefined}
+					style={style}
+					src={`/media/variants/${(props as ClientMediaProps).path}.${preferredSize}.webp`}
+					alt={props.alt ?? ''}
+					loading={(props.lazy ?? true) ? 'lazy' : undefined}
+					class={merge('full', state !== 'loading' && 'loaded')}
+				/>
 			}
 		</div>
 	);
 }
+
+// For if I ever end up hooking onto resize.
+
+/* <picture>
+{Object.entries(VALID_SIZES).filter(([ name ]) => name === preferredSize).map(([ name, size ]) => (
+	<source key={name} srcset={`/media/variants/${(props as ClientMediaProps).path}.${name}.webp ${size}w`}/>
+))}
+{Object.entries(VALID_SIZES).filter(([ name ]) => name === preferredSize).map(([ name, size ]) => (
+	<source key={name} srcset={`/media/variants/${(props as ClientMediaProps).path}.${name}.webp ${size}w`}/>
+))}
+<img
+	ref={state === 'loading' ? handleLoad : undefined}
+	style={style}
+	src={`/media/variants/${(props as ClientMediaProps).path}.lg.webp`}
+	alt={props.alt ?? ''}
+	loading={(props.lazy ?? true) ? 'lazy' : undefined}
+	class={merge('full', state !== 'loading' && 'loaded')}
+/>
+</picture> */
 
 function ImageSwitch(props: ExternalProps | ServerMediaProps | ClientMediaProps) {
 	if ('url' in props) return <ExternalImage {...props} />;
