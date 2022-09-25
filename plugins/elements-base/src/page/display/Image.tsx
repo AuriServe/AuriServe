@@ -110,17 +110,47 @@ function ExternalImage(props: ExternalProps) {
 		(props.protect ? 'pointer-events: none; user-select: none; ' : '') +
 		(props.aspect ? `object-fit: cover; aspect-ratio: ${props.aspect}; ` : '');
 
+	const [ lightbox, setLightbox ] = useState(false);
+	const [ initialLoad, setInitialLoad ] = useState(true);
+	const [ size, setSize ] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
+
+	function handleLoad(elem: HTMLImageElement | null) {
+		if (!elem || !initialLoad) return;
+		setInitialLoad(false);
+
+		if (elem.complete) setSize({ width: elem.naturalWidth, height: elem.naturalHeight });
+		else elem.addEventListener('load', () => setSize({ width: elem.naturalWidth, height: elem.naturalHeight }));
+	}
+
+	function handleSetLightbox(evt: MouseEvent) {
+		evt.preventDefault();
+		setLightbox(!lightbox);
+	}
+
+	const Tag = props.lightbox && !props.protect ? 'a' : props.lightbox ? 'button' : 'div';
+
 	return (
-		<div
-			class={merge(identifier, 'external', props.class)}
-			style={`aspect-ratio: ${props.aspect}; ${props.style ?? ''}`}>
+		<Tag class={merge(identifier, 'external', props.class)} style={props.style}
+			onClick={props.lightbox ? handleSetLightbox : undefined} target='_blank'
+			href={Tag === 'a' ? props.url : undefined}>
 			<img
+				ref={handleLoad}
 				style={style}
 				src={props.url}
 				alt={props.alt ?? ''}
 				loading={(props.lazy ?? true) ? 'lazy' : undefined}
 			/>
-		</div>
+			<ImageModal
+				open={lightbox}
+				path={props.url}
+				fullPath={props.url}
+				width={size.width}
+				height={size.height}
+				alt={props.alt}
+				protect={props.protect}
+				onClose={handleSetLightbox}
+			/>
+		</Tag>
 	);
 }
 
@@ -163,7 +193,7 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 		}, 50);
 	}
 
-	function handleToggleLightbox(evt: MouseEvent) {
+	function handleSetLightbox(evt: MouseEvent) {
 		evt.preventDefault();
 		setLightbox(!lightbox);
 	}
@@ -172,7 +202,7 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 
 	return (
 		<Tag class={merge(identifier, 'media', props.class)} style={props.style}
-			onClick={props.lightbox ? handleToggleLightbox : undefined} target='_blank'
+			onClick={props.lightbox ? handleSetLightbox : undefined} target='_blank'
 			href={Tag === 'a' ? `/media/variants/${path}.full.webp` : undefined}>
 			{state !== 'loaded' &&
 				<Static>
@@ -212,7 +242,7 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 				height={height}
 				alt={props.alt}
 				protect={props.protect}
-				onClose={handleToggleLightbox}
+				onClose={handleSetLightbox}
 			/>
 		</Tag>
 	);
