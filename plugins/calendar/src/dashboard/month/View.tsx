@@ -1,10 +1,11 @@
 import { h } from 'preact';
+import { useMediaMatches } from 'vibin-hooks';
 import { tw, Svg, Icon, Button } from 'dashboard';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import Row from './Row';
-import { PopulatedCalendar, PopulatedEvent } from '../../common/Calendar';
 import VirtualScroll from '../../common/VirtualScroll';
+import { PopulatedCalendar, PopulatedEvent } from '../../common/Calendar';
 
 const MONTH = [ 'January', 'February', 'March', 'April', 'May', 'June',
 	'July', 'August', 'September', 'October', 'November', 'December' ];
@@ -65,18 +66,15 @@ export default function MonthView(props: Props) {
 			</div>
 			<div class={tw`relative grow grid h-full overflow-hidden group rounded-lg isolate`}>
 				<VirtualScroll
-					initialPosition={0}
-					itemHeight={cellHeight}
+					itemHeight={cellHeight} snap
 					onScroll={(i) => setCurrent(+getWeekDate(start, i + 1))}
-					class={tw`p-2 pt-0`}
-					scrollerClass={tw`snap-y snap-mandatory`}>
+					class={tw`p-2 pt-0`}>
 					{(i) =>
 						<Row
 							start={getWeekDate(start, i)}
 							height={cellHeight - 6}
 							calendar={props.calendar}
 							activeEvent={props.activeEvent}
-
 							onClickCell={props.onClickCell}
 							onClickEvent={props.onClickEvent}
 						/>

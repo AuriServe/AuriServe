@@ -77,7 +77,8 @@ export default function Row(props: Props) {
 	}
 
 	return (
-		<div class={tw`bg-gray-900 grid-(& cols-7) gap-1.5`} style={{ height: props.height }}>
+		<div class={tw`bg-gray-900 grid-(& cols-7) gap-1.5`}
+			style={{ height: props.height }}>
 			{cells}
 		</div>
 	);

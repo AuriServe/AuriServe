@@ -171,7 +171,7 @@ export default function DateTimeField(props: Props) {
 				<div class={tw`${!dateVal && 'text-gray-400'}`}>
 					<span>{(dateVal?.getDate() ?? 0).toString().padStart(2, '0')}</span>
 					<span class={tw`text-gray-${dateVal ? '300' : '500'} px-px font-bold`}>/</span>
-					<span>{(dateVal?.getMonth() ?? 0).toString().padStart(2, '0')}</span>
+					<span>{((dateVal?.getMonth() ?? 0) + 1).toString().padStart(2, '0')}</span>
 					<span class={tw`text-gray-${dateVal ? '300' : '500'} px-px font-bold`}>/</span>
 					<span>{(dateVal?.getFullYear() ?? 0).toString().padStart(4, '0')}{' '}</span>
 				</div>

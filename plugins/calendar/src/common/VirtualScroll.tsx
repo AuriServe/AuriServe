@@ -1,105 +1,152 @@
 import { h, VNode } from 'preact';
-import { merge, tw } from 'dashboard';
-import { useLayoutEffect, useState, useRef } from 'preact/hooks';
-
-// interface Hooks {
-// 	setPosition: (index: number) => void;
-// 	onPositionChange: (callback: (index: number) => void) => void;
-// }
+import { useLayoutEffect, useState, useRef, useEffect, useMemo } from 'preact/hooks';
 
 interface Props {
 	itemHeight: number;
-	initialPosition: number;
+	position?: number;
+	snap?: boolean;
 
 	onScroll?: (index: number) => void;
 
 	class?: string;
 	style?: string;
-	scrollerClass?: string;
-	scrollerStyle?: string;
 	children: (index: number) => VNode;
 }
 
-export default function VirtualScroll(props: Props) {
-	const { onScroll, itemHeight } = props;
+/**
+ * This element is pretty hacky, and to be honest I still have no idea why
+ * it resets the scroll position? But uh, it's here.
+ * Renders an infinite virtual list of items, with a fixed height. Good for things like... calendars? :)
+ */
 
-	const scrollerRef = useRef<HTMLDivElement>(null);
+export default function VirtualScroll(props: Props) {
+	const { onScroll } = props;
+	const itemHeight = Math.round(props.itemHeight);
+
+	const touching = useRef(false);
+	const updateTimeout = useRef<number>(0);
+	const autoScrollTarget = useRef<number | null>(null);
+	const scrollerRef = useRef<HTMLDivElement | null>(null);
 
 	const [ frameHeight, setFrameHeight ] = useState(0);
-	const [ scrollPos, setScrollPos ] = useState(0);
 	const [ startOffset, setStartOffset ] = useState(0);
 	const [ shiftScroll, setShiftScroll ] = useState<number | null>(null);
 
-	const OVERSCROLL_ELEMS = 2;
-	const BUFFER_ELEMS = 10;
-	const BUFFER_PX = props.itemHeight * BUFFER_ELEMS;
+	const touch = useMemo(() => window.matchMedia('(pointer: coarse)').matches, []);
+
+	const OVERSCROLL_ELEMS = 10;
+	const OVERSCROLL_PX = itemHeight * OVERSCROLL_ELEMS;
 
 	useLayoutEffect(() => {
 		if (shiftScroll == null) return;
-		scrollerRef.current!.scrollTop = shiftScroll;
+		scrollerRef.current!.scrollTop += shiftScroll;
+		if (autoScrollTarget.current) autoScrollTarget.current! += (shiftScroll);
 		setShiftScroll(null);
 	}, [ shiftScroll ]);
 
-	useLayoutEffect(() => {
-		setShiftScroll(props.itemHeight * (BUFFER_ELEMS + props.initialPosition));
-	}, [ props.itemHeight, props.initialPosition ]);
+	useLayoutEffect(() => setShiftScroll(itemHeight * (OVERSCROLL_ELEMS + (props.position ?? 0))),
+		[ itemHeight, props.position ]);
 
-	const start = Math.floor(scrollPos / itemHeight + startOffset - BUFFER_ELEMS - OVERSCROLL_ELEMS);
-	const num = Math.ceil((frameHeight / itemHeight) + 1) + OVERSCROLL_ELEMS * 2;
+	const start = Math.floor(startOffset - OVERSCROLL_ELEMS);
+	const num = Math.ceil((frameHeight / itemHeight) * 2 + 1) + OVERSCROLL_ELEMS * 2;
 
 	useLayoutEffect(() => onScroll?.(start + OVERSCROLL_ELEMS), [ onScroll, start ])
 
 	function handleSetHeight(elem: HTMLDivElement | null) {
-		requestAnimationFrame(() => {
-			setFrameHeight(elem?.clientHeight ?? 0);
-		});
+		requestAnimationFrame(() => setFrameHeight(elem?.clientHeight ?? 0));
 	}
 
-	function handleScroll(e: Event) {
-		const elem = e.target as HTMLDivElement;
+	function update() {
+		const elem = scrollerRef.current;
+		updateTimeout.current = 0;
 		if (!elem) return;
 
-		let newStartOffset = startOffset;
-		const frameSize = Math.ceil((frameHeight / itemHeight) + 1);
-
-		let scrollPos = elem.scrollTop;
-		let shiftScroll = false;
-
-		if (scrollPos < BUFFER_PX) {
-			scrollPos += frameSize * itemHeight;
-			newStartOffset -= frameSize;
-			shiftScroll = true;
-		}
-		else if (scrollPos > BUFFER_PX + frameHeight * 2) {
-			scrollPos -= frameSize * itemHeight;
-			newStartOffset += frameSize;
-			shiftScroll = true;
+		if (touching.current) {
+			updateTimeout.current = setTimeout(update, 50) as any;
+			return;
 		}
 
-		setScrollPos(scrollPos);
-		if (shiftScroll) setShiftScroll(scrollPos);
-		setStartOffset(newStartOffset);
+		if (elem.scrollTop < OVERSCROLL_PX) {
+			const diff = Math.ceil(Math.abs((OVERSCROLL_PX - elem.scrollTop) / itemHeight));
+			setStartOffset(offset => offset - diff);
+			setShiftScroll(diff * itemHeight);
+		}
+		else if (elem.scrollTop > OVERSCROLL_PX + itemHeight) {
+			const diff = Math.ceil(Math.abs((OVERSCROLL_PX + itemHeight - elem.scrollTop) / itemHeight));
+			setStartOffset(offset => offset + diff);
+			setShiftScroll(-diff * itemHeight);
+		}
+	}
+
+	useEffect(() => {
+		if (!touch) return;
+
+		const onTouchStart = () => touching.current = true;
+		const onTouchEnd = () => touching.current = false;
+
+		window.addEventListener('touchstart', onTouchStart);
+		window.addEventListener('touchend', onTouchEnd);
+
+		return () => {
+			window.removeEventListener('touchstart', onTouchStart);
+			window.removeEventListener('touchend', onTouchEnd);
+		}
+	}, [ touch ]);
+
+	function handleScroll() {
+		// console.log('scrolling!', console.log(evt));
+		if (touch) {
+			if (updateTimeout.current) window.clearTimeout(updateTimeout.current);
+			updateTimeout.current = window.setTimeout(update, 100);
+		}
+		else if (!updateTimeout.current) updateTimeout.current = window.setTimeout(update, 50);
+	}
+
+	function handleWheel(evt: any) {
+		if (!props.snap) return;
+		evt.preventDefault();
+		const elem = scrollerRef.current!;
+		if (!elem) return;
+
+		if (autoScrollTarget.current == null) {
+			const STEP = 3;
+
+			function snappedScroll() {
+				const diff = (autoScrollTarget.current ?? 0) - elem.scrollTop;
+
+				if (diff === 0 || autoScrollTarget.current == null) {
+					autoScrollTarget.current = null;
+					return;
+				}
+
+				if (Math.abs(diff) > 2) elem.scrollTop += Math.round(diff / STEP);
+				else elem.scrollTop = autoScrollTarget.current;
+
+				window.requestAnimationFrame(snappedScroll);
+			}
+
+			window.requestAnimationFrame(snappedScroll);
+		}
+
+		autoScrollTarget.current = (autoScrollTarget.current ?? elem.scrollTop) + (evt.deltaY > 0 ? 1 : -1) * itemHeight;
 	}
 
 	const items = [];
 	for (let i = start; i < start + num; i++) {
 		items.push(
-			<div key={i} class={tw`absolute left-0 right-0`} style={{ top:
-				(i - startOffset + BUFFER_ELEMS) * itemHeight }}>
+			<div key={`${start}_${i}`}
+				style={`height:${itemHeight}px;${props.snap && touch && 'scroll-snap-stop: normal;scroll-snap-align: start;'}`}>
 				{props.children(i)}
 			</div>
 		);
 	}
 
 	return (
-		<div class={merge(tw`overflow-hidden grid`, props.class)} style={props.style} ref={handleSetHeight} >
-			<div class={merge(tw`overflow-auto relative grow scroll-hide`, props.scrollerClass)}
-				style={props.scrollerStyle} ref={scrollerRef} onScroll={handleScroll}>
-				<div class={tw`interact-none`} style={`height: ${BUFFER_PX}px`}/>
-				<div class={tw`interact-none h-[200%]`}/>
-				<div class={tw`interact-none`} style={`height: ${BUFFER_PX}px`}/>
-				{items}
-			</div>
+		<div onScroll={handleScroll} onWheel={handleWheel}
+			ref={elem => { handleSetHeight(elem); scrollerRef.current = elem; }}
+			style={`overflow:auto;${props.style};${props.snap && touch && 'snap-y snap-proximity'};`}
+			class='scroll-hide'>
+			{items}
 		</div>
 	);
 }
