@@ -49,7 +49,7 @@ export function execCWebP(input: string, output: string, options: string) {
 }
 
 export function scaleTo(width: number, height: number, max: number): { width: number, height: number }{
-	const ratio = Math.max(width, height) / max;
+	const ratio = Math.max(Math.max(width, height) / max, 1);
 	return { width: Math.floor(width / ratio), height: Math.floor(height / ratio) };
 }
 

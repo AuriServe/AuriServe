@@ -1,4 +1,5 @@
 import path from 'path';
+import sizeOf from 'image-size';
 import { assert } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 import auriserve, { router, dataPath, database, log } from 'auriserve';
@@ -83,6 +84,7 @@ export async function ingest(file: string, options: IngestOptions = {}): Promise
 	if (type === 'image') {
 		const paths = await generateAllPresets(options.path, VARIANTS_DIR);
 		await Promise.all(Object.entries(paths).map(async ([ preset, file ]) => {
+			const { width, height } = sizeOf(file);
 			const stat = await fs.stat(file);
 
 			// Convert to data uri if the length < 1024.
@@ -92,8 +94,9 @@ export async function ingest(file: string, options: IngestOptions = {}): Promise
 				file = `data:image/webp;base64,${data}`;
 			}
 
-			database.prepare('INSERT INTO media_image_variants (media, path, type, size) VALUES (?, ?, ?, ?)')
-				.run(id, file, preset, stat.size);
+			database.prepare(
+				'INSERT INTO media_image_variants (media, path, type, size, width, height) VALUES (?, ?, ?, ?, ?, ?)')
+				.run(id, file, preset, stat.size, width, height);
 		}));
 	}
 

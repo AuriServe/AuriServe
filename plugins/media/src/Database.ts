@@ -16,6 +16,8 @@ export interface MediaImageVariant {
 	path: string;
 	type: string;
 	size: number;
+	width: number;
+	height: number;
 }
 
 
@@ -42,7 +44,9 @@ export function init() {
 			media INTEGER,
 			path TEXT,
 			type TEXT,
-			size INTEGER
+			size INTEGER,
+			width INTEGER,
+			height INTEGER
 		) STRICT`
 	).run();
 

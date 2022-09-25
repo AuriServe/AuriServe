@@ -32,7 +32,7 @@ function RawGrid(props: Props) {
 			setMoreToReveal(!!ref.current && !!revealedCount &&
 				ref.current.querySelectorAll(':scope > .hydrated\\:static > .contents > *').length > revealedCount);
 			return revealedCount;
-		})
+		});
 	}, []);
 
 	useLayoutEffect(() => updateMoreToReveal(), [ revealedCount, updateMoreToReveal ]);
