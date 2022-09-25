@@ -148,7 +148,7 @@ export default function CalendarPage() {
 
 	return (
 		<div class={tw`flex -mb-14 overflow-hidden`}>
-			<div class={tw`grow flex-(& col) pb-1 relative`}>
+			<div class={tw`grow flex-(& col) h-screen relative`}>
 				{calendar && <MonthView
 					calendar={calendar}
 					saved={saved}

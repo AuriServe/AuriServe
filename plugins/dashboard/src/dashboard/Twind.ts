@@ -375,6 +375,17 @@ tw(css`
 		).join('\n')}
 	}
 
+	.scroll-hide {
+		overflow-y: scroll;
+		scrollbar-width: none; /* Firefox */
+		-ms-overflow-style: none;  /* Internet Explorer 10+ */
+	}
+
+	.scroll-hide::-webkit-scrollbar { /* WebKit */
+		width: 0 !important;
+		height: 0 !important;
+	}
+
 	[class*='dash-before']::before {
 		display: block;
 		--dash-tw-content: ' ';
