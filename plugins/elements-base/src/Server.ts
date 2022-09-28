@@ -11,6 +11,5 @@ addStylesheet(styles);
 Object.values(Elements).forEach((elem) => addElement(elem));
 auriserve.once('cleanup', () => {
 	Object.values(Elements).forEach((elem) => removeElement(elem.identifier));
-
 	removeStylesheet(styles);
 });

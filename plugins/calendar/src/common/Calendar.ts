@@ -41,3 +41,24 @@ export interface PopulatedCalendar {
 	events: Record<string, PopulatedEvent>;
 	categories: Record<string, Category & { enabled: boolean }>;
 }
+
+export function getEventsInRange(calendar: PopulatedCalendar, start: number, end: number): PopulatedEvent[] {
+	const events: PopulatedEvent[] = [];
+
+	Object.values(calendar.events).forEach((event) => {
+		if (event.last >= start && event.start <= end) {
+			event.dates.forEach((date) => {
+				if (date + (event.end - event.start) >= start && date <= end) {
+					const instance = { ...event } as any;
+					// delete instance.dates;
+					// delete instance.last;
+					instance.start = date;
+					instance.end = date + (event.end - event.start);
+					events.push(instance);
+				}
+			})
+		}
+	});
+
+	return events;
+}

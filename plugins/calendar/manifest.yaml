@@ -8,8 +8,10 @@ author: Auri
 
 depends:
   dashboard: ^0.0.1
+  elements: ^0.0.1
+  hydrated: ^0.0.1
 
 entry:
   server: build/server.js
   dashboard: build/dashboard.js
-  # client: build/client.js
+  client: build/client.js

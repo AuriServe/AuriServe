@@ -31,8 +31,8 @@ export const presets: Preset[] = [
 	},
 	{
 		identifier: 'load',
-		maxSize: 64,
-		options: { size: 512, noalpha: true }
+		maxSize: 32,
+		options: { size: 1024, noalpha: true }
 	}
 ]
 

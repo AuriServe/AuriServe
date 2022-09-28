@@ -30,23 +30,18 @@ export function populateACAL(calendar: Calendar): PopulatedCalendar {
 	return cal;
 }
 
-export function getEventsInRange(calendar: PopulatedCalendar, start: number, end: number): PopulatedEvent[] {
-	const events: PopulatedEvent[] = [];
+/**
+ * Removes populated details from an ACAL.
+ */
 
-	Object.values(calendar.events).forEach((event) => {
-		if (event.last >= start && event.start <= end) {
-			event.dates.forEach((date) => {
-				if (date + (event.end - event.start) >= start && date <= end) {
-					const instance = { ...event } as any;
-					// delete instance.dates;
-					// delete instance.last;
-					instance.start = date;
-					instance.end = date + (event.end - event.start);
-					events.push(instance);
-				}
-			})
-		}
-	});
+export function unpopulateACAL(calendar: PopulatedCalendar): Calendar {
+	const cal: Calendar = JSON.parse(JSON.stringify(calendar));
 
-	return events;
+	for (const key of Object.keys(cal.events)) {
+		const event = cal.events[key];
+		delete (event as Partial<PopulatedEvent>).dates;
+		delete (event as Partial<PopulatedEvent>).last;
+	}
+
+	return cal;
 }

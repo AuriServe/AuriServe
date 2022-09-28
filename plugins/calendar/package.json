@@ -13,18 +13,26 @@
 		"dev": "webpack-gen dev",
 		"build": "webpack-gen build"
 	},
+	"webpackGenConfig": {
+		"types": false,
+		"postcss": true
+	},
 	"devDependencies": {
+		"@types/dashboard": "file:../dashboard",
+		"@types/elements": "file:../elements",
+		"@types/hydrated": "file:../hydrated",
 		"@types/ical": "^0.8.0",
+		"@types/markdown-it": "^12.2.3",
 		"preact": "^10.10.2",
 		"vibin-hooks": "^0.3.0",
-		"webpack-gen": "file:../../webpack-gen",
-		"@types/dashboard": "file:../dashboard"
+		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
 		"common": "file:../../common/build",
 		"ical": "^0.8.0",
 		"ics": "^2.40.0",
+		"markdown-it": "^13.0.1",
 		"rrule": "^2.7.1"
 	}
 }

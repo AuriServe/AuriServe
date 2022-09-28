@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { tw, executeQuery, AppContext, Form, Field, TransitionGroup } from 'dashboard';
 import { useContext, useEffect, useLayoutEffect, useState } from 'preact/hooks';
 
-import { populateACAL } from './PopulateCalendar';
+import { populateACAL, unpopulateACAL } from './PopulateCalendar';
 import { PopulatedCalendar, PopulatedEvent } from '../common/Calendar';
 
 import Editor from './Editor';
@@ -35,12 +35,6 @@ function Category(props: CategoryProps) {
 					${props.enabled ? 'scale-[20%]' : 'scale-[32%]'}`}/>
 				<div class={tw`inset-0 absolute rounded-full transition bg-accent-400
 					${props.enabled ? 'scale-[38%] opacity-1' : 'scale-0 opacity-0'}`}/>
-
-				{/* <div class={tw`w-full h-full rounded-full transition duration-75
-					border-(2 ${props.enabled ? 'accent-500' : 'gray-200'})`}/>
-				<div class={tw`absolute inset-0 rounded-full transition duration-75
-					${props.enabled ? 'scale-[32%]' : 'scale-0'}
-					bg-${props.enabled ? 'accent-500' : 'gray-200'}`}/> */}
 			</div>
 
 			<p class={tw`font-medium text-sm transition duration-75 pt-px
@@ -59,7 +53,8 @@ export default function CalendarPage() {
 
 	const [ calendar, setCalendar ] = useState<PopulatedCalendar | null>(null);
 	const [ editing, setEditing ] = useState<EditingState | null>(null);
-	const [ saved, setSaved ] = useState<boolean>(false);
+	const [ dirty, setDirty ] = useState<boolean>(false);
+	const [ saving, setSaving ] = useState<boolean>(false);
 
 	useEffect(() => {
 		executeQuery('{ calendars }').then(({ calendars }) => {
@@ -102,9 +97,11 @@ export default function CalendarPage() {
 		delete newCalendar.events[editing!.event.uid];
 		setCalendar(newCalendar);
 		setEditing(null);
+		setDirty(true);
 	}
 
 	function handleEditingSave() {
+		setDirty(true);
 		setEditing(null);
 	}
 
@@ -146,14 +143,33 @@ export default function CalendarPage() {
 		}
 	}
 
+	function handleSave() {
+		if (!dirty || saving) return;
+
+		setSaving(true);
+
+		executeQuery('mutation($name: String!, $calendar: String!) { calendar(name: $name, calendar: $calendar) }',
+			{ name: calendarName, calendar: JSON.stringify(unpopulateACAL(calendar!)) }).then(res => {
+
+			if (!res.calendar) {
+				alert('Failed to save calendar.');
+				setSaving(false);
+			}
+			else {
+				setDirty(false);
+				setSaving(false);
+			}
+		});
+	}
+
 	return (
 		<div class={tw`flex -mb-14 overflow-hidden`}>
 			<div class={tw`grow flex-(& col) h-screen relative`}>
 				{calendar && <MonthView
 					calendar={calendar}
-					saved={saved}
+					saved={!dirty}
 					activeEvent={editing?.event?.uid}
-					onSave={() => setSaved(true)}
+					onSave={handleSave}
 					onClickCell={handleClickCell}
 					onClickEvent={handleClickEvent}
 				/>}

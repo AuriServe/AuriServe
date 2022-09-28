@@ -32,7 +32,7 @@ export default function VirtualScroll(props: Props) {
 	const [ startOffset, setStartOffset ] = useState(0);
 	const [ shiftScroll, setShiftScroll ] = useState<number | null>(null);
 
-	const touch = useMemo(() => window.matchMedia('(pointer: coarse)').matches, []);
+	const touch = useMemo(() => (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches), []);
 
 	const OVERSCROLL_ELEMS = 10;
 	const OVERSCROLL_PX = itemHeight * OVERSCROLL_ELEMS;

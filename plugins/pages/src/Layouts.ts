@@ -21,12 +21,13 @@ registerLayout(
 registerLayout(
 	'max',
 `
-<aside data-include='aside'></aside>
 <input type='checkbox' id='navigation_toggle' style='display: none;'/>
+<aside data-include='navigation'></aside>
 <div class='page_content'>
 	<header data-include='header'></header>
 	<main data-include='main'></main>
 	<footer data-include='footer'></footer>
 </div>
+<aside data-include='events'></aside>
 `
 );

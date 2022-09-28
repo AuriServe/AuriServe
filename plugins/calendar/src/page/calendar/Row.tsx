@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import { tw } from 'dashboard';
 import { useMemo } from 'preact/hooks';
 
 import Cell, { Placeholder } from './Cell';
@@ -10,9 +9,7 @@ interface Props {
 	start: Date;
 	height: number;
 	calendar: PopulatedCalendar;
-	activeEvent?: string;
 
-	onClickCell?: (date: Date) => void;
 	onClickEvent?: (event: PopulatedEvent) => void;
 }
 
@@ -66,8 +63,6 @@ export default function Row(props: Props) {
 			date={date}
 			calendar={props.calendar}
 			events={eventMap[date.getDay()]}
-			activeEvent={props.activeEvent}
-			onClickCell={props.onClickCell}
 			onClickEvent={props.onClickEvent}
 		/>);
 		const newDate = new Date(date);
@@ -76,8 +71,7 @@ export default function Row(props: Props) {
 	}
 
 	return (
-		<div class={tw`bg-gray-900 grid-(& cols-7) gap-1.5`}
-			style={{ height: props.height }}>
+		<div class='row' style={{ height: props.height }}>
 			{cells}
 		</div>
 	);

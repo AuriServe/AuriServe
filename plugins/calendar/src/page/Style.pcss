@@ -1,0 +1,76 @@
+:root {
+	--calendar-background-color: #fff;
+	--calendar-border-color: #eee;
+	--calendar-day-label-color: #666;
+	--calendar-page-label-color: #333;
+}
+
+.calendar\:calendar {
+	width: 100%;
+	/* width: calc(100% + 32px);
+	margin-left: -16px; */
+	display: flex;
+	flex-direction: column;
+	background-color: var(--calendar-background-color);
+	border: 2px solid var(--calendar-border-color);
+	border-radius: 8px;
+
+	.page_header {
+		display: flex;
+		justify-content: center;
+
+		span {
+			color: var(--calendar-page-label-color);
+			font-weight: bold;
+			font-size: 16px;
+			text-transform: uppercase;
+			letter-spacing: 0.07em;
+			padding: 16px 4px 4px 4px;
+		}
+	}
+
+	.weekday_header {
+		gap: 2px;
+		display: grid;
+		text-align: center;
+		grid-template-columns: repeat(7, 1fr);
+		border-bottom: 2px solid var(--calendar-border-color);
+
+		span {
+			color: var(--calendar-day-label-color);
+			font-weight: bold;
+			font-size: 13px;
+			text-transform: uppercase;
+			letter-spacing: 0.07em;
+			padding: 8px 4px 8px 4px;
+		}
+	}
+
+	.page {
+		overflow: hidden;
+		aspect-ratio: 16/9;
+		height: calc(500px - 2px);
+		border-radius: 0 0 8px 8px;
+		background-color: var(--calendar-border-color);
+
+		.row {
+			gap: 2px;
+			display: grid;
+			grid-template-columns: repeat(7, 1fr);
+			border-bottom: 2px solid var(--calendar-border-color);
+
+			.cell {
+				background-color: var(--calendar-background-color);
+
+				.date {
+					color: var(--calendar-day-label-color);
+					font-weight: bold;
+					font-size: 13px;
+					padding: 8px;
+					text-transform: uppercase;
+					letter-spacing: 0.07em;
+				}
+			}
+		}
+	}
+}

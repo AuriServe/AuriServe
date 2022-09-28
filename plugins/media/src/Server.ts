@@ -87,8 +87,8 @@ export async function ingest(file: string, options: IngestOptions = {}): Promise
 			const { width, height } = sizeOf(file);
 			const stat = await fs.stat(file);
 
-			// Convert to data uri if the length < 1024.
-			if (stat.size < 1024) {
+			// Convert to data uri if the length < 2048 bytes.
+			if (stat.size < 2048) {
 				const data = await fs.readFile(file, 'base64');
 				await fs.unlink(file);
 				file = `data:image/webp;base64,${data}`;
