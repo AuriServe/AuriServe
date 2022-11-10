@@ -4,20 +4,23 @@ const { execSync: rawExec, execSync } = require('child_process');
 const paths = [
 	'.',
 	'common',
-	'server',
 	'api',
 	'webpack-gen',
+	'plugins/analytics',
 	'plugins/auriserve-preact',
+	'plugins/calendar',
 	'plugins/dashboard',
 	'plugins/elements',
 	'plugins/elements-base',
 	'plugins/hydrated',
 	'plugins/media',
+	'plugins/page-editor',
 	'plugins/pages',
 	'plugins/routes',
 	'plugins/tax-calculator',
 	'plugins/themes',
-	'plugins/users'
+	'plugins/users',
+	'server',
 ];
 
 function exec(cmd, cwd = '.') {

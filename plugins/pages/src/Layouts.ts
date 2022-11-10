@@ -31,3 +31,17 @@ registerLayout(
 <aside data-include='events'></aside>
 `
 );
+
+
+registerLayout(
+	'sidebar',
+`
+<input type='checkbox' id='navigation_toggle' style='display: none;'/>
+<aside data-include='aside'></aside>
+<div class='page_content'>
+	<header data-include='header'></header>
+	<main data-include='main'></main>
+	<footer data-include='footer'></footer>
+</div>
+`
+);

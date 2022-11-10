@@ -45,7 +45,7 @@ function Columns(props: Props) {
 			{props.minWidth && (
 				<style
 					dangerouslySetInnerHTML={{
-						__html: `@media(max-width:${props.minWidth}px){.base\\:columns.${identifier}>.inner{display:flex}}`,
+						__html: `@media(max-width:${props.minWidth}px){.base\\:columns.${identifier}>.inner{display:flex!important}}`,
 					}}
 				/>
 			)}

@@ -189,10 +189,15 @@ export function fileIsInDatabase(file: string): boolean {
 	if (toIngest.length) {
 		log.info(`Ingesting ${toIngest.length} media item${toIngest.length === 1 ? '' : 's'}.`);
 		const start = Date.now();
-		await Promise.all(toIngest.map(async file => {
-			const { id } = await ingest(path.join(MEDIA_DIR, file), { overwrite: true });
-			log.debug(`Ingested '${file}' as ${id}.`)
-		}));
+		for (let i = 0; i < toIngest.length; i++) {
+			const { id } = await ingest(path.join(MEDIA_DIR, toIngest[i]), { overwrite: true });
+			log.debug(`Ingested '${toIngest[i]}' as ${id}.`)
+		}
+
+		// await Promise.all(toIngest.map(async file => {
+		// 	const { id } = await ingest(path.join(MEDIA_DIR, file), { overwrite: true });
+		// 	log.debug(`Ingested '${file}' as ${id}.`)
+		// }));
 		log.info(`Ingesting completed in ${Date.now() - start} ms.`);
 	}
 

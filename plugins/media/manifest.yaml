@@ -6,5 +6,4 @@ icon: image
 version: 0.0.1
 author: Auri
 
-entry:
-  server: build/server.js
+entry: build/server.js

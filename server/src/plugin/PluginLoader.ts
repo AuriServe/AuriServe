@@ -1,5 +1,5 @@
 import path from 'path';
-import { assert, AssertError, assertSchema, Version } from 'common';
+import { assert, AssertError } from 'common';
 import { promises as fs, constants as fsc } from 'fs';
 
 import Plugin from './Plugin';
@@ -7,7 +7,7 @@ import YAML from '../util/YAML';
 import Logger from '../util/Log';
 import Watcher from '../util/Watcher';
 import PluginManager from './PluginManager';
-import { Manifest, EntryTree } from './Manifest';
+import { ManifestSchema } from './Manifest';
 
 /** Manages finding, toggling, and loading plugins.*/
 export default class PluginLoader {
@@ -60,51 +60,15 @@ export default class PluginLoader {
 				.readFile(path.join(this.manager.pluginsPath, dirName, 'manifest.yaml'), 'utf8')
 				.catch(() => assert(false, 'Missing manifest.yaml.'))) as string;
 
-			const manifest = YAML.parse(manifestStr);
-
-			assertSchema<Manifest>(
-				manifest,
-				{
-					name: 'string',
-					identifier: 'string',
-					description: 'string',
-					icon: ['undefined', 'string'],
-
-					author: 'string',
-					version: 'string',
-					type: ['undefined', 'string'],
-
-					depends: ['undefined', 'any'],
-
-					entry: 'any',
-					watch: ['undefined', 'string[]'],
-				},
-				'Invalid manifest.yaml'
-			);
+			const manifest = ManifestSchema.parse(YAML.parse(manifestStr));
 
 			assert(
 				dirName === manifest.identifier,
 				`Folder name must be '${manifest.identifier}'.`
 			);
 
-			const entry: Record<string, string> = {};
-			function parseEntryTree(obj: EntryTree, path: string) {
-				for (const key of Object.keys(obj)) {
-					const value = obj[key];
-					if (typeof value === 'string') {
-						entry[path + key] = value;
-					} else if (typeof value === 'object') {
-						parseEntryTree(value, `${path + key}_`);
-					}
-				}
-			}
-			if (typeof manifest.entry === 'string') entry.server = manifest.entry;
-			else parseEntryTree(manifest.entry, '');
-
-			const watch = [...new Set([...(manifest.watch ?? []), ...Object.values(entry)])];
-
 			await Promise.all(
-				watch.map((sourcePath: string) =>
+				manifest.watch.map((sourcePath: string) =>
 					fs
 						.access(path.join(this.manager.pluginsPath, manifest.identifier, sourcePath))
 						.catch((_) =>
@@ -120,11 +84,7 @@ export default class PluginLoader {
 				)
 			);
 
-			const version = new Version(manifest.version);
-
-			this.manager.addPlugin(
-				new Plugin(this.manager, { ...manifest, version, entry, watch })
-			);
+			this.manager.addPlugin(new Plugin(this.manager, manifest));
 		} catch (e) {
 			if (e instanceof AssertError) {
 				if (!e.message.includes('Missing manifest.yaml'))
@@ -139,14 +99,13 @@ export default class PluginLoader {
 	private startWatch(identifier: string) {
 		this.stopWatch(identifier);
 		const plugin = this.manager.get(identifier);
+
 		assert(
 			plugin !== undefined,
 			`Plugin '${identifier}' cannot be watched, as it does not exist.`
 		);
-		assert(
-			plugin.manifest.watch && plugin.manifest.watch.length > 0,
-			`Plugin '${identifier}' has no sources to watch.`
-		);
+
+		if (!plugin.manifest.watch.length) return;
 
 		const watcher = new Watcher(
 			plugin.manifest.watch.map((file) =>

@@ -22,23 +22,20 @@ export interface SharedProps {
 	class?: string;
 	style?: string;
 	imgStyle?: string;
+	blurSize: number;
 }
 
-export type ExternalProps = SharedProps & {
-	url: string;
-}
-
-export type ServerMediaProps = SharedProps & {
+export type ServerProps = SharedProps & {
 	media: number;
 }
 
-export type ClientMediaProps = SharedProps & {
+export type ClientProps = SharedProps & {
 	path: string;
 	width: number;
 	height: number;
 }
 
-const identifier = 'base:image';
+const identifier = 'indieweb:image';
 
 interface ModalProps {
 	open: boolean;
@@ -102,67 +99,19 @@ function ImageModal(props: ModalProps) {
 	)
 }
 
-/**
- * Renders an external image. No fancy stuff here.
- */
-
-function ExternalImage(props: ExternalProps) {
-	const style =
-		(props.protect ? 'pointer-events: none; user-select: none; ' : '') +
-		(props.aspect ? `object-fit: cover; aspect-ratio: ${props.aspect}; ` : '');
-
-	const [ lightbox, setLightbox ] = useState(false);
-	const [ initialLoad, setInitialLoad ] = useState(true);
-	const [ size, setSize ] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
-
-	function handleLoad(elem: HTMLImageElement | null) {
-		if (!elem || !initialLoad) return;
-		setInitialLoad(false);
-
-		if (elem.complete) setSize({ width: elem.naturalWidth, height: elem.naturalHeight });
-		else elem.addEventListener('load', () => setSize({ width: elem.naturalWidth, height: elem.naturalHeight }));
-	}
-
-	function handleSetLightbox(evt: MouseEvent) {
-		evt.preventDefault();
-		setLightbox(!lightbox);
-	}
-
-	const Tag = props.lightbox && !props.protect ? 'a' : props.lightbox ? 'button' : 'div';
-
-	return (
-		<Tag class={merge(identifier, 'external', props.class)} style={props.style}
-			onClick={props.lightbox ? handleSetLightbox : undefined} target='_blank'
-			href={Tag === 'a' ? props.url : undefined}>
-			<img
-				ref={handleLoad}
-				style={style}
-				src={props.url}
-				alt={props.alt ?? ''}
-				loading={(props.lazy ?? true) ? 'lazy' : undefined}
-			/>
-			<ImageModal
-				open={lightbox}
-				path={props.url}
-				fullPath={props.url}
-				width={size.width}
-				height={size.height}
-				alt={props.alt}
-				protect={props.protect}
-				onClose={handleSetLightbox}
-			/>
-		</Tag>
-	);
-}
+const BLUR_RADIUS = 32;
+const BLUR_SIZE = 80;
 
 /**
  * Renders a Media image. Bakes in a placeholder and lazy loads the actual version based on the rendered size.
  */
 
-function MediaImage(props: ServerMediaProps | ClientMediaProps) {
+function RawImage(props: ServerProps | ClientProps) {
 	let path = (props as any).path;
 	let width = (props as any).width;
 	let height = (props as any).height;
+
+	const aspectRatio = props.aspect || (width / height);
 
 	if (!('path' in props)) {
 		const variants = media.getMediaImageVariants(props.media);
@@ -173,18 +122,21 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 		height = lgVariant?.height ?? 0;
 	}
 
-	const aspectRatio = props.aspect || (width / height);
-
 	const [ lightbox, setLightbox ] = useState(false);
 	const [ initialLoad, setInitialLoad ] = useState(true);
 	const [ state, setState ] = useState<'static' | 'loading' | 'transition' | 'loaded'>('static');
+
+	const blurRef = useRef<HTMLCanvasElement>(null);
+	const elemRef = useRef<HTMLElement | null>(null);
 
 	function handleCheckLoad(elem: HTMLImageElement | null) {
 		if (!elem || !initialLoad) return;
 		setInitialLoad(false);
 
 		setTimeout(() => {
-			if (elem.complete) setState('loaded');
+			if (elem.complete) {
+				setState('loaded');
+			}
 			else {
 				setState('loading');
 				elem.addEventListener('load', () => {
@@ -192,6 +144,43 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 					setTimeout(() => setState('loaded'), 1000);
 				});
 			}
+		}, 50);
+
+		setTimeout(() => {
+			const loaderSrc = (elemRef.current!.querySelector('.preview')! as HTMLElement)
+				.style.backgroundImage.replace(/url\("(.+)"\)/, '$1');
+
+			const loaderImg = new window.Image();
+			loaderImg.src = loaderSrc;
+
+
+			const canvas = blurRef.current!;
+			canvas.width = elem.naturalWidth + (props.blurSize ?? BLUR_SIZE) * 2;
+			canvas.height = elem.naturalHeight + (props.blurSize ?? BLUR_SIZE) * 2;
+			const ctx = canvas.getContext('2d')!;
+
+			ctx.fillStyle = '#0F172A';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			ctx.filter = `blur(${BLUR_RADIUS}px) saturate(200%)`;
+			const printWidth = canvas.width - BLUR_RADIUS * 6;
+			const printHeight = canvas.height - BLUR_RADIUS * 6;
+			ctx.drawImage(loaderImg, BLUR_RADIUS * 3, BLUR_RADIUS * 3, printWidth, printHeight);
+
+			ctx.filter = '';
+
+			const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+			for (let i = 0; i < canvas.width; i++) {
+				for (let j = 0; j < canvas.height; j++) {
+					const index = (i + j * canvas.width) * 4;
+					if (Math.random() < 0.5) data.data[index + 0] += 1;
+					if (Math.random() < 0.5) data.data[index + 1] += 1;
+					if (Math.random() < 0.5) data.data[index + 2] += 1;
+				}
+			}
+
+			ctx.putImageData(data, 0, 0);
 		}, 50);
 	}
 
@@ -205,7 +194,9 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 	return (
 		<Tag class={merge(identifier, 'media', props.class)} style={props.style}
 			onClick={props.lightbox ? handleSetLightbox : undefined} target='_blank'
+			ref={(ref: any) => elemRef.current = ref}
 			href={Tag === 'a' ? `/media/variants/${path}.full.webp` : undefined}>
+			<canvas ref={blurRef} style={`top: -${props.blurSize ?? BLUR_SIZE}px; left: -${props.blurSize ?? BLUR_SIZE}px;`}/>
 			{state !== 'loaded' &&
 				<Static>
 					<div
@@ -251,20 +242,10 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 }
 
 /**
- * Renders either a MediaImage or ExternalImage depending on the props provided.
- */
-
-function ImageSwitch(props: ExternalProps | ServerMediaProps | ClientMediaProps) {
-	if ('url' in props) return <ExternalImage {...props} />;
-	return <MediaImage {...props} />;
-}
-
-/**
  * Hydrated Image component, which converts the data for the Client Media Image using the Media API.
  */
 
-const Image = hydrate(identifier, ImageSwitch, (props: ExternalProps | ServerMediaProps | ClientMediaProps) => {
-	if ('url' in props) return props;
+const Image = hydrate(identifier, RawImage, (props: ServerProps | ClientProps) => {
 	assert('media' in props, 'Hydration function is running on the client?');
 
 	const newProps = props as Record<string, any>;

@@ -89,14 +89,14 @@ export default function App() {
 								[
 									getShortcut('dashboard:page_home'),
 									getShortcut('tax_calculator:edit_calculator'),
-									getShortcut('calendar:edit_calendar'),
-									getShortcut('page-editor:pages'),
+									// getShortcut('calendar:edit_calendar'),
+									// getShortcut('page-editor:pages'),
 									// getShortcut('dashboard:page_routes')!,
 									// getShortcut('dashboard:page_media')!,
 									'spacer',
 									// getShortcut('dashboard:page_settings')!,
 									getShortcut('dashboard:shortcut_palette'),
-									getShortcut('dashboard:page_settings'),
+									// getShortcut('dashboard:page_settings'),
 									getShortcut('dashboard:log_out'),
 								].filter(Boolean) as (Shortcut | 'spacer')[]
 							}

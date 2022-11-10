@@ -3,8 +3,8 @@ import { promises as fs } from 'fs';
 
 import Log from '../util/Log';
 import Watcher from '../util/Watcher';
+import { Manifest } from './Manifest';
 import * as Require from '../util/Require';
-import { ParsedManifest } from './Manifest';
 import PluginManager from './PluginManager';
 import { parse, stringify } from '../util/YAML';
 
@@ -15,7 +15,7 @@ export default class Plugin {
 	private enabled = false;
 	private events: Map<string, Map<EventFn, EventProps>> = new Map();
 
-	constructor(private manager: PluginManager, readonly manifest: ParsedManifest) {}
+	constructor(private manager: PluginManager, readonly manifest: Manifest) {}
 
 	isEnabled(): boolean {
 		return this.enabled;

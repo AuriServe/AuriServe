@@ -59,7 +59,11 @@ type Props = FieldProps<number | null> & {
  */
 
 function addStringSeparators(value: number, separator: string) {
-	return value.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, separator);
+	const decimalInd = value.toString().indexOf('.');
+	const wholePart = value.toString().substring(0, decimalInd === -1 ? undefined : decimalInd)
+		.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+	const decimalPart = decimalInd === -1 ? '' : value.toString().substring(decimalInd);
+	return `${wholePart}${decimalPart}`;
 }
 
 export default function NumberInput(props: Props) {

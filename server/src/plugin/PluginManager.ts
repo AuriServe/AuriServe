@@ -4,9 +4,9 @@ import Express from 'express';
 import Log from '../util/Log';
 import Plugin from './Plugin';
 import RouterApi from './RouterApi';
+import { Manifest } from './Manifest';
 import { Database } from '../util/SQLite';
 import PluginLoader from './PluginLoader';
-import { ParsedManifest } from './Manifest';
 import pluginDependencyOrder from './pluginDependencyOrder';
 
 export type PluginEvent = 'refresh';
@@ -26,7 +26,7 @@ export default class Plugins {
 	readonly plugins: Map<string, Plugin> = new Map();
 
 	/** A map of plugin manifests indexed by their identifiers. */
-	readonly manifests: Map<string, ParsedManifest> = new Map();
+	readonly manifests: Map<string, Manifest> = new Map();
 
 	/** The plugin loader which discovers and watches the plugins. */
 	private loader: PluginLoader;

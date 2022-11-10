@@ -3,7 +3,6 @@ import path from 'path';
 import HTTP from 'http';
 import debounce from 'debounce';
 import { URLSearchParams } from 'url';
-import { AssertError } from 'common';
 
 import Express from 'express';
 import minimist from 'minimist';
@@ -13,144 +12,115 @@ import fileUpload from 'express-fileupload';
 import { server as WebSocketServer } from 'websocket';
 
 import Log from './util/Log';
+import connect from './util/SQLite';
 import { parse } from './util/YAML';
-import connect, { Database } from './util/SQLite';
+import { ConfigSchema } from './Config';
 import PluginManager from './plugin/PluginManager';
 
 const DEFAULT_CONF_PATH = 'site-data';
 const DEFAULT_CONF_FILE = 'config.yaml';
 
-export interface ServerConfig {
-	[ key: string ]: any;
+try {
+	// Construct the server config.
+	const args = minimist(process.argv.slice(2));
 
-	port: number;
-	dataPath: string;
-	logLevel: string;
-}
+	let confPath: string | undefined = args._?.[0];
+	if (!confPath) confPath = path.join(DEFAULT_CONF_PATH, DEFAULT_CONF_FILE);
+	else if (!confPath.endsWith('.yaml')) confPath = path.join(confPath, DEFAULT_CONF_FILE);
+	if (!path.isAbsolute(confPath)) confPath = path.join(process.cwd(), confPath);
 
-export default class Server {
-	private express: Express.Express;
-	private plugins: PluginManager;
-	private database: Database;
-	private conf: ServerConfig;
+	let confFile: Record<string, string>;
+	try { confFile = parse<Record<string, string>>(fs.readFileSync(confPath, 'utf8')); }
+	catch (e) { throw new Error(`Failed to parse config file '${confPath}'.`); }
 
-	private attemptedShutdown = false;
+	const conf = ConfigSchema.parse({ ...confFile, ...args })
 
-	constructor() {
-		// Construct the server config.
-		const args = minimist(process.argv.slice(2));
+	if (!path.isAbsolute(conf.dataPath)) conf.dataPath = path.join(path.dirname(confPath), conf.dataPath);
 
-		let confPath: string | undefined = args._?.[0];
-		if (!confPath) confPath = path.join(DEFAULT_CONF_PATH, DEFAULT_CONF_FILE);
-		else if (!confPath.endsWith('.yaml'))
-			confPath = path.join(confPath, DEFAULT_CONF_FILE);
-		if (!path.isAbsolute(confPath)) confPath = path.join(__dirname, '..', confPath);
+	// Apply configuration settings.
+	Log.setLogLevel(conf.logLevel);
+	Log.debug(`Initializing AuriServe with configuration file '${confPath}'.`);
 
-		this.conf = this.createConfig(confPath, args);
+	// Set up Express
+	const express = Express();
+	express.use(compression());
+	express.use(cookieParser());
+	express.use(Express.json() as any);
+	express.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
-		// Apply configuration settings.
-		Log.setLogLevel(this.conf.logLevel);
-		Log.debug(`Initializing AuriServe with configuration file '${confPath}'.`);
-
-		// Set up Express
-		this.express = Express();
-		this.express.use(compression());
-		this.express.use(cookieParser());
-		this.express.use(Express.json() as any);
-		this.express.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
-
-		this.express.set('query parser', (queryString: string): Record<string, string> => {
-			const params: Record<string, string> = {};
-			[...new URLSearchParams(queryString).entries()].forEach(
-				([key, value]) => (params[key] = Array.isArray(value) ? value[0] : value)
-			);
-			return params;
-		});
-
-		if (this.conf.logLevel === 'trace') {
-			this.express.get('*', (req, _, next) => {
-				Log.trace('GET %s', req.params[0]);
-				next();
-			});
-
-			this.express.post('*', (req, _, next) => {
-				Log.trace('POST %s', req.params[0]);
-				next();
-			});
-		}
-
-		// Connect to the database.
-		this.database = connect(path.join(this.conf.dataPath, 'data.sqlite'), {
-			verbose: (query: string) => Log.trace(`SQL Query:\n${query}`),
-		});
-
-		// Initialize plugins.
-		this.plugins = new PluginManager(
-			this.conf,
-			this.conf.dataPath,
-			true,
-			this.express,
-			this.database
+	express.set('query parser', (queryString: string): Record<string, string> => {
+		const params: Record<string, string> = {};
+		[...new URLSearchParams(queryString).entries()].forEach(
+			([key, value]) => (params[key] = Array.isArray(value) ? value[0] : value)
 		);
+		return params;
+	});
 
-		this.plugins.init().then(() => Log.info('Initialized AuriServe.'));
-
-		// Initialize WebServer.
-		const httpServer = HTTP.createServer(this.express);
-		const wsServer = new WebSocketServer({ httpServer, autoAcceptConnections: false });
-
-		httpServer.listen(this.conf.port, () =>
-			Log.debug(`HTTP server listening on port ${this.conf.port}.`)
-		);
-
-		wsServer.on('request', (request) => {
-			if (request.resourceURL.path === '/admin/watch') {
-				const connection = request.accept(undefined, request.origin);
-				this.plugins.bind('refresh', () => connection.send('refresh'));
-			}
+	if (conf.logLevel === 'trace') {
+		express.get('*', (req, _, next) => {
+			Log.trace('GET %s', req.params[0]);
+			next();
 		});
 
-		// Bind shutdown handler.
-		this.handleShutdown = debounce(this.handleShutdown.bind(this), 50);
-		process.on('SIGINT', this.handleShutdown);
-		process.on('SIGTERM', this.handleShutdown);
+		express.post('*', (req, _, next) => {
+			Log.trace('POST %s', req.params[0]);
+			next();
+		});
 	}
 
-	/** Handles shutting down the server when an exit signal is recieved. */
-	private async handleShutdown() {
-		if (this.attemptedShutdown) {
+	// Connect to the database.
+	const database = connect(path.join(conf.dataPath, 'data.sqlite'), {
+		verbose: (query: string) => Log.trace(`SQL Query:\n${query}`),
+	});
+
+	// Initialize plugins.
+	const plugins = new PluginManager(
+		conf,
+		conf.dataPath,
+		true,
+		express,
+		database
+	);
+
+	plugins.init().then(() => Log.info('Initialized AuriServe.'));
+
+	// Initialize WebServer.
+	const httpServer = HTTP.createServer(express);
+	const wsServer = new WebSocketServer({ httpServer, autoAcceptConnections: false });
+
+	httpServer.listen(conf.port, () =>
+		Log.debug(`HTTP server listening on port ${conf.port}.`)
+	);
+
+	wsServer.on('request', (request) => {
+		console.log('SOMETHING HAPENED');
+		if (request.resourceURL.path === '/admin/watch') {
+			const connection = request.accept(undefined, request.origin);
+			plugins.bind('refresh', () => connection.send('refresh'));
+		}
+	});
+
+	// Bind shutdown handler.
+	let attemptedShutdown = false;
+
+	const handleShutdown = debounce(async () => {
+		if (attemptedShutdown) {
 			Log.fatal('Shutdown requested twice. Exiting immediately.');
 			process.exit(1);
 			return;
 		}
 
-		this.attemptedShutdown = true;
+		attemptedShutdown = true;
 		Log.debug('Shutdown requested, cleaning up...');
-		await this.plugins.cleanup();
+		await plugins.cleanup();
 		Log.info('Exiting Auriserve.');
 		process.exit(0);
-	}
+	});
 
-	/** Creates a configuration object from a configuration path and command line arguments. */
-	private createConfig(confPath: string, args: minimist.ParsedArgs): ServerConfig {
-		let conf: ServerConfig;
-
-		try {
-			conf = parse(fs.readFileSync(confPath, 'utf8'));
-		} catch (_) {
-			throw new AssertError(`Could not read config file '${confPath}'.`);
-		}
-
-		let dataPath = conf.data_path ?? '.';
-		if (!path.isAbsolute(dataPath))
-			dataPath = path.join(path.dirname(confPath), dataPath);
-		conf.dataPath = dataPath;
-
-		conf.logLevel = conf.log_level || args.log_level || 'info';
-		conf.port = conf.port || args.port || 80;
-
-		return conf as ServerConfig;
-	}
+	process.on('SIGINT', handleShutdown);
+	process.on('SIGTERM', handleShutdown);
 }
-
-new Server();
+catch (e) {
+	Log.fatal('Failed to initialize AuriServe:\n%s', e);
+	process.exit(1);
+}

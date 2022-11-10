@@ -1,12 +1,12 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
+// import { useState } from 'preact/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import Card from '../Card';
-import Tooltip from '../Tooltip';
+// import Tooltip from '../Tooltip';
 import TileLayout from '../TileLayout';
-import TreeView, { TreeRenderProps, TreeItem } from '../TreeView';
+// import TreeView, { TreeRenderProps, TreeItem } from '../TreeView';
 
 import { tw } from '../../Twind';
 import { getShortcuts } from '../../Shortcut';
@@ -14,69 +14,69 @@ import { QUERY_INFO, useData } from '../../Graph';
 
 import * as Icon from '../../Icon';
 
-interface TreeData {
-	icon: string;
-	name: string;
-	path: string;
-}
+// interface TreeData {
+// 	icon: string;
+// 	name: string;
+// 	path: string;
+// }
 
-function TreeRenderItem(props: TreeRenderProps<TreeData>) {
-	return (
-		<div class={tw`rounded bg-gray-700 flex items-center gap-1.5 p-1 ml-[${props.treeLevel * 16}px] mb-1`}>
-			<Svg src={props.icon} size={6} class={tw`px-1.5`}/>
-			<div class={tw`flex-(& col)`}>
-				<p class={tw`font-medium`}>{props.name}</p>
-				<p class={tw`text-(gray-200 xs) font-medium -mt-1`}>{props.path}</p>
-			</div>
-		</div>
-	)
-}
+// function TreeRenderItem(props: TreeRenderProps<TreeData>) {
+// 	return (
+// 		<div class={tw`rounded bg-gray-700 flex items-center gap-1.5 p-1 ml-[${props.treeLevel * 16}px] mb-1`}>
+// 			<Svg src={props.icon} size={6} class={tw`px-1.5`}/>
+// 			<div class={tw`flex-(& col)`}>
+// 				<p class={tw`font-medium`}>{props.name}</p>
+// 				<p class={tw`text-(gray-200 xs) font-medium -mt-1`}>{props.path}</p>
+// 			</div>
+// 		</div>
+// 	)
+// }
 
 export default function MainPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [{ info }] = useData(QUERY_INFO, []);
 
-	const [ treeData ] = useState<TreeItem<TreeData>>({
-		key: 'root',
-		name: '',
-		icon: '',
-		path: '',
-		children: [{
-			key: 'home',
-			name: 'Home',
-			path: '(index)',
-			icon: Icon.file,
-		}, {
-			key: 'calculator',
-			name: 'Calculators',
-			path: 'calculator',
-			icon: Icon.calculator,
-		}, {
-			key: 'dashboard',
-			name: 'Dashboard',
-			path: 'dashboard',
-			icon: Icon.launch,
-		}, {
-			key: 'about',
-			name: 'About',
-			path: 'about',
-			icon: Icon.folder,
-			children: [{
-				key: 'about',
-				name: 'About Us',
-				path: '(index)',
-				icon: Icon.file,
-			}, {
-				key: 'staff',
-				name: 'Our Staff',
-				path: 'staff',
-				icon: Icon.file,
-			}]
-		}]
-	});
+	// const [ treeData ] = useState<TreeItem<TreeData>>({
+	// 	key: 'root',
+	// 	name: '',
+	// 	icon: '',
+	// 	path: '',
+	// 	children: [{
+	// 		key: 'home',
+	// 		name: 'Home',
+	// 		path: '(index)',
+	// 		icon: Icon.file,
+	// 	}, {
+	// 		key: 'calculator',
+	// 		name: 'Calculators',
+	// 		path: 'calculator',
+	// 		icon: Icon.calculator,
+	// 	}, {
+	// 		key: 'dashboard',
+	// 		name: 'Dashboard',
+	// 		path: 'dashboard',
+	// 		icon: Icon.launch,
+	// 	}, {
+	// 		key: 'about',
+	// 		name: 'About',
+	// 		path: 'about',
+	// 		icon: Icon.folder,
+	// 		children: [{
+	// 			key: 'about',
+	// 			name: 'About Us',
+	// 			path: '(index)',
+	// 			icon: Icon.file,
+	// 		}, {
+	// 			key: 'staff',
+	// 			name: 'Our Staff',
+	// 			path: 'staff',
+	// 			icon: Icon.file,
+	// 		}]
+	// 	}]
+	// });
 
-	const shortcuts = [...getShortcuts().values()].reverse().slice(0, 6);
+	const shortcuts = [...getShortcuts().values()].reverse().slice(0, 3);
 
 
 	return (
@@ -138,7 +138,7 @@ export default function MainPage() {
 							))}
 						</div>
 					</TileLayout.Tile>
-					<TileLayout.Tile width={1} height={4}>
+					{/* <TileLayout.Tile width={1} height={4}>
 						<Card class={tw`h-full`}>
 							<Card.Body>
 								<TreeView<TreeData> data={treeData} render={TreeRenderItem}/>
@@ -172,7 +172,7 @@ export default function MainPage() {
 						<Card class={tw`h-full`}>
 							<Tooltip position='right'>Hello</Tooltip>
 						</Card>
-					</TileLayout.Tile>
+					</TileLayout.Tile> */}
 				</TileLayout.Grid>
 			</TileLayout>
 		</div>

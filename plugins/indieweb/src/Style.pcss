@@ -1,0 +1,376 @@
+/* @keyframes modal_container {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+@keyframes modal_image {
+	0% { transform: scale(0.98); }
+	100% { transform: scale(1); }
+}
+
+#page {
+	.base\:columns {
+		width: 100%;
+
+		& > .inner {
+			display: grid;
+			margin: 0 auto;
+			flex-direction: column;
+			grid-template-columns: 1fr;
+
+			& > * {
+				min-width: 0;
+			}
+		}
+
+		&.reverse > .inner {
+			flex-direction: column-reverse;
+		}
+	}
+
+	.base\:image {
+		overflow: hidden;
+		position: relative;
+
+		&.media {
+
+			&button {
+				cursor: pointer;
+			}
+
+			.preview, .image {
+				position: absolute;
+				background-size: cover;
+				background-position: center;
+			}
+
+			.preview {
+				filter: blur(8px);
+				width: calc(100% + 8px);
+				height: calc(100% + 8px);
+				top: -4px;
+				left: -4px;
+			}
+
+			.loader {
+				opacity: 0;
+				width: 100%;
+			}
+
+			.image {
+				opacity: 0;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+
+				&.loaded, &.static {
+					opacity: 1;
+				}
+
+				&.animate {
+					transition: opacity 0.3s ease;
+				}
+			}
+		}
+	}
+
+	.base\:column_fancy {
+		width: 100%;
+
+		& > .columns {
+			display: grid;
+			margin: 0 auto;
+
+			& > .column {
+				min-width: 0;
+				display: flex;
+				flex-direction: column;
+			}
+		}
+	}
+
+	.base\:image-modal {
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 100;
+		display: grid;
+		padding: 32px;
+		position: fixed;
+		align-content: center;
+		justify-content: center;
+		background-color: rgb(0 0 0 / .75);
+
+		opacity: 0;
+		transition: opacity 150ms;
+		animation: modal_container 150ms 1;
+
+		.content {
+			display: grid;
+
+			transform: scale(0.98);
+			transition: transform 150ms;
+			animation: modal_image 150ms 1;
+
+			img {
+				width: 100%;
+				height: 100%;
+				border-radius: 8px;
+				background-color: #333;
+				box-shadow: 0px 4px 16px 0 rgb(0 0 0 / 0.25);
+			}
+
+			.meta {
+				display: block;
+				height: max-content;
+				overflow: auto;
+			}
+		}
+
+		&.open {
+			opacity: 1;
+
+			.content {
+				transform: scale(1);
+			}
+		}
+	}
+
+	.base\:grid {
+		width: 100%;
+
+		& > .hydrated\:static > .contents  {
+			display: grid;
+		}
+	}
+
+	.base\:stack {
+		gap: 0;
+		width: 100%;
+		display: flex;
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.base\:section-container {
+		> * {
+			&:first-child {
+				margin-top: 0 !important;
+			}
+
+			&:last-child {
+				margin-bottom: 0 !important;
+			}
+		}
+	}
+
+	.base\:testimonial {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
+
+		& > .testimonial-image {
+			width: 256px;
+			aspect-ratio: 1;
+			object-fit: cover;
+		}
+
+		& > .testimonial-content {
+			width: 100%;
+		}
+	}
+
+	.ProseMirror {
+		&.ProseMirror-focused {
+			outline: none;
+			position: relative;
+
+			p, h2, h3, h4, h5, h6 {
+				&::before {
+					all: initial;
+
+					position: absolute;
+					background-color: #60A5FA;
+					font-family: 'sans-serif';
+					color: white;
+					font-weight: bold;
+					text-align: center;
+					right: calc(100% + 16px);
+					padding: 2px 8px;
+					border-radius: 4px;
+				}
+			}
+
+			p::before { content: 'p' }
+			h2::before { content: 'h1' }
+			h3::before { content: 'h2' }
+			h4::before { content: 'h3' }
+			h5::before { content: 'h4' }
+			h6::before { content: 'h5' }
+		}
+
+	}
+
+	.base\:carousel {
+		display: grid;
+		position: relative;
+
+		& > * {
+			width: 100%;
+		}
+
+		& > .button-arrow {
+			width: 48px;
+			height: 48px;
+			filter: brightness(50%);
+			position: absolute;
+			top: calc(50% - 24px);
+
+			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpY29uLWNoZXZlcm9uLWxlZnQtY2lyY2xlIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4yMDMiIGNsYXNzPSJwcmltYXJ5Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEzLjcgMTUuM2ExIDEgMCAwIDEtMS40IDEuNGwtNC00YTEgMSAwIDAgMSAwLTEuNGw0LTRhMSAxIDAgMCAxIDEuNCAxLjRMMTAuNDIgMTJsMy4zIDMuM3oiIGNsYXNzPSJzZWNvbmRhcnkiLz48L3N2Zz4=");
+			background-size: cover;
+
+			&:first-of-type {
+				left: 0;
+			}
+
+			&:last-of-type {
+				right: 0;
+				transform: scaleX(-1);
+			}
+		}
+
+		& > .carousel-items {
+			position: relative;
+			display: grid;
+
+			& > .hydrated\:static > .carousel-item {
+				position: absolute;
+				top: 0;
+
+				&.transition-left {
+					opacity: 0;
+					transform: translateX(-12px);
+				}
+
+				&.transition-right {
+					opacity: 0;
+					transform: translateX(12px);
+				}
+			}
+		}
+
+		&.static > .carousel-items > .hydrated\:static {
+			& > .carousel-item:not(:first-child) {
+				display: none;
+			}
+		}
+
+		&:not(.static) > .carousel-items > .hydrated\:static {
+			& > .carousel-item:not(.active) {
+				display: none;
+			}
+		}
+	}
+
+	/* .ImageView
+		width: 100%
+		height: auto
+		overflow: auto
+		position: relative
+		isolation: isolate
+
+		.ImageView-Aspect
+			width: 100%
+			height: 0
+			margin: 0 auto
+			overflow: hidden
+			position: relative
+
+			object-fit: cover
+			object-position: 50% 50%
+
+			img
+				object-fit: inherit
+				object-position: inherit
+
+				width: 100%
+				height: 100%
+				display: block
+				position: absolute
+
+			.ImageView-Preload
+				z-index: 1
+				filter: blur(8px)
+				will-change: opacity
+				transform: scale(1.1)
+
+				&.FadeOut
+					opacity: 0
+					transform: scale(1)
+					transition: opacity 500ms, transform 500ms
+
+			.ImageView-Image
+				transition: opacity 350ms
+
+				@keyframes FadeIn
+					from
+						transform: scale(1.1)
+
+					to
+						transform: scale(1)
+
+				&.Hide
+					opacity: 0
+
+				&.FadeIn
+					opacity: 1
+					animation: FadeIn 500ms forwards
+
+	.ImageView-Modal
+		position: fixed
+		z-index: 255
+		top: 0
+		left: 0
+		bottom: 0
+		right: 0
+
+		padding: 24px
+		backdrop-filter: brightness(50%) blur(16px)
+
+		img
+			width: 100%
+			height: 100%
+			object-fit: contain
+} */
+
+.indieweb\:image {
+	position: relative;
+
+	canvas {
+		opacity: 0;
+		transform: scale(90%);
+		pointer-events: none;
+		/* opacity: 0.7; */
+		position: absolute;
+		transition: opacity 150ms, transform 150ms;
+		/* mix-blend-mode: hard-light; */
+	}
+
+	.image {
+		transition: filter 150ms;
+	}
+	&:hover .image {
+		filter: brightness(1.05);
+	}
+	&:hover canvas {
+		opacity: 1;
+		transform: scale(100%);
+	}
+
+	.image, .loader {
+		position: relative;
+	}
+}

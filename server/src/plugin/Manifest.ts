@@ -1,26 +1,23 @@
+import { z } from 'zod';
 import { Version } from 'common';
 
-export interface EntryTree {
-	[entry: string]: string | EntryTree;
-}
+export const ManifestSchema = z.object({
+	name: z.string().default(''),
+	identifier: z.string(),
+	description: z.string().default(''),
+	icon: z.string().optional(),
 
-export interface Manifest {
-	name?: string;
-	identifier: string;
-	description?: string;
-	icon?: string;
+	author: z.string(),
+	version: z.string().transform(v => new Version(v)),
+	depends: z.record(z.string()).default({}),
 
-	author: string;
-	version: string;
-	depends: Record<string, string>;
+	entry: z.union([ z.string().transform(server => ({ server })), z.record(z.string()) ]).default({}),
+	watch: z.string().array().default([])
+}).passthrough().transform(manifest => {
+	manifest.watch = [ ...new Set([ ...(manifest.watch ?? []), ...Object.values(manifest.entry) ]) ];
+	return manifest;
+});
 
-	entry: string | EntryTree;
-	watch?: string[];
-}
+export type Manifest = z.infer<typeof ManifestSchema>;
 
-export type ParsedManifest = Omit<Manifest, 'entry' | 'watch' | 'version'> & {
-	version: Version;
 
-	entry: Record<string, string>;
-	watch: string[];
-};

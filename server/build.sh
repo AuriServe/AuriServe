@@ -17,6 +17,6 @@ fi
 cd ../
 
 eslint src/**/*.ts & tsc --project tsconfig.json &&
-nexe --build --make="-j$(nproc 2> /dev/null || echo 1)" --name AuriServe --output build/AuriServe;
+nexe --build --target 18.7.0 --make="-j$(nproc 2> /dev/null || echo 1)" --name auriserve --output build/auriserve;
 
 npm run clean
