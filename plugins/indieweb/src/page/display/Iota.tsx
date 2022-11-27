@@ -48,6 +48,15 @@ interface Props {
 	/** The scale of the element in pixels. Defaults to 64 */
 	scale: number;
 
+	/** The start color of the iota's gradient. */
+	activeStartColor?: string;
+
+	/** The end color of the iota's gradient. */
+	activeEndColor?: string;
+
+	/** The inactive color of the iota.  */
+	inactiveColor?: string;
+
 	/** Triggered when the element is clicked. */
 	onClick?: () => void;
 
@@ -70,7 +79,7 @@ const identifier = 'indieweb:iota';
 
 function getType(iota: string): Type {
 	if (iota === 'NULL') return 'null';
-	if (iota.startsWith('[')) return 'list';
+	if (iota.startsWith('[') || iota.startsWith(']')) return 'list';
 	if (iota === 'arimfexendrapuse') return 'garbage';
 	if (iota.startsWith('HexPattern')) return 'pattern';
 	if (iota.match(/^\d+(?:.\d+)?$/)) return 'number';
@@ -95,7 +104,7 @@ function processPatternIota(props: Props): PatternData {
 			shape.push(dir);
 	}
 
-	const scale = Math.min(props.scale / ((bounds[2] - bounds[0]) +
+	const scale = Math.min(props.scale / (Math.max(bounds[2] - bounds[0], bounds[3] - bounds[1]) +
 		(props.strokeWidth / (props.scale / props.maxPatternWidth))),
 		props.scale / props.maxPatternWidth);
 	const scaledSize = [ (bounds[2] - bounds[0]) * scale, (bounds[3] - bounds[1]) * scale ];
@@ -126,7 +135,7 @@ export const Pattern = memo(function Pattern(props: Props) {
 	props.scale ??= 64;
 	props.strokeWidth ??= props.scale / 16;
 	props.maxPatternWidth ??= 3;
-	props.lineSegments ??= 8;
+	props.lineSegments ??= 4;
 	props.jitterIntensity ??= props.scale / 32;
 
 	if (typeof window === 'undefined') props.lineSegments = 1;
@@ -136,8 +145,10 @@ export const Pattern = memo(function Pattern(props: Props) {
 
 	const pattern = useMemo(() => processPatternIota(props), [ props ]);
 
+	const id = useMemo(() => Date.now() + Math.random(), []);
+
 	const basePath = `M ${pattern.points[0][0].toFixed(1)} ${pattern.points[0][1].toFixed(1)}` +
-	`${pattern.points.slice(1).map(p => `L ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ')}`;
+		`${pattern.points.slice(1).map(p => `L ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ')}`;
 
 	useEffect(() => {
 		const path = ref.current!.querySelector('svg path') as SVGPathElement;
@@ -147,6 +158,7 @@ export const Pattern = memo(function Pattern(props: Props) {
 			animationRef.current = 0;
 
 			path.setAttribute('d', basePath);
+			ref.current!.querySelector('.indicator')?.remove();
 		}
 		else if (props.active && !animationRef.current) {
 			let animationOffset = 0;
@@ -160,9 +172,8 @@ export const Pattern = memo(function Pattern(props: Props) {
 			dupe.setAttribute('stroke-dasharray', (len + 200).toString());
 			dupe.style.setProperty('--length', (len + 200).toString());
 
-			setTimeout(() => {
-				ref.current?.classList.add('glow');
-			}, 2500);
+			setTimeout(() => ref.current?.classList.add('glow'), 1600);
+			setTimeout(() => ref.current!.querySelector('.indicator')?.remove(), 3200);
 
 			function animate() {
 				let d = `M ${pattern.points[0][0].toFixed(1)} ${pattern.points[0][1].toFixed(1)} `;
@@ -185,7 +196,7 @@ export const Pattern = memo(function Pattern(props: Props) {
 				path.setAttribute('d', d);
 				dupe.setAttribute('d', d);
 				window.cancelAnimationFrame(animationRef.current);
-				animationOffset += 1;
+				animationOffset++;
 				animationRef.current = requestAnimationFrame(animate);
 			}
 
@@ -205,14 +216,24 @@ export const Pattern = memo(function Pattern(props: Props) {
 
 	return (
 		<div ref={ref} class={`${identifier} pattern ${props.active ? 'active' : ''}`}>
-			<svg xmlns='http://www.w3.org/2000/svg' width={width} height={height}
-				fill='transparent' stroke='white' strokeWidth={props.strokeWidth}
-				strokeLinecap='round' strokeLinejoin='bevel'>
-
+			<svg xmlns='http://www.w3.org/2000/svg'
+				width={width}
+				height={height}
+				fill='transparent'
+				strokeWidth={props.strokeWidth}
+				strokeLinecap='round'
+				strokeLinejoin='bevel'
+				style={
+					(true && `--gradient-url: url(#g-${id});`) +
+					(props.inactiveColor ? `--inactive-color: ${props.inactiveColor};` : '') +
+					(props.activeStartColor ? `--active-start-color: ${props.activeStartColor};` : '') +
+					(props.activeEndColor ? `--active-end-color: ${props.activeEndColor};` : '')}
+			>
 				<defs>
-					<linearGradient id='active-gradient' x1='0%' y1="0%" x2='100%' y2='100%'>
-						<stop offset='0%' stop-color='rgb(var(--color-primary-400))'/>
-						<stop offset='100%' stop-color='rgb(var(--color-secondary-400))'/>
+					<linearGradient id={`g-${id}`} x1='20%' y1="0%" x2='80%' y2='100%'
+						gradientUnits='userSpaceOnUse'>
+						<stop offset='20%'/>
+						<stop offset='100%'/>
 					</linearGradient>
 				</defs>
 
@@ -236,7 +257,22 @@ export function Iota(props: Props) {
 				</div>
 			);
 		}
+		case 'list': {
+			// return <Pattern {...props} data={props.data === '['
+			// 	? 'HexPattern(NORTH_EAST ewe)'
+			// 	: 'HexPattern(SOUTH_EAST qwq)'}
+			// 	activeStartColor='rgb(255, 255, 122)'
+			// 	activeEndColor='rgb(255, 153, 0)'/>
+			return <Pattern {...props} data={props.data === '['
+				? 'HexPattern(WEST qqq)'
+				: 'HexPattern(EAST eee)'}
+				activeStartColor='rgb(255, 255, 122)'
+				activeEndColor='rgb(255, 153, 0)'/>
+		}
 		case 'pattern': {
+			// if (props.data === 'HexPattern(WEST qqqaw)') {
+			// 	return <Pattern {...props} activeStartColor='rgb(255, 255, 122)' activeEndColor='rgb(255, 153, 0)'/>
+			// }
 			return <Pattern {...props} />;
 		}
 	}

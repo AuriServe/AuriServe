@@ -27,16 +27,16 @@ export default function useTrapFocus<T extends HTMLElement>(options: Options = {
 			});
 
 			const handleMouseDown = () => {
-				if (document.activeElement?.classList.contains('focus-visible'))
-					document.activeElement?.classList.remove('focus-visible');
+				const fakeFocused = document.querySelector('.focus-visible');
+				if (fakeFocused) fakeFocused.classList.remove('focus-visible');
 			}
 
 			const handleKeyDown = (evt: KeyboardEvent) => {
 				if (evt.key === 'Tab') {
 					evt.preventDefault();
 
-					if (document.activeElement?.classList.contains('focus-visible'))
-						document.activeElement?.classList.remove('focus-visible');
+					const fakeFocused = document.querySelector('.focus-visible');
+					if (fakeFocused) fakeFocused.classList.remove('focus-visible');
 
 					const elements = getFocusableElements(element);
 					let currentInd = elements.indexOf(document.activeElement as HTMLElement);

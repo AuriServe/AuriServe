@@ -36,11 +36,13 @@
 		"@headlessui/react": "^1.6.6",
 		"@twind/preset-tailwind": "^1.0.0-next.35",
 		"auriserve": "file:../../api/build",
+		"bufferutil": "^4.0.7",
 		"common": "file:../../common/build",
 		"graphql": "^16.5.0",
 		"preact": "^10.10.2",
 		"react-router-dom": "^6.3.0",
 		"twind": "^1.0.0-next.35",
+		"utf-8-validate": "^5.0.10",
 		"vibin-hooks": "^0.3.0",
 		"ws": "^8.8.1"
 	}

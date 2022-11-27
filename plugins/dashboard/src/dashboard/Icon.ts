@@ -53,6 +53,7 @@ export { default as plugin } from '@res/icon/plugin.svg';
 export { default as receipt } from '@res/icon/receipt.svg';
 export { default as refresh } from '@res/icon/refresh.svg';
 export { default as redo } from '@res/icon/redo.svg';
+export { default as remove } from '@res/icon/remove.svg';
 export { default as role } from '@res/icon/role.svg';
 export { default as save } from '@res/icon/save.svg';
 export { default as shortcut } from '@res/icon/shortcut.svg';

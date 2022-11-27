@@ -1,6 +1,6 @@
 import { hydrate } from 'hydrated';
 import { FunctionalComponent, h } from 'preact';
-import { useMemo, useState } from 'preact/hooks';
+import { useMemo, useRef, useState } from 'preact/hooks';
 
 const identifier = 'indieweb:hex';
 
@@ -40,23 +40,54 @@ interface Props {
 export function Hex(props: Props) {
 	const [ clicked, setClicked ] = useState<number>(-1);
 
-	const patterns = useMemo(() => {
-		return props.data
-			.replace(/^\[/, '')
-			.replace(/\]$/, '')
-			.split(',')
-			.map(p => p.trim());
-	}, [ props.data ]);
+	const animationRef = useRef<number>(0);
+
+	const tokens: string[] = [];
+
+	props.data = props.data.replace(/^\[/, '').replace(/\]$/, '');
+	let i = 0;
+	while (i < props.data.length) {
+		if (props.data[i] === ' ' || props.data[i] === ',') {
+			i++;
+		}
+		else if (props.data[i] === '[') {
+			tokens.push('[');
+			i++;
+		}
+		else if (props.data[i] === ']') {
+			tokens.push(']');
+			i++;
+		}
+		else {
+			const token = props.data.substring(i).match(
+				/^([\w\d][\w\d. ()]+|\(\d+(?:.\d+)?, ?\d+(?:.\d+)?, ?\d+(?:.\d+)?\))/);
+			if (!token) throw new Error('Invalid token');
+			tokens.push(token[1]);
+			i += token[1].length;
+		}
+	}
 
 	function handleClick(i: number) {
 		if (i === clicked) setClicked(-1);
-		else setClicked(i);
+		else {
+			if (animationRef.current) cancelAnimationFrame(animationRef.current);
+			function animate() {
+				setClicked(curr => {
+					if (curr < i) {
+						animationRef.current = setTimeout(animate, 50) as any;
+						return curr + 1;
+					}
+					return curr;
+				});
+			}
+			animate();
+		}
 	}
 
 	return (
 		<div class={identifier} style={`padding: ${props.padding ?? 0}px; gap: ${props.gap ?? 0}px;`}>
-			{patterns.map((pattern, i) =>
-				<Iota key={i} data={pattern} active={i <= clicked} jitterIntensity={props.jitterIntensity}
+			{tokens.map((tokens, i) =>
+				<Iota key={i} data={tokens} active={i <= clicked} jitterIntensity={props.jitterIntensity}
 					lineSegments={props.lineSegments} maxPatternWidth={props.maxPatternWidth}
 					scale={props.scale} strokeWidth={props.strokeWidth} onClick={() => handleClick(i)}/>
 			)}

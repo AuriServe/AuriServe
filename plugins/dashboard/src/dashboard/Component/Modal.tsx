@@ -26,7 +26,8 @@ export default function Modal(props: Props) {
 
 	useEffect(() => {
 		const body = document.documentElement;
-		const root = document.querySelector('.AS_ROOT') as HTMLElement;
+		const root = body.children[0] as HTMLElement;
+
 		if (!body || !root || !props.active) return undefined;
 
 		if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
@@ -45,7 +46,7 @@ export default function Modal(props: Props) {
 	const { onClose } = props;
 
 	useEffect(() => {
-		if (!props.onClose) return;
+		if (!onClose) return;
 
 		function handleKeyPress(evt: KeyboardEvent) {
 			if (evt.key === 'Escape') {

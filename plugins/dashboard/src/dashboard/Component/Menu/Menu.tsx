@@ -45,7 +45,6 @@ export default function Menu(props: Props) {
 	useLayoutEffect(() => {
 		if (!props.active) return;
 		const bounds = props.for && elementBounds(props.for);
-		console.log(bounds);
 
 		if (bounds) {
 			setPosition({
