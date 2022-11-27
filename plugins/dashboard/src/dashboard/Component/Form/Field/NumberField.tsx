@@ -11,6 +11,7 @@ import useDerivedState from '../useDerivedState';
 import { sign } from 'common';
 import { tw, merge, css } from '../../../Twind';
 import { elementBounds, refs as bindRefs } from '../../../Util';
+import { usePrevious } from 'vibin-hooks';
 
 type Props = FieldProps<number | null> & {
 	hideLabel?: boolean;
@@ -67,8 +68,6 @@ function addStringSeparators(value: number, separator: string) {
 }
 
 export default function NumberInput(props: Props) {
-	// console.log('render number');
-
 	// eslint-disable-next-line
 	// const separator = ' '; // hair space
 	const separator = ' '; // thin space
@@ -96,6 +95,7 @@ export default function NumberInput(props: Props) {
 		readonly,
 		onFocus,
 		onBlur: stateOnBlur,
+		onRef
 	} = useDerivedState<number | null>(props, 0, true);
 
 	const textValue = useRef<string>(
@@ -264,8 +264,11 @@ export default function NumberInput(props: Props) {
 		props.alignRight,
 	]);
 
-	useEffect(() => {
-		return ctx.event.bind('refresh', () => {
+	const lastPath = usePrevious(path);
+
+	useLayoutEffect(() => {
+		return ctx.event.bind('refresh', (paths) => {
+			if (!paths.has(path)) return;
 			if (parseFloat(textValue.current) * sign(value.current ?? 0) !== value.current) {
 				textValue.current = value.current
 					? document.activeElement === refs.current.input
@@ -276,7 +279,7 @@ export default function NumberInput(props: Props) {
 				updateElements();
 			}
 		});
-	}, [ctx, value, separator, updateElements]);
+	}, [ctx, path, value, separator, updateElements, lastPath]);
 
 	useLayoutEffect(() => updateElements(), [updateElements]);
 	useEffect(() => void setTimeout(() => updateElements(), 16), [updateElements]);
@@ -457,6 +460,7 @@ export default function NumberInput(props: Props) {
 
 			// Update the value.
 			evt.target.value = valueStr;
+			console.warn('KEYING');
 			value.current = newValue;
 			signValue.current = sign(newValue) || 1;
 			handleChange(evt);
@@ -506,7 +510,7 @@ export default function NumberInput(props: Props) {
 					autofillRef,
 					props.fieldRef,
 					(elem) => (refs.current.input = elem as HTMLInputElement),
-					(elem) => ctx.setFieldRef(path, elem)
+					onRef
 				)}
 				id={id}
 				type='text'

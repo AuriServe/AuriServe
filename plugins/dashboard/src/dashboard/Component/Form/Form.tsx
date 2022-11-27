@@ -37,7 +37,7 @@ export interface FormContextData {
 	value: MutableRef<any>;
 	meta: MutableRef<Record<string, FieldMeta | undefined>>;
 	event: EventEmitter<EventType>;
-	disabled: boolean;
+	disabled: MutableRef<boolean>;
 	setFieldRef: <T extends HTMLElement>(path: string, elem: T | null) => void;
 }
 
@@ -170,11 +170,12 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 
 	if (props.value) setValue(props.value);
 
-	const disabled = props.disabled ?? false;
+	const disabled = useRef<boolean>(props.disabled ?? false);
+	disabled.current = props.disabled ?? false;
 
 	const ctx = useMemo(
 		() => ({ value, meta, event, disabled, setFieldRef }),
-		[event, disabled, setFieldRef]
+		[value, meta, event, disabled, setFieldRef]
 	);
 
 	const handleSubmit = (e?: Event) => {

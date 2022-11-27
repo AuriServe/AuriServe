@@ -82,6 +82,7 @@ export default function FloatingDescription(props: Props) {
 					clearPosTimeout = 0;
 				}
 
+				if (!meta) return oldState;
 				const bounds = elementBounds(meta!.elem!);
 				const parentBounds = elementBounds(
 					containerRef.current!.offsetParent! as HTMLElement
@@ -105,6 +106,7 @@ export default function FloatingDescription(props: Props) {
 				setState((oldState) => {
 					if (oldState.path !== path) return oldState;
 					const meta = form.meta.current[path ?? '-'];
+					if (!meta) return oldState;
 					const bounds = elementBounds(meta!.elem!);
 					const parentBounds = elementBounds(
 						containerRef.current!.offsetParent! as HTMLElement

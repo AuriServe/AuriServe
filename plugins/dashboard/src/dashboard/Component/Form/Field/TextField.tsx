@@ -49,6 +49,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 		readonly,
 		onFocus,
 		onBlur: stateOnBlur,
+		onRef
 	} = useDerivedState<string | null>(props, '', true);
 
 	const {
@@ -121,9 +122,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 				{`${value.current}\n`}
 			</pre>}
 			<Tag
-				ref={refs(autofillRef, ref, props.fieldRef, (elem) =>
-					ctx.setFieldRef(path, elem)
-				)}
+				ref={refs(autofillRef, ref, props.fieldRef, onRef)}
 				id={id}
 				type={props.type}
 				name={path}

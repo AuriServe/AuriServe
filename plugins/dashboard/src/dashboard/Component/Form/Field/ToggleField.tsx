@@ -36,6 +36,7 @@ export default function ToggleField(props: Props) {
 		readonly,
 		onFocus,
 		onBlur: stateOnBlur,
+		onRef
 	} = useDerivedState<boolean>(props, false);
 
 	/* Don't use the derived state because checkboxes should default to optional. */
@@ -84,7 +85,7 @@ export default function ToggleField(props: Props) {
 			<div class={tw`flex gap-3`}>
 				{props.icon && <Svg src={props.icon} size={6} class={tw`shrink-0 -mr-0.5 z-10`} />}
 				<input
-					ref={refs(ref, props.fieldRef, (elem) => ctx.setFieldRef(path, elem))}
+					ref={refs(ref, props.fieldRef, onRef)}
 					id={id}
 					type='checkbox'
 					disabled={disabled}

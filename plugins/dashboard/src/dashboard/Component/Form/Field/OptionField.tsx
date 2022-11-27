@@ -36,6 +36,7 @@ export default function OptionField(props: Props) {
 		readonly,
 		onFocus,
 		onBlur: stateOnBlur,
+		onRef
 	} = useDerivedState<string | null>(props, '', true);
 
 	const {
@@ -115,7 +116,7 @@ export default function OptionField(props: Props) {
 					<Listbox.Button
 						id={id}
 						aria-description={props.description}
-						ref={refs(ref, props.fieldRef, (elem) => ctx.setFieldRef(path, elem))}
+						ref={refs(ref, props.fieldRef, onRef)}
 						className={merge(
 							tw`peer w-full px-2.5 pr-10 rounded
 							${props.hideLabel ? 'pt-1.5 pb-1 h-10' : 'pt-6 pb-1 h-[3.25rem]'}

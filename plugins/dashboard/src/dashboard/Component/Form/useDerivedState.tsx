@@ -1,6 +1,6 @@
 import { useLazyRef, useRerender } from 'vibin-hooks';
 import { assert, buildPath, splitPath, traversePath } from 'common';
-import { MutableRef, useContext, useEffect, useMemo } from 'preact/hooks';
+import { MutableRef, useCallback, useContext, useLayoutEffect, useMemo, useRef } from 'preact/hooks';
 
 import { FieldProps } from './Field';
 import { camelCaseToTitle } from '../../Util';
@@ -29,6 +29,7 @@ interface DerivedState<T> {
 
 	onFocus: (evt: Event) => void;
 	onBlur: (evt: Event) => void;
+	onRef: <T extends HTMLElement>(ref: T | null) => void;
 }
 
 export default function useDerivedState<T>(
@@ -40,6 +41,9 @@ export default function useDerivedState<T>(
 	const ctx = useContext(FormContext);
 	const group = useContext(FieldGroupContext);
 
+	const elemRef = useRef<HTMLElement | null>(null);
+	const lastPathRef = useRef<string | null>(null);
+
 	const path = useMemo(
 		() => buildPath(...splitPath(group.path), ...splitPath(props.path ?? '')),
 		[group.path, props.path]
@@ -49,7 +53,7 @@ export default function useDerivedState<T>(
 	const readonly = props.readonly ?? !(props.editable ?? true);
 	const disabled =
 		(props.disabled ?? !(props.enabled ?? true)) ||
-		(ctx.disabled ?? false) ||
+		(ctx.disabled.current ?? false) ||
 		(group.disabled ?? false);
 
 	const value = useLazyRef<T>(() => {
@@ -69,6 +73,20 @@ export default function useDerivedState<T>(
 		return !required && !defaultNullIfOptional ? defaultValue : null;
 	});
 
+	const refresh = useCallback(() => {
+		try {
+			value.current = traversePath(ctx.value.current, path);
+		} catch (_) {
+			assert(
+				false,
+				`Could not find value for path '${path}' (on refresh).\n${JSON.stringify(
+					ctx.value.current
+				)}`
+			);
+		}
+		rerender();
+	}, [ ctx, path, rerender, value ]);
+
 	const id = useMemo(
 		() => props.id ?? Math.random().toString(36).substring(2, 7),
 		[props.id]
@@ -79,24 +97,12 @@ export default function useDerivedState<T>(
 		[props.label, path]
 	);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!path) return;
 		return ctx.event.bind('refresh', (paths) => {
-			if (paths.has(path)) {
-				try {
-					value.current = traversePath(ctx.value.current, path);
-				} catch (_) {
-					assert(
-						false,
-						`Could not find value for path '${path}' (on refresh).\n${JSON.stringify(
-							ctx.value.current
-						)}`
-					);
-				}
-				rerender();
-			}
+			if (paths.has(path)) refresh();
 		});
-	}, [path, ctx.event, ctx.value, value, rerender]);
+	}, [path, ctx.event, ctx.value, value, rerender, refresh]);
 
 	const onFocus = (evt: any) => {
 		props.onFocus?.(evt.target);
@@ -107,6 +113,22 @@ export default function useDerivedState<T>(
 		props.onBlur?.(evt.target);
 		ctx.event.emit('focus', path, false);
 	};
+
+	function updateFieldRef() {
+		if (lastPathRef.current) ctx.setFieldRef(lastPathRef.current, null);
+		ctx.setFieldRef(path, elemRef.current);
+	}
+
+	const onRef = <T extends HTMLElement>(ref: T | null) => {
+		elemRef.current = ref as HTMLElement;
+		updateFieldRef();
+	}
+
+	if (path && lastPathRef.current !== path) {
+		requestAnimationFrame(() => ctx.event.emit('refresh', new Set([ path ])));
+		updateFieldRef();
+		lastPathRef.current = path;
+	}
 
 	return {
 		ctx,
@@ -122,5 +144,6 @@ export default function useDerivedState<T>(
 
 		onFocus,
 		onBlur,
+		onRef
 	};
 }
