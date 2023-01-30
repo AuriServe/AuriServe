@@ -5,3 +5,4 @@ site-data/
 plugins/client.js
 plugins/analytics/data
 plugins/tax-calculator
+plugins/davic

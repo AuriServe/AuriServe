@@ -1,12 +1,23 @@
 @import './theme/index.pcss';
 @import './element/index.pcss';
 
+@if (font.header == optima_bold) {
+	@font-face {
+		font-family: 'Optima Bold';
+		font-style: normal;
+		font-weight: normal;
+		font-display: swap;
+		src: url(/media/optima_bold.ttf) format('truetype');
+	}
+}
+
 #page {
-	@apply selection:bg-primary-100 selection:text-black;
+	@apply selection:bg-primary-100 selection:text-black grid min-h-screen;
+	grid-template-rows: auto 1fr auto;
 }
 
 .NavSection {
-	@apply border-t-4 border-primary-500 !px-16 !py-1 !pb-11.5rem;
+	@apply border-t-4 border-primary-500 !px-16 !py-1 !pb-12;
 
 	h1 {
 		margin: 0 !important;
@@ -54,5 +65,21 @@
 		.image {
 			@apply p-3;
 		}
+	}
+}
+
+#page {
+	.iframe-container {
+		@apply w-full aspect-video drop-shadow-md grid;
+
+		iframe {
+			@apply w-full h-full;
+		}
+	}
+}
+
+#page {
+	footer h6 {
+		@apply !text-lg md:!text-xl;
 	}
 }

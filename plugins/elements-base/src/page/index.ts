@@ -5,6 +5,7 @@ export { default as Image } from './display/Image';
 export { default as Navigation } from './display/Navigation';
 export { default as Testimonial } from './display/Testimonial';
 export { default as Text } from './display/Text';
+export { default as PDF } from './display/PDF';
 
 export { default as Carousel } from './layout/Carousel';
 export { default as Columns } from './layout/Columns';

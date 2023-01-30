@@ -7,12 +7,6 @@ import { useState, useLayoutEffect, useEffect, useRef } from 'preact/hooks';
 const media = (typeof window === 'undefined' ? require('media') : null) as typeof import('media');
 const auriserve = (typeof window === 'undefined' ? require('auriserve') : null) as typeof import('auriserve');
 
-export interface BaseProps {
-	alt?: string;
-	style?: string;
-	class?: string;
-}
-
 export interface SharedProps {
 	alt?: string;
 	aspect?: number;
@@ -22,6 +16,7 @@ export interface SharedProps {
 	class?: string;
 	style?: string;
 	imgStyle?: string;
+	maxWidth?: number;
 }
 
 export type ExternalProps = SharedProps & {
@@ -47,6 +42,7 @@ interface ModalProps {
 	fullPath: string;
 	width: number;
 	height: number;
+	maxWidth?: number;
 
 	alt?: string;
 	protect?: boolean;
@@ -85,7 +81,8 @@ function ImageModal(props: ModalProps) {
 
 	return createPortal(
 		<div class={`base:image-modal ${props.open && 'open'}`} onClick={props.onClose}>
-			<figure class='content' onClick={(evt) => evt.stopPropagation()} style={{ maxWidth: size.width }}>
+			<figure class='content' onClick={(evt) => evt.stopPropagation()} style={{
+				maxWidth: Math.min(props.maxWidth ?? Infinity, size.width) }}>
 				<div class='image' style={{ width: size.width, height: size.height }}>
 					<img style={props.protect ? 'pointer-events: none; user-select: none;' : ''}
 						src={props.path} {...size} alt={props.alt ?? ''}/>
@@ -107,7 +104,7 @@ function ImageModal(props: ModalProps) {
  */
 
 function ExternalImage(props: ExternalProps) {
-	const style =
+	const imageStyle =
 		(props.protect ? 'pointer-events: none; user-select: none; ' : '') +
 		(props.aspect ? `object-fit: cover; aspect-ratio: ${props.aspect}; ` : '');
 
@@ -130,13 +127,15 @@ function ExternalImage(props: ExternalProps) {
 
 	const Tag = props.lightbox && !props.protect ? 'a' : props.lightbox ? 'button' : 'div';
 
+	const tagStyle = `${props.style ?? ''}; ${props.maxWidth ? `max-width: ${props.maxWidth}px` : ''}`;
+
 	return (
-		<Tag class={merge(identifier, 'external', props.class)} style={props.style}
+		<Tag class={merge(identifier, 'external', props.class)} style={tagStyle}
 			onClick={props.lightbox ? handleSetLightbox : undefined} target='_blank'
 			href={Tag === 'a' ? props.url : undefined}>
 			<img
 				ref={handleLoad}
-				style={style}
+				style={imageStyle}
 				src={props.url}
 				alt={props.alt ?? ''}
 				loading={(props.lazy ?? true) ? 'lazy' : undefined}
@@ -202,8 +201,10 @@ function MediaImage(props: ServerMediaProps | ClientMediaProps) {
 
 	const Tag = props.lightbox && !props.protect ? 'a' : props.lightbox ? 'button' : 'div';
 
+	const tagStyle = `${props.style ?? ''}; ${props.maxWidth ? `max-width: ${props.maxWidth}px` : ''}`;
+
 	return (
-		<Tag class={merge(identifier, 'media', props.class)} style={props.style}
+		<Tag class={merge(identifier, 'media', props.class)} style={tagStyle}
 			onClick={props.lightbox ? handleSetLightbox : undefined} target='_blank'
 			href={Tag === 'a' ? `/media/variants/${path}.full.webp` : undefined}>
 			{state !== 'loaded' &&

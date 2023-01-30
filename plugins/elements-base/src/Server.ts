@@ -13,3 +13,18 @@ auriserve.once('cleanup', () => {
 	Object.values(Elements).forEach((elem) => removeElement(elem.identifier));
 	removeStylesheet(styles);
 });
+
+
+/** Expose the PDFJS worker. */
+
+// eslint-disable-next-line
+// @ts-ignore
+import worker from '!!file-loader!pdfjs-dist/build/pdf.worker.min.js'
+
+auriserve.router.get('/res/elements-base/pdf_worker.js', (_, res) => {
+	res.sendFile(path.join(auriserve.dataPath, '/plugins/elements-base/build/', worker));
+});
+
+auriserve.router.get('/res/elements-base/:file', (req, res) => {
+	res.sendFile(path.join(auriserve.dataPath, '/plugins/elements-base/build/', req.params.file));
+});

@@ -158,7 +158,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 					'preact/hooks': 'commonjs-module auriserve-preact',
 					'preact/compat': 'commonjs-module auriserve-preact',
 				} : {}),
-				...Object.fromEntries(dependencies.map(dep => [ dep, `commonjs-module ${dep}` ]))
+				...Object.fromEntries(dependencies.map(dep => [ dep, `commonjs-module ${dep}` ])),
 			},
 
 			resolve: {
@@ -207,7 +207,8 @@ export default function generate(conf: Config = {}, toFile = false) {
 			output: {
 				filename: 'client.js',
 				library: `__ASP_${manifest.identifier.replace(/-/g, '_').toUpperCase()}`,
-				libraryTarget: 'window'
+				libraryTarget: 'window',
+				publicPath: `/res/${manifest.identifier}/`
 			},
 
 			resolve: {

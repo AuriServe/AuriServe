@@ -116,8 +116,21 @@ options:
   - key: fugaz_one
   - key: montserrat
   - key: raleway
+  - key: optima_bold
 
 presets:
+  refined:
+    values:
+      color.primary: burgundy
+      color.secondary: stone
+
+      corner.style: bevel
+      corner.sides: top_left_bottom_right
+      corner.size: 12
+
+      callout.style: diamond
+
+      font.header: optima_bold
   megatech:
     values:
       color.primary: sky
@@ -130,18 +143,6 @@ presets:
       callout.style: diamond
 
       font.header: raleway
-  refined:
-    values:
-      color.primary: burgundy
-      color.secondary: stone
-
-      corner.style: bevel
-      corner.sides: top_left_bottom_right
-      corner.size: 12
-
-      callout.style: diamond
-
-      font.header: yeseva_one
   breeze:
     values:
       color.primary: sky

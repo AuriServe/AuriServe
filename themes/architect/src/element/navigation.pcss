@@ -1,18 +1,146 @@
 #page {
-	.base\:navigation {
-		@apply block w-max;
+	.NavigationHeader {
+		@apply md:h-28;
 
-		> .entries-wrap ul {
-			@apply flex flex-wrap items-center justify-center;
+		div[data-element='base:image'] {
+			@apply z-50;
+		}
+
+		&.floating > .children {
+			@apply h-18;
+
+			& > .base\:columns {
+				@apply md:py-2 md:px-1 md:bg-secondary-50;
+			}
+
+			& > .base\:columns > .inner > div > .base\:image {
+				@apply w-14 h-14 md:mt-0;
+			}
+
+			& > .base\:columns > .inner > .base\:container > .base\:text {
+				@apply opacity-0 -mb-11 -translate-x-6 -translate-y-6;
+			}
+
+			.base\:navigation .entries-wrap {
+				@apply md:-ml-8;
+			}
+
+			& > .base\:columns > .inner > .Social {
+				@apply md:top-3;
+			}
+		}
+
+		& > .children {
+			@apply h-18 md:h-28 z-50 !block fixed inset-0 transition-all;
+
+			& > .base\:columns {
+				@apply z-10 p-2 pt-3 overflow-visible bg-secondary-50 md:bg-secondary-100 shadow-md transition-all h-full;
+			}
+
+			& > .base\:columns > .inner {
+				@apply relative;
+			}
+
+			& > .base\:columns > .inner > div > .base\:image {
+				@apply m-0 -mt-1 relative z-30 transition-all w-14 h-14 md:w-24 md:h-24;
+			}
+
+			& > .base\:columns > .inner > .Social {
+				@apply absolute w-max z-10 right-2 top-2 md:top-11 mr-12 opacity-50 md:mr-0 md:opacity-100 transition-all;
+			}
+
+			& > .base\:columns > .inner > .base\:container > .base\:text {
+				@apply mt-4 -mb-3 hidden md:block transition-all !text-primary-800;
+			}
+
+			& > .base\:columns > .inner > .base\:container > .base\:navigation #toggle {
+				@apply md:hidden z-50 block absolute w-8 h-8 top-2 right-3;
+				background: url(/media/menu.svg) center / 100% no-repeat;
+			}
+		}
+	}
+
+	.base\:navigation, .base\:navigation > .entries-wrap {
+		@apply z-10 w-full h-auto relative select-none transition-all;
+
+		> ul {
+			@apply flex gap-3 lg:gap-6;
 
 			> li {
-				@apply inline-block;
+				@apply relative inline-block font-medium pt-4 pb-8 lg:pb-2 first:pl-0;
 
-				.Navigation-ItemLabel {
-					@apply block px-4 py-2 text-black font-header;
+				> .label {
+					@apply text-[22px] font-header no-underline text-secondary-900;
+				}
+
+				> a.label {
+					@apply cursor-pointer outline-none hocus:underline hocus:accent-primary-800;
+				}
+
+				&:hover > ul {
+					@apply opacity-100 top-[calc(100%-6px)] visible pointer-events-auto transition-all;
+				}
+
+				&:last-of-type > ul {
+					@apply left-auto right-0 transform-none;
+				}
+			}
+		}
+
+		> ul > li > ul {
+			@apply hidden md:block absolute w-max h-auto opacity-0 pointer-events-none text-left  transition-all
+				rounded bg-white shadow-md pr-4 pl-1 left-1/2 top-full -translate-x-1/2;
+
+			&:focus-within {
+				@apply opacity-100 top-[calc(100%-6px)] visible pointer-events-auto transition-all;
+			}
+
+			li {
+				@apply py-1 px-4;
+
+				& > .label {
+					@apply text-black text-lg font-semibold no-underline;
+				}
+
+				& > a.label {
+					@apply block cursor-pointer outline-none hocus:underline hocus:opacity-80;
+				}
+			}
+
+			> li {
+				@apply first:pt-3 last:pb-3;
+
+				> ul {
+					@apply pl-4 pt-1;
+
+					> li > .label {
+						@apply font-normal;
+					}
+				}
+			}
+		}
+
+		@media (max-width: 768px) {
+			.entries-wrap {
+				@apply top-0 left-0 w-full h-auto fixed py-[6px] px-20 !ml-0
+					opacity-0 pointer-events-none -translate-y-4 bg-white shadow-md transition-all;
+
+				> ul {
+					@apply flex flex-col gap-4 pt-4 pb-4;
+
+					> li {
+						@apply p-0;
+
+						> .label {
+							@apply text-2xl;
+						}
+					}
 				}
 			}
 		}
 	}
-}
 
+	#navigation_toggle:checked ~ main .base\:navigation .entries-wrap {
+		@apply opacity-100 pointer-events-auto translate-y-0;
+	}
+}

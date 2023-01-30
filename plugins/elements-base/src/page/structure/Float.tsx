@@ -3,6 +3,7 @@ import type { ComponentChildren } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
 import { merge } from 'common';
+import { hydrate, Static } from 'hydrated';
 
 interface Props {
 	target?: string;
@@ -15,7 +16,7 @@ interface Props {
 
 const identifier = 'base:float';
 
-function Float(props: Props) {
+function RawFloat(props: Props) {
 	const [floating, setFloating] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -46,16 +47,11 @@ function Float(props: Props) {
 
 	return (
 		<div class={merge(identifier, floating && 'floating', props.class)}>
-			{/* <Static class='Float-Contents'>{props.children}</Static> */}
-			<div class='children'>{props.children}</div>
+			<Static class='children'>{props.children}</Static>
 		</div>
 	);
 }
 
-// export const HydratedFloat = withHydration('Float', Float);
-
-// export const server: ServerDefinition = { identifier: 'Float', element: HydratedFloat };
-
-// export const client: ClientDefinition = { identifier: 'Float', element: Float };
+export const Float = hydrate(identifier, RawFloat);
 
 export default { identifier, component: Float };

@@ -14,15 +14,14 @@
 		"postcss": true
 	},
 	"devDependencies": {
+		"@types/crypto-js": "^4.1.1",
 		"@types/dashboard": "file:../dashboard",
 		"@types/elements": "file:../elements",
 		"@types/hydrated": "file:../hydrated",
 		"@types/media": "file:../media",
 		"@types/page-editor": "file:../page-editor",
 		"@types/routes": "file:../routes",
-		"file-loader": "^6.2.0",
 		"preact": "^10.10.2",
-		"raw-loader": "^4.0.2",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
@@ -30,6 +29,7 @@
 		"@tiptap/starter-kit": "^2.0.0-beta.191",
 		"auriserve": "file:../../api/build",
 		"common": "file:../../common/build",
-		"pdfjs-dist": "^3.2.146"
+		"crypto-js": "^4.1.1",
+		"nbt": "^0.8.1"
 	}
 }

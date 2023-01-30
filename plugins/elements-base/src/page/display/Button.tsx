@@ -4,7 +4,7 @@ import type { ComponentChildren } from 'preact';
 
 interface Props {
 	url?: string;
-	image?: any;
+	image?: string;
 	label?: string;
 
 	target?: 'new';
@@ -28,9 +28,7 @@ function Button(props: Props) {
 			{!props.image && <span>{props.label}</span>}
 			{props.image && (
 				<img
-					src={
-						props.image.url ?? `/media/${props.image.fileName}.${props.image.extension}`
-					}
+					src={props.image}
 					width={props.width}
 					height={props.width}
 					alt=''

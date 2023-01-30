@@ -8,7 +8,7 @@
 		--section-link-color-active: rgb(var(--color-primary-700));
 		--section-background-color: rgb(255, 255, 255);
 
-		&.inverted {
+		&.inverted, &.image-header {
 			--section-is-dark: ;
 			--section-header-color: rgb(255, 255, 255);
 			--section-body-color: rgba(255, 255, 255, 0.9);
@@ -25,6 +25,10 @@
 
 		&.pad-none {
 			@apply !p-0;
+		}
+
+		&.pad-none:first-of-type {
+			@apply !pt-16 md:!pt-0;
 		}
 
 		&.pad-small {
@@ -138,7 +142,7 @@
 			&::after {
 				bottom: calc(-1 * var(--size) * 2 - 4px);
 				left: 40%;
-				width: calc(min(var(--size) * 24, 70%));
+				width: calc(min(var(--size) * 24, 60%));
 				height: calc(var(--size) * 2);
 			}
 		}
@@ -157,6 +161,36 @@
 
 		&:not(.callout).inverted + .base\:section {
 			@apply mt-16;
+		}
+
+		&.image-header + .base\:section {
+			@apply mt-16;
+		}
+
+		&.image-header + .base\:section.callout {
+			@apply mt-16;
+		}
+	}
+
+	.base\:section.image-header {
+		@apply relative overflow-hidden pt-[8.5rem] md:pt-[6.5rem] md:-mt-10;
+
+		>*:nth-child(1), >*:nth-child(1) .base\:image {
+			@apply !absolute !inset-0;
+			clip-path: none !important;
+		}
+
+		>*:nth-child(1) .base\:image * {
+			background-size: auto 200% !important;
+			background-position: center 25% !important;
+		}
+
+		>*:nth-child(n + 1) {
+			@apply relative z-10 text-white text-shadow-md;
+		}
+
+		h2 {
+			@apply !text-3xl sm:!text-4xl md:!text-5xl my-12;
 		}
 	}
 }

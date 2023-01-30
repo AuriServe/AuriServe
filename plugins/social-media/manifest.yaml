@@ -1,0 +1,20 @@
+name: Social Media
+identifier: social-media
+description: Allows connecting various social media platforms to AuriServe, for use by other plugins.
+icon: user
+
+version: 0.0.1
+author: Auri
+
+depends:
+  elements: ^0.0.1
+  hydrated: ^0.0.1
+  auriserve-preact: ^1
+  page-editor: ^0.0.1
+  dashboard: ^0.0.1
+  media: ^0.0.1
+
+entry:
+  server: build/server.js
+  # client: build/client.js
+  dashboard: build/dashboard.js

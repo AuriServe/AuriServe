@@ -5,7 +5,8 @@ interface ArtItem {
 	media: number;
 	tmp_image: string;
 	title: string;
-	shape?: 'portrait' | 'landscape' | 'square';
+	shape?: 'portrait' | 'landscape' | 'square' | 'large_square';
+	crop?: 'top' | 'bottom' | 'center';
 	content: string;
 	tags: string[];
 }
@@ -34,6 +35,16 @@ interface VideoItem {
 type FeedItem = ArtItem | NoteItem | PostItem | VideoItem;
 
 const DATA: FeedItem[] = [
+	// {
+	// 	type: 'art',
+	// 	media: 16,
+	// 	title: 'Powerful Magic',
+	// 	tmp_image: '/media/variants/magic.md.webp',
+	// 	shape: 'large_square',
+	// 	crop: 'center',
+	// 	tags: [ 'sketch', 'snep', 'comic' ],
+	// 	content: '<p>I finally found a spell that was too powerful for me.</p>'
+	// },
 	{
 		type: 'note',
 		tmp_image: '/media/variants/background.sm.webp',
@@ -209,7 +220,9 @@ export function Feed() {
 								}
 								case 'art':
 									return (
-										<div key={i} class={`item art ${item.shape ?? 'portrait'}`} style={`--image: url(${item.tmp_image})`}>
+										<div key={i} class={`item art
+											${item.shape ?? 'portrait'} crop-${item.crop ?? 'center'}`}
+											style={`--image: url(${item.tmp_image})`}>
 											<div class='inner'>
 												<div class='image'/>
 												<div class='content'>

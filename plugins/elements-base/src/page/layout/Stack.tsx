@@ -20,7 +20,7 @@ function Stack(props: Props) {
 	return (
 		<div
 			style={{
-				flexDirection: props.direction === 'row' ? 'row' : undefined,
+				flexDirection: props.direction === 'row' ? 'row' : 'column',
 				maxWidth: props.width ? `${props.width}px` : undefined,
 				gap: props.gap ? `${props.gap}px` : undefined,
 				alignItems:
