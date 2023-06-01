@@ -1,7 +1,7 @@
 // import auriserve from 'auriserve';
 // import { promises as fs } from 'fs';
 // import { stylesheets } from 'elements';
-import { getPage, registeredLayouts } from 'pages';
+import { getDocument, registeredLayouts } from 'pages';
 import { extendGQLSchema, gqlResolver } from 'dashboard';
 import { addPermission, addPermissionCategory } from 'users';
 
@@ -47,15 +47,19 @@ extendGQLSchema(`
 `);
 
 gqlResolver.page = ({ path }: { path: string }) => {
-	const page = getPage(path);
+	const page = getDocument(path);
 	if (!page) return null;
 
 	return {
 		path,
-		title: page.metadata.title,
-		description: page.metadata.description,
-		index: page.metadata.index ?? true,
-		layout: page.content.layout ?? 'default',
+		title: '',
+		description: '',
+		index: true,
+		layout: 'default',
+		// title: page.metadata.title,
+		// description: page.metadata.description,
+		// index: page.metadata.index ?? true,
+		// layout: page.content.layout ?? 'default',
 		serialized: JSON.stringify(page)
 	};
 }

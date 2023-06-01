@@ -3,6 +3,7 @@ import type { Database } from 'better-sqlite3';
 import type Log from './log';
 import type Yaml from './yaml';
 import type Router from './router';
+import type * as Util from './util';
 import type { PluginManifest } from './plugin';
 import type { WatcherConstructor } from './watcher';
 
@@ -32,6 +33,12 @@ export interface API {
 
 	/** The path to the site-data folder. */
 	dataPath: string;
+
+	/** Merges string CSS classes. Anything falsey will be ignored. */
+	merge: typeof Util.merge;
+
+	/** Asserts a condition, throwing an ensure error if the condition is false. */
+	ensure: typeof Util.ensure;
 
 	/** Binds a callback to an event. */
 	on(event: string, cb: (event: any) => void): void;
@@ -75,6 +82,10 @@ export const database: Database = api.database;
 export const config = api.config;
 
 export const dataPath = api.dataPath;
+
+export const merge = api.merge;
+
+export const ensure = api.ensure;
 
 export const on = api.on;
 

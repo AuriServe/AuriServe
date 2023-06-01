@@ -2,7 +2,7 @@ import path from 'path';
 import auriserve from 'auriserve';
 import { addElement, removeElement, addStylesheet, removeStylesheet } from 'elements';
 
-import * as Elements from './page';
+import * as Elements from './page/_all';
 
 import './Style.pcss';
 const styles = path.join(__dirname, 'style.css');
@@ -14,6 +14,7 @@ auriserve.once('cleanup', () => {
 	removeStylesheet(styles);
 });
 
+export * as Elements from './page/_all';
 
 /** Expose the PDFJS worker. */
 

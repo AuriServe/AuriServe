@@ -17,7 +17,7 @@
 		"@types/pages": "file:../pages",
 		"@types/routes": "file:../routes",
 		"@types/users": "file:../users",
-		"preact": "^10.6.5",
+		"preact": "^10.13.2",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {

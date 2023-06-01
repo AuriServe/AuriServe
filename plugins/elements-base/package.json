@@ -4,14 +4,19 @@
 	"description": "Registers basic elements for use with the Auriserve Elements plugin.",
 	"author": "Auri Collings <me@auri.xyz>",
 	"license": "MIT",
+	"types": "types/Server.d.ts",
 	"sideEffects": false,
 	"scripts": {
 		"dev": "webpack-gen dev",
 		"build": "webpack-gen build"
 	},
 	"webpackGenConfig": {
-		"types": false,
-		"postcss": true
+		"postcss": true,
+		"export": {
+			"client": { "externals": { "fs": "fs" } },
+			"server": { "externals": { "pdfjs-dist": "pdfjs-dist" } },
+			"dashboard": true
+		}
 	},
 	"devDependencies": {
 		"@types/dashboard": "file:../dashboard",
@@ -21,7 +26,7 @@
 		"@types/page-editor": "file:../page-editor",
 		"@types/routes": "file:../routes",
 		"file-loader": "^6.2.0",
-		"preact": "^10.10.2",
+		"preact": "^10.13.2",
 		"raw-loader": "^4.0.2",
 		"webpack-gen": "file:../../webpack-gen"
 	},

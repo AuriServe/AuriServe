@@ -1,4 +1,4 @@
-import { database } from 'auriserve';
+import { database, log } from 'auriserve';
 
 import { Document } from './Interface';
 
@@ -18,7 +18,8 @@ export function clearCache() {
  */
 
 export async function cache(path: string, pageStr: string) {
-	database.prepare('INSERT OR IGNORE INTO pages (path, content) VALUES (?, ?)').run(path, pageStr);
+	database.prepare('INSERT OR REPLACE INTO pages (path, content) VALUES (?, ?)')
+		.run(path, pageStr);
 }
 
 /**
@@ -29,6 +30,14 @@ export async function cache(path: string, pageStr: string) {
  */
 
 export function getDocument(path: string): Document | null {
-	const content = database.prepare('SELECT content FROM pages WHERE path = ?').get(path)?.content;
-	return content ? JSON.parse(content) : null;
+	try {
+		const content = database.prepare('SELECT content FROM pages WHERE path = ?').get(path)?.content;
+		return content ? JSON.parse(content) : null;
+	}
+	catch (err) {
+		if (typeof err === 'object' && err && 'message' in err) {
+			log.warn('Failed to parse page \'%s\': %s', path, (err as any).message);
+		}
+		return null;
+	}
 }

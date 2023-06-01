@@ -11,14 +11,14 @@
 		"build": "webpack-gen build; rm build/reset.css 2> /dev/null; cp reset.css build/reset.css;"
 	},
 	"devDependencies": {
-		"@types/clean-css": "^4.2.5",
+		"@types/clean-css": "^4.2.6",
 		"@types/elements": "file:../elements",
 		"@types/pages": "file:../pages",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
-		"clean-css": "^5.3.1",
+		"clean-css": "^5.3.2",
 		"common": "file:../../common/build",
 		"preact": "^10.10.2",
 		"preact-render-to-string": "^5.2.1"

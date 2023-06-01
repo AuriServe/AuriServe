@@ -39,7 +39,7 @@
 		"bufferutil": "^4.0.7",
 		"common": "file:../../common/build",
 		"graphql": "^16.5.0",
-		"preact": "^10.10.2",
+		"preact": "^10.13.2",
 		"react-router-dom": "^6.3.0",
 		"twind": "^1.0.0-next.35",
 		"utf-8-validate": "^5.0.10",

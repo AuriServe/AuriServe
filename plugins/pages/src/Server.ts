@@ -1,11 +1,12 @@
 import { DirectoryRoute, root } from 'routes';
 import { promises as fs } from 'fs';
 import path, { resolve } from 'path';
-import { log, dataPath, plugins, router } from 'auriserve';
+import { log, dataPath, plugins, router, Watcher, config } from 'auriserve';
 
 import PageRoute from './PageRoute';
 import { addInjector } from './Injectors';
 import { cache, clearCache } from './Database';
+import { reloadClients, startDebugSocket } from './Debug';
 
 export { default as PageRoute } from './PageRoute';
 export { registeredLayouts, registerLayout, unregisterLayout } from './Layouts';
@@ -16,7 +17,31 @@ export { isElementNode, isIncludeNode } from './Interface';
 export type { Document, PageDocument, IncludeDocument, PageMetadata, IncludeMetadata,
 	Node, ElementNode, IncludeNode } from './Interface';
 
-async function importPages(pagesPath: string) {
+const watchers: any[] = [];
+
+async function loadPage(pagesPath: string, page: string) {
+	const pagePath = path.join(pagesPath, page);
+
+	async function loadPage() {
+		cache(page, await fs.readFile(pagePath, 'utf8'));
+	}
+
+	loadPage();
+
+	if (config.debug) {
+		const watcher = new Watcher([ pagePath ]);
+		watcher.bind(() => {
+			log.debug('Reloading page \'%s\'.', page);
+			loadPage();
+			reloadClients();
+		});
+		watchers.push(watcher);
+	}
+}
+
+async function loadAndWatchPages(pagesPath: string) {
+	for (const watcher of watchers) watcher.stop();
+	watchers.length = 0;
 	clearCache();
 
 	async function getPages(dirPath: string): Promise<string[]> {
@@ -29,7 +54,7 @@ async function importPages(pagesPath: string) {
 	}
 
 	const pages = (await getPages(pagesPath)).map((page) => path.relative(pagesPath, page));
-	await Promise.all(pages.map(async (page) => cache(page, await fs.readFile(path.join(pagesPath, page), 'utf8'))));
+	await Promise.all(pages.map((page) => loadPage(pagesPath, page)));
 
 	for (const page of pages.filter(page => !page.startsWith('includes'))) {
 		const pathSegments = page.replace(/.json$/, '').split('/');
@@ -50,7 +75,7 @@ async function importPages(pagesPath: string) {
 }
 
 const pagesDir = path.join(dataPath, 'pages');
-importPages(pagesDir);
+loadAndWatchPages(pagesDir);
 
 const buildPath = path.join(dataPath, 'plugins/client.js');
 
@@ -72,4 +97,9 @@ router.get('/client.js', async (_, res) => {
 
 addInjector('head', () => `<script defer src='/client.js'></script>`);
 
+if (config.debug) startDebugSocket();
+
 export { getDocument } from './Database';
+export { reloadClients } from './Debug';
+export { usePageContext } from './Hooks';
+export type { PageContext } from './Hooks';

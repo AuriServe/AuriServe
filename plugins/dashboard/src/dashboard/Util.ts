@@ -7,7 +7,7 @@ export type DeepPartial<T> = T extends object
 	: T;
 
 export function refs<T = HTMLElement>(
-	...refs: (RefObject<T> | RefCallback<T> | undefined)[]
+	...refs: (RefObject<T> | RefCallback<T> | undefined | null)[]
 ): RefCallback<T> {
 	return ((elem: T) => {
 		for (const ref of refs) {

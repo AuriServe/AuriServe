@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@types/elements": "file:../elements",
-		"preact": "^10.10.2",
+		"preact": "^10.13.2",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {

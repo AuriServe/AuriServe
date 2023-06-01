@@ -17,11 +17,15 @@
 		"@types/elements": "file:../elements",
 		"@types/escape-html": "^1.0.1",
 		"@types/routes": "file:../routes",
+		"@types/ws": "^8.5.4",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
+		"bufferutil": "^4.0.7",
 		"common": "file:../../common/build",
-		"escape-html": "^1.0.3"
+		"escape-html": "^1.0.3",
+		"utf-8-validate": "^6.0.3",
+		"ws": "^8.13.0"
 	}
 }

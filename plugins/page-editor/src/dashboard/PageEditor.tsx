@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { tw, AppContext, executeQuery, Graph, Spinner } from 'dashboard';
 import { useContext, useLayoutEffect, useState } from 'preact/hooks';
 
-import { Page } from 'pages';
+import { Document } from 'pages';
 import { useAsyncEffect } from 'vibin-hooks';
 import Editor from './Editor';
 
@@ -48,7 +48,7 @@ async function loadTheme(): Promise<void> {
  * @returns
  */
 
-async function getPageAndLayout(path: string): Promise<[ Page, string ]> {
+async function getPageAndLayout(path: string): Promise<[ Document, string ]> {
 	const { page: pageRaw } = await executeQuery(Graph.QUERY_PAGE, { path });
 	if (!pageRaw) throw new Error('Page not found.');
 
@@ -87,7 +87,7 @@ export default function PageEditor() {
 		app.setHijackScrollbar(false);
 	});
 
-	const [page, setPage] = useState<Page | null>(null);
+	const [page, setPage] = useState<Document | null>(null);
 	const [layout, setLayout] = useState<string | null>(null);
 
 	useAsyncEffect(async (abort) => {

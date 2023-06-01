@@ -8,11 +8,14 @@ import type Config from './Config';
 
 function normalizeExport(name: string, def: boolean | string | object, callingDir: string):
 	Record<string, any> {
-	if (typeof def === 'object') return def;
-	if (typeof def === 'string') return { entry: def };
-	const capitalName = name.charAt(0).toUpperCase() + name.slice(1);
-	return { entry: fs.existsSync(path.join(callingDir, `./src/${name}/Main.ts`))
-		? `./${name}/Main.ts` : `./${capitalName}.ts` };
+	const obj: Record<string, any> =
+		(typeof def === 'object' ? def : { entry: (typeof def === 'string') ? def : undefined });
+	if (!obj.entry) {
+		const capitalName = name.charAt(0).toUpperCase() + name.slice(1);
+		obj.entry = fs.existsSync(path.join(callingDir, `./src/${name}/Main.ts`))
+			? `./${name}/Main.ts` : `./${capitalName}.ts`;
+	}
+	return obj;
 }
 
 export default function generate(conf: Config, toFile?: false): Record<string, any>[];

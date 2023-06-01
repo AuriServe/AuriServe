@@ -1,9 +1,8 @@
 import { useEffect, useMemo } from 'preact/hooks';
-import { createPortal, forwardRef } from 'preact/compat';
+import { ForwardedRef, createPortal, forwardRef } from 'preact/compat';
 import {
 	h,
 	ComponentChildren,
-	RefObject,
 	FunctionalComponent,
 	ComponentClass,
 } from 'preact';
@@ -25,7 +24,7 @@ interface Props {
 
 export default forwardRef<HTMLDivElement, Props>(function Portal(
 	props: Props,
-	ref: RefObject<HTMLDivElement>
+	ref: ForwardedRef<HTMLDivElement>
 ) {
 	const root = useMemo(() => document.createElement('div'), []);
 

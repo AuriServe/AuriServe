@@ -5,6 +5,7 @@ import { promises as fs, constants as fsc } from 'fs';
 
 import Theme from './Theme';
 import ThemeLoader from './ThemeLoader';
+import CleanCSS from 'clean-css';
 
 export default class ThemeManager {
 	readonly loader: ThemeLoader;
@@ -62,21 +63,20 @@ export default class ThemeManager {
 	}
 
 	async buildThemes() {
-		const style = (
-			await Promise.all([
+
+		let style = (await Promise.all([
 				fs.readFile(path.join(__dirname, 'reset.css'), 'utf8'),
 				...[...stylesheets].map((filePath) => fs.readFile(filePath, 'utf8')),
 				...[...this.themes.values()].map((theme) => theme.buildCSS()),
-			])
-		).join('\n');
+			])).join('\n');
 
 		const head = (
 			await Promise.all([...this.themes.values()].map((theme) => theme.buildHead()))
 		).join('\n');
 
-		// style = new CleanCSS({
-		// 	level: { 1: { specialComments: 'none' }, 2: { all: true } },
-		// }).minify(style).styles;
+		style = new CleanCSS({
+			level: { 1: { specialComments: 'none' }, 2: { all: true } },
+		}).minify(style).styles;
 
 		await Promise.all([
 			fs.writeFile(path.join(this.buildDir, 'style.css'), style),

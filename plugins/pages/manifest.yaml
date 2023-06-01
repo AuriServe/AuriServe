@@ -13,3 +13,4 @@ depends:
 
 entry:
   server: build/server.js
+  client: build/client.js

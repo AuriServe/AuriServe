@@ -38,7 +38,7 @@ export function hydrate<PS, PH = PS>(
 		return (
 			<div data-element={identifier}>
 				<script type='application/json' dangerouslySetInnerHTML={{ __html: hydratePropsStr }}/>
-				<Component {...props}/>
+				<Component {...props as any}/>
 			</div>
 		);
 	};
@@ -48,6 +48,24 @@ export function hydrate<PS, PH = PS>(
  * Hydrates all instances of a hydratable preact component on the client.
  */
 
-export function hydrateElement(_element: { identifier: string, component: FunctionalComponent }) {
+export function hydrateElement(_element: { identifier: string, component: FunctionalComponent<any> }) {
 	// This function doesn't do anything on the server :3
+}
+
+/**
+ * A hook that provides a boolean for if the element is currently hydrated.
+ * Will force a full rerender of the component when the element is first hydrated.
+ */
+
+export function useHydrated(): boolean {
+	return false;
+}
+
+/**
+ * A hook that provides the client's globalThis if the component is rendering on the client.
+ * Will return null on the server. Forces a full rerender of the component when the element is first hydrated.
+ */
+
+export function useClient(): typeof window['globalThis'] | null {
+	return null;
 }

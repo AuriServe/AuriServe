@@ -2,6 +2,7 @@ import path from 'path';
 import { assert } from 'common';
 import { YAML, Watcher, log } from 'auriserve';
 import { promises as fs, constants as fsc } from 'fs';
+import { reloadClients } from 'pages';
 
 import Theme from './Theme';
 import { Manifest } from './Manifest';
@@ -88,6 +89,7 @@ export default class ThemeLoader {
 		watcher.bind(async () => {
 			log.debug(`Theme '${identifier}' source files changed, reloading.`);
 			this.manager.reloadTheme(identifier);
+			reloadClients();
 		});
 
 		this.watchers.set(identifier, watcher);

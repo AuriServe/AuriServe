@@ -69,7 +69,7 @@ export default function LoginPage({ onLogin }: Props) {
 						<h1 class={tw`sr-only`}>AuriServe</h1>
 						<div
 							role='heading'
-							aria-level='2'
+							aria-level={2}
 							aria-label='Log In'
 							class={tw`
 								relative mt-10 mb-6 mx-auto rounded-full

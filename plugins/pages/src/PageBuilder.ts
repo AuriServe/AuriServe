@@ -3,6 +3,7 @@ import { assert } from 'common';
 import escapeHtml from 'escape-html';
 import { renderTree } from 'elements';
 
+import { PageContext } from './Hooks';
 import { getDocument } from './Database';
 import { registeredLayouts } from './Layouts';
 import { registeredInjectors } from './Injectors';
@@ -15,7 +16,7 @@ const getSectionRegex = (section: string) => {
 	);
 };
 
-export async function buildPage(page: PageDocument): Promise<string> {
+export async function buildPage(page: PageDocument, context: PageContext): Promise<string> {
 	const perfName = `Building page '${page.metadata.title ?? 'Untitled'}'`;
 
 	function resolveIncludes(node: Node, includeProps: Record<string, Record<string, any>> = {}): void {
@@ -55,7 +56,7 @@ export async function buildPage(page: PageDocument): Promise<string> {
 			Promise.all(
 				[...registeredInjectors.body_end].map((injector) => injector())
 			).then((res) => res.join('\n')),
-			populateLayout(page.content.layout ?? 'default', page.content.sections),
+			populateLayout(page.content.layout ?? 'default', page.content.sections, context),
 		]);
 
 	const html = `
@@ -80,7 +81,9 @@ export async function buildPage(page: PageDocument): Promise<string> {
 	return html;
 }
 
-export async function populateLayout(identifier: string, sections: Record<string, Node>): Promise<string> {
+export async function populateLayout(
+	identifier: string, sections: Record<string, Node>, context: PageContext): Promise<string> {
+
 	let layout = registeredLayouts.get(identifier);
 	assert(layout, `Layout '${identifier}' not found.`);
 
@@ -88,7 +91,7 @@ export async function populateLayout(identifier: string, sections: Record<string
 
 	await Promise.all(
 		Object.entries(sections).map(async ([key, section]) => {
-			const contents = await renderTree(section as any);
+			const contents = await renderTree<PageContext>(section as any, context);
 			sectionContents[key] = contents;
 		})
 	);

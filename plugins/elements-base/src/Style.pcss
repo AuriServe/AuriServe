@@ -32,19 +32,33 @@
 		overflow: hidden;
 		position: relative;
 
-		&.media {
+		.base\:image-protect {
+			user-select: none;
+			pointer-events: none;
+		}
+
+		.base\:image-svg-wrap {
+			display: contents;
+
+			svg {
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		&.base\:image-media.base\:image-raster {
 
 			&button {
 				cursor: pointer;
 			}
 
-			.preview, .image {
+			.base\:image-preview, .base\:image-image {
 				position: absolute;
 				background-size: cover;
 				background-position: center;
 			}
 
-			.preview {
+			.base\:image-preview {
 				filter: blur(8px);
 				width: calc(100% + 8px);
 				height: calc(100% + 8px);
@@ -52,23 +66,23 @@
 				left: -4px;
 			}
 
-			.loader {
+			.base\:image-loader {
 				opacity: 0;
 				width: 100%;
 			}
 
-			.image {
+			.base\:image-image {
 				opacity: 0;
 				width: 100%;
 				height: 100%;
 				top: 0;
 				left: 0;
 
-				&.loaded, &.static {
+				&.base\:image-loaded, &.base\:image-static {
 					opacity: 1;
 				}
 
-				&.animate {
+				&.base\:image-animate {
 					transition: opacity 0.3s ease;
 				}
 			}
