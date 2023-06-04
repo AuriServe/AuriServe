@@ -1,0 +1,9 @@
+name: Sendmail
+identifier: sendmail
+description: Exposes an API to send mail over SMTP using nodemailer.
+icon: receipt
+
+version: 0.0.1
+author: Auri
+
+entry: build/server.js

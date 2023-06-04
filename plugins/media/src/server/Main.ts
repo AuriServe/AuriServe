@@ -37,3 +37,4 @@ auriserve.once('cleanup', () => {
 });
 
 export * from './Database';
+export { MEDIA_DIR, VARIANT_DIR } from './Ingest';

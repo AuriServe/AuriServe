@@ -50,6 +50,13 @@ export default function useValidity<
 	const [error, setError] = useState<ValidityError | null>(null);
 	const invalid = error?.visible ?? false;
 
+	if (!formCtx) return {
+		error: null,
+		invalid: false,
+		onBlur: () => {/**/},
+		validate: () => null
+	};
+
 	const validate = (value: Value) => {
 		const ctx = { ...options.context, value };
 		const check = options.checks.find((check) => check.condition(ctx));

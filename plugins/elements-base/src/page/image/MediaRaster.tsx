@@ -97,7 +97,7 @@ export default function MediaRaster(props: Props) {
 						class={cn`preview`}
 						style={mergeStyles(
 							imgStyle,
-							`background-image: url(${loadVariant}`
+							`background-image: url(${loadVariant})`
 						)}
 					/>
 				</Static>

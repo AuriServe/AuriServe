@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { MEDIA_DIR, getMediaVariants } from 'media';
 import { traversePath, convertColor, Color } from 'common';
 
 function colorToFormat(color: Color, format: string): string {
@@ -49,6 +52,29 @@ directives.push([
 		return Object.entries(colors)
 			.map(([weight, color]) => `${prop}-${weight}: ${colorToFormat(color, format)};`)
 			.join('\n');
+	},
+]);
+
+
+directives.push([
+	/\/\*\s*@font-face(?:\(([a-z-.,\s]+)*\))*\s*\*\//gim,
+	function fontFace(ctx, _, strArgs: string) {
+		const [themePath, variant] = strArgs
+			.split(',')
+			.filter(Boolean)
+			.map((arg: string) => arg.trim());
+
+		const id = traversePath(ctx.theme, themePath);
+		if (!id) return '';
+
+		const media = getMediaVariants(id);
+		const variantObj = media.find(m => m.type === `font_${variant}`);
+
+		const url = (variant === 'inline'
+			? `url(data:font/woff2;base64,${fs.readFileSync(path.join(MEDIA_DIR, variantObj?.path ?? ''), 'base64')})`
+			: `url(/media/${variantObj?.path ?? ''})` )
+
+		return url;
 	},
 ]);
 

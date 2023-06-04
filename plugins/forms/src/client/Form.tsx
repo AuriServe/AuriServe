@@ -134,6 +134,7 @@ export function RawForm(props: Props) {
 				<Static>
 					<input type='hidden' name='#form_id#' value={formProps.id}/>
 					<input type='hidden' name='#return_path#' value={pageContext?.path ?? ''}/>
+					<input type='email' autoComplete='nothx' id='#email#' name='#email#' tabIndex={-1}/>
 				</Static>
 				{formProps.layout.map((layout, ind) => {
 					switch (layout.id) {

@@ -8,5 +8,6 @@ author: Auri
 depends:
   pages: ^0.0.1 ?
   elements: ^0.0.1
+  media: ^0.0.1
 
 entry: build/server.js

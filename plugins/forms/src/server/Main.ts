@@ -7,7 +7,7 @@ import { addElement, addStylesheet, removeElement, removeStylesheet } from 'elem
 
 import Form from '../client/Form';
 import { refreshFormCache, getFormSubmissions, getForms,
-	countUnreadFormSubmissions, markFormSubmissionRead, deleteFormSubmission, getForm } from './Database';
+	countUnreadFormSubmissions, markFormSubmissionRead, deleteFormSubmission, getForm, markAllFormSubmissionsRead } from './Database';
 import { registerRoute } from './Submit';
 
 import '../Style.pcss';
@@ -51,7 +51,11 @@ dashboard.extendGQLSchema(`
 		forms: [Form!]!
 		form(id: Int!): String,
 		formSubmissions(form: Int!): [FormSubmission!]!
-		markFormSubmissionRead(id: Int!): Boolean!
+	}
+
+	extend type Mutation {
+		markFormSubmissionRead(id: Int!, read: Boolean!): Boolean!
+		markAllFormSubmissionsRead(form: Int!): Boolean!
 		deleteFormSubmission(id: Int!): Boolean!
 	}
 `);
@@ -85,8 +89,12 @@ resolver.form = ({ id }: { id: number }) => {
 	return JSON.stringify(form);
 };
 
-resolver.markFormSubmissionRead = ({ id }: { id: number }) => {
-	return markFormSubmissionRead(id);
+resolver.markFormSubmissionRead = ({ id, read }: { id: number, read: boolean }) => {
+	return markFormSubmissionRead(id, read);
+};
+
+resolver.markAllFormSubmissionsRead = ({ form }: { form: number }) => {
+	return markAllFormSubmissionsRead(form);
 };
 
 resolver.deleteFormSubmission = ({ id }: { id: number }) => {

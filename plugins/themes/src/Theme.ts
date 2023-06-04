@@ -47,6 +47,9 @@ export default class Theme {
 					case 'option':
 						addTo[keyParts[keyParts.length - 1]] = value;
 						break;
+					case 'font_media':
+						addTo[keyParts[keyParts.length - 1]] = value;
+						break;
 					default:
 						log.warn('Unhandled option type:', option.type);
 				}

@@ -1,5 +1,7 @@
-import { addFormSubmission, getForm } from './Database';
 import auriserve, { log, router } from 'auriserve';
+
+import { sendMessage } from './SendMessage';
+import { addFormSubmission, getForm } from './Database';
 import { SelectClientFieldProps, TextAreaClientFieldProps, TextClientFieldProps } from '../Type';
 
 type FormData = Record<string, string | number | boolean | string[] | null>;
@@ -97,7 +99,7 @@ function submitForm(formID: number, body: Record<string, string>) {
 		}
 	}
 
-	addFormSubmission({ data: JSON.stringify(data), formId: formID, time: Date.now() });
+	return addFormSubmission({ data: JSON.stringify(data), formId: formID, time: Date.now() });
 }
 
 export function registerRoute() {
@@ -109,15 +111,17 @@ export function registerRoute() {
 			ensure(typeof returnPath === 'string', 'Invalid return path.');
 
 			let error = '';
-
 			const formID = parseFloat(req.body['#form_id#']);
 
-			try {
-				submitForm(formID, req.body);
-			}
-			catch (e) {
-				if (e instanceof EnsureError) error = e.message;
-				else throw e;
+			if (!req.body['#email#']) {
+				try {
+					const id = submitForm(formID, req.body);
+					sendMessage(id as number);
+				}
+				catch (e) {
+					if (e instanceof EnsureError) error = e.message;
+					else throw e;
+				}
 			}
 
 			if (error) {

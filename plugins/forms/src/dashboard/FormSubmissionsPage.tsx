@@ -1,39 +1,16 @@
 import { h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { tw, Icon, Card, executeQuery, useLocation, useNavigate, Button } from 'dashboard';
 
+import { Form } from '../Type';
+import RowField from './RowField';
 import SidebarItem from './SidebarItem';
-import { ClientFieldProps, Form } from '../Type';
+import { formatDate, formatTime } from '../common/Date';
+import FormSubmissionModal from './FormSubmissionModal';
 import { DatabaseFormSubmission } from '../server/Database';
 
-type FormSubmission = Omit<DatabaseFormSubmission, 'read' | 'data'> & { data: Record<string, any>, read: boolean };
-
-function RowData({ field, data }: { field: ClientFieldProps, data: any }) {
-	switch (field.type) {
-		case 'text':
-		case 'textarea':
-		case 'tel':
-		case 'email': {
-			return <span class={tw`font-medium text-gray-100 text-sm line-clamp-1
-				overflow-ellipsis max-w-full block whitespace-pre overflow-hidden max-w-full`}>{data}</span>
-		}
-		case 'select': {
-			const selected = field.multiple ? data : [ data ];
-			return <div class={tw`flex gap-1 overflow-hidden relative isolate`}>
-				<div class={tw`absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-r from-transparent to-gray-800`} />
-				{selected.map((d: string) => {
-					const option = field.options.find(o => o.id === d);
-					return <span key={d} class={tw`bg-gray-700 rounded text-xs
-						text-gray-100 font-bold px-2 py-1 whitespace-pre`}>
-						{option?.shortName ?? option?.label ?? d}
-					</span>
-				})}
-			</div>;
-		}
-		default:
-			return <p>UNKNOWN</p>
-	}
-}
+export type FormSubmission =
+	Omit<DatabaseFormSubmission, 'read' | 'data'> & { data: Record<string, any>, read: boolean };
 
 export default function FormSubmissionsPage() {
 	const location = useLocation();
@@ -43,37 +20,89 @@ export default function FormSubmissionsPage() {
 	const [ form, setForm ] = useState<Form | null>(null);
 	const [ submissions, setSubmissions ] = useState<FormSubmission[] | null>(null);
 
+	let formId: number | null = parseInt(location.pathname.replace(/\/forms\/?/, ''), 10);
+	let submissionId: number | null = parseInt(location.pathname.replace(/\/forms(?:\/\d+\/?)?/, ''), 10);
+	if (isNaN(submissionId)) submissionId = null;
+	if (isNaN(formId)) formId = null;
+
 	useEffect(() => {
 		if (forms?.size) return;
 		executeQuery('{ forms { id, path, name, unread } }').then(({ forms }) => {
-			setForms(new Map(forms.map((f: any) => ([ f.id, f ]))));
-			if (forms.length > 0) navigate(`/forms/${forms[0].id}`, { replace: true });
+			const formsMap: Map<number, { id: number, name: string, unread: number }> =
+				new Map(forms.map((f: any) => ([ f.id, f ])));
+			setForms(formsMap);
+			if ((forms.length > 0 && formId == null) || (formId != null && !formsMap.has(formId) && formsMap.size > 0))
+				navigate(`/forms/${forms[0].id}`, { replace: true });
 		});
-	}, [ navigate, forms ]);
-
-
-	let formId: number | null = parseInt(location.pathname.replace(/\/forms\/?/, ''), 10);
-	if (isNaN(formId) || !forms?.has(formId)) formId = null;
+	}, [ navigate, forms, formId ]);
 
 	useEffect(() => {
-		if (!formId) return;
+		if (!formId || (form?.id === formId && submissions != null)) return;
+		console.warn('getting submissions');
 		executeQuery(`query($id: Int!) { form(id: $id) formSubmissions(form: $id) { id, formId, time, data, read } }`,
 			{ id: formId }).then(({ form, formSubmissions }) => {
-
 			if (form == null) return;
 			setForm(JSON.parse(form));
-			setSubmissions(formSubmissions.map((sub: any) => ({ ...sub, data: JSON.parse(sub.data) }))
-				.sort((a: FormSubmission, b: FormSubmission) => (b.time - a.time)));
+			const submissions = formSubmissions.map((sub: any) => ({ ...sub, data: JSON.parse(sub.data) }))
+				.sort((a: FormSubmission, b: FormSubmission) => (b.time - a.time));
+			setSubmissions(submissions);
+			console.log(submissionId);
+			if (submissionId != null && !submissions.find((s: any) => s.id === submissionId))
+				navigate(`/forms/${formId}`, { replace: true });
 		});
-	}, [ formId ]);
+	}, [ formId, submissionId, submissions, form, navigate ]);
+
+	const submission = submissions?.find(s => s.id === submissionId) ?? null;
 
 	function handleMarkAllRead() {
 		if (!formId) return;
 		if (submissions) setSubmissions(submissions?.map(s => ({ ...s, read: true })));
-		// executeQuery(`mutation($id: Int!) { markAllFormSubmissionsRead(form: $id) }`, { id: formId }).then(() => {
-		// 	setSubmissions(submissions?.map(s => ({ ...s, read: true })));
-		// 	setForms(new Map(forms?.set(formId, { ...forms.get(formId), unread: 0 })));
-		// });
+		if (forms) {
+			const newForms = new Map(forms.entries());
+			newForms.set(formId, { ...newForms.get(formId)!, unread: 0 });
+			setForms(newForms);
+		}
+		executeQuery(`mutation($id: Int!) { markAllFormSubmissionsRead(form: $id) }`, { id: formId });
+	}
+
+	const handleMarkRead = useCallback((id: number, read: boolean) => {
+		if (!formId) return;
+		setSubmissions(submissions => {
+			if (!submissions) return submissions;
+			const newSubmissions = [ ...submissions ];
+			const index = newSubmissions.findIndex(s => s.id === id);
+			if (index === -1 || newSubmissions[index].read === read) return submissions;
+			const offset = read ? -1 : 1;
+			setForms(forms => {
+				const newForms = new Map(forms!.entries() ?? []);
+				newForms.set(formId!, { ...newForms.get(formId!)!, unread: newForms.get(formId!)!.unread + offset });
+				return newForms;
+			});
+			newSubmissions[index] = { ...newSubmissions[index], read };
+			executeQuery(`mutation($id: Int!, $read: Boolean!) { markFormSubmissionRead(id: $id, read: $read) }`,
+				{ id: submissions[index].id, read });
+			return newSubmissions;
+		});
+	}, [ formId ]);
+
+	function handleClose() {
+		navigate(`/forms/${formId}`);
+	}
+
+	function handleDelete() {
+		handleClose();
+		if (!submissions || !submissionId) return;
+		const newSubmissions = [ ...submissions ];
+		const index = newSubmissions.findIndex(s => s.id === submissionId);
+		if (!submissions[index].read) setForms(forms => {
+			const newForms = new Map(forms!.entries() ?? []);
+			newForms.set(formId!, { ...newForms.get(formId!)!, unread: newForms.get(formId!)!.unread - 1 });
+			return newForms;
+		});
+		if (index === -1) return;
+		newSubmissions.splice(index, 1);
+		setSubmissions(newSubmissions);
+		executeQuery(`mutation($id: Int!) { deleteFormSubmission(id: $id) }`, { id: submissionId });
 	}
 
 	return (
@@ -112,7 +141,12 @@ export default function FormSubmissionsPage() {
 									})()}</th>
 								)}
 							</tr>
-							{submissions.map(sub => <tr key={sub.id} class={tw`border-(t-1 gray-600)`}>
+							{submissions.map(sub => <tr
+								key={sub.id}
+								onClick={() => navigate(`/forms/${form.id}/${sub.id}`)}
+								tabIndex={0}
+								class={tw`border-(t-1 gray-600) bg-gray-800 ${sub.read && 'opacity-60'}
+									hocus:brightness-110 hocus:saturate-80 hocus:border-b-1 transition duration-75 cursor-pointer`}>
 								<td class={tw`py-3 pl-0 font-bold tracking-wide text-sm font-mono text-gray-200`}>
 									<div class={tw`flex w-full`}>
 										<div class={tw`w-1.5 h-1.5 bg-accent-300 ring-([3px] accent-400) mr-3 ml-1
@@ -121,15 +155,12 @@ export default function FormSubmissionsPage() {
 									</div>
 								</td>
 								<td class={tw`py-3 flex-(& col)`}>
-									<span class={tw`text-sm font-medium`}>{new Date(sub.time).toLocaleDateString('en-US',
-										{ month: 'short', day: 'numeric', year: 'numeric' })}</span>
-									<span class={tw`text-([10px] -mt-1 block gray-200) font-medium`}>
-										{new Date(sub.time).toLocaleTimeString('en-US',
-										{ hour12: true, hour: 'numeric', minute: 'numeric' })}</span>
+									<span class={tw`text-sm font-medium`}>{formatDate(sub.time)}</span>
+									<span class={tw`text-([10px] -mt-1 block gray-200) font-medium`}>{formatTime(sub.time)}</span>
 								</td>
 								{form.dashboard.columns?.map(col =>
 									<td class={tw`py-3 pl-8`} key={col}>
-										<RowData field={form.fields.find(f => f.id === col.id)!} data={sub.data[col.id]}/>
+										<RowField field={form.fields.find(f => f.id === col.id)!} data={sub.data[col.id]}/>
 									</td>
 								)}
 							</tr>)}
@@ -138,6 +169,15 @@ export default function FormSubmissionsPage() {
 				</Card>
 			</div>
 			<div class={tw`hidden w-80 shrink 2xl:block`}/>
+			<FormSubmissionModal
+				key={submission?.id}
+				show={!!submission}
+				data={submission}
+				form={form}
+				onClose={handleClose}
+				onDelete={handleDelete}
+				onMarkRead={handleMarkRead}
+			/>
 		</div>
 	);
 }

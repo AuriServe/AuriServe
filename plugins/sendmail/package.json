@@ -1,0 +1,26 @@
+{
+	"name": "@auriserve/plugin-sendmail",
+	"version": "0.0.1",
+	"description": "Exposes an API to send mail over SMTP using nodemailer.",
+	"types": "types/Main.d.ts",
+	"author": "Auri Collings <me@auri.xyz>",
+	"license": "UNLICENSED",
+	"sideEffects": false,
+	"scripts": {
+		"dev": "webpack-gen dev",
+		"build": "webpack-gen build"
+	},
+	"devDependencies": {
+		"@types/mailparser": "^3.4.0",
+		"@types/nodemailer": "^6.4.8",
+		"@types/sendmail": "^1.4.4",
+		"webpack-gen": "file:../../webpack-gen"
+	},
+	"dependencies": {
+		"auriserve": "file:../../api/build",
+		"common": "file:../../common/build",
+		"mailparser": "^3.6.4",
+		"nodemailer": "^6.9.3",
+		"zod": "^3.21.4"
+	}
+}

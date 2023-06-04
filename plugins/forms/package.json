@@ -23,6 +23,7 @@
 		"@types/elements": "file:../elements",
 		"@types/elements-base": "file:../elements-base",
 		"@types/hydrated": "file:../hydrated",
+		"@types/sendmail": "file:../sendmail",
 		"@types/media": "file:../media",
 		"@types/page-editor": "file:../page-editor",
 		"@types/pages": "file:../pages",

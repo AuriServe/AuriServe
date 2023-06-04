@@ -24,10 +24,14 @@ export interface BaseClientFieldProps {
 	}
 }
 
-export interface BaseDashboardFieldProps<V, L extends BaseDashboardLayoutProps = BaseDashboardLayoutProps> {
+export interface BaseDashboardFieldProps<
+	V,
+	L extends BaseDashboardLayoutProps = BaseDashboardLayoutProps,
+	F extends BaseClientFieldProps = BaseClientFieldProps> {
 	label: string;
 	value: V;
 	layout: L;
+	field: F
 }
 
 export type BaseClientLayoutProps = {
@@ -101,6 +105,7 @@ export type { TextFieldProps as TextDashboardFieldProps } from
 	'./dashboard/field/TextField';
 
 export type Form = {
+	id: number;
 	name: string;
 	fields: ClientFieldProps[];
 
@@ -111,9 +116,10 @@ export type Form = {
 	}
 
 	dashboard: {
+		reply?: string;
 		columns?: { id: string, maxWidth?: number }[];
 		layoutColumns?: number;
-		layout?: DashboardLayoutProps[];
+		layout: DashboardLayoutProps[];
 	}
 
 }

@@ -53,8 +53,8 @@ export default function useDerivedState<T>(
 	const readonly = props.readonly ?? !(props.editable ?? true);
 	const disabled =
 		(props.disabled ?? !(props.enabled ?? true)) ||
-		(ctx.disabled.current ?? false) ||
-		(group.disabled ?? false);
+		(ctx?.disabled?.current ?? false) ||
+		(group?.disabled ?? false);
 
 	const value = useLazyRef<T>(() => {
 		if (props.value != null) return props.value;
@@ -93,30 +93,30 @@ export default function useDerivedState<T>(
 	);
 
 	const label = useMemo(
-		() => props.label ?? camelCaseToTitle(splitPath(path).pop() as string),
+		() => props.label ?? camelCaseToTitle(splitPath(path).pop() as string ?? 'UNKNOWN'),
 		[props.label, path]
 	);
 
 	useLayoutEffect(() => {
-		if (!path) return;
+		if (!path || !ctx?.event) return;
 		return ctx.event.bind('refresh', (paths) => {
 			if (paths.has(path)) refresh();
 		});
-	}, [path, ctx.event, ctx.value, value, rerender, refresh]);
+	}, [path, ctx?.event, ctx?.value, value, rerender, refresh]);
 
 	const onFocus = (evt: any) => {
 		props.onFocus?.(evt.target);
-		ctx.event.emit('focus', path, true);
+		ctx?.event.emit('focus', path, true);
 	};
 
 	const onBlur = (evt: any) => {
 		props.onBlur?.(evt.target);
-		ctx.event.emit('focus', path, false);
+		ctx?.event.emit('focus', path, false);
 	};
 
 	function updateFieldRef() {
-		if (lastPathRef.current) ctx.setFieldRef(lastPathRef.current, null);
-		ctx.setFieldRef(path, elemRef.current);
+		if (lastPathRef.current) ctx?.setFieldRef(lastPathRef.current, null);
+		ctx?.setFieldRef(path, elemRef.current);
 	}
 
 	const onRef = <T extends HTMLElement>(ref: T | null) => {

@@ -75,7 +75,7 @@ export default class ThemeManager {
 		).join('\n');
 
 		style = new CleanCSS({
-			level: { 1: { specialComments: 'none' }, 2: { all: true } },
+			level: { 1: { specialComments: 'none' }, 2: { all: true, removeUnusedAtRules: false } },
 		}).minify(style).styles;
 
 		await Promise.all([

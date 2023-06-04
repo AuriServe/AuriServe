@@ -25,23 +25,23 @@ export default function Modal(props: Props) {
 	const overflowTimeoutRef = useRef<number>(0);
 
 	useEffect(() => {
-		const body = document.documentElement;
-		const root = body.children[0] as HTMLElement;
+		const root = document.documentElement;
+		const app = document.body.children[0] as HTMLElement;
 
-		if (!body || !root || !props.active) return undefined;
+		if (!root || !app || !props.active) return undefined;
 
 		if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
-		body.style.overflow = 'hidden';
-		root.style.paddingRight = '14px';
+		root.style.overflow = 'hidden';
+		app.style.paddingRight = '14px';
 
 		return () => {
 			if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
 			overflowTimeoutRef.current = setTimeout(() => {
-				body.style.overflow = '';
-				root.style.paddingRight = '';
+				root.style.overflow = '';
+				app.style.paddingRight = '';
 			}, 150) as any as number;
 		};
-	}, [props.active]);
+	}, [ props.active ]);
 
 	const { onClose } = props;
 

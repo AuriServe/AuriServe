@@ -49,8 +49,8 @@ export function refreshFormCache() {
 }
 
 export function addFormSubmission(form: Omit<DatabaseFormSubmission, 'read' | 'id'>) {
-	database.prepare(`INSERT INTO ${FORM_SUBMISSIONS} (formId, time, data) VALUES (?, ?, ?)`)
-		.run(form.formId, form.time, form.data);
+	return database.prepare(`INSERT INTO ${FORM_SUBMISSIONS} (formId, time, data) VALUES (?, ?, ?)`)
+		.run(form.formId, form.time, form.data).lastInsertRowid;
 }
 
 export function getForms(): DatabaseForm[] {
@@ -60,21 +60,29 @@ export function getForms(): DatabaseForm[] {
 export function getForm(id: number): Form | null {
 	const formPath = path.join(dataPath, 'forms',
 		database.prepare(`SELECT path FROM ${FORMS} WHERE id = ?`).get(id)?.path ?? '');
-	try { return JSON.parse(fs.readFileSync(formPath, 'utf8')); }
+	try { return { ...JSON.parse(fs.readFileSync(formPath, 'utf8')), id }; }
 	catch (e) { return null; }
+}
+
+export function countUnreadFormSubmissions(form: number) {
+	return database.prepare(`SELECT COUNT(*) AS count FROM ${FORM_SUBMISSIONS} WHERE formId = ? AND read = 0`)
+		.get(form).count;
 }
 
 export function getFormSubmissions(form: number): DatabaseFormSubmission[] {
 	return database.prepare(`SELECT * FROM ${FORM_SUBMISSIONS} WHERE formId = ?`).all(form);
 }
 
-export function markFormSubmissionRead(id: number) {
-	return !!database.prepare(`UPDATE ${FORM_SUBMISSIONS} SET read = 1 WHERE id = ?`).run(id).changes;
+export function getFormSubmission(id: number): DatabaseFormSubmission | null {
+	return database.prepare(`SELECT * FROM ${FORM_SUBMISSIONS} WHERE id = ?`).get(id);
 }
 
-export function countUnreadFormSubmissions(form: number) {
-	return database.prepare(`SELECT COUNT(*) AS count FROM ${FORM_SUBMISSIONS} WHERE formId = ? AND read = 0`)
-		.get(form).count;
+export function markFormSubmissionRead(id: number, read: boolean) {
+	return !!database.prepare(`UPDATE ${FORM_SUBMISSIONS} SET read = ? WHERE id = ?`).run(read ? 1 : 0, id).changes;
+}
+
+export function markAllFormSubmissionsRead(form: number) {
+	return !!database.prepare(`UPDATE ${FORM_SUBMISSIONS} SET read = 1 WHERE formId = ?`).run(form).changes;
 }
 
 export function deleteFormSubmission(id: number) {
