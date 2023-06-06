@@ -34,7 +34,14 @@ export async function ingestSVG(media: Database.Media, canonical: Database.Media
 		{ mid: media.id, hash, path: path.relative(MEDIA_DIR, outputPath), size: stat.size, type: 'svg_min', prop: 0 },
 		{ width, height });
 
-	// Database.addMediaVariant(
-	// 	{ mid: media.id, hash, path: svg.data, size: stat.size, type: 'svg_inline', prop: 0 },
-	// 	{ width, height });
+	const inlineData = svg.data
+		.replace(/"/g, `'`)
+		.replace(/>\s{1,}</g, `><`)
+		.replace(/\s{2,}/g, ` `)
+		.replace(/[\r\n%#()<>?[\\\]^`{|}]/g, encodeURIComponent);
+
+	const inlined = `data:image/svg+xml,${inlineData}`;
+	Database.addMediaVariant(
+		{ mid: media.id, hash, path: inlined, size: stat.size, type: 'svg_inline', prop: 0 },
+		{ width, height });
 }

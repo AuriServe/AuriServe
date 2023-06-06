@@ -36,7 +36,7 @@ export function getDocument(path: string): Document | null {
 	}
 	catch (err) {
 		if (typeof err === 'object' && err && 'message' in err) {
-			log.warn('Failed to parse page \'%s\': %s', path, (err as any).message);
+			log.error('Failed to parse page \'%s\': %s', path, (err as any).message);
 		}
 		return null;
 	}

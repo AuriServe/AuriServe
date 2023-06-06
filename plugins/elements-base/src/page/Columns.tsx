@@ -10,7 +10,7 @@ export type Props = {
 	justifyChildren?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
 	justifyItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
 
-	gap?: number;
+	gap?: number | [ number, number ];
 	minWidth?: number;
 	maxWidth?: number;
 	columns?: { min?: string; width: string }[];
@@ -38,6 +38,8 @@ function Columns(props: Props) {
 	const gridColumnString = (props.columns ?? [{ width: '1fr' }]).map(({ min, width }) =>
 		min ? `minmax(${min}, ${width})` : width).join(' ');
 
+	const gap = Array.isArray(props.gap) ? props.gap : [ props.gap ?? 0, props.gap ?? 0 ];
+
 	return (
 		<div
 			class={['base:columns', identifier, props.class, props.reverseVertical && 'reverse']
@@ -53,7 +55,8 @@ function Columns(props: Props) {
 			<div
 				class='inner'
 				style={{
-					gap: `${props.gap}px`,
+					columnGap: `${gap[0]}px`,
+					rowGap: `${gap[1]}px`,
 					maxWidth: props.maxWidth && `${props.maxWidth}px`,
 					gridTemplateColumns: gridColumnString,
 					alignItems: props.layoutChildren ?? 'stretch',

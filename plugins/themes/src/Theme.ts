@@ -48,6 +48,7 @@ export default class Theme {
 						addTo[keyParts[keyParts.length - 1]] = value;
 						break;
 					case 'font_media':
+					case 'image_media':
 						addTo[keyParts[keyParts.length - 1]] = value;
 						break;
 					default:

@@ -57,8 +57,8 @@ directives.push([
 
 
 directives.push([
-	/\/\*\s*@font-face(?:\(([a-z-.,\s]+)*\))*\s*\*\//gim,
-	function fontFace(ctx, _, strArgs: string) {
+	/\/\*\s*@asset(?:\(([a-z-_.,\s]+)*\))*\s*\*\//gim,
+	function asset(ctx, _, strArgs: string) {
 		const [themePath, variant] = strArgs
 			.split(',')
 			.filter(Boolean)
@@ -68,11 +68,13 @@ directives.push([
 		if (!id) return '';
 
 		const media = getMediaVariants(id);
-		const variantObj = media.find(m => m.type === `font_${variant}`);
+		const variantObj = media.find(m => m.type === `${variant}`);
 
-		const url = (variant === 'inline'
+		const url = (variant === 'font_inline'
 			? `url(data:font/woff2;base64,${fs.readFileSync(path.join(MEDIA_DIR, variantObj?.path ?? ''), 'base64')})`
-			: `url(/media/${variantObj?.path ?? ''})` )
+			: (variantObj?.path?.startsWith('data:'))
+			? `url("${variantObj?.path ?? ''}")`
+			: `url(/media/${variantObj?.path ?? ''})`);
 
 		return url;
 	},
