@@ -102,4 +102,3 @@ export default {
 	trace: logFunction('trace', '93'),
 	setLogLevel: setLevel,
 };
-

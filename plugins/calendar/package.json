@@ -23,8 +23,8 @@
 		"@types/hydrated": "file:../hydrated",
 		"@types/ical": "^0.8.0",
 		"@types/markdown-it": "^12.2.3",
-		"preact": "^10.10.2",
-		"vibin-hooks": "^0.3.0",
+		"preact": "^10.15.1",
+		"vibin-hooks": "^0.5.0",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {

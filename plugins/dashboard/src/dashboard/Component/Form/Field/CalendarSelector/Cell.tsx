@@ -22,7 +22,7 @@ interface Props {
 export default function Cell(props: Props) {
 	const dark = props.date.getMonth() % 2 === 1;
 	const isCurrentDate = isSameDate(props.date, new Date());
-	const isInvalid = props.min && props.date < props.min || props.max && props.date > props.max;
+	const isInvalid = props.min && +props.date + 24 * 60 * 60 * 1000 - 1 < +props.min || props.max && props.date > props.max;
 
 	return (
 		<button type='button' onClick={props.onClick} class={tw`

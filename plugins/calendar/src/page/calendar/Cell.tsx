@@ -21,7 +21,7 @@ interface Props {
 }
 
 export default function Cell(props: Props) {
-	// const dark = props.date.getMonth() % 2 === 0;
+	const dark = props.date.getMonth() % 2 === 0;
 	const isCurrentDate = isSameDate(props.date, new Date());
 
 	const eventElements = [];
@@ -43,7 +43,7 @@ export default function Cell(props: Props) {
 	}
 
 	return (
-		<div class='cell'>
+		<div class={`cell ${dark && 'dark'}`}>
 			<p class={`date ${isCurrentDate && 'current'}`}>{props.date.getDate()}</p>
 			{eventElements}
 			{props.events.length > 3 && <p class='more_indicator'>+{props.events.length - 3} more</p>}

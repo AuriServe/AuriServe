@@ -21,7 +21,7 @@ export default function CalendarSelector(props: Props) {
 
 	const viewRef = useRef<HTMLDivElement>(null);
 
-	const [ start, setStart ] = useState<Date>(() => {
+	const [ origin, setOrigin ] = useState<Date>(() => {
 		const now = selected || new Date();
 		const date = new Date(now.getFullYear(), now.getMonth(), 1);
 		date.setDate(date.getDate() - date.getDay());
@@ -36,10 +36,10 @@ export default function CalendarSelector(props: Props) {
 
 		const onScroll = (evt: any) => {
 			const dir = evt.deltaY > 0 ? 1 : -1;
-			setStart(start => {
-				const newStart = new Date(start);
-				newStart.setDate(newStart.getDate() + dir * 7);
-				return newStart;
+			setOrigin(origin => {
+				const newOrigin = new Date(origin);
+				newOrigin.setDate(newOrigin.getDate() + dir * 7);
+				return newOrigin;
 			});
 		}
 
@@ -48,15 +48,15 @@ export default function CalendarSelector(props: Props) {
 	}, []);
 
 	function handleSetScrollMonth(ind: number) {
-		const date = new Date(start.getFullYear(), ind, 1);
+		const date = new Date(origin.getFullYear(), ind, 1);
 		date.setDate(date.getDate() - date.getDay());
-		setStart(date);
+		setOrigin(date);
 	}
 
 	function handleSetScrollYear(ind: number) {
-		const date = new Date(ind, start.getMonth() + 1, 1);
+		const date = new Date(ind, origin.getMonth() + 1, 1);
 		date.setDate(date.getDate() - date.getDay());
-		setStart(date);
+		setOrigin(date);
 	}
 
 	function handleSetDate(newDate: Date) {
@@ -91,15 +91,30 @@ export default function CalendarSelector(props: Props) {
 		props.onSelect(date);
 	}
 
-	const headDate = new Date(start);
+	function handleUpdateMonthSelectLength(elem: HTMLParagraphElement | null) {
+		if (elem) {
+			if (elem.getClientRects().length === 0) requestAnimationFrame(() => handleUpdateMonthSelectLength(elem));
+			setMonthSelectLength(elem.offsetWidth);
+		}
+	}
+
+	function handleReset() {
+		const date = new Date();
+		props.onSelect(date);
+		const newOrigin = new Date(date.getFullYear(), date.getMonth(), 1);
+		newOrigin.setDate(newOrigin.getDate() - newOrigin.getDay());
+		setOrigin(newOrigin);
+	}
+
+	const headDate = new Date(origin);
 	headDate.setDate(headDate.getDate() + 6);
 
 	const rows = [];
 	const buffer = 6;
 
-	const date = new Date(start);
+	const date = new Date(origin);
 	date.setDate(date.getDate() - buffer * 7);
-	const end = new Date(start);
+	const end = new Date(origin);
 	end.setDate(end.getDate() + 7 * (5 + buffer) - 1);
 
 	while (date < end) {
@@ -147,8 +162,7 @@ export default function CalendarSelector(props: Props) {
 					</select>
 				</div>
 			</div>
-			<p ref={(elem) => window.requestAnimationFrame(() =>
-				setMonthSelectLength(elem?.offsetWidth ?? monthSelectLength))}
+			<p ref={handleUpdateMonthSelectLength}
 				class={tw`fixed left-[-9999px] top-0 font-medium text-lg`}>
 				{MONTH[headDate.getMonth()]}
 			</p>
@@ -165,7 +179,7 @@ export default function CalendarSelector(props: Props) {
 					{rows.map((date) =>
 						<div key={+date} class={tw`absolute transition duration-150 w-full`} style={{
 							transform: `translateY(${Math.floor((+date / 1000 / 60 / 60 / 24 / 7) -
-								(+start / 1000 / 60 / 60 / 24 / 7)) * (32 + 4)}px)`
+								(+origin / 1000 / 60 / 60 / 24 / 7)) * (32 + 4)}px)`
 						}}>
 							<Row start={date} onClick={handleSetDate} selected={props.selected}
 								min={props.min} max={props.max}/>
@@ -200,13 +214,23 @@ export default function CalendarSelector(props: Props) {
 					</select>
 				</div>
 
-				<button type='button' onClick={() => props.onSelect(null)} class={tw`
-					rounded bg-gray-(600 hocus:500 active:400) cursor-pointer w-9 h-9 grid place-content-center
-					focus:ring-(2 gray-500 offset-2 offset-gray-700) outline-0 transition
-					active:ring-(2 gray-500 offset-2 offset-gray-700)`}>
-					<Svg src={Icon.close} size={6}/>
-					<Tooltip label='Clear' small position='right' bg='gray-600' class={tw`z-50 text-white`}/>
-				</button>
+				<div class={tw`flex gap-1`}>
+					<button type='button' onClick={handleReset} class={tw`
+						rounded bg-gray-(600 hocus:500 active:400) cursor-pointer w-9 h-9 grid place-content-center
+						focus:ring-(2 gray-500 offset-2 offset-gray-700) outline-0 transition
+						active:ring-(2 gray-500 offset-2 offset-gray-700)`}>
+						<Svg src={Icon.home} size={6}/>
+						<Tooltip label='Now' small position='right' bg='gray-600' class={tw`z-50 text-white`}/>
+					</button>
+
+					<button type='button' onClick={() => props.onSelect(null)} class={tw`
+						rounded bg-gray-(600 hocus:500 active:400) cursor-pointer w-9 h-9 grid place-content-center
+						focus:ring-(2 gray-500 offset-2 offset-gray-700) outline-0 transition
+						active:ring-(2 gray-500 offset-2 offset-gray-700)`}>
+						<Svg src={Icon.close} size={6}/>
+						<Tooltip label='Clear' small position='right' bg='gray-600' class={tw`z-50 text-white`}/>
+					</button>
+				</div>
 			</div>
 		</div>
 	);

@@ -65,7 +65,8 @@ export default function MonthView(props: Props) {
 			</div>
 			<div class={tw`relative grow grid h-full overflow-hidden group rounded-lg isolate`}>
 				<VirtualScroll
-					itemHeight={cellHeight} snap
+					snap
+					itemHeight={cellHeight}
 					onScroll={(i) => setCurrent(+getWeekDate(start, i + 1))}
 					class={tw`p-2 pt-0`}>
 					{(i) =>

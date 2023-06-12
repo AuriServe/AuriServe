@@ -30,17 +30,19 @@ export default function Modal(props: Props) {
 
 		if (!root || !app || !props.active) return undefined;
 
-		if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
-		root.style.overflow = 'hidden';
-		app.style.paddingRight = '14px';
-
-		return () => {
+		if (document.documentElement.classList?.contains('custom_scroll')) {
 			if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
-			overflowTimeoutRef.current = setTimeout(() => {
-				root.style.overflow = '';
-				app.style.paddingRight = '';
-			}, 150) as any as number;
-		};
+			root.style.overflow = 'hidden';
+			app.style.paddingRight = '14px';
+
+			return () => {
+				if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
+				overflowTimeoutRef.current = setTimeout(() => {
+					root.style.overflow = '';
+					app.style.paddingRight = '';
+				}, 150) as any as number;
+			};
+		}
 	}, [ props.active ]);
 
 	const { onClose } = props;

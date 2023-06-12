@@ -15,6 +15,40 @@
 	rrule?: string;
 }
 
+// Events
+
+// id   -- primary key
+// cal  \ -- foreign key
+// uid  // unique index
+
+// start
+// end
+// rrule
+
+// title
+// description
+
+// EventCategories
+
+// id -- primary foreign key \
+// cat -- foreign key        // unique index
+
+// Categories
+
+// id -- primary key
+// cal -- foreign key
+
+// name
+// color
+
+// Calendars
+
+// id -- primary key
+// name
+// description
+
+
+
 export interface PopulatedEvent extends Event {
 	dates: number[];
 	last: number;

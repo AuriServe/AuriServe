@@ -1,6 +1,6 @@
 import { h } from 'preact';
-import { hydrate } from 'hydrated';
-import { useMemo } from 'preact/hooks';
+import { hydrate, useHydrated } from 'hydrated';
+import { useMemo, useState } from 'preact/hooks';
 
 import Row from './calendar/Row';
 import VirtualScroll from '../common/VirtualScroll';
@@ -23,6 +23,7 @@ interface Props {
 }
 
 function RawCalendar(_props: Props) {
+	const hydrated = useHydrated();
 	const calendar: PopulatedCalendar = { events: {}, categories: {} };
 
 	const start = useMemo(() => {
@@ -32,11 +33,13 @@ function RawCalendar(_props: Props) {
 		return +date;
 	}, []);
 
+	const [ current, setCurrent ] = useState(start);
+
 	return (
 		<div class={identifier}>
 			<div class='page_header'>
-				<span class='month'>May</span>
-				<span class='year'>2025</span>
+				<span class='month'>{MONTH[new Date(current).getMonth()]}</span>
+				<span class='year'>{new Date(current).getFullYear()}</span>
 			</div>
 			<div class='weekday_header'>
 				<span>Sunday</span>
@@ -49,17 +52,26 @@ function RawCalendar(_props: Props) {
 			</div>
 			<div class='page'>
 				<VirtualScroll
-					itemHeight={100} snap
-					// onScroll={(i) => setCurrent(+getWeekDate(start, i + 1))}
+					snap={hydrated}
+					position={1}
+					onScroll={(i) => setCurrent(+getWeekDate(start, i + 1) - 1)}
+					itemHeight={100}
 					>
-					{(i) =>
-						<Row
-							start={getWeekDate(start, i)}
-							height={100}
-							calendar={calendar}
-							onClickEvent={() => {/**/}}
-						/>
-					}
+					{(i) => {
+						if (i >= 1) {
+							return <Row
+								start={getWeekDate(start, i - 1)}
+								height={100}
+								calendar={calendar}
+								onClickEvent={() => {/**/}}
+							/>
+						}
+
+							return <div style={{ height: '100px', padding: '32px', textAlign: 'center', color: '#333' }}>
+								<p>{}</p>
+							</div>
+
+					}}
 				</VirtualScroll>
 			</div>
 		</div>

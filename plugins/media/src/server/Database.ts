@@ -1,7 +1,11 @@
 import path from 'path';
-import { database, log } from 'auriserve';
+import { database } from 'auriserve';
 import { MEDIA_DIR } from './Ingest';
 import { MediaType, MEDIA_TYPES, VARIANT_TYPES, VariantType } from '../common/Type';
+
+const MEDIA_TBL = 'media_media';
+const VARIANTS_TBL = 'media_variants';
+const IMAGES_TBL = 'media_images';
 
 /** A media item. Individual files pretaining to it are represented by `MediaVariant`s. */
 export interface Media {
@@ -36,9 +40,9 @@ export function init() {
 	 * Clean-up databases, for testing.
 	 */
 
-	// database.prepare('DROP TABLE IF EXISTS media_media').run();
-	// database.prepare('DROP TABLE IF EXISTS media_variants').run();
-	// database.prepare('DROP TABLE IF EXISTS media_images').run();
+	// database.prepare('DROP TABLE IF EXISTS ${MEDIA_TBL}').run();
+	// database.prepare('DROP TABLE IF EXISTS ${VARIANTS_TBL}').run();
+	// database.prepare('DROP TABLE IF EXISTS ${IMAGES_TBL}').run();
 	database.prepare('DROP TABLE IF EXISTS media').run();
 	database.prepare('DROP TABLE IF EXISTS media_image_variants').run();
 
@@ -48,12 +52,12 @@ export function init() {
 	 */
 
 	database.prepare(
-		`CREATE TABLE IF NOT EXISTS media_media (
+		`CREATE TABLE IF NOT EXISTS ${MEDIA_TBL} (
 			id INTEGER PRIMARY KEY,
-			name TEXT,
-			description TEXT,
-			type TEXT,
-			canonical INTEGER
+			name TEXT NOT NULL,
+			description TEXT NOT NULL,
+			type TEXT NOT NULL,
+			canonical INTEGER NOT NULL
 			CHECK (type IN (${MEDIA_TYPES.map(t => `'${t}'`).join(',')}))
 		) STRICT`
 	).run();
@@ -66,20 +70,20 @@ export function init() {
 	 */
 
 	database.prepare(
-		`CREATE TABLE IF NOT EXISTS media_variants (
+		`CREATE TABLE IF NOT EXISTS ${VARIANTS_TBL} (
 			id INTEGER PRIMARY KEY,
-			mid INTEGER REFERENCES media_media(id) ON DELETE CASCADE,
-			path TEXT,
-			size INTEGER,
-			hash TEXT,
-			type TEXT,
-			prop INTEGER,
+			mid INTEGER NOT NULL REFERENCES ${MEDIA_TBL}(id) ON DELETE CASCADE,
+			path TEXT NOT NULL,
+			size INTEGER NOT NULL,
+			hash TEXT NOT NULL,
+			type TEXT NOT NULL,
+			prop INTEGER NOT NULL,
 			CHECK (type IN (${VARIANT_TYPES.map(t => `'${t}'`).join(',')})),
 			UNIQUE (type, prop, mid)
 		) STRICT`
 	).run();
 
-	database.prepare('CREATE INDEX IF NOT EXISTS media_variants_mid ON media_variants (mid)').run();
+	database.prepare(`CREATE INDEX IF NOT EXISTS media_variants_mid ON ${VARIANTS_TBL} (mid)`).run();
 	// database.prepare('CREATE UNIQUE INDEX IF NOT EXISTS media_variants_path ON media_variants (path)').run();
 
 	/**
@@ -87,44 +91,44 @@ export function init() {
 	 */
 
 	database.prepare(
-		`CREATE TABLE IF NOT EXISTS media_images (
+		`CREATE TABLE IF NOT EXISTS ${IMAGES_TBL} (
 			id INTEGER PRIMARY KEY,
-			vid INTEGER REFERENCES media_variants(id) ON DELETE CASCADE,
-			width INTEGER,
-			height INTEGER
+			vid INTEGER NOT NULL REFERENCES ${VARIANTS_TBL}(id) ON DELETE CASCADE,
+			width INTEGER NOT NULL,
+			height INTEGER NOT NULL
 		) STRICT`
 	).run();
 
-	database.prepare('CREATE UNIQUE INDEX IF NOT EXISTS media_images_vid ON media_images (vid)').run();
+	database.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS media_images_vid ON ${IMAGES_TBL} (vid)`).run();
 }
 
 init();
 
-const QUERY_GET_MEDIA_FROM_ID = database.prepare('SELECT * FROM media_media WHERE id = ?');
-const QUERY_GET_VARIANT_FROM_ID = database.prepare('SELECT * FROM media_variants WHERE id = ?');
-const QUERY_GET_VARIANT_FROM_PATH = database.prepare('SELECT * FROM media_variants WHERE path = ?');
-const QUERY_GET_VARIANTS_FROM_MEDIA_ID = database.prepare('SELECT * FROM media_variants WHERE mid = ?');
-const QUERY_GET_IMAGE_STAT_FROM_VARIANT_ID = database.prepare('SELECT * FROM media_images WHERE vid = ?');
-const QUERY_GET_MEDIA_HASH_FROM_PATH = database.prepare('SELECT hash FROM media_variants WHERE path = ?');
-const QUERY_GET_VARIANT_FROM_TYPE_AND_ID = database.prepare('SELECT * FROM media_variants WHERE mid = ? AND type = ?');
+const QUERY_GET_MEDIA_FROM_ID = database.prepare(`SELECT * FROM ${MEDIA_TBL} WHERE id = ?`);
+const QUERY_GET_VARIANT_FROM_ID = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE id = ?`);
+const QUERY_GET_VARIANT_FROM_PATH = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE path = ?`);
+const QUERY_GET_VARIANTS_FROM_MEDIA_ID = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE mid = ?`);
+const QUERY_GET_IMAGE_STAT_FROM_VARIANT_ID = database.prepare(`SELECT * FROM ${IMAGES_TBL} WHERE vid = ?`);
+const QUERY_GET_MEDIA_HASH_FROM_PATH = database.prepare(`SELECT hash FROM ${VARIANTS_TBL} WHERE path = ?`);
+const QUERY_GET_VARIANT_FROM_TYPE_AND_ID = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE mid = ? AND type = ?`);
 const QUERY_GET_MEDIA_CANONICAL_PATH_HASH_PAIRS = database.prepare(
-	`SELECT media_media.id, media_variants.hash, media_variants.path FROM media_media
-	INNER JOIN media_variants ON media_media.canonical = media_variants.id`);
+	`SELECT ${MEDIA_TBL}.id, ${VARIANTS_TBL}.hash, ${VARIANTS_TBL}.path FROM ${MEDIA_TBL}
+	INNER JOIN ${VARIANTS_TBL} ON ${MEDIA_TBL}.canonical = ${VARIANTS_TBL}.id`);
 const QUERY_INSERT_MEDIA = database.prepare(
-	`INSERT INTO media_media (name, description, type) VALUES (?, ?, ?)`);
+	`INSERT INTO ${MEDIA_TBL} (name, description, type) VALUES (?, ?, ?)`);
 const QUERY_INSERT_OR_REPLACE_MEDIA = database.prepare(
-	`INSERT OR REPLACE INTO media_media (name, description, type, id) VALUES (?, ?, ?, ?)`);
+	`INSERT OR REPLACE INTO ${MEDIA_TBL} (name, description, type, id) VALUES (?, ?, ?, ?)`);
 const QUERY_INSERT_MEDIA_VARIANT = database.prepare(
-	`INSERT INTO media_variants (mid, path, size, hash, type, prop) VALUES (?, ?, ?, ?, ?, ?)`);
+	`INSERT INTO ${VARIANTS_TBL} (mid, path, size, hash, type, prop) VALUES (?, ?, ?, ?, ?, ?)`);
 const QUERY_INSERT_MEDIA_IMAGE_STAT = database.prepare(
-	`INSERT INTO media_images (vid, width, height) VALUES (?, ?, ?)`);
-const QUERY_DELETE_MEDIA = database.prepare(`DELETE FROM media_media WHERE id = ?`);
-const QUERY_DELETE_MEDIA_VARIANTS_FROM_ID = database.prepare(`DELETE FROM media_variants WHERE mid = ?`);
-const QUERY_SET_MEDIA_CANONICAL_VARIANT = database.prepare(`UPDATE media_media SET canonical = ? WHERE id = ?`);
+	`INSERT INTO ${IMAGES_TBL} (vid, width, height) VALUES (?, ?, ?)`);
+const QUERY_DELETE_MEDIA = database.prepare(`DELETE FROM ${MEDIA_TBL} WHERE id = ?`);
+const QUERY_DELETE_MEDIA_VARIANTS_FROM_ID = database.prepare(`DELETE FROM ${VARIANTS_TBL} WHERE mid = ?`);
+const QUERY_SET_MEDIA_CANONICAL_VARIANT = database.prepare(`UPDATE ${MEDIA_TBL} SET canonical = ? WHERE id = ?`);
 const QUERY_GET_SMALLEST_VARIANT_FROM_SIZE_AND_ID = database.prepare(
-	`SELECT * FROM media_variants WHERE mid = ? AND prop >= ? ORDER BY size ASC LIMIT 1`);
+	`SELECT * FROM ${VARIANTS_TBL} WHERE mid = ? AND prop >= ? ORDER BY size ASC LIMIT 1`);
 const QUERY_GET_CANONICAL_VARIANT_FROM_ID = database.prepare(
-	`SELECT * FROM media_variants WHERE id = (SELECT canonical FROM media_media WHERE id = ?)`);
+	`SELECT * FROM ${VARIANTS_TBL} WHERE id = (SELECT canonical FROM media_media WHERE id = ?)`);
 
 /** Converts a relative media path to an absolute one. */
 
