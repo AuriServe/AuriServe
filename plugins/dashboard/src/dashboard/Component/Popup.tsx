@@ -1,5 +1,5 @@
-import { forwardRef } from 'preact/compat';
 import { h, ComponentChildren } from 'preact';
+import { ForwardedRef, forwardRef } from 'preact/compat';
 
 import Portal from './Portal';
 import { Transition } from './Transition';
@@ -18,7 +18,7 @@ const Popup = forwardRef<HTMLDivElement, Props>((props, fRef) => {
 	return (
 		<Portal
 			class='absolute'
-			ref={fRef}
+			ref={fRef as ForwardedRef<HTMLElement>}
 			to={document.querySelector('.AS_ROOT') ?? document.body}>
 			<Transition
 				show={props.active}

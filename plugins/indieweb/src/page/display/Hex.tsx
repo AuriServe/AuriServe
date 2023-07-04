@@ -1,6 +1,6 @@
 import { hydrate } from 'hydrated';
 import { FunctionalComponent, h } from 'preact';
-import { useMemo, useRef, useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 
 const identifier = 'indieweb:hex';
 

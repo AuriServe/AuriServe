@@ -30,6 +30,9 @@ interface Props {
 	/** Whether or not the input is invalid, determines the appearance of the container. */
 	invalid?: boolean;
 
+	/** Whether or not the input is disabled. */
+	disabled: boolean;
+
 	onFocusIn?: (e: any) => void;
 	onFocusOut?: (e: any) => void;
 
@@ -43,11 +46,11 @@ interface Props {
  * Parameters are taken from the props. Should be memoized.
  */
 
-function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean) {
+function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean, disabled?: boolean) {
 	const posInactive = 'top-[0.9375rem] left-3 text-base font-medium';
 	const posActive = 'top-1.5 left-2.5 text-xs font-bold';
 	const validActive = 'text-accent-(600 dark:300)';
-	const validInactive = 'text-(gray-((500 dark:300) peer-hover:(500 dark:200)))';
+	const validInactive = `text-(gray-((500 dark:300) ${disabled ? '' : 'peer-hover:(500 dark:200)'}))`;
 	const invalidActive = 'text-red-(800 dark:300)';
 	const invalidInactive =
 		'text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:(800 dark:300))';
@@ -62,13 +65,13 @@ function getLabelStyles(active?: boolean, populated?: boolean, invalid?: boolean
 			: `${populated ? posActive : posInactive}`
 		}
 		${active === undefined
-			? `${colInactive} peer-focus-input:!(${colActive})`
-			: `${active ? colActive : `${colInactive} peer-focus-input:!(${colActive})`}`
+			? `${colInactive} ${disabled ? '' : `peer-focus-input:!(${colActive})`}`
+			: `${active ? colActive : `${colInactive} ${disabled ? '' : `peer-focus-input:!(${colActive})`}`}`
 		}
 	)`;
 }
 
-function getPlaceholderStyles(active?: boolean, populated?: boolean, isInvalid?: boolean) {
+function getPlaceholderStyles(active?: boolean, populated?: boolean, isInvalid?: boolean, _isDisabled?: boolean) {
 	const pos = 'top-[9px] left-3 text-base';
 	const valid = 'text-(gray-((500 dark:300) peer-hover:(500 dark:200)))';
 	const invalid = 'text-red-((900 dark:400) peer-hover:(800/75 dark:300) peer-focus-input:(800 dark:300))';
@@ -105,8 +108,8 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 					props.hideLabel
 						? tw`sr-only`
 						: props.placeholderLabel
-							? getPlaceholderStyles(props.active, props.populated, props.invalid)
-							: getLabelStyles(props.active, props.populated, props.invalid)
+							? getPlaceholderStyles(props.active, props.populated, props.invalid, props.disabled)
+							: getLabelStyles(props.active, props.populated, props.invalid, props.disabled)
 				}>
 				{props.label}
 			</label>

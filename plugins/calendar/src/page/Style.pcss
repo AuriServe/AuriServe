@@ -1,7 +1,7 @@
 :root {
 	--calendar-background-color: #fff;
 	--calendar-cell-background-color-light: #fff;
-	--calendar-cell-background-color-dark: #f7f7f7;
+	--calendar-cell-background-color-dark: #f9f9f9;
 	--calendar-border-color: #eee;
 	--calendar-day-label-color: #666;
 	--calendar-page-label-color: #333;
@@ -29,7 +29,7 @@
 				font-size: 16px;
 				text-transform: uppercase;
 				letter-spacing: 0.07em;
-				padding: 16px 4px 4px 4px;
+				padding: 12px 4px 4px 4px;
 			}
 		}
 
@@ -46,17 +46,21 @@
 				font-size: 13px;
 				text-transform: uppercase;
 				letter-spacing: 0.07em;
-				padding: 8px 4px 8px 4px;
+				padding: 4px 4px 6px 4px;
 			}
 		}
 
 		.page {
 			display: grid;
 			overflow: hidden;
-			aspect-ratio: 16/9;
-			height: calc(500px - 2px);
+			height: 498px;
 			border-radius: 0 0 8px 8px;
 			background-color: var(--calendar-border-color);
+
+			.vscroll_item:last-child {
+				height: 98px !important;
+				overflow: hidden;
+			}
 
 			.row {
 				gap: 2px;
@@ -80,25 +84,8 @@
 						letter-spacing: 0.07em;
 					}
 				}
+
 			}
 		}
-	}
-
-	.vscroll {
-		overflow: auto;
-		margin-right: -20px;
-		scrollbar-color: var(--calendar-background-color) var(--calendar-background-color);
-		&::-webkit-scrollbar { width: 20px; }
-		@supports (scrollbar-width: none) { margin-right: 0; scrollbar-width: none; }
-
-		&.vscroll_snap {
-			scroll-snap-type: y mandatory;
-
-			> .vscroll_item {
-				scroll-snap-stop: normal;
-				scroll-snap-align: start;
-			}
-		}
-
 	}
 }

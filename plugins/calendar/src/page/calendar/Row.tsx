@@ -3,7 +3,7 @@ import { useMemo } from 'preact/hooks';
 
 import Cell, { Placeholder } from './Cell';
 
-import { getEventsInRange, PopulatedCalendar, PopulatedEvent } from '../../common/Calendar';
+import { PopulatedCalendar, PopulatedEvent } from '../../common/Calendar';
 
 interface Props {
 	start: Date;
@@ -22,8 +22,8 @@ function getDate(date: number) {
 export default function Row(props: Props) {
 	const end = new Date(props.start.getFullYear(), props.start.getMonth(), props.start.getDate() + 6, 23, 59, 59, 999);
 
-	const events = useMemo(() => getEventsInRange(props.calendar, +props.start, +end)
-		.filter(event => props.calendar.categories[event.category].enabled)
+	const events = useMemo(() => Object.values(props.calendar.events)
+		.filter((event) => event.end >= +props.start && event.start <= +end)
 		.sort((a, b) => getDate(a.start) - getDate(b.start) || (
 			getDate(b.end) - getDate(b.start)) - (getDate(a.end) - getDate(a.start)) ||
 			(a.title ?? '').localeCompare(b.title ?? '')),

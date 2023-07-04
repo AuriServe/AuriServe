@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const { execSync: rawExec, execSync } = require('child_process');
 
@@ -12,15 +13,17 @@ const paths = [
 	'plugins/dashboard',
 	'plugins/elements',
 	'plugins/elements-base',
+	'plugins/forms',
 	'plugins/hydrated',
 	'plugins/media',
 	'plugins/page-editor',
 	'plugins/pages',
 	'plugins/routes',
+	'plugins/sendmail',
 	'plugins/tax-calculator',
 	'plugins/themes',
 	'plugins/users',
-	'server',
+	'server'
 ];
 
 function exec(cmd, cwd = '.') {
@@ -77,6 +80,28 @@ function build() {
 	console.log('\nBuilt packages.\n');
 }
 
+function compilePlugins() {
+	// build();
+
+
+	// try { fs.mkdirSync(path.join(__dirname, 'plugins', 'build'), { recursive: true }) } catch {};
+
+	const copy_paths = [
+		'build',
+		'manifest.yaml',
+		'README.md'
+	];
+
+	for (const pluginPath of paths.filter(p => p.startsWith('plugins'))) {
+		fs.mkdirSync(path.join(__dirname, 'plugins', 'build', pluginPath.split('/').pop()), { recursive: true });
+		const outPath = path.join(__dirname, 'plugins', 'build', pluginPath.split('/').pop());
+		try { fs.mkdir(outPath, { recursive: true }) } catch {};
+		for (const copyPath of copy_paths) {
+			execOut(`cp -R '${path.join(__dirname, pluginPath, copyPath)}' '${path.join(outPath, copyPath)}'`);
+		}
+	}
+}
+
 function cleanBuild() {
 	cleanInstall();
 	build();
@@ -89,5 +114,6 @@ function cleanBuild() {
 	cleanInstall,
 	update,
 	build,
-	cleanBuild
+	cleanBuild,
+	compilePlugins
 })[process.argv[2]] ?? (() => console.log('Unknown action.')))();

@@ -124,9 +124,12 @@ export async function executeQuery<T = any>(
 		} as any,
 		cache: 'no-cache',
 		body: JSON.stringify({ query, variables }),
-	}).then((res) => res.json())) as { data?: T; graphQLErrors?: string[] };
+	}).then((res) => res.json())) as { data?: T; errors?: { message: string }[] };
 
-	if (res.graphQLErrors) console.error('GraphQL Error:', res.graphQLErrors);
+	if (res.errors) {
+		console.log(res.errors);
+		throw new Error(res.errors.map(m => m.message).join('\n'));
+	}
 	return res.data ?? ({} as T);
 }
 

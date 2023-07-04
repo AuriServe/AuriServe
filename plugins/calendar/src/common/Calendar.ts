@@ -1,98 +1,77 @@
-/**
- * A calendar event that can be serialized into a JSON format.
- */
+// /**
+//  * A calendar event that can be serialized into a JSON format.
+//  */
 
- export interface Event {
-	uid: string;
-	start: number;
-	end: number;
+//  export interface Event {
+// 	uid: string;
+// 	start: number;
+// 	end: number;
 
-	title?: string;
-	description?: string;
-	category: string;
+// 	title?: string;
+// 	description?: string;
+// 	category: string;
 
-	location?: string;
-	rrule?: string;
-}
+// 	location?: string;
+// 	rrule?: string;
+// }
 
-// Events
+// // Events
 
-// id   -- primary key
-// cal  \ -- foreign key
-// uid  // unique index
+// // id   -- primary key
+// // cal  \ -- foreign key
+// // uid  // unique index
 
-// start
-// end
-// rrule
+// // start
+// // end
+// // rrule
 
-// title
-// description
+// // title
+// // description
 
-// EventCategories
+// // EventCategories
 
-// id -- primary foreign key \
-// cat -- foreign key        // unique index
+// // id -- primary foreign key \
+// // cat -- foreign key        // unique index
 
-// Categories
+// // Categories
 
-// id -- primary key
-// cal -- foreign key
+// // id -- primary key
+// // cal -- foreign key
 
-// name
-// color
+// // name
+// // color
 
-// Calendars
+// // Calendars
 
-// id -- primary key
-// name
-// description
+// // id -- primary key
+// // name
+// // description
 
 
 
-export interface PopulatedEvent extends Event {
-	dates: number[];
-	last: number;
-}
+// export interface PopulatedEvent extends Event {
+// 	dates: number[];
+// 	last: number;
+// }
 
-export interface Category {
-	uid: string;
-	name: string;
-	color: string;
-}
+// export interface Category {
+// 	uid: string;
+// 	name: string;
+// 	color: string;
+// }
 
-/**
- * Auriserve Calendar Object
- */
+// /**
+//  * Auriserve Calendar Object
+//  */
 
-export interface Calendar {
-	title?: string;
-	events: Record<string, Event>;
-	categories: Record<string, Category>;
-}
+// export interface Calendar {
+// 	title?: string;
+// 	events: Record<string, Event>;
+// 	categories: Record<string, Category>;
+// }
 
-export interface PopulatedCalendar {
-	title?: string;
-	events: Record<string, PopulatedEvent>;
-	categories: Record<string, Category & { enabled: boolean }>;
-}
-
-export function getEventsInRange(calendar: PopulatedCalendar, start: number, end: number): PopulatedEvent[] {
-	const events: PopulatedEvent[] = [];
-
-	Object.values(calendar.events).forEach((event) => {
-		if (event.last >= start && event.start <= end) {
-			event.dates.forEach((date) => {
-				if (date + (event.end - event.start) >= start && date <= end) {
-					const instance = { ...event } as any;
-					// delete instance.dates;
-					// delete instance.last;
-					instance.start = date;
-					instance.end = date + (event.end - event.start);
-					events.push(instance);
-				}
-			})
-		}
-	});
-
-	return events;
-}
+// export interface PopulatedCalendar {
+// 	title?: string;
+// 	events: Record<string, PopulatedEvent>;
+// 	categories: Record<string, Category & { enabled: boolean }>;
+// }

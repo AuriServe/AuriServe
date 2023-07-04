@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import Svg from '../Svg';
 import Card from '../Card';
-// import Tooltip from '../Tooltip';
+import Tooltip from '../Tooltip';
 import TileLayout from '../TileLayout';
 // import TreeView, { TreeRenderProps, TreeItem } from '../TreeView';
 
@@ -138,13 +138,6 @@ export default function MainPage() {
 							))}
 						</div>
 					</TileLayout.Tile>
-					{/* <TileLayout.Tile width={1} height={4}>
-						<Card class={tw`h-full`}>
-							<Card.Body>
-								<TreeView<TreeData> data={treeData} render={TreeRenderItem}/>
-							</Card.Body>
-						</Card>
-					</TileLayout.Tile>
 					<TileLayout.Tile width={2} height={4}>
 						<Card class={tw`h-full`}>
 							<Card.Body
@@ -172,7 +165,7 @@ export default function MainPage() {
 						<Card class={tw`h-full`}>
 							<Tooltip position='right'>Hello</Tooltip>
 						</Card>
-					</TileLayout.Tile> */}
+					</TileLayout.Tile>
 				</TileLayout.Grid>
 			</TileLayout>
 		</div>

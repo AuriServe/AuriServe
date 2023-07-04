@@ -3,7 +3,7 @@ import { tw } from 'dashboard';
 
 import CellEvent from './CellEvent';
 
-import { PopulatedEvent, Calendar } from '../../common/Calendar';
+import { CalendarEvent } from '../../server/Database';
 
 export const Placeholder = Symbol('placeholder');
 
@@ -15,12 +15,11 @@ function isSameDate(a: Date, b: Date) {
 
 interface Props {
 	date: Date;
-	calendar: Calendar;
 	activeEvent?: string;
-	events: (PopulatedEvent | typeof Placeholder)[];
+	events: (CalendarEvent | typeof Placeholder)[];
 
 	onClickCell?: (date: Date) => void;
-	onClickEvent?: (event: PopulatedEvent) => void;
+	onClickEvent?: (event: CalendarEvent) => void;
 }
 
 export default function Cell(props: Props) {
@@ -40,7 +39,6 @@ export default function Cell(props: Props) {
 				active={props.activeEvent === event.uid}
 				event={event}
 				date={props.date}
-				categories={props.calendar.categories}
 				onClick={() => props.onClickEvent?.(event)}
 			/>
 		);

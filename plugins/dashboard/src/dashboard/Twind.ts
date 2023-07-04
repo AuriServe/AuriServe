@@ -7,7 +7,7 @@ import {
 	css,
 	tx,
 	defineConfig,
-} from 'twind';
+} from '@twind/core';
 
 import presetTailwind from '@twind/preset-tailwind';
 
@@ -275,6 +275,7 @@ const config = defineConfig({
 				'scale-in': 'scale-in 250ms ease-out 1 backwards',
 				'spinner-1': 'spinner 1s ease-in-out alternate infinite',
 				'spinner-2': 'spinner 1s ease-in-out -1s alternate infinite',
+				'rocket': 'rocket 200ms ease-out 1',
 			},
 			keyframes: {
 				'scale-in': {
@@ -301,6 +302,14 @@ const config = defineConfig({
 						transform: 'scale(1)',
 					},
 				},
+				'rocket': {
+					from: {
+						transform: 'scale(0.8) translate(-30%, 30%)',
+						opacity: 0,
+					},
+					to: {
+					}
+				}
 			},
 		},
 		colors: {
@@ -463,4 +472,4 @@ tw(css`
 `);
 
 export { merge } from 'common';
-export { css } from 'twind';
+export { css } from '@twind/core';

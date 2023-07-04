@@ -108,8 +108,9 @@ export default function OptionField(props: Props) {
 					active={open}
 					onFocusIn={handleFocus}
 					onFocusOut={handleBlur}
-					populated={open || value.current != null || props.options.get(null) != null}
+					populated={open || props.options.get(value.current) != null}
 					invalid={invalid}
+					disabled={disabled}
 					hideLabel={props.hideLabel}
 					class={props.class}
 					style={props.style}>
@@ -121,7 +122,7 @@ export default function OptionField(props: Props) {
 							tw`peer w-full px-2.5 pr-10 rounded
 							${props.hideLabel ? 'pt-1.5 pb-1 h-10' : 'pt-6 pb-1 h-[3.25rem]'}
 							text-left !outline-none resize-none transition
-							bg-gray-100 dark:bg-gray-700/75 dark:focus:bg-gray-700
+							bg-gray-100 dark:bg-gray-700/75 ${disabled ? 'text-gray-300' : 'dark:focus:bg-gray-700'}
 							overflow-hidden truncate
 							${open && '!shadow-md dark:!bg-gray-700'}
 						`
@@ -172,7 +173,7 @@ export default function OptionField(props: Props) {
 					</Transition>
 
 					<Svg
-						class={tw`absolute right-2 icon-p-gray-200 transition
+						class={tw`absolute right-2 icon-p-gray-${props.disabled ? 400 : 200} transition
 						${props.hideLabel ? 'top-1.5' : 'top-3'}
 						${open && 'scale-y-[-100%] translate-y-px}'}`}
 						src={Icon.dropdown}

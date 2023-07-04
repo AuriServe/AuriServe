@@ -22,9 +22,9 @@ interface Props {
 	children?: ComponentChildren;
 }
 
-export default forwardRef<HTMLDivElement, Props>(function Portal(
+export default forwardRef<HTMLElement, Props>(function Portal(
 	props: Props,
-	ref: ForwardedRef<HTMLDivElement>
+	ref: ForwardedRef<HTMLElement>
 ) {
 	const root = useMemo(() => document.createElement('div'), []);
 

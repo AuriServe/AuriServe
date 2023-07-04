@@ -33,8 +33,8 @@ export default function Cell(props: Props) {
 
 		eventElements.push(
 			<CellEvent
-			event={event}
-			key={event.uid}
+				event={event}
+				key={event.uid}
 				date={props.date}
 				categories={props.calendar.categories}
 				onClick={() => props.onClickEvent?.(event)}

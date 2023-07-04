@@ -10,7 +10,7 @@ interface Props {
 
 export function Post(props: Props) {
 	// const mediaID = 5;
-	const media = '/media/variants/background.lg.webp';
+	const media = '/media/variant/background.1920.webp';
 
 	return (
 		<div class={identifier} style={`--image: url(${media});`}>
@@ -53,7 +53,9 @@ export function Post(props: Props) {
 			<script dangerouslySetInnerHTML={{ __html: `
 				const background = document.currentScript.parentElement.querySelector('.background');
 				window.addEventListener('scroll', () => {
-					background.style.transform = \`translateY(\${Math.max(-window.scrollY * 0.7, -window.innerHeight * 0.8 + 192)}px)\`;
+					background.style.opacity = Math.max(1 - (Math.sqrt(window.scrollY) / 50), 0.3).toString();
+					// else background.style.opacity = '1';
+					// background.style.transform = \`translateY(\${Math.max(-window.scrollY * 0.7, -window.innerHeight * 0.8 + 192)}px)\`;
 				}, { passive: true });
 			`}}/>
 		</div>

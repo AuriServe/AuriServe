@@ -57,7 +57,7 @@ export function init() {
 			name TEXT NOT NULL,
 			description TEXT NOT NULL,
 			type TEXT NOT NULL,
-			canonical INTEGER NOT NULL
+			canonical INTEGER
 			CHECK (type IN (${MEDIA_TYPES.map(t => `'${t}'`).join(',')}))
 		) STRICT`
 	).run();

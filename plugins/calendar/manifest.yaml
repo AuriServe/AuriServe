@@ -10,6 +10,7 @@ depends:
   dashboard: ^0.0.1
   elements: ^0.0.1
   hydrated: ^0.0.1
+  users: ^0.0.1
 
 entry:
   server: build/server.js

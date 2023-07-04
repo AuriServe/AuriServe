@@ -1,23 +1,22 @@
 import { h } from 'preact';
-import { tw, Svg, Icon, Button } from 'dashboard';
+import { tw, Svg, Icon } from 'dashboard';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import Row from './Row';
 import VirtualScroll from '../../common/VirtualScroll';
-import { PopulatedCalendar, PopulatedEvent } from '../../common/Calendar';
+import { CalendarEvent } from '../../server/Database';
 
 const MONTH = [ 'January', 'February', 'March', 'April', 'May', 'June',
 	'July', 'August', 'September', 'October', 'November', 'December' ];
 
 interface Props {
-	calendar: PopulatedCalendar;
+	events: CalendarEvent[];
 	activeEvent?: string;
 
-	saved?: boolean;
 	onSave?: () => void;
-
+	onScroll?: (i: number, date: Date) => void;
 	onClickCell?: (date: Date) => void;
-	onClickEvent?: (event: PopulatedEvent) => void;
+	onClickEvent?: (event: CalendarEvent) => void;
 }
 
 function getWeekDate(start: number, offset: number) {
@@ -47,7 +46,12 @@ export default function MonthView(props: Props) {
 		setContainerHeight(elem.clientHeight - elem.children[0].clientHeight);
 	}, []);
 
-	const cellHeight = containerHeight / 5;
+	function handleScroll(i: number) {
+		props.onScroll?.(i, getWeekDate(start, i));
+		setCurrent(+getWeekDate(start, i + 1));
+	}
+
+	const cellHeight = Math.floor(containerHeight / 5);
 
 	return (
 		<div ref={viewRef} class={tw`grow flex-(& col) h-full`}>
@@ -58,29 +62,32 @@ export default function MonthView(props: Props) {
 						{MONTH[new Date(current).getMonth()]} {new Date(current).getFullYear()}
 					</h2>
 				</div>
-				{!props.saved && <div class={tw`flex gap-3`}>
-					<p class={tw`text-gray-200 font-medium mt-1`}>You have unsaved changes.</p>
-					<Button.Secondary small icon={Icon.save} label='Save' onClick={props.onSave}/>
-				</div>}
 			</div>
-			<div class={tw`relative grow grid h-full overflow-hidden group rounded-lg isolate`}>
-				<VirtualScroll
-					snap
-					itemHeight={cellHeight}
-					onScroll={(i) => setCurrent(+getWeekDate(start, i + 1))}
-					class={tw`p-2 pt-0`}>
-					{(i) =>
-						<Row
-							start={getWeekDate(start, i)}
-							height={cellHeight - 6}
-							calendar={props.calendar}
-							activeEvent={props.activeEvent}
-							onClickCell={props.onClickCell}
-							onClickEvent={props.onClickEvent}
-						/>
-					}
-				</VirtualScroll>
-
+			<div class={tw`relative grow grid h-full overflow-hidden group rounded-lg isolate max-h-[${cellHeight * 5}px]`}>
+				{cellHeight !== 0 &&
+					<VirtualScroll
+						snap
+						itemHeight={cellHeight}
+						minRow={-Infinity}
+						onScroll={handleScroll}
+						position={0}
+						class={tw`p-2 pt-0`}>
+						{(i) => {
+							const date = +getWeekDate(start, i);
+							return (
+								<Row
+									key={date}
+									start={date}
+									height={cellHeight - 6}
+									events={props.events}
+									activeEvent={props.activeEvent}
+									onClickCell={props.onClickCell}
+									onClickEvent={props.onClickEvent}
+								/>
+							);
+						}}
+					</VirtualScroll>
+				}
 				<div aria-hidden class={tw`absolute top-0 left-2 right-2 grid-(& cols-7) interact-none`}>
 					{[ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ].map(day =>
 						<p key={day} class={tw`mt-2 ml-10 pt-px text-gray-300 font-bold text-xs uppercase tracking-widest`}>

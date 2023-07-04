@@ -21,6 +21,7 @@
 		"@types/dashboard": "file:../dashboard",
 		"@types/elements": "file:../elements",
 		"@types/hydrated": "file:../hydrated",
+		"@types/users": "file:../users",
 		"@types/ical": "^0.8.0",
 		"@types/markdown-it": "^12.2.3",
 		"preact": "^10.15.1",
@@ -28,6 +29,7 @@
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
+		"assert": "^2.0.0",
 		"auriserve": "file:../../api/build",
 		"common": "file:../../common/build",
 		"ical": "^0.8.0",

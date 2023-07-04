@@ -109,6 +109,10 @@ export type Form = {
 	name: string;
 	fields: ClientFieldProps[];
 
+	server?: {
+		mailTo?: string[];
+	}
+
 	client: {
 		layout?: ClientLayoutProps[];
 		gap?: [ number, number ];

@@ -16,6 +16,8 @@ export async function sendMessage(id: number) {
 	const form = getForm(submission.formId);
 	assert(form, 'Form not found.')
 
+	if (!form.server?.mailTo?.length) return;
+
 	const content = renderToString(h(Message, {
 		form,
 		time: submission.time,
@@ -26,7 +28,7 @@ export async function sendMessage(id: number) {
 
 	await sendMail({
 		content,
-		to: 'me@auri.xyz',
+		to: form.server.mailTo,
 		subject: `${form.name} Form Submission.`,
 		replyTo: JSON.parse(submission.data)[form.dashboard.reply!],
 	});

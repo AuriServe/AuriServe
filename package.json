@@ -7,6 +7,7 @@
 		"installAll": "node script.js install",
 		"cleanInstall": "node script.js cleanInstall",
 		"build": "node script.js build",
+		"compilePlugins": "node script.js compilePlugins",
 		"cleanBuild": "node script.js cleanBuild",
 		"update": "node script.js update",
 		"audit": "node script.js audit"

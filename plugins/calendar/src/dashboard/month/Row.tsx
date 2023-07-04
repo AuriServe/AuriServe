@@ -4,16 +4,16 @@ import { useMemo } from 'preact/hooks';
 
 import Cell, { Placeholder } from './Cell';
 
-import { getEventsInRange, PopulatedCalendar, PopulatedEvent } from '../../common/Calendar';
+import { CalendarEvent } from '../../server/Database';
 
 interface Props {
-	start: Date;
+	start: number;
 	height: number;
-	calendar: PopulatedCalendar;
+	events: CalendarEvent[];
 	activeEvent?: string;
 
 	onClickCell?: (date: Date) => void;
-	onClickEvent?: (event: PopulatedEvent) => void;
+	onClickEvent?: (event: CalendarEvent) => void;
 }
 
 function getDate(date: number) {
@@ -23,40 +23,45 @@ function getDate(date: number) {
 }
 
 export default function Row(props: Props) {
-	const end = new Date(props.start.getFullYear(), props.start.getMonth(), props.start.getDate() + 6, 23, 59, 59, 999);
+	const start = useMemo(() => new Date(props.start), [ props.start ]);
+	const end = useMemo(() => new Date(start.getFullYear(),
+		start.getMonth(), start.getDate() + 6, 23, 59, 59, 999), [ start ]);
 
-	const events = useMemo(() => getEventsInRange(props.calendar, +props.start, +end)
-		.filter(event => props.calendar.categories[event.category].enabled)
-		.sort((a, b) => getDate(a.start) - getDate(b.start) || (
-			getDate(b.end) - getDate(b.start)) - (getDate(a.end) - getDate(a.start)) ||
-			(a.title ?? '').localeCompare(b.title ?? '')),
-		[ +props.start, +end, props.calendar ]); // eslint-disable-line react-hooks/exhaustive-deps
+	const eventMap = useMemo(() => {
+		const events = props.events
+			.filter(evt => evt.end >= +start && evt.start <= +end)
+			.sort((a, b) => getDate(a.start) - getDate(b.start) || (
+				getDate(b.end) - getDate(b.start)) - (getDate(a.end) - getDate(a.start)) ||
+				(a.title ?? '').localeCompare(b.title ?? ''));
 
-	const eventMap: (PopulatedEvent | typeof Placeholder)[][] = [ [], [], [], [], [], [], [] ];
+		const eventMap: (CalendarEvent | typeof Placeholder)[][] = [ [], [], [], [], [], [], [] ];
 
-	for (const event of events) {
-		const startDay = event.start < +props.start ? 0 : new Date(event.start).getDay();
-		const endDay = event.end > +end ? 6 : new Date(event.end).getDay();
+		for (const event of events) {
+			const startDay = event.start < +start ? 0 : new Date(event.start).getDay();
+			const endDay = event.end > +end ? 6 : new Date(event.end).getDay();
 
-		let row = 0;
-		let found = null;
+			let row = 0;
+			let found = null;
 
-		loop:
-		while (found == null) {
-			for (let i = startDay; i <= endDay; i++) {
-				if (eventMap[i][row]) {
-					row++;
-					continue loop;
-				};
+			loop:
+			while (found == null) {
+				for (let i = startDay; i <= endDay; i++) {
+					if (eventMap[i][row]) {
+						row++;
+						continue loop;
+					};
+				}
+				found = row;
 			}
-			found = row;
+
+			eventMap[startDay][row] = event;
+			for (let i = startDay + 1; i <= endDay; i++) {
+				eventMap[i][row] = Placeholder;
+			}
 		}
 
-		eventMap[startDay][row] = event;
-		for (let i = startDay + 1; i <= endDay; i++) {
-			eventMap[i][row] = Placeholder;
-		}
-	}
+		return eventMap;
+	}, [ start, end, props.events ]);
 
 	let date = new Date(props.start);
 
@@ -64,7 +69,6 @@ export default function Row(props: Props) {
 	while (date <= end) {
 		cells.push(<Cell
 			date={date}
-			calendar={props.calendar}
 			events={eventMap[date.getDay()]}
 			activeEvent={props.activeEvent}
 			onClickCell={props.onClickCell}
