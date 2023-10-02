@@ -20,6 +20,7 @@ const paths = [
 	'plugins/pages',
 	'plugins/routes',
 	'plugins/sendmail',
+	'plugins/anonymous-form',
 	'plugins/tax-calculator',
 	'plugins/themes',
 	'plugins/users',

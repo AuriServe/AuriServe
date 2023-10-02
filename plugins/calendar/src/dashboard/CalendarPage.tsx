@@ -1,6 +1,6 @@
-import { h } from 'preact';
+import { Fragment, h } from 'preact';
 import { useAsyncEffect } from 'vibin-hooks';
-import { tw, executeQuery, AppContext } from 'dashboard';
+import { tw, executeQuery, AppContext, Form, Field, Icon, Svg, Button } from 'dashboard';
 import { useContext, useLayoutEffect, useRef, useState } from 'preact/hooks';
 
 // import Editor from './Editor';
@@ -52,6 +52,7 @@ export default function CalendarPage() {
 
 	const [ calendars, setCalendars ] = useState<Map<number, CalendarSpec>>(new Map());
 	const [ events, setEvents ] = useState<CalendarEvent[]>([]);
+	const [ editing, setEditing ] = useState<CalendarEvent | null>(null);
 
 	const refreshAbortController = useRef<AbortController>(new AbortController());
 	const lastQueriedDate = useRef<Date>(new Date());
@@ -108,6 +109,25 @@ export default function CalendarPage() {
 		setCalendars(newCal);
 		if (active) await refreshEvents(lastQueriedDate.current, [...newCal.values()].filter(c => c.active).map(c => c.id));
 		else setEvents(events.filter(e => e.cal !== id));
+	}
+
+	function handleStartEdit(eventOrDate: CalendarEvent | Date) {
+		const event: CalendarEvent = (eventOrDate instanceof Date) ? {
+			cal: calendars.values().next().value.id,
+			uid: `${Date.now()}-${Math.random()}@cal.auriserve.com`,
+			type: 'event-day',
+
+			start: +eventOrDate,
+			end: +eventOrDate,
+			rrule: null,
+			timezone: null,
+
+			title: '',
+			description: '',
+			location: ''
+		} : eventOrDate;
+
+		setEditing(event);
 	}
 
 	// useEffect(() => {
@@ -216,40 +236,95 @@ export default function CalendarPage() {
 	// 	});
 	// }
 
+	console.log(editing);
+
 	return (
 		<div
 			class={tw`flex -mb-14 overflow-hidden`}
 		>
-			<div class={tw`w-80 shrink-0 flex-(& col) relative z-10 bg-gray-800 shadow-md p-4`}>
-				{/* <Form<{ calendar: string }>
-					value={{ calendar: calendarName ?? undefined }}
-					onChange={(data) => setCalendarName(data.calendar ?? null)}>
-					<Field.Option path='calendar' options={new Map(calendars)}/>
+			<div class={tw`${editing ? 'w-96' : 'w-80'} shrink-0 flex-(& col) relative z-10 bg-gray-800 shadow-md p-4
+				transition-all duration-150 max-h-screen overflow-hidden`}>
+				{editing ? <Fragment>
+					<Form<CalendarEvent> value={editing} class={tw`flex-(& col) overflow-hidden h-full`}>
+						<div class={tw`shrink-0 flex-(& col) -mt-1 shrink-0 pb-3`}>
+							<div class={tw`flex items-center`}>
+								<Svg src={Icon.widget_add} size={6} class={tw`-mt-0.5`}/>
+								<h2 class={tw`text-xl leading-none font-medium ml-2 my-1.5`}>
+									{editing.id != null ? 'Edit' : 'Add'} Event
+								</h2>
+							</div>
+						</div>
 
-					<div class={tw`h-4`}/>
+						<div class={tw`flex-(& col) gap-6 overflow-y-auto overflow-x-hidden grow`}>
+							<div class={tw`flex-(& col) gap-2`}>
+								<Field.Text path='title' optional/>
+								<div class={tw`grid-(& cols-5) gap-2`}>
+									<Field.Option
+										label='Calendar'
+										class={tw`col-span-3`}
+										options={new Map([ ...calendars.values() ].map(v => [ v.id, v.name ]))}
+										disabled={calendars.size < 2}
+										value={editing.cal! as any as string}
+									/>
 
-					{Object.values(calendar?.categories ?? {}).map(category =>
-						<Category
-							key={category.uid}
-							name={category.name}
-							color={category.color}
-							enabled={category.enabled}
-							toggle={() => handleToggleCategory(category.uid)}
-						/>
-					)}
-				</Form> */}
-				<h2 class={tw`text-xs text-gray-300 tracking-widest font-bold mb-2 uppercase ml-2 mt-6`}>Calendars</h2>
-				<div class={tw`flex-(& col) gap-0.5`}>
-					{[...(calendars?.entries() ?? [])].map(calendar =>
-						<Calendar
-							color='blue'
-							enabled={calendar[1].active}
-							name={calendar[1].name}
-							onClick={() => handleSetActive(calendar[0], !calendar[1].active)}
-							key={calendar[0]}
-						/>
-					)}
-				</div>
+									<Field.Toggle
+										label='Public'
+										class={tw`col-span-2`}
+										value={!(editing as any).hidden}
+										onChange={value => setEditing({ ...editing, hidden: !value } as any)}
+									/>
+								</div>
+							</div>
+
+							<div class={tw`flex-(& col) gap-2`}>
+								<div class={tw`flex gap-2 mb-1 items-center`}>
+									<Svg src={Icon.clock} size={5}/>
+									<p class={tw`text-gray-200 uppercase tracking-widest text-xs font-bold mt-0.5`}>Scheduling</p>
+								</div>
+
+								<div class={tw`grid-(& cols-2) gap-2`}>
+									<Field.DateTime path='start' label='Start Date' class={tw`shrink-0 h-[52px]`}/>
+									<Field.DateTime path='end' label='End Date' class={tw`shrink-0 h-[52px]`}/>
+								</div>
+								<Field.Toggle
+									label='All Day'
+									value={editing.type === 'event-day'}
+									onChange={value => setEditing({ ...editing, type: value ? 'event-day' : 'event-timed' })}
+								/>
+							</div>
+
+							<div class={tw`flex-(& col) gap-2`}>
+								<div class={tw`flex gap-2 mb-1 items-center`}>
+									<Svg src={Icon.file} size={5}/>
+									<p class={tw`text-gray-200 uppercase tracking-widest text-xs font-bold mt-0.5`}>Details</p>
+								</div>
+
+								<Field.Text path='description' optional multiline/>
+								<Field.Text path='location' optional/>
+								<Field.Text value='' label='Attachments' disabled optional/>
+							</div>
+						</div>
+
+						<div class={tw`shrink-0 flex-(& row-reverse) pt-4`}>
+							<Button.Secondary icon={Icon.save} label='Save'/>
+						</div>
+					</Form>
+				</Fragment> : <Fragment>
+					<h2 class={tw`text-xs text-gray-300 tracking-widest font-bold mb-2 uppercase ml-2 mt-6 grow-0 shrink-0`}>
+						Calendars
+					</h2>
+					<div class={tw`flex-(& col) gap-0.5 items-start grow`}>
+						{[...(calendars?.entries() ?? [])].map(calendar =>
+							<Calendar
+								color='blue'
+								enabled={calendar[1].active}
+								name={calendar[1].name}
+								onClick={() => handleSetActive(calendar[0], !calendar[1].active)}
+								key={calendar[0]}
+							/>
+						)}
+					</div>
+				</Fragment>}
 			</div>
 
 			{calendars && <ImportCalendarModal
@@ -261,11 +336,8 @@ export default function CalendarPage() {
 				<MonthView
 					events={events}
 					onScroll={handleScroll}
-
-					// activeEvent={editing?.event?.uid}
-					// onSave={handleSave}
-					// onClickCell={handleClickCell}
-					// onClickEvent={handleClickEvent}
+					onClickCell={(date) => handleStartEdit(date)}
+					onClickEvent={(event) => handleStartEdit(event)}
 				/>
 				{/* <TransitionGroup
 					duration={150}

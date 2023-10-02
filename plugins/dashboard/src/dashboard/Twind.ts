@@ -264,6 +264,7 @@ const config = defineConfig({
 			},
 			spacing: {
 				18: '4.5rem',
+				128: '32rem',
 			},
 			cursor: {
 				'resize-ns': 'ns-resize',

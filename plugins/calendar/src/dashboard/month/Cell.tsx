@@ -27,7 +27,7 @@ export default function Cell(props: Props) {
 	const isCurrentDate = isSameDate(props.date, new Date());
 
 	const eventElements = [];
-	for (const event of props.events.slice(0, 3)) {
+	for (const event of props.events.slice(0, 4)) {
 		if (!event || event === Placeholder) {
 			eventElements.push(<div class={tw`h-7`}/>);
 			continue;
@@ -45,7 +45,7 @@ export default function Cell(props: Props) {
 	}
 
 	return (
-		<button class={tw`relative rounded-md p-1.5 pt-9 flex-(& col) gap-2
+		<button class={tw`relative rounded-md p-1.5 pt-8 flex-(& col)
 			${dark ? 'bg-gray-800/[55%]' : 'bg-gray-800/30'}`}
 			onClick={() => props.onClickCell?.(props.date)}>
 
@@ -56,8 +56,8 @@ export default function Cell(props: Props) {
 
 			{eventElements}
 
-			{props.events.length > 3 && <p class={tw`text-gray-300 text-xs font-bold pt-1`}>
-				+{props.events.length - 3} more
+			{props.events.length > 4 && <p class={tw`text-gray-300 text-xs font-bold pt-1`}>
+				+{props.events.length - 4} more
 			</p>}
 		</button>
 	);

@@ -2,7 +2,7 @@ import { h } from 'preact';
 
 import CellEvent from './CellEvent';
 
-import { PopulatedEvent, Calendar } from '../../common/Calendar';
+import { CalendarEvent } from '../../server/Database';
 
 export const Placeholder = Symbol('placeholder');
 
@@ -14,10 +14,10 @@ function isSameDate(a: Date, b: Date) {
 
 interface Props {
 	date: Date;
-	calendar: Calendar;
-	events: (PopulatedEvent | typeof Placeholder)[];
+	events: (CalendarEvent | typeof Placeholder)[];
+	maxEventsPerDay: number;
 
-	onClickEvent?: (event: PopulatedEvent) => void;
+	onClickEvent?: (event: CalendarEvent) => void;
 }
 
 export default function Cell(props: Props) {
@@ -25,7 +25,7 @@ export default function Cell(props: Props) {
 	const isCurrentDate = isSameDate(props.date, new Date());
 
 	const eventElements = [];
-	for (const event of props.events.slice(0, 3)) {
+	for (const event of props.events.slice(0, props.maxEventsPerDay)) {
 		if (!event || event === Placeholder) {
 			eventElements.push(<div class='placeholder'/>);
 			continue;
@@ -36,7 +36,6 @@ export default function Cell(props: Props) {
 				event={event}
 				key={event.uid}
 				date={props.date}
-				categories={props.calendar.categories}
 				onClick={() => props.onClickEvent?.(event)}
 			/>
 		);
@@ -46,7 +45,11 @@ export default function Cell(props: Props) {
 		<div class={`cell ${dark && 'dark'}`}>
 			<p class={`date ${isCurrentDate && 'current'}`}>{props.date.getDate()}</p>
 			{eventElements}
-			{props.events.length > 3 && <p class='more_indicator'>+{props.events.length - 3} more</p>}
+			{props.events.length > props.maxEventsPerDay && <p class='more_indicator'>
+				<span class='sign'>+</span>
+				<span class='amount'>{props.events.length - props.maxEventsPerDay}</span>
+				<span class='suffix'> more</span>
+			</p>}
 		</div>
 	);
 }

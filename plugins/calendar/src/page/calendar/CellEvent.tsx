@@ -1,16 +1,15 @@
 import { h } from 'preact';
 
-import { PopulatedEvent, Category } from '../../common/Calendar';
+import { CalendarEvent } from '../../server/Database';
 
 interface Props {
 	date: Date;
-	event: PopulatedEvent;
-	categories: Record<string, Category>;
+	event: CalendarEvent;
 
 	onClick: () => void;
 }
 
-function cellProps(event: PopulatedEvent, start: Date): { extendLeft: boolean, extendRight: boolean, length: number } {
+function cellProps(event: CalendarEvent, start: Date): { extendLeft: boolean, extendRight: boolean, length: number } {
 	const lengthRaw = Math.ceil((event.end - +start) / (1000 * 60 * 60 * 24));
 	const extendRight = (lengthRaw > 7 - start.getDay());
 	const extendLeft = event.start < +start;
@@ -41,7 +40,10 @@ export default function CellEvent(props: Props) {
 				bg-${props.active ? 'accent-300' : 'accent-400'} rounded-full mr-1`}/> */}
 
 			{time && <p class='time'>{time}</p>}
-			<p class='title'>{props.event.title || '(Untitled)'}</p>
+			<p class='title'>{(props.event.title || '(Untitled)').split(' ').map(text => [
+				<span key={text}>{text}</span>,
+				<span key={`${text}-space`}> </span>
+			]).flat()}</p>
 		</button>
 	);
 }

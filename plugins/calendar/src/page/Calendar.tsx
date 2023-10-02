@@ -1,12 +1,10 @@
 import { Fragment, h } from 'preact';
 import { hydrate, useHydrated } from 'hydrated';
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import Row from './calendar/Row';
 import VirtualScroll from '../common/VirtualScroll';
-
-import { PopulatedCalendar } from '../common/Calendar';
-import { view } from 'dashboard/types/dashboard/Icon';
+import { CalendarEvent } from '../server/Database';
 
 const identifier = 'calendar:calendar';
 
@@ -20,12 +18,18 @@ function getWeekDate(start: number, offset: number) {
 }
 
 interface Props {
-	calendar: string;
+	maxEventsPerDay?: number;
+	calendars: number[];
 }
 
-function RawCalendar(_props: Props) {
+const SCROLL_WEEK_INTERVAL = 3;
+const BUFFER_WEEKS = 6;
+
+function RawCalendar(props: Props) {
 	const hydrated = useHydrated();
-	const calendar: PopulatedCalendar = { events: {}, categories: {} };
+	const [ events, setEvents ] = useState<CalendarEvent[]>([]);
+	const lastQueriedDate = useRef<Date>(new Date());
+	const refreshAbortController = useRef<AbortController>(new AbortController());
 
 	const start = useMemo(() => {
 		const now = new Date();
@@ -34,6 +38,36 @@ function RawCalendar(_props: Props) {
 		return +date;
 	}, []);
 
+	async function refreshEvents(date: Date, calendars: number[]) {
+		console.log('events are refreshing');
+		if (calendars.length === 0) return;
+
+		const from = Math.floor(+date) - 1000 * 60 * 60 * 24 * 7 * BUFFER_WEEKS;
+		const to = Math.floor(+date) + 1000 * 60 * 60 * 24 * 7 * BUFFER_WEEKS * 2;
+
+		refreshAbortController.current.abort();
+		const controller = new AbortController();
+		refreshAbortController.current = controller;
+
+		const res = await fetch(`/api/calendar/events?from=${encodeURIComponent(from)}&to=${
+			encodeURIComponent(to)}&calendars=${encodeURIComponent(calendars.join(','))}`, {
+				signal: controller.signal,
+				method: 'GET',
+				cache: 'no-cache'
+		});
+
+		if (controller.signal.aborted) return;
+		const json = await res.json();
+
+		if (controller.signal.aborted) return;
+		setEvents(json.events);
+	}
+
+	useEffect(() => {
+		const date = new Date();
+		lastQueriedDate.current = date;
+		refreshEvents(date, props.calendars);
+	}, [ props.calendars ]);
 
 	const [ current, setCurrent ] = useState(start);
 	const [ viewOffset, setViewOffset ] = useState(0);
@@ -60,6 +94,16 @@ function RawCalendar(_props: Props) {
 		setViewOffset(v => v + diffWeeks);
 	}
 
+	const handleScroll = (i: number) => {
+		const date = getWeekDate(start, i);
+		setCurrent(+getWeekDate(start, i + 1));
+
+		const diff = Math.abs(+lastQueriedDate.current - +date);
+		if (diff >= 1000 * 60 * 60 * 24 * 7 * SCROLL_WEEK_INTERVAL) {
+			lastQueriedDate.current = date;
+			refreshEvents(date, props.calendars);
+		}
+	}
 
 	return (
 		<div class={identifier}>
@@ -87,7 +131,7 @@ function RawCalendar(_props: Props) {
 					snap
 					position={viewOffset}
 					minRow={0}
-					onScroll={(i) => setCurrent(+getWeekDate(start, i + 1))}
+					onScroll={handleScroll}
 					itemHeight={100}
 					>
 					{(i) => {
@@ -99,8 +143,9 @@ function RawCalendar(_props: Props) {
 
 						return <Row
 							start={getWeekDate(start, i)}
+							maxEventsPerDay={props.maxEventsPerDay ?? 4}
 							height={100}
-							calendar={calendar}
+							events={events}
 							onClickEvent={() => {/**/}}
 						/>
 					}}

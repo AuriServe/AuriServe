@@ -22,6 +22,15 @@ function getDate(date: number) {
 	return +dateObj;
 }
 
+function isFullDay(event: CalendarEvent) {
+	return event.type === 'event-day';
+}
+
+function displaysAsFullDay(event: CalendarEvent) {
+	return isFullDay(event) || (event.end - event.start) / 1000 / 60 / 60 > 36 || (getDate(event.start) !==
+		getDate(event.end) && new Date(event.end).getHours() >= 12);
+}
+
 export default function Row(props: Props) {
 	const start = useMemo(() => new Date(props.start), [ props.start ]);
 	const end = useMemo(() => new Date(start.getFullYear(),
@@ -29,16 +38,30 @@ export default function Row(props: Props) {
 
 	const eventMap = useMemo(() => {
 		const events = props.events
-			.filter(evt => evt.end >= +start && evt.start <= +end)
-			.sort((a, b) => getDate(a.start) - getDate(b.start) || (
-				getDate(b.end) - getDate(b.start)) - (getDate(a.end) - getDate(a.start)) ||
-				(a.title ?? '').localeCompare(b.title ?? ''));
+			.filter((evt) => {
+				if (displaysAsFullDay(evt)) return evt.end >= +start && evt.start <= +end;
+				return evt.start >= +start && evt.start <= +end;
+			})
+			.sort((a, b) => {
+				if (displaysAsFullDay(a) && displaysAsFullDay(b) && isFullDay(a) !== isFullDay(b))
+					return +isFullDay(a) - +isFullDay(b);
+				if (displaysAsFullDay(a) !== displaysAsFullDay(b))
+					return +displaysAsFullDay(b) - +displaysAsFullDay(a);
+				if (displaysAsFullDay(a) && displaysAsFullDay(b))
+					return getDate(a.start) - getDate(b.start) || (
+						getDate(b.end) - getDate(b.start)) - (getDate(a.end) - getDate(a.start)) ||
+						(a.title ?? '').localeCompare(b.title ?? '');
+				return a.start - b.start;
+			});
 
 		const eventMap: (CalendarEvent | typeof Placeholder)[][] = [ [], [], [], [], [], [], [] ];
 
 		for (const event of events) {
 			const startDay = event.start < +start ? 0 : new Date(event.start).getDay();
 			const endDay = event.end > +end ? 6 : new Date(event.end).getDay();
+
+			if (event.title === 'CSC 226 - ECS 125') console.log(new Date(event.start).toLocaleString());
+			// if (!displaysAsFullDay(event)) endDay = startDay + 1;
 
 			let row = 0;
 			let found = null;
