@@ -14,17 +14,21 @@
 		"postcss": true
 	},
 	"devDependencies": {
+		"@types/color": "^3.0.4",
 		"@types/dashboard": "file:../dashboard",
 		"@types/elements": "file:../elements",
 		"@types/hydrated": "file:../hydrated",
 		"@types/media": "file:../media",
 		"@types/page-editor": "file:../page-editor",
+		"@types/pages": "file:../pages",
 		"@types/routes": "file:../routes",
 		"preact": "^10.10.2",
 		"webpack-gen": "file:../../webpack-gen"
 	},
 	"dependencies": {
 		"auriserve": "file:../../api/build",
-		"common": "file:../../common/build"
+		"color": "^4.2.3",
+		"common": "file:../../common/build",
+		"fast-average-color": "^9.4.0"
 	}
 }

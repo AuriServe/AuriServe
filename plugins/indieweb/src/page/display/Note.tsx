@@ -17,12 +17,13 @@ export type Props = ServerProps | ClientProps;
 
 const identifier = 'indieweb:note';
 
-function getClientProps(id: number): ClientProps {
+function getClientProps(_id: number): ClientProps {
 	return {} as ClientProps;
 }
 
 export function RawNote(rawProps: Props) {
 	const props = ('content' in rawProps) ? rawProps : getClientProps(rawProps.id);
+
 
 	return (
 		<div

@@ -31,7 +31,11 @@ export default class PageRoute implements Route {
 
 	async req(req: Req): Promise<string | null> {
 		const page = getDocument(this.page);
-		if (page && isPageDocument(page)) return await buildPage(page, { path: req.path, query: req.query });
+		if (page && isPageDocument(page)) return await buildPage(page, {
+			path: req.path,
+			query: req.query,
+			params: req.params
+		});
 		return null;
 	}
 }

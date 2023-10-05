@@ -92,7 +92,8 @@ export default function generate(conf: Config = {}, toFile = false) {
 		module: {
 			rules: [
 				{
-					test: runtimeRegex(conf.tsx ? /\.[t|j]sx?$/ : /\.[t|j]s$/),
+					test: '/(\\.%ENTRY)?\\.[t|j]sx?$/',
+					resourceQuery: '/%ENTRY/',
 					loader: 'babel-loader',
 					options: {
 						babelrc: false,
@@ -125,6 +126,15 @@ export default function generate(conf: Config = {}, toFile = false) {
 						] : []
 					}
 				},
+				{
+					test: '/\\.(?!%ENTRY)\\w+\\.[t|j]sx?$/',
+					loader: 'null-loader'
+				},
+				// {
+				// 	test: runtimeRegex(/.[t|j]sx?/i),
+				// 	resourceQuery: '/%NOT_ENTRY/',
+				// 	loader: 'null-loader'
+				// },
 				{
 					test: runtimeRegex(/\.svg$/i),
 					type: 'asset/source',
@@ -232,6 +242,36 @@ export default function generate(conf: Config = {}, toFile = false) {
 		delete conf.export.client;
 	}
 
+	if (conf.export.client_sync) {
+		configs.push(merge(baseConfig, {
+			name: 'client_sync',
+			target: 'web',
+
+			output: {
+				filename: 'client_sync.js',
+				library: `__ASP_${manifest.identifier.replace(/-/g, '_').toUpperCase()}`,
+				libraryTarget: 'window',
+				publicPath: `/res/${manifest.identifier}/`
+			},
+
+			resolve: {
+				alias: {
+					'@res': resolve(callingDir, 'res/client')
+				}
+			},
+
+			externals: {
+				...(conf.tsx && !conf.noPreactAlias?.includes('client_sync') ? {
+					'preact': '__ASP_AURISERVE_PREACT',
+					'preact/hooks': '__ASP_AURISERVE_PREACT',
+					'preact/compat': '__ASP_AURISERVE_PREACT',
+				} : {}),
+				...Object.fromEntries(dependencies.map(dep => [ dep, `__ASP_${dep.replace(/-/g, '_').toUpperCase()}` ]))
+			}
+		}, conf.export.client_sync));
+		delete conf.export.client_sync;
+	}
+
 	if (conf.export.dashboard) {
 		configs.push(merge(baseConfig, {
 			name: 'dashboard',
@@ -274,6 +314,33 @@ export default function generate(conf: Config = {}, toFile = false) {
 			}
 		}, conf);
 	}));
+
+	configs.forEach(config => {
+		config.module = { ...config.module };
+		config.module.rules = [ ...config.module.rules ];
+		config.module.rules.forEach((rule: { resourceQuery: string | RegExp, test: string | RegExp, exclude: string | RegExp }, i: number) => {
+			rule = { ...rule };
+			config.module.rules[i] = rule;
+			if (typeof rule.resourceQuery === 'string') {
+				rule.resourceQuery = runtimeRegex(new RegExp(rule.resourceQuery.substring(1, rule.resourceQuery.length - 1)
+					.replace('%ENTRY', `(entry=(\\w+,)*${config.name}(,\\w+)*)?`)
+					.replace('%NOT_ENTRY', `entry=((?!${config.name})\\w+,)*((?!${config.name})\\w+)*$`)
+				));
+			}
+
+			if (typeof rule.test === 'string') {
+				rule.test = runtimeRegex(new RegExp(rule.test.substring(1, rule.test.length - 1)
+					.replace('%ENTRY', config.name)
+				));
+			}
+
+			if (typeof rule.exclude === 'string') {
+				rule.exclude = runtimeRegex(new RegExp(rule.exclude.substring(1, rule.exclude.length - 1)
+					.replace('%ENTRY', config.name)
+				));
+			}
+		})
+	})
 
 	if (toFile) {
 		return `module.exports = ${

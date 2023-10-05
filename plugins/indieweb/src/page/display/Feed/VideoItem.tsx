@@ -12,11 +12,11 @@ import { getOptimizedImage } from 'media';
 
 export default function ArtItem({ post }: Props) {
 	return (
-		<PostItem class={`art ${post.data.shape ?? 'portrait'} crop-${post.data.crop ?? 'center'}`}
-			style={`--image: url(/media/${getOptimizedImage(post.data.media, 480)?.path})`}>
+		<PostItem class={`video`}
+			style={`--image: url(/media/${getOptimizedImage(post.data.thumbnail, 480)?.path})`}>
 			<div class='inner'>
 				<img class='image_preload' data-palettize={2}
-					src={getOptimizedImage(post.data.media, 'image_inline')!.path}/>
+					src={getOptimizedImage(post.data.thumbnail, 'image_inline')!.path}/>
 				<div class='image'/>
 				<div class='content'>
 					<div class='title element-prose'><h3>{post.data.title}</h3></div>
@@ -27,6 +27,9 @@ export default function ArtItem({ post }: Props) {
 						))}
 					</div>
 				</div>
+				<button class='play'>
+					<span>Play</span>
+				</button>
 			</div>
 		</PostItem>
 	);

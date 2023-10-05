@@ -114,12 +114,12 @@ function RawImage(props: ServerProps | ClientProps) {
 	const aspectRatio = props.aspect || (width / height);
 
 	if (!('path' in props)) {
-		const variants = media.getMediaImageVariants(props.media);
-		const lgVariant = variants.find(variant => variant.type === 'lg')!;
-		if (!lgVariant) auriserve.log.error('No variant found for media image', props.media);
-		path = (lgVariant?.path ?? '').replace(/.+[\\/]media\/variants\//, '').replace(/\.\w+\.webp/, '');
-		width = lgVariant?.width ?? 0;
-		height = lgVariant?.height ?? 0;
+		// const variants = media.getMediaImageVariants(props.media);
+		// const lgVariant = variants.find(variant => variant.type === 'lg')!;
+		// if (!lgVariant) auriserve.log.error('No variant found for media image', props.media);
+		// path = (lgVariant?.path ?? '').replace(/.+[\\/]media\/variants\//, '').replace(/\.\w+\.webp/, '');
+		// width = lgVariant?.width ?? 0;
+		// height = lgVariant?.height ?? 0;
 	}
 
 	const [ lightbox, setLightbox ] = useState(false);
@@ -201,9 +201,9 @@ function RawImage(props: ServerProps | ClientProps) {
 				<Static>
 					<div
 						aria-hidden
-						style={`aspect-ratio: ${aspectRatio}; ${props.imgStyle ?? ''};
-							background-image: url(${('media' in props ?
-							media.getMediaImageVariants(props.media).find(variant => variant.type === 'load')?.path ?? '' : '')});`}
+						// style={`aspect-ratio: ${aspectRatio}; ${props.imgStyle ?? ''};
+						// 	background-image: url(${('media' in props ?
+						// 	media.getMediaImageVariants(props.media).find(variant => variant.type === 'load')?.path ?? '' : '')});`}
 						class='preview'
 					/>
 				</Static>
@@ -246,19 +246,21 @@ function RawImage(props: ServerProps | ClientProps) {
  */
 
 const Image = hydrate(identifier, RawImage, (props: ServerProps | ClientProps) => {
-	assert('media' in props, 'Hydration function is running on the client?');
+	// assert('media' in props, 'Hydration function is running on the client?');
 
-	const newProps = props as Record<string, any>;
-	const variants = media.getMediaImageVariants(props.media);
-	const lgVariant = variants.find(variant => variant.type === 'lg')!;
-	if (!lgVariant) auriserve.log.error('No variant found for media image', props.media);
-	delete newProps.media;
+	// const newProps = props as Record<string, any>;
+	// const variants = media.getMediaImageVariants(props.media);
+	// const lgVariant = variants.find(variant => variant.type === 'lg')!;
+	// if (!lgVariant) auriserve.log.error('No variant found for media image', props.media);
+	// delete newProps.media;
 
-	newProps.path = (lgVariant?.path ?? '').replace(/.+[\\/]media\/variants\//, '').replace(/\.\w+\.webp/, '');
-	newProps.width = lgVariant?.width ?? 0;
-	newProps.height = lgVariant?.height ?? 0;
+	// newProps.path = (lgVariant?.path ?? '').replace(/.+[\\/]media\/variants\//, '').replace(/\.\w+\.webp/, '');
+	// newProps.width = lgVariant?.width ?? 0;
+	// newProps.height = lgVariant?.height ?? 0;
 
-	return newProps as any;
+	// return newProps as any;
+
+	return props as any;
 });
 
 export default { identifier, component: Image as FunctionalComponent };

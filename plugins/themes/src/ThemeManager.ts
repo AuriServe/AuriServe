@@ -74,9 +74,10 @@ export default class ThemeManager {
 			await Promise.all([...this.themes.values()].map((theme) => theme.buildHead()))
 		).join('\n');
 
-		style = new CleanCSS({
-			level: { 1: { specialComments: 'none' }, 2: { all: true, removeUnusedAtRules: false } },
-		}).minify(style).styles;
+		// style = new CleanCSS({
+		// 	level: { 1: { specialComments: 'none', removeWhitespace: false }, 2: { all: true, removeUnusedAtRules: false } },
+		// }).minify(style).styles;
+		// TODO: when cleancss supports :nth-child(of) re-enable this.
 
 		await Promise.all([
 			fs.writeFile(path.join(this.buildDir, 'style.css'), style),

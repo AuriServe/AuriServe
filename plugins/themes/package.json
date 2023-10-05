@@ -13,7 +13,6 @@
 	"devDependencies": {
 		"@types/clean-css": "^4.2.6",
 		"@types/elements": "file:../elements",
-
 		"@types/media": "file:../media",
 		"@types/pages": "file:../pages",
 		"webpack-gen": "file:../../webpack-gen"

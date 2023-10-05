@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
-    "minimist": "^1.2.6"
+    "minimist": "^1.2.6",
+    "null-loader": "^4.0.1"
   }
 }

@@ -11,6 +11,7 @@ depends:
   hydrated: ^0.0.1
   auriserve-preact: ^1
   page-editor: ^0.0.1
+  pages: ^0.0.1
   dashboard: ^0.0.1
   media: ^0.0.1
 
@@ -18,3 +19,4 @@ entry:
   server: build/server.js
   client: build/client.js
   dashboard: build/dashboard.js
+  client_sync: build/client_sync.js

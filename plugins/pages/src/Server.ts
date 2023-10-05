@@ -1,4 +1,4 @@
-import { DirectoryRoute, root } from 'routes';
+import { root } from 'routes';
 import { promises as fs } from 'fs';
 import path, { resolve } from 'path';
 import { log, dataPath, plugins, router, Watcher, config } from 'auriserve';
@@ -57,45 +57,49 @@ async function loadAndWatchPages(pagesPath: string) {
 	await Promise.all(pages.map((page) => loadPage(pagesPath, page)));
 
 	for (const page of pages.filter(page => !page.startsWith('includes'))) {
-		const pathSegments = page.replace(/.json$/, '').split('/');
-		const lastSegment = pathSegments.pop()!;
-
-		let parent = root;
-		for (let i = 0; i < pathSegments.length; i++) {
-			let child = await parent.get(pathSegments[i]);
-			if (!child) {
-				child = new DirectoryRoute(`${parent.getPath()}/${pathSegments[i]}`);
-				parent.add(pathSegments[i], child);
-			}
-			parent = child;
+		const routeStr = JSON.parse(await fs.readFile(path.join(pagesPath, page), 'utf8')).metadata?.route;
+		if (routeStr) {
+			log.debug('Adding page route \'%s\'.', routeStr);
+			root.add(routeStr, new PageRoute(routeStr, page));
 		}
-
-		parent.add(lastSegment, new PageRoute(`${parent.getPath()}/${lastSegment}`, page));
 	}
 }
 
 const pagesDir = path.join(dataPath, 'pages');
 loadAndWatchPages(pagesDir);
 
-const buildPath = path.join(dataPath, 'plugins/client.js');
+const asyncClientBuildPath = path.join(dataPath, 'plugins/client.js');
+const syncClientBuildPath = path.join(dataPath, 'plugins/client_sync.js');
+
+const PLUGIN_TIMEOUT = 200;
 
 // TODO: An event should exist for all plugins loaded.
 setTimeout(async () => {
-	const paths = [ ...plugins.values()].filter(plugin => plugin.entry.client)
+	const asyncPaths = [ ...plugins.values()].filter(plugin => plugin.entry.client)
 		.map(plugin => `${plugin.identifier}/${plugin.entry.client}`);
 
-	log.info(`Client Plugins: ${paths.map(path => `'${path.split('/')[0]}'`).join(', ')}`);
+	log.info(`Client Plugins: ${asyncPaths.map(path => `'${path.split('/')[0]}'`).join(', ')}`);
 
-	await fs.writeFile(buildPath,
-		(await Promise.all(paths.map(pluginPath => fs.readFile(path.join(__dirname, '../../', pluginPath), 'utf8'))))
+	await fs.writeFile(asyncClientBuildPath,
+		(await Promise.all(asyncPaths.map(pluginPath => fs.readFile(path.join(__dirname, '../../', pluginPath), 'utf8'))))
 			.join('\n'));
-}, 500);
+
+	const syncPaths = [ ...plugins.values()].filter(plugin => plugin.entry.client_sync)
+	.map(plugin => `${plugin.identifier}/${plugin.entry.client_sync}`);
+
+	log.info(`Client Plugins (sync): ${syncPaths.map(path => `'${path.split('/')[0]}'`).join(', ')}`);
+
+	await fs.writeFile(syncClientBuildPath,
+		(await Promise.all(syncPaths.map(pluginPath => fs.readFile(path.join(__dirname, '../../', pluginPath), 'utf8'))))
+			.join('\n'));
+}, PLUGIN_TIMEOUT);
 
 router.get('/client.js', async (_, res) => {
-	res.send(await fs.readFile(buildPath, 'utf8'));
+	res.send(await fs.readFile(asyncClientBuildPath, 'utf8'));
 });
 
 addInjector('head', () => `<script defer src='/client.js'></script>`);
+addInjector('body_end', async () => `<script>${await fs.readFile(syncClientBuildPath, 'utf8')}</script>`);
 
 if (config.debug) startDebugSocket();
 

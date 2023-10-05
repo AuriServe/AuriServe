@@ -1,4 +1,3 @@
-import path from 'path';
 import { database } from 'auriserve';
 
 const POSTS_TBL = 'indieweb_posts';
@@ -56,11 +55,11 @@ export function init() {
 	 * Clean-up databases, for testing.
 	 */
 
-	database.prepare(`DROP TABLE IF EXISTS ${POSTS_TBL}`).run();
-	database.prepare(`DROP TABLE IF EXISTS ${ENGAGEMENTS_TBL}`).run();
-	database.prepare(`DROP TABLE IF EXISTS ${TAGS_TBL}`).run();
-	database.prepare(`DROP TABLE IF EXISTS ${MEDIA_TBL}`).run();
-	database.prepare(`DROP TABLE IF EXISTS ${COMMENTS_TBL}`).run();
+	// database.prepare(`DROP TABLE IF EXISTS ${POSTS_TBL}`).run();
+	// database.prepare(`DROP TABLE IF EXISTS ${ENGAGEMENTS_TBL}`).run();
+	// database.prepare(`DROP TABLE IF EXISTS ${TAGS_TBL}`).run();
+	// database.prepare(`DROP TABLE IF EXISTS ${MEDIA_TBL}`).run();
+	// database.prepare(`DROP TABLE IF EXISTS ${COMMENTS_TBL}`).run();
 
 
 	/**
@@ -134,6 +133,12 @@ export const QUERY_GET_POST_FROM_DATE_RANGE = database.prepare(`
 		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
 	FROM ${POSTS_TBL} AS posts WHERE created >= ? AND created <= ? ORDER BY posts.created
 `);
+export const QUERY_GET_POSTS_OF_TYPE = database.prepare(`
+	SELECT posts.*,
+		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
+		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
+	FROM ${POSTS_TBL} AS posts WHERE type = ? ORDER BY posts.created LIMIT ?
+`)
 
 export function addPost(post: Omit<Post, 'id' | 'tags' | 'media'> & { tags?: string[], media?: number[] }) {
 	const id = QUERY_INSERT_POST.run(post.type, post.created, post.modified, JSON.stringify(post.data))
@@ -164,51 +169,7 @@ export function getPostsInDateRange(start: number, end: number): Post[] {
 		.map((post) => populatePost(post));
 }
 
-// export function getPostsInDateRange(start: number, end: number): Post[] {
-// 	// const posts = database.prepare(
-// 	// 	`SELECT * FROM ${POSTS_TBL} WHERE created >= ? AND created <= ? ORDER BY created DESC`
-// 	// ).all(start, end) as Post[];
-// 	// return posts.map(p => ({
-// 	// 	...p,
-// 	// 	data: JSON.parse(p.data)
-// 	// }));
-// }
-
-
-// /** Gets a media item from an id or path. */
-
-// export function getMedia(idOrPath: number | string): Media | null {
-// 	if (typeof idOrPath === 'string') {
-// 		const { mid } = QUERY_GET_VARIANT_FROM_PATH.get(idOrPath) ?? {};
-// 		if (!mid) return null;
-// 		idOrPath = mid;
-// 	}
-
-// 	return QUERY_GET_MEDIA_FROM_ID.get(idOrPath);
-// }
-
-// /**
-//  * Adds a new media item to the database. If `media.id` is specified, the media item with that id will be replaced.
-//  * Also adds a canonical variant based on the specified information. Deletes all other variants if replacing.
-//  * Returns the media item's id.
-//  */
-
-// export function addMedia(
-// 	media: Omit<Media, 'canonical' | 'id'> & { id?: number },
-// 	variant: Omit<MediaVariant, 'id' | 'mid' | 'type' | 'prop'>,
-// 	imageStat?: Omit<MediaImageStat, 'id' | 'vid'>) {
-
-// 	let media_id: number;
-// 	if ('id' in media) media_id = QUERY_INSERT_OR_REPLACE_MEDIA.run(
-// 		media.name, media.description, media.type, media.id).lastInsertRowid as number;
-// 	else media_id = QUERY_INSERT_MEDIA.run(
-// 		media.name, media.description, media.type).lastInsertRowid as number;
-
-// 	QUERY_DELETE_MEDIA_VARIANTS_FROM_ID.run(media_id);
-
-// 	const variant_id = addMediaVariant({ ...variant, mid: media_id, type: 'original', prop: 0 }, imageStat);
-
-// 	QUERY_SET_MEDIA_CANONICAL_VARIANT.run(variant_id, media_id);
-
-// 	return media_id;
-// }
+export function getPostsOfType(type: string, limit: number) {
+	return (QUERY_GET_POSTS_OF_TYPE.all(type, limit) as (DatabasePost & { tags: string, media: string })[])
+		.map((post) => populatePost(post));
+}

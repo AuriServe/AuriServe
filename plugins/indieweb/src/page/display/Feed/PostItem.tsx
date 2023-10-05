@@ -1,26 +1,17 @@
-import { h } from 'preact';
-
-import { Post } from '../../../server/Database';
+import { ComponentChildren, h } from 'preact';
 
 interface Props {
-	post: Post;
+	style?: any;
+	class?: string;
+	children: ComponentChildren;
 }
 
-export default function PostItem({ post }: Props) {
+const identifier = 'indieweb:post-item';
+
+export default function PostItem(props: Props) {
 	return (
-		<div class='item post' style={`--image: url(${post.data.tmp_image})`}>
-			<div class='inner'>
-				<div class='image'/>
-				<div class='content'>
-					<div class='title element-prose'><h3>{post.data.title}</h3></div>
-					<div class='text element-prose' dangerouslySetInnerHTML={{ __html: post.data.content }}/>
-					<div class='tags'>
-						{post.tags.map((tag, i) => (
-							<div key={i} class='tag'>{tag}</div>
-						))}
-					</div>
-				</div>
-			</div>
+		<div class={`${identifier} ${props.class ?? ''}`} style={props.style}>
+			{props.children}
 		</div>
 	);
 }

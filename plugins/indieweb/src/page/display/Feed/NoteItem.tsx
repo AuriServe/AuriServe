@@ -1,5 +1,7 @@
 import { h } from 'preact';
 
+import PostItem from './PostItem';
+
 import { Post } from '../../../server/Database';
 
 interface Props {
@@ -8,7 +10,7 @@ interface Props {
 
 export default function NoteItem({ post }: Props) {
 	return (
-		<div class={`item note ${post.data.tmp_image ? 'has_image' : ''}`}
+		<PostItem class={`note ${post.data.tmp_image ? 'has_image' : ''}`}
 			style={`--image: url(${post.data.tmp_image})`}>
 			<div class='inner'>
 				{post.data.tmp_image && <div class='image'/>}
@@ -29,6 +31,6 @@ export default function NoteItem({ post }: Props) {
 					</button>
 				</div>
 			</div>
-		</div>
+		</PostItem>
 	);
 }
