@@ -24,6 +24,7 @@
 		"@types/hydrated": "file:../hydrated",
 		"@types/media": "file:../media",
 		"@types/page-editor": "file:../page-editor",
+		"@types/pages": "file:../pages",
 		"@types/routes": "file:../routes",
 		"file-loader": "^6.2.0",
 		"preact": "^10.13.2",

@@ -21,6 +21,7 @@
 		"@types/media": "file:../media",
 		"@types/page-editor": "file:../page-editor",
 		"@types/pages": "file:../pages",
+		"@types/elements-base": "file:../elements-base",
 		"@types/routes": "file:../routes",
 		"preact": "^10.10.2",
 		"webpack-gen": "file:../../webpack-gen"

@@ -1,19 +1,21 @@
 import { h } from 'preact';
+import { getOptimizedImage } from 'media';
 
 import PostItem from './PostItem';
+import { FeedRenderCtx } from './Feed';
 
 import { Post } from '../../../server/Database';
 
 interface Props {
 	post: Post;
+	ctx?: FeedRenderCtx;
 }
 
-import { getOptimizedImage } from 'media';
 
-export default function ArtItem({ post }: Props) {
+export default function ArtItem({ post, ctx }: Props) {
 	return (
-		<PostItem class={`art ${post.data.shape ?? 'portrait'} crop-${post.data.crop ?? 'center'}`}
-			style={`--image: url(/media/${getOptimizedImage(post.data.media, 480)?.path})`}>
+		<PostItem class={`art ${post.data.shape ?? 'portrait'} crop-${post.data.crop ?? 'center'}`} i={ctx?.i}
+			style={{ '--image': `url(/media/${getOptimizedImage(post.data.media, 480)?.path})` }}>
 			<div class='inner'>
 				<img class='image_preload' data-palettize={2}
 					src={getOptimizedImage(post.data.media, 'image_inline')!.path}/>

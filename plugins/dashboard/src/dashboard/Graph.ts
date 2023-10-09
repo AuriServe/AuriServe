@@ -66,7 +66,7 @@ export interface GraphData {
  * - and a function that can be called to refresh the cache.
  */
 
-type UseDataResult = [ Partial<GraphData>, () => void ];
+type UseDataResult<T extends Record<string, any> = Record<string, any>> = [ Partial<GraphData & T>, () => void ];
 
 /**
  * A hook that provides access to the cached App data, and can refresh subsets of data if supplied with queries.
@@ -83,7 +83,8 @@ type UseDataResult = [ Partial<GraphData>, () => void ];
  * @returns an array containing the hook's result.
  */
 
-export function useData(queries: string | string[], dependents?: any[]): UseDataResult {
+export function useData<T extends Record<string, any> = Record<string, any>>(
+	queries: string | string[], dependents?: any[]): UseDataResult<T> {
 	const query = `{${typeof queries === 'string' ? queries : queries.join('\n')}}`;
 
 	const { data, mergeData } = useContext<AppContextData>(AppContext);

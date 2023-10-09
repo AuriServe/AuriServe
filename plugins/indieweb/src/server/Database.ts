@@ -9,6 +9,7 @@ const COMMENTS_TBL = 'indieweb_post_comments';
 /** A database post. */
 export interface DatabasePost {
 	id: number;
+	slug: string;
 	type: string;
 	created: number;
 	modified: number;
@@ -71,6 +72,7 @@ export function init() {
 	database.prepare(
 		`CREATE TABLE IF NOT EXISTS ${POSTS_TBL} (
 			id INTEGER PRIMARY KEY,
+			slug TEXT UNIQUE NOT NULL,
 			type TEXT NOT NULL,
 			created INTEGER NOT NULL,
 			modified INTEGER NOT NULL,
@@ -127,7 +129,13 @@ export const QUERY_GET_POST_FROM_ID = database.prepare(`
 		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
 	FROM ${POSTS_TBL} AS posts WHERE id = ?
 `);
-export const QUERY_GET_POST_FROM_DATE_RANGE = database.prepare(`
+export const QUERY_GET_POST_FROM_SLUG = database.prepare(`
+	SELECT posts.*,
+		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
+		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
+	FROM ${POSTS_TBL} AS posts WHERE slug = ?
+`);
+export const QUERY_GET_POSTS_FROM_DATE_RANGE = database.prepare(`
 	SELECT posts.*,
 		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
 		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
@@ -139,6 +147,14 @@ export const QUERY_GET_POSTS_OF_TYPE = database.prepare(`
 		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
 	FROM ${POSTS_TBL} AS posts WHERE type = ? ORDER BY posts.created LIMIT ?
 `)
+export const QUERY_GET_POSTS = database.prepare(`
+	SELECT posts.*,
+		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
+		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
+	FROM ${POSTS_TBL} AS posts ORDER BY posts.created LIMIT ?
+`)
+
+type UnionedDBPost = (DatabasePost & { tags: string, media: string });
 
 export function addPost(post: Omit<Post, 'id' | 'tags' | 'media'> & { tags?: string[], media?: number[] }) {
 	const id = QUERY_INSERT_POST.run(post.type, post.created, post.modified, JSON.stringify(post.data))
@@ -148,9 +164,9 @@ export function addPost(post: Omit<Post, 'id' | 'tags' | 'media'> & { tags?: str
 	return id;
 }
 
-function populatePost(post: (DatabasePost & { tags: string, media: string })): Post;
+function populatePost(post: UnionedDBPost): Post;
 function populatePost(post: null): null;
-function populatePost(post: (DatabasePost & { tags: string, media: string }) | null): Post | null {
+function populatePost(post: UnionedDBPost | null): Post | null {
 	if (!post) return null;
 	return {
 		...post,
@@ -160,16 +176,19 @@ function populatePost(post: (DatabasePost & { tags: string, media: string }) | n
 	};
 }
 
-export function getPost(id: number): Post | null {
-	return populatePost(QUERY_GET_POST_FROM_ID.get(id));
+export function getPost(idOrSlug: number | string): Post | null {
+	if (typeof idOrSlug === 'string') return populatePost(QUERY_GET_POST_FROM_SLUG.get(idOrSlug));
+	return populatePost(QUERY_GET_POST_FROM_ID.get(idOrSlug));
 }
 
 export function getPostsInDateRange(start: number, end: number): Post[] {
-	return (QUERY_GET_POST_FROM_DATE_RANGE.all(start, end) as (DatabasePost & { tags: string, media: string })[])
+	return (QUERY_GET_POSTS_FROM_DATE_RANGE.all(start, end) as UnionedDBPost[])
 		.map((post) => populatePost(post));
 }
 
-export function getPostsOfType(type: string, limit: number) {
-	return (QUERY_GET_POSTS_OF_TYPE.all(type, limit) as (DatabasePost & { tags: string, media: string })[])
+export function getPosts(limit?: number, type?: string) {
+	if (!type) return (QUERY_GET_POSTS.all(limit ?? 1000000) as UnionedDBPost[])
+		.map((post) => populatePost(post));
+	return (QUERY_GET_POSTS_OF_TYPE.all(type, limit ?? 1000000) as UnionedDBPost[])
 		.map((post) => populatePost(post));
 }

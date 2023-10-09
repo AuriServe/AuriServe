@@ -30,6 +30,7 @@ export function createReq(req: Request): Req {
 
 /** Handles a GET request and sends the render result of a Route if there is one at the specified path. */
 export async function handleGet(req: Request, res: Response, next: NextFunction): Promise<void> {
+	if (req.path.startsWith('/dashboard')) return next();
 	if (!root) return next();
 	const routeRes = await root.req(createReq(req));
 	if (routeRes == null) return next();

@@ -2157,16 +2157,31 @@ toCompute.forEach(img => {
   Object.entries(weights).forEach(([weight, lightness]) => elem.style.setProperty(`--palette-${weight}`, color__WEBPACK_IMPORTED_MODULE_0___default()(color).lightness(lightness).saturationl(100).rgb().string().substring(4).replace(/\)$/, '')));
 });
 const scrollTopElems = document.querySelectorAll('[data-scrolltop]');
+const windowScrollTopElems = Array.from(scrollTopElems).filter(e => isNaN(Number.parseInt(e.getAttribute('data-scrolltop'), 10)));
+const hasSynchronousScrollTop = windowScrollTopElems.findIndex(e => e.getAttribute('data-scrolltop') === 'sync') !== -1;
 
-if (scrollTopElems.length) {
+if (windowScrollTopElems.length) {
   scrollTopElems.forEach(elem => elem.style.setProperty('--scroll-top', window.scrollY.toString()));
   window.addEventListener('scroll', () => {
     scrollTopElems.forEach(elem => elem.style.setProperty('--scroll-top', window.scrollY.toString()));
   }, {
-    passive: true
+    passive: !hasSynchronousScrollTop
   });
 }
 
+const customScrollTopElems = Array.from(scrollTopElems).filter(e => !isNaN(Number.parseInt(e.getAttribute('data-scrolltop'), 10)));
+customScrollTopElems.forEach(elem => {
+  let parent = elem;
+
+  for (let i = 0; i < Number.parseInt(elem.getAttribute('data-scrolltop'), 10); i++) parent = parent.parentElement;
+
+  parent.style.setProperty('--scroll-top', elem.scrollTop.toString());
+  elem.addEventListener('scroll', () => {
+    parent.style.setProperty('--scroll-top', elem.scrollTop.toString());
+  }, {
+    passive: true
+  });
+});
 const expandElems = document.querySelectorAll(':is(strong.jitter, em.bounce)');
 expandElems.forEach(elem => {
   const text = elem;

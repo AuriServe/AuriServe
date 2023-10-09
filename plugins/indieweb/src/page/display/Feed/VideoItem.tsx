@@ -1,19 +1,20 @@
 import { h } from 'preact';
+import { getOptimizedImage } from 'media';
 
 import PostItem from './PostItem';
+import { FeedRenderCtx } from './Feed';
 
 import { Post } from '../../../server/Database';
 
 interface Props {
 	post: Post;
+	ctx?: FeedRenderCtx;
 }
 
-import { getOptimizedImage } from 'media';
-
-export default function ArtItem({ post }: Props) {
+export default function ArtItem({ post, ctx }: Props) {
 	return (
-		<PostItem class={`video`}
-			style={`--image: url(/media/${getOptimizedImage(post.data.thumbnail, 480)?.path})`}>
+		<PostItem class={`video`} i={ctx?.i}
+			style={{ '--image': `url(/media/${getOptimizedImage(post.data.thumbnail, 480)?.path})` }}>
 			<div class='inner'>
 				<img class='image_preload' data-palettize={2}
 					src={getOptimizedImage(post.data.thumbnail, 'image_inline')!.path}/>

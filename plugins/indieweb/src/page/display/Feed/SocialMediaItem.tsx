@@ -1,6 +1,7 @@
 import { h } from 'preact';
 
 import PostItem from './PostItem';
+import { FeedRenderCtx } from './Feed';
 
 type SocialMediaType = 'discord' |
 	'github' |
@@ -14,6 +15,7 @@ type SocialMediaType = 'discord' |
 
 interface Props {
 	type: SocialMediaType;
+	ctx?: FeedRenderCtx;
 }
 
 const INFO: Record<SocialMediaType, {
@@ -98,12 +100,12 @@ const INFO: Record<SocialMediaType, {
 	}
 }
 
-export default function SocialMediaItem({ type }: Props) {
+export default function SocialMediaItem({ type, ctx }: Props) {
 	const info = INFO[type];
 
 	return (
-		<PostItem class={`social`}
-			style={`--image: url(/media/${info.icon}); --color: ${info.color}; --accent: ${info.accent}`}>
+		<PostItem class={`social`} i={ctx?.i}
+			style={{ '--image': `url(/media/${info.icon})`, '--color': info.color, '--accent': info.accent }}>
 			<a class='inner' target='_blank' rel='noreferrer' href={info.url}>
 				<div class='image'/>
 				<div class='content'>

@@ -498,6 +498,7 @@ export default function NumberInput(props: Props) {
 
 	return (
 		<InputContainer
+			disabled={disabled}
 			hideLabel={props.hideLabel}
 			label={label}
 			labelId={id}

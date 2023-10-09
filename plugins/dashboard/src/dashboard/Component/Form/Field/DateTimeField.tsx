@@ -144,6 +144,7 @@ export default function DateTimeField(props: Props) {
 
 	return (
 		<InputContainer
+			disabled={disabled}
 			hideLabel={props.hideLabel}
 			placeholderLabel={props.placeholderLabel}
 			active={focused}

@@ -1,10 +1,12 @@
 import { h } from 'preact';
 import { merge } from 'common';
 import type { ComponentChildren } from 'preact';
+import { getOptimizedImage } from 'media';
+import { usePageContext } from 'pages';
 
 interface Props {
 	url?: string;
-	image?: string;
+	media?: number;
 	label?: string;
 
 	target?: 'new';
@@ -17,18 +19,25 @@ interface Props {
 const identifier = 'base:button';
 
 function Button(props: Props) {
+	const ctx = usePageContext();
+	let active = false;
+	if (props.url) {
+		const requestPath = ((ctx?.path ?? '!!').replace(/^\//, '').replace(/#.*/, '').replace(/\/$/, ''));
+		active = (props.url ?? '!!').replace(/^\//, '').replace(/#.*/, '').replace(/\/$/, '') === requestPath;
+	}
+
 	return (
 		<a
 			rel='noreferrer noopener'
 			href={props.url}
-			title={props.image && props.label}
-			aria-label={props.image && props.label}
+			title={props.media != null ? props.label : undefined}
+			aria-label={props.media != null ? props.label : undefined}
 			target={props.target === 'new' ? '_blank' : undefined}
-			class={merge(identifier, props.class, props.image && 'image')}>
-			{!props.image && <span>{props.label}</span>}
-			{props.image && (
+			class={merge(identifier, props.class, props.media != null && 'image', active && 'active')}>
+			{props.media == null && <span>{props.label}</span>}
+			{props.media != null && (
 				<img
-					src={props.image}
+					src={`/media/${getOptimizedImage(props.media, 'svg_min')?.path}`}
 					width={props.width}
 					height={props.width}
 					alt=''

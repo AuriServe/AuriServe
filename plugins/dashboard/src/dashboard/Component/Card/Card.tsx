@@ -25,7 +25,7 @@ export interface Props {
  */
 
 const cardTmp = forwardRef<HTMLElement, Props>(function Card(props, ref) {
-	const Tag = props.as ?? 'section';
+	const Tag = (props.as ?? 'section') as ComponentType<any>;
 
 	const passedProps = { ...props };
 	delete passedProps.as;

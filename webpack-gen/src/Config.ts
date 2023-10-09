@@ -11,6 +11,8 @@ export default interface Config {
 
 	noPreactAlias?: string[];
 
+	sourceEntryFilter?: boolean;
+
 	base?: Record<string, any>;
 	export?: Record<string, boolean | string | Record<string, any>> | string[];
 }

@@ -6,8 +6,10 @@ import {
 	colorFromTheme,
 	css,
 	tx,
-	defineConfig,
+	setup,
 } from '@twind/core';
+import typography from '@twind/typography';
+import { lineClamp } from '@twind/line-clamp';
 
 import presetTailwind from '@twind/preset-tailwind';
 
@@ -163,8 +165,12 @@ function twindColor(color: string) {
 		`rgba(var(--${color}) / ${opacityValue ?? 1})`;
 }
 
-const config = defineConfig({
-	presets: [presetTailwind()],
+const config = (setup as any)({
+	presets: [ presetTailwind() as any ],
+	plugins: {
+		'line-clamp': lineClamp,
+		...typography({})
+	},
 	darkMode: 'class',
 	hash: (val: string) => {
 		if (val.startsWith('dash-')) return val;
@@ -312,7 +318,7 @@ const config = defineConfig({
 					}
 				}
 			},
-		},
+		} as any,
 		colors: {
 			white: ({ opacityValue }: { opacityValue?: number }) =>
 				`rgba(255 255 255 / ${opacityValue ?? 1})`,

@@ -103,6 +103,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 
 	return (
 		<InputContainer
+			disabled={disabled}
 			hideLabel={props.hideLabel}
 			placeholderLabel={props.placeholderLabel}
 			label={label}

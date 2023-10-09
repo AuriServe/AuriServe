@@ -92,8 +92,8 @@ export default function generate(conf: Config = {}, toFile = false) {
 		module: {
 			rules: [
 				{
-					test: '/(\\.%ENTRY)?\\.[t|j]sx?$/',
-					resourceQuery: '/%ENTRY/',
+					test: conf.sourceEntryFilter ? '/(\\.%ENTRY)?\\.[t|j]sx?$/' : runtimeRegex(/\.[t|j]sx?$/),
+					resourceQuery: conf.sourceEntryFilter ? '/%ENTRY/' : undefined,
 					loader: 'babel-loader',
 					options: {
 						babelrc: false,
@@ -126,10 +126,10 @@ export default function generate(conf: Config = {}, toFile = false) {
 						] : []
 					}
 				},
-				{
+				(conf.sourceEntryFilter ? {
 					test: '/\\.(?!%ENTRY)\\w+\\.[t|j]sx?$/',
 					loader: 'null-loader'
-				},
+				} : undefined),
 				// {
 				// 	test: runtimeRegex(/.[t|j]sx?/i),
 				// 	resourceQuery: '/%NOT_ENTRY/',
@@ -147,7 +147,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 					resourceQuery: runtimeRegex(/resource/),
 					type: 'asset/resource',
 				}
-			]
+			].filter(Boolean)
 		},
 
 		optimization: {
