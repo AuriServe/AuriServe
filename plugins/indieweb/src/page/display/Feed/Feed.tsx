@@ -1,5 +1,5 @@
 import { Fragment, FunctionalComponent, h } from 'preact';
-import type { Post } from '../../../server/Database';
+import { Post } from '../../../common/Type';
 
 
 import BlogItem from './BlogItem';
@@ -76,7 +76,8 @@ export function Feed(props: Props) {
 							if (!Renderer) return <UnknownItem key={i} post={item} ctx={{ i, feedLayout: props.layout }}/>;
 							return <Renderer key={i} post={item} ctx={{ i, feedLayout: props.layout }}/>;
 						})}
-						{props.layout === 'cards' && range(month.posts.length % 3).map(i =>
+						{props.layout === 'cards' &&
+							range(month.posts.length % 3 === 1 ? 2 : month.posts.length % 3 === 2 ? 1 : 0).map(i =>
 							<div class='filler' key={i} style={{ '--i': month.posts.length + i + 1 }}/>)}
 					</div>
 				</div>
@@ -142,7 +143,6 @@ export function Feed(props: Props) {
 
 						c.querySelector('script').remove();
 					}, 1);
-
 				`}}/>
 			</Fragment>}
 		</div>

@@ -1,17 +1,8 @@
-import {
-	twind,
-	escape,
-	// dom as om,
-	cssom as om,
-	colorFromTheme,
-	css,
-	tx,
-	setup,
-} from '@twind/core';
-import typography from '@twind/typography';
-import { lineClamp } from '@twind/line-clamp';
+import * as Twind from '@twind/core';
+import lineClamp from '@twind/preset-line-clamp';
+import typography from '@twind/preset-typography';
 
-import presetTailwind from '@twind/preset-tailwind';
+import presetTailwind, { TailwindTheme } from '@twind/preset-tailwind';
 
 /** The weigths for theme colors. */
 const COLOR_WEIGHTS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
@@ -165,89 +156,40 @@ function twindColor(color: string) {
 		`rgba(var(--${color}) / ${opacityValue ?? 1})`;
 }
 
-const config = (setup as any)({
-	presets: [ presetTailwind() as any ],
-	plugins: {
-		'line-clamp': lineClamp,
-		...typography({})
-	},
+const config = Twind.defineConfig<Twind.TwindUserConfig<TailwindTheme, Twind.Preset<any>[]>>({
+	presets: [ presetTailwind({}), lineClamp(), typography() ] as any,
 	darkMode: 'class',
 	hash: (val: string) => {
 		if (val.startsWith('dash-')) return val;
 		return `dash-${val}`;
 	},
 	rules: [
-		[
-			'icon-p-',
-			colorFromTheme({
-				section: 'colors',
-				property: '--icon-primary' as any,
-			}),
-		],
-		[
-			'icon-s-',
-			colorFromTheme({
-				section: 'colors',
-				property: '--icon-secondary' as any,
-			}),
-		],
-		[
-			'scroll-gutter-',
-			colorFromTheme({
-				section: 'colors',
-				property: '--scroll-gutter' as any,
-			}),
-		],
-		[
-			'scroll-bar-',
-			colorFromTheme({
-				section: 'colors',
-				property: '--scroll-bar' as any,
-			}),
-		],
-		[
-			'scroll-bar-hover-',
-			colorFromTheme({
-				section: 'colors',
-				property: '--scroll-bar-hover' as any,
-			}),
-		],
+		Twind.matchColor('icon-p-', { section: 'colors', property: '--icon-primary' as any }),
+		Twind.matchColor('icon-s-', {	section: 'colors',property: '--icon-secondary' as any }),
+		Twind.matchColor('scroll-gutter-', { section: 'colors', property: '--scroll-gutter' as any }),
+		Twind.matchColor('scroll-bar-', { section: 'colors', property: '--scroll-bar' as any }),
+		Twind.matchColor('scroll-bar-hover-', { section: 'colors', property: '--scroll-bar-hover' as any }),
 		['interact-none', { userSelect: 'none', pointerEvents: 'none' }],
 		['interact-auto', { userSelect: 'auto', pointerEvents: 'auto' }],
+		...Object.keys(themeColors).map((name) => [ `theme-${name}`, Object.fromEntries(COLOR_WEIGHTS.map((weight) => [ `--theme-accent-${weight}`, `var(--color-${name}-${weight})` ]))]) as Twind.Rule<Twind.BaseTheme&TailwindTheme>[],
+		['decoration-skip', { textDecorationSkipInk: 'auto' }],
+		['no-decoration-skip', { textDecorationSkipInk: 'none'}]
 	],
 	variants: [
-		['focus-input', '&:focus'],
-		['focus', '&:focus-visible,&.focus-visible'],
+		[ 'focus-input', '&:focus' ],
+		[ 'focus', '&:focus-visible,&.focus-visible' ],
 
-		['disabled', '&[disabled]'],
-		['hocus', '&:hover,&:focus-visible,&.focus-visible'],
-		[
-			'((group|peer)(~.+)?)-hocus',
-			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
-				['hover', 'focus-visible']
-					.map((state) => `:merge(.${e(h($1))}):${state}${$1[0] === 'p' ? '~' : ' '}&`)
-					.join(',')) as any,
-		],
-		[
-			'((group|peer)(~.+)?)-focus-input',
-			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
-				`:merge(.${e(h($1))}):focus${$1[0] === 'p' ? '~' : ' '}&`) as any,
-		],
-		[
-			'((group|peer)(~.+)?)-focus',
-			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
-				`:merge(.${e(h($1))}):focus-visible${$1[0] === 'p' ? '~' : ' '}&`) as any,
-		],
-		// ['peer-focus', (_: any, { h }: any) => `.${escape(h('peer'))}:focus-visible ~ &`],
-		[
-			'peer-placeholder-shown',
-			(_: any, { h }: any) => `.${escape(h('peer'))}:placeholder-shown ~ &`,
-		],
-		[
-			'input-inactive',
-			(_: any, { h }: any) =>
-				`.${escape(h('peer'))}:is(:placeholder-shown:not(:focus)) ~ &`,
-		],
+		[ 'disabled', '&[disabled]' ],
+		[ 'hocus', '&:hover,&:focus-visible,&.focus-visible' ],
+		[ '((group|peer)(~.+)?)-hocus',
+			(({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) => ['hover', 'focus-visible']
+				.map((state) => `:merge(.${e(h($1))}):${state}${$1[0] === 'p' ? '~' : ' '}&`).join(',')) as any ],
+		[ '((group|peer)(~.+)?)-focus-input', (({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
+				`:merge(.${e(h($1))}):focus${$1[0] === 'p' ? '~' : ' '}&`) as any ],
+		[ '((group|peer)(~.+)?)-focus', (({ 1: $1 }: { 1: string }, { e, h }: { e: any; h: any }) =>
+				`:merge(.${e(h($1))}):focus-visible${$1[0] === 'p' ? '~' : ' '}&`) as any ],
+		[ 'peer-placeholder-shown', (_: any, { h }: any) => `.${Twind.escape(h('peer'))}:placeholder-shown ~ &` ],
+		[ 'input-inactive', (_: any, { h }: any) => `.${Twind.escape(h('peer'))}:is(:placeholder-shown:not(:focus)) ~ &` ],
 	],
 	theme: {
 		extend: {
@@ -318,7 +260,7 @@ const config = (setup as any)({
 					}
 				}
 			},
-		} as any,
+		},
 		colors: {
 			white: ({ opacityValue }: { opacityValue?: number }) =>
 				`rgba(255 255 255 / ${opacityValue ?? 1})`,
@@ -326,22 +268,19 @@ const config = (setup as any)({
 				`rgba(0 0 0 / ${opacityValue ?? 1})`,
 			transparent: 'transparent',
 			gray: Object.fromEntries(
-				COLOR_WEIGHTS_GRAY.map((weight) => [weight, twindColor(`theme-gray-${weight}`)])
-			),
+				COLOR_WEIGHTS_GRAY.map((weight) => [weight, twindColor(`theme-gray-${weight}`)])),
 			accent: Object.fromEntries(
-				COLOR_WEIGHTS.map((weight) => [weight, twindColor(`theme-accent-${weight}`)])
-			),
+				COLOR_WEIGHTS.map((weight) => [weight, twindColor(`theme-accent-${weight}`)])),
 			red: Object.fromEntries(
-				COLOR_WEIGHTS.map((weight) => [weight, twindColor(`color-red-${weight}`)])
-			),
+				COLOR_WEIGHTS.map((weight) => [weight, twindColor(`color-red-${weight}`)])),
 		} as any,
 	},
 });
 
-const tw$ = twind(config, om());
-export const tw = tx.bind(tw$);
+const tw$ = Twind.twind(config, Twind.cssom());
+export const tw = Twind.tx.bind(tw$);
 
-tw(css`
+tw(Twind.css`
 	@font-face {
 		font-weight: 100 900;
 		font-family: 'Roboto';
@@ -413,16 +352,6 @@ tw(css`
 		--dash-tw-content: ' ';
 		content: var(--dash-tw-content);
 	}
-
-	${Object.keys(themeColors)
-		.map(
-			(name) => `.theme-${name} {
-				${COLOR_WEIGHTS.map(
-					(weight) => `--theme-accent-${weight}: var(--color-${name}-${weight});`
-				).join('\n')}
-			}`
-		)
-		.join('\n')}
 
 	svg, svg > * { @apply transition-all duration-75; }
 

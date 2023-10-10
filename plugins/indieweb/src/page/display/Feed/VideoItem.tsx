@@ -4,16 +4,17 @@ import { getOptimizedImage } from 'media';
 import PostItem from './PostItem';
 import { FeedRenderCtx } from './Feed';
 
-import { Post } from '../../../server/Database';
+import { Post } from '../../../common/Type';
 
 interface Props {
 	post: Post;
+	layout?: 'left' | 'right';
 	ctx?: FeedRenderCtx;
 }
 
-export default function ArtItem({ post, ctx }: Props) {
+export default function ArtItem({ post, layout, ctx }: Props) {
 	return (
-		<PostItem class={`video`} i={ctx?.i}
+		<PostItem class={`video ${layout ?? 'left'}`} i={ctx?.i}
 			style={{ '--image': `url(/media/${getOptimizedImage(post.data.thumbnail, 480)?.path})` }}>
 			<div class='inner'>
 				<img class='image_preload' data-palettize={2}

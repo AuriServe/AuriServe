@@ -86,7 +86,10 @@ export default function generate(conf: Config = {}, toFile = false) {
 		},
 
 		plugins: [
-			runtimeImport('eslint-webpack-plugin', 'new $({})')
+			runtimeImport('eslint-webpack-plugin', 'new $({})'),
+			// ...(conf.postcss ? [
+			// 	runtimeImport('mini-css-extract-plugin', `new $({ filename: 'style.css' })`)
+			// ] : []),
 		],
 
 		module: {
@@ -126,15 +129,38 @@ export default function generate(conf: Config = {}, toFile = false) {
 						] : []
 					}
 				},
-				(conf.sourceEntryFilter ? {
+				...(conf.sourceEntryFilter ? [{
 					test: '/\\.(?!%ENTRY)\\w+\\.[t|j]sx?$/',
 					loader: 'null-loader'
-				} : undefined),
+				}] : []),
 				// {
 				// 	test: runtimeRegex(/.[t|j]sx?/i),
 				// 	resourceQuery: '/%NOT_ENTRY/',
 				// 	loader: 'null-loader'
 				// },
+				{
+					test: runtimeRegex(/\.css$/i),
+					use: [
+						'style-loader',
+						'css-loader'
+					]
+				},
+				...(conf.postcss ? [{
+					test: runtimeRegex(/\.pcss$/),
+					sideEffects: true,
+					use: [
+						'style-loader',
+						'css-loader',
+						{
+							loader: 'postcss-loader',
+							options: {
+								postcssOptions: typeof conf.postcss === 'boolean' ? {
+									plugins: [ 'postcss-nested', 'postcss-minify' ]
+								} : conf.postcss
+							}
+						}
+					],
+				}] : []),
 				{
 					test: runtimeRegex(/\.svg$/i),
 					type: 'asset/source',
@@ -147,7 +173,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 					resourceQuery: runtimeRegex(/resource/),
 					type: 'asset/resource',
 				}
-			].filter(Boolean)
+			]
 		},
 
 		optimization: {

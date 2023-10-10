@@ -4,7 +4,7 @@ import { getOptimizedImage } from 'media';
 import PostItem from './PostItem';
 import { FeedRenderCtx } from './Feed';
 
-import { Post } from '../../../server/Database';
+import { Post } from '../../../common/Type';
 
 interface Props {
 	post: Post;
@@ -37,6 +37,9 @@ export default function BlogItem({ post, ctx, layout = 'landscape' }: Props) {
 		<PostItem class={`blog ${layout}`} i={ctx?.i} style={{
 			'--image': post.data.banner
 				? `url(/media/${getOptimizedImage(post.data.banner, 480)!.path})`
+				: undefined,
+			'--background-align': post.data.bannerAlign
+				? `${post.data.bannerAlign[0]}% ${post.data.bannerAlign[1]}%`
 				: undefined
 		}}>
 			<a class='inner' href={`/blog/${post.slug}`}>

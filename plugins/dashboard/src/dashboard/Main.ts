@@ -59,6 +59,7 @@ export { Page } from './Component/Page';
 export { default as Svg } from './Component/Svg';
 export { default as Modal } from './Component/Modal';
 export { default as Title } from './Component/Title';
+export { default as Table } from './Component/Table';
 export { default as Portal } from './Component/Portal';
 export { default as Tooltip } from './Component/Tooltip';
 export { default as Spinner } from './Component/Spinner';
@@ -85,7 +86,7 @@ export {
 
 export { default as Menu } from './Component/Menu/Menu';
 
-export { tw, merge } from './Twind';
+export { tw, merge, css } from './Twind';
 export { refs, elementBounds } from './Util';
 
 export * as Icon from './Icon';
@@ -111,7 +112,7 @@ try {
 				const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
 				socket.addEventListener('open', () => window.location.reload());
 				socket.addEventListener('error', () => {
-					if (++attempts < 20) setTimeout(awaitServerAndReload, 100);
+					if (++attempts < 20) setTimeout(awaitServerAndReload, 200);
 				});
 			})();
 		});

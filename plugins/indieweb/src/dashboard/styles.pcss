@@ -1,0 +1,42 @@
+.PROSEMIRROR_VIEW strong.jitter, .PROSEMIRROR_VIEW em.bounce {
+	white-space: nowrap;
+}
+
+.PROSEMIRROR_VIEW s {
+	text-decoration: none;
+	display: inline-block;
+}
+
+.PROSEMIRROR_VIEW s.space {
+	display: inline;
+}
+
+@keyframes bounce {
+	0% { transform: translateY(calc(-1px * var(--magnitude))); }
+	50% { transform: translateY(calc(1px * var(--magnitude))); }
+	100% { transform: translateY(calc(-1px * var(--magnitude))); }
+}
+
+.PROSEMIRROR_VIEW em.bounce s {
+	--magnitude: 0.5;
+	animation: bounce 1s ease-in-out calc(-100s + var(--i, 0) * 0.1s) infinite;
+}
+
+@keyframes jitter {
+	0% { transform: translate(calc(var(--magnitude) * -1px), calc(var(--magnitude) * -0.5px)); }
+	10% { transform: translate(calc(var(--magnitude) * 0.5px), calc(var(--magnitude) * 1px)); }
+	20% { transform: translate(calc(var(--magnitude) * -1px), calc(var(--magnitude) * 0.5px)); }
+	30% { transform: translate(calc(var(--magnitude) * -0.5px), calc(var(--magnitude) * -1px)); }
+	40% { transform: translate(calc(var(--magnitude) * -0.5px), calc(var(--magnitude) * 1px)); }
+	50% { transform: translate(calc(var(--magnitude) * -0.5px), calc(var(--magnitude) * -1px)); }
+	60% { transform: translate(calc(var(--magnitude) * -1px), calc(var(--magnitude) * -0.5px)); }
+	70% { transform: translate(calc(var(--magnitude) * 0.5px), calc(var(--magnitude) * -1px)); }
+	80% { transform: translate(calc(var(--magnitude) * 0.5px), calc(var(--magnitude) * 1px)); }
+	90% { transform: translate(calc(var(--magnitude) * 0.5px), calc(var(--magnitude) * -1px)); }
+	100% { transform: translate(calc(var(--magnitude) * -1px), calc(var(--magnitude) * -0.5px)); }
+}
+
+.PROSEMIRROR_VIEW strong.jitter s {
+	--magnitude: 0.4;
+	animation: jitter 0.15s linear calc(-100s + var(--i, 0) * 0.1s) infinite;
+}

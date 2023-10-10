@@ -29,7 +29,8 @@ export function PostView() {
 						? `/media/${getOptimizedImage(post.data.banner, 1920)?.path}`
 						: getOptimizedImage(post.data.banner, 'image_inline')?.path});`
 					: '',
-				'--background-opacity': showBanner ? 0.55 : 0.4
+				'--background-opacity': showBanner ? 0.55 : 0.4,
+				'--background-align': post.data.bannerAlign ? `${post.data.bannerAlign[0]}% ${post.data.bannerAlign[1]}%` : undefined
 			}}>
 			<script dangerouslySetInnerHTML={{ __html: `
 				let a = document.currentScript.parentElement;

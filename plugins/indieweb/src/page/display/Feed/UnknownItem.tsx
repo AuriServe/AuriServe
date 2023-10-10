@@ -3,7 +3,7 @@ import { h } from 'preact';
 import PostItem from './PostItem';
 import { FeedRenderCtx } from './Feed';
 
-import { Post } from '../../../server/Database';
+import { Post } from '../../../common/Type';
 
 interface Props {
 	post: Post;

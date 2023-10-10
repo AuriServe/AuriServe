@@ -1,4 +1,5 @@
 import { database } from 'auriserve';
+import { Visibility, Post } from '../common/Type';
 
 const POSTS_TBL = 'indieweb_posts';
 const ENGAGEMENTS_TBL = 'indieweb_engagements';
@@ -13,42 +14,8 @@ export interface DatabasePost {
 	type: string;
 	created: number;
 	modified: number;
+	visibility: Visibility;
 	data: string;
-}
-
-export type Post = Omit<DatabasePost, 'data'> & {
-	data: Record<string, any>;
-	media: number[];
-	tags: string[];
-}
-
-/** A used media item in a post. */
-export interface Media {
-	id: number;
-	post: number;
-	media: number;
-}
-
-/** Tags for a post. */
-export interface Tag {
-	id: number;
-	post: number;
-	tag: string;
-}
-
-/** An engagement (like, share, comment, etc) on a post. */
-export interface Engagement {
-	id: number;
-	post: number;
-	type: 'like' | 'share' | 'comment';
-	date: number;
-}
-
-/** A comment on a post. */
-export interface Comment {
-	id: number;
-	engagement: number;
-	content: string;
 }
 
 export function init() {
@@ -76,6 +43,7 @@ export function init() {
 			type TEXT NOT NULL,
 			created INTEGER NOT NULL,
 			modified INTEGER NOT NULL,
+			visibility INTEGER NOT NULL DEFAULT ${Visibility.Public},
 			data TEXT NOT NULL
 		) STRICT`
 	).run();
@@ -139,19 +107,19 @@ export const QUERY_GET_POSTS_FROM_DATE_RANGE = database.prepare(`
 	SELECT posts.*,
 		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
 		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
-	FROM ${POSTS_TBL} AS posts WHERE created >= ? AND created <= ? ORDER BY posts.created
+	FROM ${POSTS_TBL} AS posts WHERE created >= ? AND created <= ? ORDER BY posts.created DESC
 `);
 export const QUERY_GET_POSTS_OF_TYPE = database.prepare(`
 	SELECT posts.*,
 		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
 		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
-	FROM ${POSTS_TBL} AS posts WHERE type = ? ORDER BY posts.created LIMIT ?
+	FROM ${POSTS_TBL} AS posts WHERE type = ? ORDER BY posts.created DESC LIMIT ?
 `)
 export const QUERY_GET_POSTS = database.prepare(`
 	SELECT posts.*,
 		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
 		(SELECT GROUP_CONCAT(media,'|') AS media FROM ${MEDIA_TBL} WHERE post = posts.id) AS media
-	FROM ${POSTS_TBL} AS posts ORDER BY posts.created LIMIT ?
+	FROM ${POSTS_TBL} AS posts ORDER BY posts.created DESC LIMIT ?
 `)
 
 type UnionedDBPost = (DatabasePost & { tags: string, media: string });

@@ -6,38 +6,41 @@ import * as Database from './Database';
 
 import * as Elements from '../page';
 
-import '../Style.pcss';
-const styles = path.join(__dirname, 'style.css');
-addStylesheet(styles);
+// import './Style.pcss';
+// const styles = path.join(__dirname, 'style.css');
+// addStylesheet(styles);
 
 Object.values(Elements).forEach((elem) => addElement(elem));
 auriserve.once('cleanup', () => {
 	Object.values(Elements).forEach((elem) => removeElement(elem.identifier));
-	removeStylesheet(styles);
+	// removeStylesheet(styles);
 });
 
 extendGQLSchema(`
-	type IndiewebPost {
+	type IndieWebPost {
 		id: Int!
 		slug: String!
 		type: String!
 		created: Int!
 		modified: Int!
+		visibility: Int!
 		data: String!
 		media: [Int!]!
 		tags: [String!]!
 	}
 
-	type IndiewebQueryAPI {
-		posts: [IndiewebPost!]!
+	type IndieWebQueryAPI {
+		posts: [IndieWebPost!]!
+		postBySlug(slug: String!): IndieWebPost
+		postById(id: Int!): IndieWebPost
 	}
 
-	type IndiewebMutationAPI {
+	type IndieWebMutationAPI {
 		_nothing: Boolean
 	}
 
-	extend type Query { indieweb: IndiewebQueryAPI! }
-	extend type Mutation { indieweb: IndiewebMutationAPI! }
+	extend type Query { indieweb: IndieWebQueryAPI! }
+	extend type Mutation { indieweb: IndieWebMutationAPI! }
 
 `);
 
@@ -48,5 +51,15 @@ gqlResolver.indieweb = {
 			...post,
 			data: JSON.stringify(post.data),
 		}));
+	},
+	postBySlug: (ctx: any) => {
+		const post = Database.getPost(ctx.slug);
+		if (!post) return null;
+		return { ...post, data: JSON.stringify(post.data) };
+	},
+	postById: (ctx: any) => {
+		const post = Database.getPost(ctx.id);
+		if (!post) return null;
+		return { ...post, data: JSON.stringify(post.data) };
 	}
 }
