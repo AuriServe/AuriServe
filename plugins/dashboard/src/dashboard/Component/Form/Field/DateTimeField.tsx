@@ -44,14 +44,15 @@ export default function DateTimeField(props: Props) {
 	}, []);
 
 	const {
-		ctx,
 		value,
+		setValue,
 		id,
 		path,
 		label,
 		required,
 		disabled,
 		readonly,
+		onRef
 		// onFocus: stateOnFocus,
 		// onBlur: stateOnBlur,
 	} = useDerivedState<Date | number | null>(props, null, true);
@@ -119,10 +120,8 @@ export default function DateTimeField(props: Props) {
 		let formattedVal: Date | number | null = newValue;
 		if (typeof value.current === 'number' && formattedVal != null) formattedVal = +formattedVal;
 
+		setValue(formattedVal);
 		validate(newValue);
-		value.current = formattedVal;
-		props.onChange?.(formattedVal);
-		ctx.event.emit('change', path, formattedVal);
 		rerender();
 	};
 
@@ -153,7 +152,7 @@ export default function DateTimeField(props: Props) {
 			invalid={invalid}
 			class={props.class}
 			style={props.style}
-			ref={refs(ref, props.fieldRef, (elem) => ctx.setFieldRef(path, elem))}
+			ref={refs(ref, props.fieldRef, onRef)}
 		>
 			<button
 				type='button'

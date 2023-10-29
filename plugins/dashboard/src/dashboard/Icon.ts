@@ -56,6 +56,7 @@ export { default as redo } from '@res/icon/redo.svg';
 export { default as remove } from '@res/icon/remove.svg';
 export { default as role } from '@res/icon/role.svg';
 export { default as save } from '@res/icon/save.svg';
+export { default as search } from '@res/icon/search.svg';
 export { default as shortcut } from '@res/icon/shortcut.svg';
 export { default as sort } from '@res/icon/sort.svg';
 export { default as star } from '@res/icon/star.svg';

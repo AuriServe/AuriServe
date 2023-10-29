@@ -10,10 +10,13 @@ import useDerivedState from '../useDerivedState';
 import { refs } from '../../../Util';
 import useAutoFill from '../useAutoFill';
 import { tw, merge } from '../../../Twind';
+import { useClasses } from '../../../Hooks';
+import { useRerender } from 'vibin-hooks';
 
 type Props = FieldProps<string | null> & {
 	hideLabel?: boolean;
 	placeholderLabel?: boolean;
+	placeholder?: string;
 
 	multiline?: boolean;
 	minRows?: number;
@@ -30,6 +33,8 @@ type Props = FieldProps<string | null> & {
 function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 	const ref = useRef<HTMLElement>(null);
 	const preRef = useRef<HTMLPreElement>(null);
+	const classes = useClasses(props.class);
+	const rerender = useRerender();
 
 	useEffect(() => {
 		// Autofocus on first render if the autofocus prop is set.
@@ -39,8 +44,8 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 	}, []);
 
 	const {
-		ctx,
 		value,
+		setValue,
 		id,
 		path,
 		label,
@@ -83,15 +88,15 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 
 	useLayoutEffect(() => void validate(value.current), [validate, value]);
 
-	const [autofillRef, autofillClasses] = useAutoFill(invalid);
+	const [ autofillRef, autofillClasses ] = useAutoFill(invalid);
 
 	const handleChange = ({ target }: any) => {
 		const newValue: string | null = required ? target.value : target.value || null;
-		if (preRef.current) preRef.current.innerText = `${newValue ?? ''}\n`;
-		value.current = newValue;
+		if (preRef.current) preRef.current.innerText = newValue ? `${newValue ?? ''}\n` : props.placeholder ?? '';
+		const needsRerender = !!value.current !== !!newValue;
+		setValue(newValue);
 		validate(newValue);
-		props.onChange?.(newValue);
-		ctx.event.emit('change', path, newValue);
+		if (needsRerender) rerender();
 	};
 
 	const handleBlur = (evt: Event) => {
@@ -100,6 +105,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 	};
 
 	const Tag = props.multiline ? 'textarea' : 'input';
+	const placeholderVisible = !!(!value.current && props.placeholder);
 
 	return (
 		<InputContainer
@@ -109,19 +115,9 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 			label={label}
 			labelId={id}
 			invalid={invalid}
-			class={props.class}
+			class={classes}
+			populated={!!value.current || placeholderVisible}
 			style={props.style}>
-			{Tag === 'textarea' && <pre aria-hidden={true} ref={preRef}
-				class={merge(tw`relative font-sans !opacity-0 interact-none text-accent-500
-					w-full overflow-auto px-1.5 whitespace-pre-line break-words
-					${(props.hideLabel || props.placeholderLabel) ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}`,
-					autofillClasses)}
-				style={{
-					minHeight: props.minRows && `${props.minRows * 1.5 + 1}rem`,
-					maxHeight: props.maxRows && `${props.maxRows * 1.5 + 1}rem`,
-				}}>
-				{`${value.current}\n`}
-			</pre>}
 			<Tag
 				ref={refs(autofillRef, ref, props.fieldRef, onRef)}
 				id={id}
@@ -129,7 +125,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 				name={path}
 				disabled={disabled}
 				readonly={readonly}
-				placeholder=' '
+				placeholder={Tag === 'input' ? props.placeholder : ' '}
 				autocomplete={props.completion ?? 'off'}
 				aria-description={props.description}
 				class={merge(
@@ -137,7 +133,11 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 						${(props.hideLabel || props.placeholderLabel) ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}
 						${(props.hideLabel || props.placeholderLabel) && invalid && '!text-red-300'}
 						${props.multiline && `absolute top-0 left-0 w-full h-full resize-none !transition-none
-							scroll-bar-gray-500 scroll-bar-hover-gray-400 scroll-gutter-gray-input focus:scroll-gutter-gray-700`}`,
+							scroll-bar-(gray-500 hover-gray-400) --scroll-gutter[var(--input-background,rgb(var(--theme-gray-input)))]
+							focus:--scroll-gutter[var(--input-background-focus,rgb(var(--theme-gray-700)))]
+							not-focus:(!text-transparent !-webkit-text-fill-color[transparent])`}`,
+					classes.get('input'),
+					classes.get('text'),
 					autofillClasses
 				)}
 				value={value.current ?? ''}
@@ -145,6 +145,27 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 				onFocus={onFocus}
 				onBlur={handleBlur}
 			/>
+			{Tag === 'textarea' && <pre
+				ref={preRef}
+				aria-hidden={true}
+				class={merge(
+					tw`PreBaseClasses~(relative font-sans interact-none text-accent-500
+						w-full overflow-auto px-1.5 whitespace-pre-line break-words z-10)
+						${!placeholderVisible && 'peer-focus:opacity-0 opacity-100'}
+						${(props.hideLabel || props.placeholderLabel) ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}`,
+					autofillClasses,
+					classes.get('text'),
+					classes.get('pre'),
+					tw`PreReset~(!bg-transparent !transition-none !box-shadow[none]
+						!border-transparent !-webkit-text-fill-color[unset]`,
+					placeholderVisible && merge(tw`PlaceholderReset~(!text-gray-400)`, classes.get('placeholder')),
+				)}
+				style={{
+					minHeight: props.minRows && `${props.minRows * 1.5 + 1}rem`,
+					maxHeight: props.maxRows && `${props.maxRows * 1.5 + 1}rem`,
+				}}>
+				{`${value.current || props.placeholder}\n`}
+			</pre>}
 		</InputContainer>
 	);
 }

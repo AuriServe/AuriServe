@@ -32,54 +32,6 @@ export function NoteView() {
 			picture: 'https://avatars.githubusercontent.com/u/18364747',
 			content: '<p>This is a comment.</p>',
 			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364',
-			content: '<p>I have a Calculus exam coming up tomorrow. Oooh boy, my anxiety is spiking. I have a Calculus exam coming up tomorrow. Oooh boy, my anxiety is spiking. Oooh boy, my anxiety is spiking. I have a Calculus exam coming up tomorrow.</p>',
-			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364711',
-			content: '<p>This is a comment.</p>',
-			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364747',
-			content: '<p>This is a comment.</p>',
-			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364',
-			content: '<p>I have a Calculus exam coming up tomorrow. Oooh boy, my anxiety is spiking. I have a Calculus exam coming up tomorrow. Oooh boy, my anxiety is spiking.</p>',
-			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364747',
-			content: '<p>This is a comment.</p>',
-			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364',
-			content: '<p>I have a Calculus exam coming up tomorrow. Oooh boy, my anxiety is spiking. I have a Calculus exam coming up tomorrow. Oooh boy, my anxiety is spiking. Oooh boy, my anxiety is spiking. I have a Calculus exam coming up tomorrow.</p>',
-			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364711',
-			content: '<p>This is a comment.</p>',
-			posted: '2 days ago'
-		},
-		{
-			user: 'Auri',
-			picture: 'https://avatars.githubusercontent.com/u/18364747',
-			content: '<p>This is a comment.</p>',
-			posted: '2 days ago'
 		}
 	]
 
@@ -94,7 +46,6 @@ export function NoteView() {
 				<div class='inner'>
 					<div class='scroll'>
 						{allPosts.map((note, i) => <NoteItem post={note} ctx={{ i, feedLayout: 'list' }} key={note.slug}/>)}
-						{allPosts.map((note, i) => <NoteItem post={note} ctx={{ i: i+12, feedLayout: 'list' }} key={note.slug}/>)}
 					</div>
 					{/* <nav class='contents'>
 						<p class='label'>Table of Contents</p>

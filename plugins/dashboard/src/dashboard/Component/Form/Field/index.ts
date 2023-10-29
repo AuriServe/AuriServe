@@ -1,11 +1,12 @@
 import { Ref } from 'preact';
 
 import NumberField from './NumberField';
-import { TextField, PasswordField } from './TextField';
 import ToggleField from './ToggleField';
 import OptionField from './OptionField';
+import { Classes } from '../../../Hooks';
 import DateTimeField from './DateTimeField';
 import type { ValidityError } from '../useValidity';
+import { TextField, PasswordField } from './TextField';
 
 export { default as NumberField } from './NumberField';
 export { TextField, PasswordField } from './TextField';
@@ -26,7 +27,7 @@ export const Field = {
 export type FieldProps<InputType, OutputType = InputType> = {
 	id?: string;
 	style?: any;
-	class?: string;
+	class?: Classes;
 	fieldRef?: Ref<HTMLElement>;
 
 	label?: string;

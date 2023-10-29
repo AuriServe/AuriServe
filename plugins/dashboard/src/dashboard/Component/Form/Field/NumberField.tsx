@@ -87,6 +87,7 @@ export default function NumberInput(props: Props) {
 	const {
 		ctx,
 		value,
+		setValue,
 		id,
 		path,
 		label,
@@ -294,11 +295,9 @@ export default function NumberInput(props: Props) {
 		const floatValue: number | null = textValue.current.length
 			? Number.parseFloat(textValue.current) * signValue.current
 			: null;
-		value.current = floatValue;
 
+		setValue(floatValue);
 		validate(floatValue);
-		props.onChange?.(floatValue);
-		ctx.event.emit('change', path, floatValue);
 	};
 
 	/** Prevent invalid inputs and attempt to contain the value to the specified lengths. */
@@ -460,8 +459,6 @@ export default function NumberInput(props: Props) {
 
 			// Update the value.
 			evt.target.value = valueStr;
-			console.warn('KEYING');
-			value.current = newValue;
 			signValue.current = sign(newValue) || 1;
 			handleChange(evt);
 		}

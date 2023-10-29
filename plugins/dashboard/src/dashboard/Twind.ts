@@ -1,6 +1,7 @@
 import * as Twind from '@twind/core';
 import lineClamp from '@twind/preset-line-clamp';
 import typography from '@twind/preset-typography';
+import presetExt from '@twind/preset-ext';
 
 import presetTailwind, { TailwindTheme } from '@twind/preset-tailwind';
 
@@ -157,20 +158,23 @@ function twindColor(color: string) {
 }
 
 const config = Twind.defineConfig<Twind.TwindUserConfig<TailwindTheme, Twind.Preset<any>[]>>({
-	presets: [ presetTailwind({}), lineClamp(), typography() ] as any,
+	presets: [ presetTailwind({}), lineClamp(), typography(), presetExt() ] as any,
 	darkMode: 'class',
 	hash: (val: string) => {
 		if (val.startsWith('dash-')) return val;
 		return `dash-${val}`;
 	},
 	rules: [
-		Twind.matchColor('icon-p-', { section: 'colors', property: '--icon-primary' as any }),
-		Twind.matchColor('icon-s-', {	section: 'colors',property: '--icon-secondary' as any }),
+		['icon-p-([A-z0-9-]+)(?:/(\\d+))?', ({ 1: color, 2: opacity }) => ({
+			'--icon-primary': `rgb(var(--theme-${color}) / ${opacity ?? '100'}%)` }) ],
+		['icon-s-([A-z0-9-]+)(?:/(\\d+))?', ({ 1: color, 2: opacity }) => ({
+			'--icon-secondary': `rgb(var(--theme-${color}) / ${opacity ?? '100'}%)` }) ],
 		Twind.matchColor('scroll-gutter-', { section: 'colors', property: '--scroll-gutter' as any }),
 		Twind.matchColor('scroll-bar-', { section: 'colors', property: '--scroll-bar' as any }),
 		Twind.matchColor('scroll-bar-hover-', { section: 'colors', property: '--scroll-bar-hover' as any }),
 		['interact-none', { userSelect: 'none', pointerEvents: 'none' }],
 		['interact-auto', { userSelect: 'auto', pointerEvents: 'auto' }],
+		['hyphens-', ({ $$ }) => ({ hyphens: $$ }) as any],
 		...Object.keys(themeColors).map((name) => [ `theme-${name}`, Object.fromEntries(COLOR_WEIGHTS.map((weight) => [ `--theme-accent-${weight}`, `var(--color-${name}-${weight})` ]))]) as Twind.Rule<Twind.BaseTheme&TailwindTheme>[],
 		['decoration-skip', { textDecorationSkipInk: 'auto' }],
 		['no-decoration-skip', { textDecorationSkipInk: 'none'}]
@@ -220,8 +224,11 @@ const config = Twind.defineConfig<Twind.TwindUserConfig<TailwindTheme, Twind.Pre
 			animation: {
 				'fade-in': 'fade-in 150ms ease-out 1 backwards',
 				'drop-fade-in': 'drop-fade-in 150ms ease-out 1 backwards',
+				'drop-fade-out': 'drop-fade-in 150ms ease-out 1 reverse forwards',
 				'rise-fade-in': 'rise-fade-in 150ms ease-out 1 backwards',
+				'rise-fade-out': 'rise-fade-in 150ms ease-out 1 reverse forwards',
 				'scale-in': 'scale-in 250ms ease-out 1 backwards',
+				'scale-out': 'scale-in 250ms ease-out 1 reverse forwards',
 				'spinner-1': 'spinner 1s ease-in-out alternate infinite',
 				'spinner-2': 'spinner 1s ease-in-out -1s alternate infinite',
 				'rocket': 'rocket 200ms ease-out 1',
@@ -371,8 +378,8 @@ tw(Twind.css`
 		}
 
 		html.custom_scroll::-webkit-scrollbar-thumb, html body *::-webkit-scrollbar-thumb {
-			@apply rounded-full border-(4 solid);
-			border-color: var(--scroll-gutter);
+			@apply rounded-full border-(4 solid transparent);
+			background-clip: content-box;
 			background-color: var(--scroll-bar);
 		}
 

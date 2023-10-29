@@ -6,8 +6,8 @@ import { promises as fs } from 'fs';
 import { exec } from 'child_process';
 
 import * as Database from './Database';
-import { VariantType } from '../common/Type';
 import { MEDIA_DIR, VARIANT_DIR, fileHash } from './Ingest';
+import { Media, MediaVariant, VariantType } from '../common/Type';
 
 /** Default quality for scaling images. */
 const DEFAULT_QUALITY = 80;
@@ -74,13 +74,15 @@ export function generateVariantImage(inPath: string, outPath: string,
  * Ingests a media image, generating different scaled variants.
  */
 
-export async function ingestImage(media: Database.Media, canonical: Database.MediaVariant) {
-	const imageStat = Database.getImageStat(canonical.id);
-	assert(imageStat, 'Image variant does not exist.');
+export async function ingestImage(media: Media, canonical: MediaVariant) {
+	const canonicalVariant = Database.getMediaVariant(canonical.id, true);
+	assert(canonicalVariant && canonicalVariant.width != null && canonicalVariant.height != null,
+		'Image variant does not exist.');
 
 	const canonicalPath = path.join(MEDIA_DIR, canonical.path);
 	const parsedPath = path.parse(canonicalPath);
-	const maxDimension = Math.max(imageStat.width, imageStat.height);
+	const dimensions = { width: canonicalVariant.width!, height: canonicalVariant.height! };
+	const maxDimension = Math.max(dimensions.width, dimensions.height);
 
 	await Promise.all([
 
@@ -88,21 +90,21 @@ export async function ingestImage(media: Database.Media, canonical: Database.Med
 		...[ ...new Set([ ...SCALED_SIZES, Math.min(maxDimension, SCALED_SIZES[SCALED_SIZES.length - 1]) ]).values() ]
 		.filter(s => s <= maxDimension).map(async (size) => {
 			const outputPath = path.join(VARIANT_DIR, `${parsedPath.name}.${size}.webp`);
-			await generateVariantImage(canonicalPath, outputPath, imageStat, size);
+			await generateVariantImage(canonicalPath, outputPath, dimensions, size);
 			return { path: outputPath, type: 'image_scaled', prop: size };
 		}),
 
 		// Full variant.
 		(async () => {
 			const outputPath = path.join(VARIANT_DIR, `${parsedPath.name}.full.webp`);
-			await generateVariantImage(canonicalPath, outputPath, imageStat);
+			await generateVariantImage(canonicalPath, outputPath, dimensions);
 			return { path: outputPath, type: 'image_full' };
 		})(),
 
 		// Inline variant.
 		(async () => {
 			const outputPath = path.join(VARIANT_DIR, `${parsedPath.name}.inline.webp`);
-			await generateVariantImage(canonicalPath, outputPath, imageStat, INLINE_MAX_SIZE, undefined, INLINE_BYTE_HINT);
+			await generateVariantImage(canonicalPath, outputPath, dimensions, INLINE_MAX_SIZE, undefined, INLINE_BYTE_HINT);
 			return { path: outputPath, type: 'image_inline' };
 		})()
 
@@ -122,8 +124,16 @@ export async function ingestImage(media: Database.Media, canonical: Database.Med
 			}
 
 			Database.addMediaVariant(
-				{ mid: media.id, type: data.type, prop: data.prop ?? 0, path: data.path, hash, size: stat.size },
-				{ width, height });
+				{
+					mid: media.id,
+					type: data.type,
+					prop: data.prop ?? 0,
+					path: data.path,
+					hash,
+					size: stat.size,
+					width,
+					height
+				});
 		}
 		catch (err) {
 			log.error('%s', err); return null;

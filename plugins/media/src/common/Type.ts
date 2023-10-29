@@ -47,3 +47,32 @@ export const VARIANT_TYPES = [
 ];
 
 export type VariantType = typeof VARIANT_TYPES[number];
+
+
+/** A media item. Individual files pretaining to it are represented by `MediaVariant`s. */
+export interface Media {
+	id: number;
+	name: string;
+	description: string;
+	type: MediaType;
+	canonical: number;
+}
+
+/** A GraphQL media item. */
+export interface MediaGraph extends Media {
+	canonicalVariant: MediaVariant;
+	variants: MediaVariant[];
+}
+
+/** An ingested media variant. This includes the canonical file. References a `Media`. */
+export interface MediaVariant {
+	id: number;
+	mid: number;
+	path: string;
+	size: number;
+	hash: string;
+	type: VariantType;
+	prop: number;
+	width?: number;
+	height?: number;
+}

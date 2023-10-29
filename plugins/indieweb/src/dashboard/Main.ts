@@ -5,8 +5,8 @@
 // Object.values(Elements).forEach((elem) => addElement(elem));
 
 import 'prosemirror-view/style/prosemirror.css';
-import 'prosemirror-example-setup/style/style.css';
-import 'prosemirror-menu/style/menu.css';
+// import 'prosemirror-example-setup/style/style.css';
+// import 'prosemirror-menu/style/menu.css';
 import './styles.pcss';
 
 import { registerPage, registerShortcut, Icon } from 'dashboard';

@@ -1,5 +1,5 @@
 import path from 'path';
-import auriserve from 'auriserve';
+import auriserve, { log } from 'auriserve';
 import { extendGQLSchema, gqlResolver } from 'dashboard';
 import { addElement, removeElement, addStylesheet, removeStylesheet } from 'elements';
 import * as Database from './Database';
@@ -36,7 +36,7 @@ extendGQLSchema(`
 	}
 
 	type IndieWebMutationAPI {
-		_nothing: Boolean
+		post(id: Int!, data: String!, tags: [String!], slug: String): Boolean!
 	}
 
 	extend type Query { indieweb: IndieWebQueryAPI! }
@@ -61,5 +61,18 @@ gqlResolver.indieweb = {
 		const post = Database.getPost(ctx.id);
 		if (!post) return null;
 		return { ...post, data: JSON.stringify(post.data) };
+	},
+	post: (ctx: any) => {
+		const post = Database.getPost(ctx.id);
+		if (!post) return false;
+
+		if (ctx.slug && ctx.slug !== post.slug) {
+			log.error('Cannot change slug of post at this time.');
+			return false;
+		}
+
+		const newPost = { ...post, data: JSON.parse(ctx.data), tags: ctx.tags ?? post.tags };
+		Database.updatePost(newPost);
+		return true;
 	}
 }

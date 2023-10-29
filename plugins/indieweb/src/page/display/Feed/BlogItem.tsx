@@ -52,7 +52,7 @@ export default function BlogItem({ post, ctx, layout = 'landscape' }: Props) {
 					<div class='text element-prose' dangerouslySetInnerHTML={{ __html: post.data.content }}/>
 					<div class='tags'>
 						{post.tags.sort().map((tag, i) => (
-							<div key={i} class='tag'><span>{tag}</span></div>
+							<div key={i} class='tag'><span>{tag.replace(/_/g, ' ')}</span></div>
 						))}
 					</div>
 				</div>

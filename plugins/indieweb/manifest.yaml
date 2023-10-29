@@ -1,7 +1,7 @@
 name: Indieweb
 identifier: indieweb
 description: Blogging and syndication for indieweb.
-icon: page
+icon: file
 
 version: 0.0.1
 author: Auri

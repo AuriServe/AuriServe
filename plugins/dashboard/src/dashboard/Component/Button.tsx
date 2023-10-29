@@ -94,7 +94,7 @@ const BaseButton = forwardRef<HTMLElement, Props>(function BaseButton(props, ref
 			{...props}
 			style={style}
 			class={merge(
-				tw`group BaseButton~(flex w-max items-center justify-center font-bold uppercase tracking-widest
+				tw`group~ButtonGroup BaseButton~(flex w-max items-center justify-center font-bold uppercase tracking-widest
 				select-none !outline-none transition-all shadow-(none hocus:md active:none)
 				ring-(0 focus:& active:& offset-(active:2 focus:2) dark:offset-gray-750))
 				disabled:(opacity-50 interact-none)
@@ -170,10 +170,29 @@ export const TertiaryButton = forwardRef<HTMLElement, Props>(function TertiaryBu
 			ref={ref}
 			{...props}
 			class={merge(
-				tw`TertiaryButton~(bg-gray-((200 dark:600) hocus:(300 dark:500) active:(500 dark:600))
+				tw`TertiaryButton~(bg-gray-(600 hocus:500 active:600)
 				text-gray-((600 dark:100) hocus:(300 dark:50) active:(100 dark:200))
 				icon-p-gray-(600 dark:100 active:100) icon-s-gray-(500 dark:300 active:300)
 				ring-gray-((300 dark:600) active:(400 dark:600)))`,
+				props.class
+			)}
+		/>
+	);
+});
+
+export const GhostButton = forwardRef<HTMLElement, Props>(function TertiaryButton(
+	props,
+	ref
+) {
+	return (
+		<BaseButton
+			ref={ref}
+			{...props}
+			class={merge(
+				tw`GhostButton~(bg-(transparent hocus:gray-100/[5%] active:gray-100/10)
+				text-gray-(100/75 hocus:100/90 active:50)
+				icon-p-gray-100/90 icon-s-gray-200/60
+				ring-(transparent !offset-transparent)`,
 				props.class
 			)}
 		/>
@@ -186,18 +205,20 @@ export const LinkButton = forwardRef<HTMLElement, Props>(function LinkButton(pro
 			ref={ref}
 			{...props}
 			class={merge(
-				tw`group LinkButton~(relative isolate inline !outline-none leading-none
-				icon-p-(accent-700 active:white dark:(accent-200 hocus:white active:gray-700)
-				icon-s-(accent-400 active:accent-200 dark:(accent-400 hocus:accent-200 active:gray-900)))
+				tw`group~ButtonGroup LinkButton~(relative isolate inline !outline-none leading-none
+				icon-p-(accent-700 active:white dark:(accent-200 hocus:white active:gray-700))
+				icon-s-(accent-400 active:accent-200 dark:(accent-400 hocus:accent-200 active:gray-900))
+				font-medium text-(accent-(700 dark:300) hocus:not-active:(accent-600 dark:white) active:(white dark:gray-800)))
 				${props.icon && 'ml-0.5'}`,
 				props.class
 			)}>
 			<div
-				class={tw`absolute z-10 rounded-sm transition-all ease-out
-				w-(full group-hocus:[calc(100% + 8px)] group-active:[calc(100% + 8px)])
-				bottom-(px group-hocus:-0.5 group-active:-0.5) left-(0 group-hocus:-1 group-active:-1)
-				h-(1 group-hocus:[calc(100% + 6px)] group-active:[calc(100% + 6px)])
-				bg-accent-((500/30 dark:400/25) group-hocus:(500/20 dark:500/20) group-active:(500 dark:500))`}
+				class={tw`LinkButtonUnderline~(absolute z-10 rounded-sm transition-all ease-out
+				w-(full group~ButtonGroup-hocus:[calc(100%+8px)] group~ButtonGroup-active:[calc(100%+8px)])
+				bottom-(px group~ButtonGroup-hocus:[-3px] group~ButtonGroup-active:[-3px])
+				left-(0 group~ButtonGroup-hocus:-1 group~ButtonGroup-active:-1)
+				h-(1 group~ButtonGroup-hocus:[calc(100%+6px)] group~ButtonGroup-active:[calc(100%+6px)])
+				bg-accent-((500/30 dark:400/25) group~ButtonGroup-hocus:(500/20 dark:500/20) group~ButtonGroup-active:(500 dark:500)))`}
 			/>
 
 			{props.icon && !props.iconRight && (
@@ -208,14 +229,8 @@ export const LinkButton = forwardRef<HTMLElement, Props>(function LinkButton(pro
 				/>
 			)}
 
-			<span
-				class={tw`z-10 font-medium
-					text-(accent-(700 dark:300) group-hocus:(accent-600 dark:white) group-active:(white dark:gray-800))
-					${
-						props.iconOnly
-							? 'sr-only'
-							: `${props.icon ? (props.iconRight ? 'mr-1' : 'ml-1') : ''} relative`
-					}`}>
+			<span class={tw`z-10 ${props.iconOnly ? 'sr-only' :
+				`${props.icon ? (props.iconRight ? 'mr-1' : 'ml-1') : ''} relative`}`}>
 				{props.label}
 			</span>
 
@@ -234,12 +249,14 @@ const obj: {
 	Primary: typeof PrimaryButton;
 	Secondary: typeof SecondaryButton;
 	Tertiary: typeof TertiaryButton;
+	Ghost: typeof GhostButton;
 	Link: typeof LinkButton;
 	Unstyled: typeof UnstyledButton;
 } = {
 	Primary: PrimaryButton,
 	Secondary: SecondaryButton,
 	Tertiary: TertiaryButton,
+	Ghost: GhostButton,
 	Link: LinkButton,
 	Unstyled: UnstyledButton,
 };

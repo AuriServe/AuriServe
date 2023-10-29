@@ -9,6 +9,7 @@ import useDerivedState from '../useDerivedState';
 
 import { refs } from '../../../Util';
 import { tw, merge } from '../../../Twind';
+import { useClasses } from '../../../Hooks';
 
 type Props = FieldProps<boolean> & {
 	icon?: string;
@@ -18,6 +19,7 @@ type Props = FieldProps<boolean> & {
 
 export default function ToggleField(props: Props) {
 	const ref = useRef<HTMLElement>(null);
+	const classes = useClasses(props.class);
 
 	useEffect(() => {
 		// Autofocus on first render if the autofocus prop is set.
@@ -27,8 +29,8 @@ export default function ToggleField(props: Props) {
 	}, []);
 
 	const {
-		ctx,
 		value,
+		setValue,
 		id,
 		path,
 		label,
@@ -62,11 +64,8 @@ export default function ToggleField(props: Props) {
 
 	const handleChange = ({ target }: any) => {
 		const newValue: boolean = target.checked;
-
-		value.current = newValue;
+		setValue(newValue);
 		validate(newValue);
-		props.onChange?.(newValue);
-		ctx.event.emit('change', path, newValue);
 	};
 
 	const handleBlur = (evt: Event) => {
@@ -79,11 +78,11 @@ export default function ToggleField(props: Props) {
 			class={merge(
 				tw`flex-(& col) px-2.5 py-3 min-h-13 rounded border-(2 gray-input) relative isolate
 					cursor-${props.disabled ? 'auto' : 'pointer'}`,
-				props.class
+				classes.get()
 			)}
 			style={props.style}>
 			<div class={tw`flex gap-3`}>
-				{props.icon && <Svg src={props.icon} size={6} class={tw`shrink-0 -mr-0.5 z-10`} />}
+				{props.icon && <Svg src={props.icon} size={6} class={merge(tw`shrink-0 -mr-0.5 z-10`, classes.get('icon'))} />}
 				<input
 					ref={refs(ref, props.fieldRef, onRef)}
 					id={id}
@@ -91,7 +90,7 @@ export default function ToggleField(props: Props) {
 					disabled={disabled}
 					readonly={readonly}
 					class={tw`absolute z-10 w-full h-full inset-0 opacity-0 peer cursor-(pointer disabled:auto)`}
-					checked={value.current}
+					checked={value.current ?? false}
 					onChange={handleChange}
 					onFocus={onFocus}
 					onBlur={handleBlur}
@@ -100,10 +99,10 @@ export default function ToggleField(props: Props) {
 					class={tw`absolute bg-gray-input inset-0 opacity-(0 peer-checked:100) transition`}
 				/>
 				<span
-					class={tw`
+					class={merge(tw`
 						relative font-medium leading-none grow transition select-none truncate pt-[5px]
 						text-((gray-600 dark:gray-200) peer-checked:(gray-500 dark:gray-100))
-						${invalid && 'text-red-((900 dark:400)'}`}>
+						${invalid && 'text-red-((900 dark:400)'}`, classes.get('label'))}>
 					{label}
 				</span>
 				<div

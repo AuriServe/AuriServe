@@ -25,9 +25,11 @@ type Props = FieldProps<string | null> & {
 
 export default function OptionField(props: Props) {
 	const rerender = useRerender();
+	// const classes = useClasses(props.class);
+
 	const {
-		ctx,
 		value,
+		setValue,
 		id,
 		path,
 		label,
@@ -69,10 +71,8 @@ export default function OptionField(props: Props) {
 	}, []);
 
 	const handleChange = (newValue: string | null) => {
-		value.current = newValue;
+		setValue(newValue);
 		validate(newValue);
-		props.onChange?.(newValue);
-		ctx.event.emit('change', path, newValue);
 		rerender();
 	};
 

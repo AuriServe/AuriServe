@@ -1,39 +1,11 @@
 import path from 'path';
 import { database } from 'auriserve';
 import { MEDIA_DIR } from './Ingest';
-import { MediaType, MEDIA_TYPES, VARIANT_TYPES, VariantType } from '../common/Type';
+import { MediaType, MEDIA_TYPES, VARIANT_TYPES, VariantType, Media, MediaVariant } from '../common/Type';
 
 const MEDIA_TBL = 'media_media';
 const VARIANTS_TBL = 'media_variants';
 const IMAGES_TBL = 'media_images';
-
-/** A media item. Individual files pretaining to it are represented by `MediaVariant`s. */
-export interface Media {
-	id: number;
-	name: string;
-	description: string;
-	type: MediaType;
-	canonical: number;
-}
-
-/** An ingested media variant. This includes the canonical file. References a `Media`. */
-export interface MediaVariant {
-	id: number;
-	mid: number;
-	path: string;
-	size: number;
-	hash: string;
-	type: VariantType;
-	prop: number;
-}
-
-/** Dimensions for an image media variant. References a `MediaVariant`. */
-export interface MediaImageStat {
-	id: number;
-	vid: number;
-	width: number;
-	height: number;
-}
 
 export function init() {
 	/**
@@ -104,10 +76,20 @@ export function init() {
 
 init();
 
+const QUERY_GET_ALL_MEDIA = database.prepare(`SELECT * FROM ${MEDIA_TBL}`);
 const QUERY_GET_MEDIA_FROM_ID = database.prepare(`SELECT * FROM ${MEDIA_TBL} WHERE id = ?`);
 const QUERY_GET_VARIANT_FROM_ID = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE id = ?`);
+const QUERY_GET_VARIANT_WITH_IMAGE_STAT_FROM_ID = database.prepare(
+	`SELECT ${VARIANTS_TBL}.*, ${IMAGES_TBL}.width, ${IMAGES_TBL}.height FROM ${VARIANTS_TBL}
+	LEFT JOIN ${IMAGES_TBL} ON ${VARIANTS_TBL}.id = ${IMAGES_TBL}.vid WHERE ${VARIANTS_TBL}.id = ?`);
 const QUERY_GET_VARIANT_FROM_PATH = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE path = ?`);
+const QUERY_GET_VARIANT_WITH_IMAGE_STAT_FROM_PATH = database.prepare(
+	`SELECT ${VARIANTS_TBL}.*, ${IMAGES_TBL}.width, ${IMAGES_TBL}.height FROM ${VARIANTS_TBL}
+	LEFT JOIN ${IMAGES_TBL} ON ${VARIANTS_TBL}.id = ${IMAGES_TBL}.vid WHERE ${VARIANTS_TBL}.path = ?`);
 const QUERY_GET_VARIANTS_FROM_MEDIA_ID = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE mid = ?`);
+const QUERY_GET_VARIANTS_WITH_IMAGE_STAT_FROM_MEDIA_ID = database.prepare(
+	`SELECT ${VARIANTS_TBL}.*, ${IMAGES_TBL}.width, ${IMAGES_TBL}.height FROM ${VARIANTS_TBL}
+	LEFT JOIN ${IMAGES_TBL} ON ${VARIANTS_TBL}.id = ${IMAGES_TBL}.vid WHERE ${VARIANTS_TBL}.mid = ?`);
 const QUERY_GET_IMAGE_STAT_FROM_VARIANT_ID = database.prepare(`SELECT * FROM ${IMAGES_TBL} WHERE vid = ?`);
 const QUERY_GET_MEDIA_HASH_FROM_PATH = database.prepare(`SELECT hash FROM ${VARIANTS_TBL} WHERE path = ?`);
 const QUERY_GET_VARIANT_FROM_TYPE_AND_ID = database.prepare(`SELECT * FROM ${VARIANTS_TBL} WHERE mid = ? AND type = ?`);
@@ -129,6 +111,10 @@ const QUERY_GET_SMALLEST_VARIANT_FROM_SIZE_AND_ID = database.prepare(
 	`SELECT * FROM ${VARIANTS_TBL} WHERE mid = ? AND prop >= ? ORDER BY size ASC LIMIT 1`);
 const QUERY_GET_CANONICAL_VARIANT_FROM_ID = database.prepare(
 	`SELECT * FROM ${VARIANTS_TBL} WHERE id = (SELECT canonical FROM media_media WHERE id = ?)`);
+const QUERY_GET_CANONICAL_VARIANT_WITH_IMAGE_STAT_FROM_MEDIA_ID = database.prepare(
+	`SELECT ${VARIANTS_TBL}.*, ${IMAGES_TBL}.width, ${IMAGES_TBL}.height FROM ${VARIANTS_TBL}
+	LEFT JOIN ${IMAGES_TBL} ON ${VARIANTS_TBL}.id = ${IMAGES_TBL}.vid WHERE ${VARIANTS_TBL}.id = (
+		SELECT canonical FROM media_media WHERE id = ?)`);
 
 /** Converts a relative media path to an absolute one. */
 
@@ -142,7 +128,18 @@ export function toRelative(absolutePath: string) {
 	return path.relative(MEDIA_DIR, absolutePath);
 }
 
+/** Gets all media items, optionally by a type */
 
+export function getAllMedia(type?: string): Media[] {
+	if (type?.length) {
+		const sanitizedTypes = type.toLowerCase().replace(/[^a-z_ ]/g, '').split(' ').map(t =>
+			`'${t.trim()}'`).join(',');
+		return database.prepare(`SELECT * FROM ${MEDIA_TBL} WHERE type IN (${sanitizedTypes})`).all();
+	}
+	else {
+		return QUERY_GET_ALL_MEDIA.all();
+	}
+}
 
 /** Gets a media item from an id or path. */
 
@@ -164,8 +161,7 @@ export function getMedia(idOrPath: number | string): Media | null {
 
 export function addMedia(
 	media: Omit<Media, 'canonical' | 'id'> & { id?: number },
-	variant: Omit<MediaVariant, 'id' | 'mid' | 'type' | 'prop'>,
-	imageStat?: Omit<MediaImageStat, 'id' | 'vid'>) {
+	variant: Omit<MediaVariant, 'id' | 'mid' | 'type' | 'prop'>) {
 
 	let media_id: number;
 	if ('id' in media) media_id = QUERY_INSERT_OR_REPLACE_MEDIA.run(
@@ -175,7 +171,7 @@ export function addMedia(
 
 	QUERY_DELETE_MEDIA_VARIANTS_FROM_ID.run(media_id);
 
-	const variant_id = addMediaVariant({ ...variant, mid: media_id, type: 'original', prop: 0 }, imageStat);
+	const variant_id = addMediaVariant({ ...variant, mid: media_id, type: 'original', prop: 0 });
 
 	QUERY_SET_MEDIA_CANONICAL_VARIANT.run(variant_id, media_id);
 
@@ -192,42 +188,49 @@ export function removeMedia(id: number) {
  */
 
 export function addMediaVariant(
-	variant: Omit<MediaVariant, 'id'>,
-	imageStat?: Omit<MediaImageStat, 'id' | 'vid'>) {
+	variant: Omit<MediaVariant, 'id'>) {
 
 	const variant_id = QUERY_INSERT_MEDIA_VARIANT.run(
 		variant.mid, variant.path, variant.size, variant.hash, variant.type, variant.prop).lastInsertRowid;
 
-	if (imageStat) QUERY_INSERT_MEDIA_IMAGE_STAT.run(
-		variant_id, imageStat.width, imageStat.height);
+	if (variant.width != null && variant.height != null) QUERY_INSERT_MEDIA_IMAGE_STAT.run(
+		variant_id, variant.width, variant.height);
 
 	return variant_id;
 }
 
 /** Gets a media variant from an id or path. */
 
-export function getMediaVariant(idOrPath: number | string): MediaVariant | null {
-	if (typeof idOrPath === 'number') return QUERY_GET_VARIANT_FROM_ID.get(idOrPath);
-	return QUERY_GET_VARIANT_FROM_PATH.get(idOrPath);
+export function getMediaVariant(idOrPath: number | string, imageStat = false): MediaVariant | null {
+	if (imageStat) {
+		if (typeof idOrPath === 'number') return QUERY_GET_VARIANT_WITH_IMAGE_STAT_FROM_ID.get(idOrPath);
+		return QUERY_GET_VARIANT_WITH_IMAGE_STAT_FROM_PATH.get(idOrPath);
+	}
+	else {
+		if (typeof idOrPath === 'number') return QUERY_GET_VARIANT_FROM_ID.get(idOrPath);
+		return QUERY_GET_VARIANT_FROM_PATH.get(idOrPath);
+	}
 }
 
 /** Gets the canonical media variant from a media id. */
 
-export function getCanonicalVariant(id: number): MediaVariant | null {
+export function getCanonicalVariant(id: number, imageStat = false): MediaVariant | null {
+	if (imageStat) return QUERY_GET_CANONICAL_VARIANT_WITH_IMAGE_STAT_FROM_MEDIA_ID.get(id);
 	return QUERY_GET_CANONICAL_VARIANT_FROM_ID.get(id);
 }
 
 /** Gets all of the variants of a media variant from a media id. */
 
-export function getMediaVariants(id: number): MediaVariant[] {
+export function getMediaVariants(id: number, imageStat = false): MediaVariant[] {
+	if (imageStat) return QUERY_GET_VARIANTS_WITH_IMAGE_STAT_FROM_MEDIA_ID.all(id);
 	return QUERY_GET_VARIANTS_FROM_MEDIA_ID.all(id);
 }
 
-/** Gets the variant image stats from a media variant id. */
+// /** Gets the variant image stats from a media variant id. */
 
-export function getImageStat(id: number): MediaImageStat | null {
-	return QUERY_GET_IMAGE_STAT_FROM_VARIANT_ID.get(id);
-}
+// export function getImageStat(id: number): MediaImageStat | null {
+// 	return QUERY_GET_IMAGE_STAT_FROM_VARIANT_ID.get(id);
+// }
 
 /** Check if a media variant at the path specified matches the hash specified. */
 

@@ -29,6 +29,30 @@ interface State {
 	left: string;
 }
 
+const SELF_WIDTH = 80 * 4;
+
+function computePos(position: 'right' | 'left' | 'above' | 'below', padding: number ,
+	bounds: ReturnType<typeof elementBounds>, parentBounds: ReturnType<typeof elementBounds>):
+	{ top: string, left: string } {
+
+	let left = '';
+	if (position === 'right') {
+		left = `${
+			Math.floor(bounds.left + bounds.width - parentBounds.left) +
+			padding
+		}px`;
+	}
+	else if (position === 'left') {
+		left = `${
+			Math.floor(bounds.left - parentBounds.left) -
+			padding - SELF_WIDTH
+		}px`;
+	}
+
+	const top = `${Math.floor(bounds.top) - parentBounds.top}px`;
+	return { top, left };
+}
+
 export default function FloatingDescription(props: Props) {
 	const form = useContext(FormContext);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -84,18 +108,12 @@ export default function FloatingDescription(props: Props) {
 
 				if (!meta) return oldState;
 				const bounds = elementBounds(meta!.elem!);
-				const parentBounds = elementBounds(
-					containerRef.current!.offsetParent! as HTMLElement
-				);
+				const parentBounds = elementBounds(containerRef.current!.offsetParent! as HTMLElement);
 				return {
 					path,
 					description,
 					error: meta!.error?.message ?? null,
-					top: `${Math.floor(bounds.top) - parentBounds.top}px`,
-					left: `${
-						Math.floor(bounds.left + bounds.width - parentBounds.left) +
-						(props.padding ?? 4) * 4
-					}px`,
+					...computePos(props.position, (props.padding ?? 4) * 4, bounds, parentBounds)
 				} as State;
 			});
 		});
@@ -114,11 +132,7 @@ export default function FloatingDescription(props: Props) {
 
 					return {
 						...oldState,
-						top: `${Math.floor(bounds.top - parentBounds.top)}px`,
-						left: `${
-							Math.floor(bounds.left + bounds.width - parentBounds.left) +
-							(props.padding ?? 4) * 4
-						}px`,
+						...computePos(props.position, (props.padding ?? 4) * 4, bounds, parentBounds),
 						error: (error?.visible && error?.message) || null,
 					};
 				});
@@ -131,7 +145,7 @@ export default function FloatingDescription(props: Props) {
 			if (clearPathTimeout) clearTimeout(clearPathTimeout);
 			if (clearPosTimeout) clearTimeout(clearPosTimeout);
 		};
-	}, [form, props.padding]);
+	}, [form, props.padding, props.position]);
 
 	const handleUpdateContainerHeight = (ref: HTMLDivElement | null) => {
 		if (!ref || !containerRef.current) return;
@@ -145,9 +159,11 @@ export default function FloatingDescription(props: Props) {
 			ref={containerRef}
 			style={{ ...props.style, top: state.top, left: state.left }}
 			class={merge(
-				tw`FloatingDescription~(isolate absolute z-10 w-80 min-h-[2.5rem]
-					bg-gray-700 shadow-md rounded transition-all [transform-origin:left_center])
-				after:(absolute -left-1.5 top-3.5 w-3 h-3 bg-gray-700 rotate-45)
+				tw`FloatingDescription~(isolate absolute z-10 w-[${SELF_WIDTH}px] min-h-[2.5rem]
+					bg-gray-700 shadow-md rounded transition-all
+					[transform-origin:${props.position === 'right' ? 'left_center' : 'right-center'}])
+				after:(absolute ${props.position === 'right' ? '-left-1.5' : '-right-1.5'}
+					top-3.5 w-3 h-3 bg-gray-700 rotate-45)
 				${show ? 'delay-75' : 'opacity-0 scale-[98%] interact-none'}`,
 				props.class
 			)}>

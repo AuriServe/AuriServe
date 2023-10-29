@@ -6,4 +6,10 @@ icon: image
 version: 0.0.1
 author: Auri
 
-entry: build/server.js
+depends:
+  dashboard: ^0.0.1 ?
+  auriserve-preact: ^1.0.0 ?
+
+entry:
+  server: build/server.js
+  dashboard: build/dashboard.js

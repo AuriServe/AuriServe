@@ -3,7 +3,7 @@ import { useContext, useState } from 'preact/hooks';
 import { FormContext } from './Form';
 
 type CheckCtx<Ctx extends Record<string, unknown>, Value> = Ctx & {
-	value: Value;
+	value: Value | null;
 };
 
 type ValidityErrorSeverity = 'submit' | 'blur' | 'change';
@@ -33,7 +33,7 @@ interface UseValidityResult<Value> {
 	readonly invalid: boolean;
 
 	onBlur: () => void;
-	validate: (value: Value) => ValidityError | null;
+	validate: (value: Value | null) => ValidityError | null;
 }
 
 function isSameError(a: ValidityError | null, b: ValidityError | null): boolean {
@@ -57,7 +57,7 @@ export default function useValidity<
 		validate: () => null
 	};
 
-	const validate = (value: Value) => {
+	const validate = (value: Value | null) => {
 		const ctx = { ...options.context, value };
 		const check = options.checks.find((check) => check.condition(ctx));
 		setError((lastError) => {

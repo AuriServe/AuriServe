@@ -91,6 +91,7 @@ const QUERY_INSERT_POST_MEDIA_ARRAY = database.transaction((post: number, media:
 	media.forEach(m => QUERY_INSERT_POST_MEDIA.run(post, m)));
 const QUERY_INSERT_POST_TAG_ARRAY = database.transaction((post: number, tags: string[]) =>
 	tags.forEach(t => QUERY_INSERT_POST_TAG.run(post, t)));
+export const QUERY_REMOVE_POST_TAGS = database.prepare(`DELETE FROM ${TAGS_TBL} WHERE post = ?`);
 export const QUERY_GET_POST_FROM_ID = database.prepare(`
 	SELECT posts.*,
 		(SELECT GROUP_CONCAT(tag,'|') AS tags FROM ${TAGS_TBL} WHERE post = posts.id) AS tags,
@@ -159,4 +160,11 @@ export function getPosts(limit?: number, type?: string) {
 		.map((post) => populatePost(post));
 	return (QUERY_GET_POSTS_OF_TYPE.all(type, limit ?? 1000000) as UnionedDBPost[])
 		.map((post) => populatePost(post));
+}
+
+export function updatePost(post: Post) {
+	// TODO: update flags and other stuff
+	database.prepare(`UPDATE ${POSTS_TBL} SET data = ? WHERE id = ?`).run(JSON.stringify(post.data), post.id);
+	QUERY_REMOVE_POST_TAGS.run(post.id);
+	if (post.tags?.length) QUERY_INSERT_POST_TAG_ARRAY(post.id, post.tags);
 }

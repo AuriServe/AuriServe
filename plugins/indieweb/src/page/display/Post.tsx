@@ -45,7 +45,7 @@ export function PostView() {
 					<main class='content'>
 						<div class='tags'>
 							{post.tags.map((tag, i) => (
-								<div key={i} class='tag'>{tag}</div>
+								<div key={i} class='tag'>{tag.replace(/_/g, ' ')}</div>
 							))}
 						</div>
 						<h2 class='title'>{post.data.title}</h2>

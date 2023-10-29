@@ -43,6 +43,17 @@ function getPosts(filter: 'all' | string): { month: string, posts: Post[] }[] {
 	startOfMonth.setDate(1);
 	startOfMonth.setHours(0, 0, 0, 0);
 
+	if (filter === 'note') {
+		let notes = Database.getPostsInDateRange(0, +endOfMonth)
+		.sort((a, b) => b.created - a.created)
+		.filter(p => filter === p.type)
+		notes = [ ...notes, ...notes, ...notes ];
+		return [{
+			month: 'October',
+			posts: notes
+		}]
+	}
+
 	return [
 		{
 			month: 'October',

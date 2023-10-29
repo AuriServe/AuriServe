@@ -1,6 +1,6 @@
 import { useLazyRef, useRerender } from 'vibin-hooks';
 import { assert, buildPath, splitPath, traversePath } from 'common';
-import { MutableRef, useCallback, useContext, useLayoutEffect, useMemo, useRef } from 'preact/hooks';
+import { Ref, useCallback, useContext, useLayoutEffect, useMemo, useRef } from 'preact/hooks';
 
 import { FieldProps } from './Field';
 import { camelCaseToTitle } from '../../Util';
@@ -10,8 +10,10 @@ import { FormContext, FormContextData } from './Form';
 interface DerivedState<T> {
 	/** The form context. */
 	ctx: FormContextData;
-	/** The field's value. */
-	value: MutableRef<T>;
+	/** A ref to the field's value. */
+	value: Ref<T>;
+	/** A setter for the field's value. */
+	setValue: (value: T) => void;
 
 	/** The field's unique ID. */
 	id: string;
@@ -56,11 +58,15 @@ export default function useDerivedState<T>(
 		(ctx?.disabled?.current ?? false) ||
 		(group?.disabled ?? false);
 
-	const value = useLazyRef<T>(() => {
-		if (props.value != null) return props.value;
-		if (props.path) {
+	const value = useLazyRef<T | null>(() => {
+		let value: T | null = null;
+
+		if (props.value != null) {
+			value = props.value;
+		}
+		else if (props.path) {
 			try {
-				return traversePath(ctx.value.current, path);
+				value = traversePath(ctx.value.current, path);
 			} catch (_) {
 				assert(
 					false,
@@ -70,7 +76,11 @@ export default function useDerivedState<T>(
 				);
 			}
 		}
-		return !required && !defaultNullIfOptional ? defaultValue : null;
+
+		if (value != null) return value;
+		value = !defaultNullIfOptional ? (defaultValue ?? null) : null;
+
+		return value;
 	});
 
 	const refresh = useCallback(() => {
@@ -114,6 +124,12 @@ export default function useDerivedState<T>(
 		ctx?.event.emit('focus', path, false);
 	};
 
+	const setValue = (newValue: T) => {
+		value.current = newValue;
+		props.onChange?.(newValue);
+		ctx.event.emit('change', path, newValue);
+	};
+
 	function updateFieldRef() {
 		if (lastPathRef.current) ctx?.setFieldRef(lastPathRef.current, null);
 		ctx?.setFieldRef(path, elemRef.current);
@@ -133,6 +149,7 @@ export default function useDerivedState<T>(
 	return {
 		ctx,
 		value,
+		setValue,
 
 		id,
 		path,

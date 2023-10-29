@@ -60,8 +60,8 @@ export interface Props<T> {
 	/** Whether or not fields should be disabled. */
 	disabled?: boolean;
 
-	/** Don't show floating description. */
-	noDescription?: boolean;
+	/** Where / if the floating description displays. */
+	description?: 'none' | 'right' | 'left' | 'above' | 'below';
 
 	hooks?: MutableRef<FormHooks<T>>;
 	onChange?: (value: DeepPartial<T>) => void;
@@ -211,7 +211,7 @@ export default memo(function Form<ValueType>(props: Props<ValueType>) {
 					tabIndex={-1}
 					disabled={props.disabled}
 				/>
-				{!props.noDescription && <FloatingDescription position='right' />}
+				{props.description !== 'none' && <FloatingDescription position={props.description ?? 'right'} />}
 			</form>
 		</FormContext.Provider>
 	);

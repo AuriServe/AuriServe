@@ -2,8 +2,9 @@ import path from 'path';
 import { promises as fs } from 'fs';
 import { exec } from 'child_process';
 
-import { MEDIA_DIR, VARIANT_DIR, fileHash } from './Ingest';
 import * as Database from './Database';
+import { Media, MediaVariant } from '../common/Type';
+import { MEDIA_DIR, VARIANT_DIR, fileHash } from './Ingest';
 
 const INLINE_LAYOUT_FEATURES = '--layout-features+="lnum,tnum" --layout-features-="cswh" ';
 const INLINE_LAYOUT_UNICODES = '--unicodes="U+0020-007F" ';
@@ -21,7 +22,7 @@ export function execPyFtSubset(input: string, output: string, options: string) {
 	});
 }
 
-export async function ingestFont(media: Database.Media, canonical: Database.MediaVariant) {
+export async function ingestFont(media: Media, canonical: MediaVariant) {
 	const filePath = path.join(MEDIA_DIR, canonical.path);
 	const parsedPath = path.parse(filePath);
 

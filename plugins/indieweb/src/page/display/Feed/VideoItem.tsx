@@ -25,7 +25,7 @@ export default function ArtItem({ post, layout, ctx }: Props) {
 					<div class='text element-prose' dangerouslySetInnerHTML={{ __html: post.data.content }}/>
 					<div class='tags'>
 						{post.tags.map((tag, i) => (
-							<div key={i} class='tag'><span>{tag}</span></div>
+							<div key={i} class='tag'><span>{tag.replace(/_/g, ' ')}</span></div>
 						))}
 					</div>
 				</div>

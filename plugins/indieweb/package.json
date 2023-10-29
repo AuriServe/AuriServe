@@ -11,7 +11,8 @@
 	},
 	"webpackGenConfig": {
 		"types": false,
-		"postcss": true
+		"postcss": true,
+		"sourceEntryFilter": true
 	},
 	"devDependencies": {
 		"@types/color": "^3.0.4",
@@ -39,6 +40,7 @@
 		"prosemirror-schema-list": "^1.3.0",
 		"prosemirror-state": "^1.4.3",
 		"prosemirror-view": "^1.32.0",
-		"vibin-hooks": "^0.5.0"
+		"prosemirror-virtual-cursor": "^0.4.1",
+		"vibin-hooks": "^0.6.1"
 	}
 }

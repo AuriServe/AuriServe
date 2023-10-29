@@ -161,7 +161,7 @@ export default function PostListPage() {
 													truncate select-all overflow-hidden font-(mono bold) text-(xs gray-300)`}>
 													<span>
 														{post.slug}
-														<Tooltip position='bottom' label={post.slug} small class={tw`font-mono`}/>
+														<Tooltip position='bottom' label={post.slug} small class={tw`font-(mono bold) text-xs`}/>
 													</span>
 												</p>;
 											}
@@ -184,8 +184,7 @@ export default function PostListPage() {
 														{new Date(post[col.name] * 1000).toLocaleDateString('en-US',
 															{ month: 'short', day: '2-digit', year: 'numeric' })}
 														<Tooltip position='bottom' label={new Date(post[col.name] * 1000)
-															.toLocaleTimeString('en-us', { minute: 'numeric', hour: 'numeric' })}
-															small class={tw`font-mono`}/>
+															.toLocaleTimeString('en-us', { minute: 'numeric', hour: 'numeric' })} small/>
 													</span>
 												</p>;
 											}

@@ -3,38 +3,7 @@ import { useRef, useEffect, useState, useMemo } from 'preact/hooks';
 
 import { tw, css } from '../../Twind';
 
-interface UseAutoFillProps {
-	baseBg: string;
-	baseText: string;
-	focusBg?: string;
-	focusText?: string;
-	autofillText?: string;
-	borderSize: number;
-}
-
 type UseAutoFillResult<Element> = [RefObject<Element>, string];
-
-/**
- * Styles an input element with default styles based on an invalid state, obscuring autofill styles.
- *
- * @param invalid - Whether or not the input is invalid.
- * @returns a ref object and class name to apply to the input.
- */
-
-export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
-	invalid: boolean
-): UseAutoFillResult<Element>;
-
-/**
- * Styles an input element according to the props object specified, obscuring autofill styles.
- *
- * @param props - An object specifying the styles for the input.
- * @returns a ref object and class name to apply to the input.
- */
-
-export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
-	props: UseAutoFillProps
-): UseAutoFillResult<Element>;
 
 /**
  * Chrome sucks ass and tries to override form styles really shittily when an input is autofilled.
@@ -43,29 +12,14 @@ export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
  * as it's not rendered on the page and seems to only inherit the text color, not any other CSS properties,
  * but it's still way fucking better than nothing. Also works on Firefox fine.
  *
- * @param arg - Either a boolean to indicate that the input is invalid, or a set of props to use for the styles.
+ * @param invalid - A boolean to indicate that the input is invalid.
  * @returns a ref object and class name to apply to the input.
  */
 
 export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
-	arg: UseAutoFillProps | boolean
+	invalid: boolean
 ): UseAutoFillResult<Element> {
 	const ref = useRef<Element>(null);
-
-	const props = useMemo(() => {
-		if (typeof arg === 'boolean') {
-			return {
-				baseBg: 'rgb(var(--theme-gray-input))',
-				baseText: arg ? 'rgb(var(--theme-red-200))' : 'rgb(var(--theme-gray-100))',
-				focusBg: 'rgb(var(--theme-gray-700))',
-				focusText: 'rgb(var(--theme-gray-100))',
-				autofillText: 'rgb(var(--theme-accent-100))',
-				borderSize: 4,
-			};
-		}
-
-		return arg;
-	}, [arg]);
 
 	const [autofill, setAutofill] = useState<boolean>(false);
 	const [settled, setSettled] = useState<boolean>(true);
@@ -93,51 +47,48 @@ export default function useAutoFill<Element extends HTMLElement = HTMLElement>(
 		return () => input.removeEventListener('animationstart', onAnimationStart);
 	}, []);
 
-	const {
-		baseBg,
-		baseText,
-		focusBg = baseBg,
-		focusText = baseText,
-		autofillText = baseText,
-		borderSize,
-	} = props;
-
 	const classes = useMemo(
 		() =>
 			tw`${css`
 				& {
+					--bg: var(--input-background,rgb(var(--theme-gray-input)));
+					--rad: var(--input-border-radius,4px);
+					--text: var(--input-color${invalid ? '-invalid' : ''},rgb(var(--theme-${invalid ? 'red-200' : 'gray-100'})));
 					background-clip: content-box;
 
-					background-color: ${baseBg};
-					box-shadow: 0 0 0 1000px ${baseBg} inset;
-					border: ${borderSize / 16}rem solid ${baseBg};
+					background-color: var(--bg);
+					box-shadow: 0 0 0 1000px var(--bg) inset;
+					border: var(--rad) solid var(--bg);
 
-					color: ${baseText};
-					caret-color: ${baseText};
-					-webkit-text-fill-color: ${baseText};
+					color: var(--text);
+					caret-color: var(--text);
+					-webkit-text-fill-color: var(--text);
 
-					${settled &&
-					'transition: color 75ms, border-color 75ms, background-color 75ms, box-shadow 75ms;'}
+					${settled && 'transition: color 75ms, border-color 75ms, background-color 75ms, box-shadow 75ms;'}
 				}
 
 				&:focus {
-					border-color: ${focusBg};
-					background-color: ${focusBg};
-					box-shadow: 0 0 0 1000px ${focusBg} inset;
+					--bg: var(--input-background-focus,rgb(var(--theme-gray-700)));
+					--text: var(--input-color-focus,rgb(var(--theme-gray-100)));
 
-					color: ${focusText};
-					caret-color: ${focusText};
-					-webkit-text-fill-color: ${focusText};
+					border-color: --bg;
+					background-color: --bg;
+					box-shadow: 0 0 0 1000px --bg inset;
+
+					color: --text;
+					caret-color: --text;
+					-webkit-text-fill-color: --text;
 				}
 
 				${autofill
 					? `&, &:focus {
-					-webkit-text-fill-color: ${autofillText};
-					caret-color: ${autofillText};
-				}`
+							--text: var(--input-color-autofill,rgb(var(--theme-accent-100)));
+							-webkit-text-fill-color: --text;
+							caret-color: --text;
+						}`
 					: ''}
 			`}`,
-		[autofill, settled, baseBg, baseText, focusBg, focusText, autofillText, borderSize]
+		[autofill, settled, invalid]
 	);
 
 	return [ref, classes];

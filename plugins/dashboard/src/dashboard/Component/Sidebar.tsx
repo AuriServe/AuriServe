@@ -42,7 +42,7 @@ export default function Sidebar({ shortcuts }: Props) {
 
 	return (
 		<aside
-			class={tw`fixed z-30 w-14 h-full inset-0 icon-(p-accent-300 s-accent-100) bg-gray-700`}>
+			class={tw`fixed z-[100] w-14 h-full inset-0 icon-(p-accent-300 s-accent-100) bg-gray-700`}>
 			<nav class={tw`flex-(& col) h-full`}>
 				<div class={tw`bg-accent-500/30 mb-1`}>
 					<Button.Unstyled to='/' class={tw`block`}>

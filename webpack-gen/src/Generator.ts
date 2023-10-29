@@ -96,7 +96,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 			rules: [
 				{
 					test: conf.sourceEntryFilter ? '/(\\.%ENTRY)?\\.[t|j]sx?$/' : runtimeRegex(/\.[t|j]sx?$/),
-					resourceQuery: conf.sourceEntryFilter ? '/%ENTRY/' : undefined,
+					// resourceQuery: conf.sourceEntryFilter ? '/%ENTRY/' : undefined,
 					loader: 'babel-loader',
 					options: {
 						babelrc: false,
@@ -131,7 +131,8 @@ export default function generate(conf: Config = {}, toFile = false) {
 				},
 				...(conf.sourceEntryFilter ? [{
 					test: '/\\.(?!%ENTRY)\\w+\\.[t|j]sx?$/',
-					loader: 'null-loader'
+					loader: 'null-loader',
+					exclude: /node_modules/
 				}] : []),
 				// {
 				// 	test: runtimeRegex(/.[t|j]sx?/i),

@@ -144,8 +144,7 @@ export async function ingest(filePath: string, options: IngestOptions) {
 
 	const id = Database.addMedia(
 		{ name: options.name, description: options.description, type, id: options.overwrite },
-		{ hash, path: relativePath, size: stat.size },
-		size ? { width: size.width!, height: size.height! } : undefined
+		{ hash, path: relativePath, size: stat.size, width: size?.width, height: size?.height },
 	) as number;
 
 	if (options.generateVariants) await generateVariants(id);

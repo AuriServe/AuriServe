@@ -84,7 +84,7 @@ export default function Modal(props: Props) {
 		<Portal as='dialog' ref={dialogRef} z={props.z || 100} onClick={onClose}
 			class={tw`fixed inset-0 w-screen h-screen max-w-none max-h-screen p-0 m-0
 				pl-14 flex-(& col) items-center overflow-auto justify-around
-				bg-transparent interact-none backdrop:bg-transparent text-gray-(800 dark:100)`}>
+				bg-transparent backdrop:bg-transparent text-gray-(800 dark:100) ${!props.active && 'interact-none'}`}>
 			<div class={tw`w-screen h-screen interact-none absolute inset-0 flex`}>
 				<div class={tw`opacity-${props.active ? 100 : 0} transition duration-150 w-14 h-full bg-gray-900/60`}/>
 				<div class={tw`opacity-${props.active ? 100 : 0} transition duration-150

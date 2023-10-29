@@ -101,7 +101,9 @@ export default function LoginPage({ onLogin }: Props) {
 							<Form<{ identity: string; password: string }>
 								class={tw`flex-(& col) gap-y-4`}
 								initialValue={{ identity: '', password: '' }}
-								onSubmit={handleSubmit}>
+								onSubmit={handleSubmit}
+								description='none'
+							>
 								<Field.Text
 									fieldRef={userInputRef}
 									path='identity'

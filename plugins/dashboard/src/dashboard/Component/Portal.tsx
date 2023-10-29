@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from 'preact/hooks';
+import { useMemo } from 'preact/hooks';
+import { useInlineEffect } from 'vibin-hooks';
 import { ForwardedRef, createPortal, forwardRef } from 'preact/compat';
 import {
 	h,
@@ -28,12 +29,12 @@ export default forwardRef<HTMLElement, Props>(function Portal(
 ) {
 	const root = useMemo(() => document.createElement('div'), []);
 
-	useEffect(() => {
+	useInlineEffect(() => {
 		root.className = merge(tw`Portal~(fixed top-0 left-0 w-0 h-0)`, props.wrapperClass);
 		if (props.z) root.style.zIndex = props.z.toString();
 	}, [props.wrapperClass, root, props.z]);
 
-	useEffect(() => {
+	useInlineEffect(() => {
 		const parent = props.to ?? document.querySelector('#portal') ?? document.body;
 		parent.appendChild(root);
 		return () => parent.removeChild(root);
