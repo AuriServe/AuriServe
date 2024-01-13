@@ -1,10 +1,10 @@
 import { Fragment, h } from 'preact';
 
-import Svg from '../Svg';
-import { SecondaryButton } from '../Button';
+import Svg from '../../Svg';
+import { SecondaryButton } from '../../Button';
 
-import { tw } from '../../Twind';
-import * as Icon from '../../Icon';
+import { tw } from '../../../Twind';
+import * as Icon from '../../../Icon';
 
 export default function UnknownPage() {
 	return (

@@ -1,11 +1,11 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 
-import Card from '../Card';
-import Form, { Field } from '../Form';
+import Card from '../../Card';
+import Form, { Field } from '../../Form';
 
-import { tw } from '../../Twind';
-import * as Icon from '../../Icon';
+import { tw } from '../../../Twind';
+import * as Icon from '../../../Icon';
 // import EventEmitter from '../../EventEmitter';
 
 interface OverviewData {

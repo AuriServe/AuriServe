@@ -26,7 +26,7 @@ export interface Props {
 
 	to?: string;
 	href?: string;
-	onClick?: () => void;
+	onClick?: (evt: Event) => void;
 
 	disabled?: boolean;
 
@@ -199,7 +199,7 @@ export const GhostButton = forwardRef<HTMLElement, Props>(function TertiaryButto
 	);
 });
 
-export const LinkButton = forwardRef<HTMLElement, Props>(function LinkButton(props, ref) {
+export const LinkButton = forwardRef<HTMLElement, Props & { nowrap?: boolean }>(function LinkButton(props, ref) {
 	return (
 		<UnstyledButton
 			ref={ref}
@@ -210,6 +210,7 @@ export const LinkButton = forwardRef<HTMLElement, Props>(function LinkButton(pro
 				icon-s-(accent-400 active:accent-200 dark:(accent-400 hocus:accent-200 active:gray-900))
 				font-medium text-(accent-(700 dark:300) hocus:not-active:(accent-600 dark:white) active:(white dark:gray-800)))
 				${props.icon && 'ml-0.5'}`,
+				props.nowrap && tw`flex mr-0.5`,
 				props.class
 			)}>
 			<div
@@ -225,12 +226,15 @@ export const LinkButton = forwardRef<HTMLElement, Props>(function LinkButton(pro
 				<Svg
 					src={props.icon}
 					size={5}
-					class={tw`relative z-10 inline-block -mb-1 -mt-1 -mx-0.5`}
+					class={tw`relative z-10 inline-block -mb-1 -mt-1 -mx-0.5 shrink-0`}
 				/>
 			)}
 
-			<span class={tw`z-10 ${props.iconOnly ? 'sr-only' :
-				`${props.icon ? (props.iconRight ? 'mr-1' : 'ml-1') : ''} relative`}`}>
+			<span class={merge(
+				tw`z-10 ${props.iconOnly ? 'sr-only' :
+					`${props.icon ? (props.iconRight ? 'mr-1' : 'ml-1') : ''} relative`}`,
+				props.nowrap && tw`truncate overflow-hidden w-full`
+			)}>
 				{props.label}
 			</span>
 
@@ -238,7 +242,7 @@ export const LinkButton = forwardRef<HTMLElement, Props>(function LinkButton(pro
 				<Svg
 					src={props.icon}
 					size={5}
-					class={tw`relative z-10 inline-block -mb-1 -mt-1 -mx-0.5`}
+					class={tw`relative z-10 inline-block -mb-1 -mt-1 -mx-0.5 shrink-0`}
 				/>
 			)}
 		</UnstyledButton>

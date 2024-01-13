@@ -33,6 +33,8 @@ interface Props {
 export default function BlogItem({ post, ctx, layout = 'landscape' }: Props) {
 	if (ctx?.feedLayout === 'cards') layout = 'portrait';
 
+	let sanitizedContent = post.data.content.replace(/<(a|h1|h2|h3|h4|h5|h6|blockquote).*?>(.+?)<\/\1>/gi, '$2');
+
 	return (
 		<PostItem class={`blog ${layout}`} i={ctx?.i} style={{
 			'--image': post.data.banner
@@ -49,7 +51,7 @@ export default function BlogItem({ post, ctx, layout = 'landscape' }: Props) {
 				<div class='image'/>
 				<div class='content'>
 					<div class='title element-prose'><h3>{post.data.title}</h3></div>
-					<div class='text element-prose' dangerouslySetInnerHTML={{ __html: post.data.content }}/>
+					<div class='text element-prose' dangerouslySetInnerHTML={{ __html: sanitizedContent }}/>
 					<div class='tags'>
 						{post.tags.sort().map((tag, i) => (
 							<div key={i} class='tag'><span>{tag.replace(/_/g, ' ')}</span></div>

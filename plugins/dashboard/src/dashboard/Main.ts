@@ -59,12 +59,12 @@ export { Page } from './Component/Page';
 export { default as Svg } from './Component/Svg';
 export { default as Modal } from './Component/Modal';
 export { default as Title } from './Component/Title';
-export { default as Table } from './Component/Table';
 export { default as Portal } from './Component/Portal';
 export { default as Tooltip } from './Component/Tooltip';
 export { default as Spinner } from './Component/Spinner';
+export { default as Table } from './Component/Table/Table';
 export { default as SavePrompt } from './Component/SavePrompt';
-export { Transition, TransitionGroup } from './Component/Transition';
+export { default as Transition } from './Component/Transition';
 export { default as Form, Field, FieldGroup } from './Component/Form';
 export { default as DimensionTransition } from './Component/DimensionTransition';
 

@@ -76,7 +76,7 @@
 		&:has(br:only-child) {
 			position: relative;
 			&::after {
-				content: 'A heading goes here.';
+				content: 'Some stunning heading.';
 				color: rgb(var(--theme-gray-500));
 				position: absolute;
 				top: 0;
@@ -86,7 +86,7 @@
 		}
 	}
 
-	p:has(br:only-child) {
+	h1 + p:has(br:only-child) {
 		position: relative;
 		&::after {
 			content: 'Words go here.';
@@ -169,6 +169,14 @@
 .tooltip_style_preview {
 	&.active {
 		background-color: rgb(var(--theme-gray-600));
+
+		&:hover {
+			background-color: rgb(var(--theme-gray-600) / 80%);
+		}
+
+		&:active {
+			background-color: rgb(var(--theme-gray-600) / 60%);
+		}
 	}
 
 	& strong:not([class]) {

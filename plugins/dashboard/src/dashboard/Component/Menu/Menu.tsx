@@ -8,6 +8,7 @@ import Shortcut from './Shortcut';
 import Transition from '../Transition';
 import { tw, merge } from '../../Twind';
 import { elementBounds } from '../../Util';
+import { Classes, useClasses } from '../../Hooks';
 import { useContext, useLayoutEffect, useState } from 'preact/hooks';
 
 interface Props {
@@ -19,7 +20,7 @@ interface Props {
 	offset?: number;
 	for?: HTMLElement | null;
 
-	class?: string;
+	class?: Classes;
 	children: ComponentChildren;
 }
 
@@ -32,6 +33,7 @@ export const MenuContext = createContext<MenuContextData>({ root: true });
 
 export default function Menu(props: Props) {
 	const ctx = useContext(MenuContext);
+	const classes = useClasses(props.class);
 
 	const openFrom = props.openFrom ?? 'topLeft';
 	const isTop = openFrom === 'topLeft' || openFrom === 'topRight';
@@ -66,15 +68,20 @@ export default function Menu(props: Props) {
 			: [props.children]
 		: [];
 
-	children = children.filter(Boolean).map((child, i) =>
-		cloneElement(child, {
-			class: merge(
-				child.props.class,
-				tw`animate-${isTop ? 'drop' : 'rise'}-fade-in
-				[animation-delay:${(isTop ? i + 1 : children.length - i - 1) * 25}ms]`
-			),
-		})
-	);
+	children = children.filter(Boolean).map((child, i) => {
+		const newClasses = tw`animate-${isTop ? 'drop' : 'rise'}-fade-in
+			[animation-delay:${(isTop ? i + 1 : children.length - i - 1) * 25}ms]`;
+
+		const mergedClasses = (child.props.class == null || typeof child.props.class === 'string')
+			? ({ '': merge(child.props.class, newClasses) })
+			: ({
+				...child.props.class,
+				'': merge(child.props.class['.'] ?? child.props.class[''] ?? '', newClasses),
+			});
+		delete mergedClasses['.'];
+
+		return cloneElement(child, { class: mergedClasses });
+	});
 
 	const transformOrigin = `${isLeft ? '1rem' : 'calc(100% - 1rem)'} ${
 		isTop ? '1rem' : 'calc(100% - 1rem)'
@@ -97,20 +104,19 @@ export default function Menu(props: Props) {
 			enterFrom={tw`scale-95 opacity-0`}
 			invertExit
 			style={{ transformOrigin, ...position }}
-			class={merge(tw`Menu~(absolute isolate w-auto h-auto grid z-50)`, props.class)}>
+			class={merge(tw`Menu~(absolute isolate w-auto h-auto grid z-50)`, classes.get())}>
 			<div
-				class={
-					ctx.root
-						? tw`fixed inset-0 -z-10 w-full h-full`
-						: tw`absolute -z-10 -top-8 left-1.5 w-[calc(100%+1.5rem)] h-[calc(100%+4rem)]`
-				}
+				class={ctx.root
+					? tw`fixed inset-0 -z-10 w-full h-full`
+					: tw`absolute -z-10 -top-8 left-1.5 w-[calc(100%+1.5rem)] h-[calc(100%+4rem)]`}
 				onClick={handleClose}
 				onContextMenu={handleClose}
 			/>
 
 			<div
-				class={tw`Menu~(min-w-[12rem] w-max h-auto grid bg-gray-750 rounded shadow-lg shadow-black/25)
-					${ctx.root && 'will-change-transform'}`}
+				class={merge(
+					tw`Menu~(min-w-[12rem] w-max h-auto grid bg-gray-750 rounded shadow-lg shadow-black/25)
+					${ctx.root && 'will-change-transform'}`, classes.get('card'))}
 				onContextMenu={(evt) => {
 					evt.preventDefault();
 					evt.stopPropagation();

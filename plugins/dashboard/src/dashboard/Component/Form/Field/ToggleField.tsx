@@ -96,7 +96,10 @@ export default function ToggleField(props: Props) {
 					onBlur={handleBlur}
 				/>
 				<div
-					class={tw`absolute bg-gray-input inset-0 opacity-(0 peer-checked:100) transition`}
+					class={merge(
+						tw`absolute bg-gray-input inset-0 opacity-(0 peer-checked:100) transition`,
+						classes.get('background')
+					)}
 				/>
 				<span
 					class={merge(tw`
@@ -106,17 +109,20 @@ export default function ToggleField(props: Props) {
 					{label}
 				</span>
 				<div
-					class={tw`absolute w-10 h-6 top-3 right-3 p-1 rounded-full transition
+					class={merge(tw`absolute w-10 h-6 top-3 right-3 p-1 rounded-full transition
 						${
 							props.disabled
 								? `bg-gray-700 peer-checked:bg-gray-400`
 								: `ring-(${invalid ? 'red-400' : 'accent-400'}
 									offset-gray-800 peer-focus:(2 offset-2) peer-active:(2 offset-2))
 									bg-(gray-700 peer-checked:accent-400 peer-checked:peer-focus:accent-400)`
-						}`}
+						}`,
+						classes.get('switch_track')
+					)}
+
 				/>
 				<div
-					class={tw`absolute w-4 h-4 top-4 right-8 rounded-full
+					class={merge(tw`absolute w-4 h-4 top-4 right-8 rounded-full
 					peer-checked:translate-x-4 shadow-sm shadow-gray-900/50 transition
 					peer-disabled:!(bg-gray-400 peer-checked:bg-gray-700)
 					${
@@ -124,7 +130,9 @@ export default function ToggleField(props: Props) {
 							? `bg-red-300`
 							: `bg-(gray-300 peer-hover:gray-200 peer-focus:accent-400 peer-checked:gray-700
 								peer-checked:peer-hover:gray-600 peer-checked:peer-focus:gray-700)`
-					}`}
+					}`,
+					classes.get('switch_knob')
+					)}
 				/>
 			</div>
 			{props.description && (

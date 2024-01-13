@@ -133,9 +133,8 @@ export default function LoginPage({ onLogin }: Props) {
 				</Card>
 			</div>
 			<div
-				class={tw`bg-gradient-to-r from-gray-(100 dark:800) via-gray-(100 dark:800) to-transparent
-					w-max py-2 pl-4 pr-80 justify-self-start self-end`}>
-				<p class={tw`text-gray-(600 dark:300) mt-0.5`}>
+				class={tw`bg-gray-(100 dark:800/50) w-full py-3 px-4 justify-self-start text-center`}>
+				<p class={tw`text-gray-(600 dark:400) mt-0.5 text-sm font-medium`}>
 					AuriServe 0.0.1&nbsp; &nbsp;&bull;&nbsp; &nbsp;AS Frontend 0.0.1
 				</p>
 			</div>

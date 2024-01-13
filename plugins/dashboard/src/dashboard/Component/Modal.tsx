@@ -1,9 +1,9 @@
-import { h, ComponentChildren } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { h, ComponentChildren, Fragment } from 'preact';
 
 import Card from './Card';
-import Portal from './Portal';
-import { Transition } from './Transition';
+import Button from './Button';
+import * as Icon from '../Icon';
+import { Dialog, Transition } from '@headlessui/react';
 
 import { tw, merge } from '../Twind';
 
@@ -12,102 +12,69 @@ interface Props {
 
 	z?: number;
 
-	onClose?: (_: MouseEvent | KeyboardEvent) => void;
+	onClose?: () => void;
 
 	style?: any;
 	class?: string;
-	children?: ComponentChildren;
+	children?: ComponentChildren | ((open: boolean) => ComponentChildren);
 }
 
 export default function Modal(props: Props) {
-	const dialogRef = useRef<HTMLDialogElement>(null);
-	const closeTimeoutRef = useRef<number>(0);
-	const overflowTimeoutRef = useRef<number>(0);
-
-	useEffect(() => {
-		if (props.active && dialogRef) {
-			if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-			closeTimeoutRef.current = 0;
-			dialogRef.current?.showModal();
-			// requestAnimationFrame(() => {
-			// 	const elem = (document.activeElement as HTMLElement);
-			// 	elem?.blur();
-			// 	elem?.focus({ focusVisible: true } as any);
-			// });
-		}
-		else if (!props.active && dialogRef) {
-			if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-			closeTimeoutRef.current = setTimeout(() => dialogRef.current?.close(), 150) as any as number;
-		}
-		else {
-			console.warn('invalid state', props.active, dialogRef);
-		}
-	}, [ props.active ]);
-
-	useEffect(() => {
-		const root = document.documentElement;
-		const app = document.body.children[0] as HTMLElement;
-
-		if (!root || !app || !props.active) return undefined;
-
-		if (document.documentElement.classList?.contains('custom_scroll')) {
-			if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
-			root.style.overflow = 'hidden';
-			app.style.paddingRight = '14px';
-
-			return () => {
-				if (overflowTimeoutRef.current) clearTimeout(overflowTimeoutRef.current);
-				overflowTimeoutRef.current = setTimeout(() => {
-					root.style.overflow = '';
-					app.style.paddingRight = '';
-				}, 150) as any as number;
-			};
-		}
-	}, [ props.active ]);
-
-	const { onClose } = props;
-
-	useEffect(() => {
-		if (!onClose || !props.active) return;
-
-		function handleKeyPress(evt: KeyboardEvent) {
-			if (evt.key === 'Escape') {
-				onClose?.(evt);
-			}
-		}
-
-		window.addEventListener('keydown', handleKeyPress);
-		return () => window.removeEventListener('keydown', handleKeyPress);
-	}, [ onClose, props.active ]);
-
 	return (
-		<Portal as='dialog' ref={dialogRef} z={props.z || 100} onClick={onClose}
-			class={tw`fixed inset-0 w-screen h-screen max-w-none max-h-screen p-0 m-0
-				pl-14 flex-(& col) items-center overflow-auto justify-around
-				bg-transparent backdrop:bg-transparent text-gray-(800 dark:100) ${!props.active && 'interact-none'}`}>
-			<div class={tw`w-screen h-screen interact-none absolute inset-0 flex`}>
-				<div class={tw`opacity-${props.active ? 100 : 0} transition duration-150 w-14 h-full bg-gray-900/60`}/>
-				<div class={tw`opacity-${props.active ? 100 : 0} transition duration-150
-					grow h-full bg-gray-50/80 dark:bg-[#081024cc] backdrop-filter backdrop-blur-md`}/>
-			</div>
-			<div class={tw`flex w-full h-auto px-3 py-12 overflow-auto justify-around relative z-10`}>
-				{/** TODO: Make a TransitionChild component to make nested transitions like this work without jank. */}
-				<Transition
-					show={props.active}
-					initial
-					duration={150}
-					invertExit
-					enter={tw`transition duration-150`}
-					enterFrom={tw`scale-[98%] opacity-0`}
-					enterTo={tw`scale-100 opacity-100`}>
-					<Card
-						class={merge(tw`h-min will-change-transform interact-auto`, props.class)}
-						style={props.style}
-						onClick={(e: any) => e.stopPropagation()}>
-						{props.children}
-					</Card>
-				</Transition>
-			</div>
-		</Portal>
+		<Transition
+			as={Fragment}
+			show={props.active}
+			appear={true}
+		>
+			<Dialog
+				onClose={() => props.onClose?.()}
+				class={tw`fixed inset-0 w-screen h-screen max-w-[100vw] max-h-screen p-0 m-0
+					pl-14 flex overflow-hidden items-center interact-auto z-[${props.z || 100}]`}
+			>
+				<Transition.Child as={Fragment}
+					enter={tw`transition duration-150`} enterFrom={tw`opacity-0`} leaveTo={tw`opacity-0`}
+					enterTo={tw`opacity-100`} leaveFrom={tw`opacity-100`} leave={tw`transition duration-150`}>
+					<div class={tw`fixed top-0 left-0 transition duration-150 w-14 h-full
+						opacity-${props.active ? 100 : 0} bg-gray-900/60`}/>
+				</Transition.Child>
+
+				<Transition.Child as={Fragment}
+					enter={tw`transition duration-150`} enterFrom={tw`opacity-0`} leaveTo={tw`opacity-0`}
+					enterTo={tw`opacity-100`} leaveFrom={tw`opacity-100`} leave={tw`transition duration-150`}>
+					<div class={tw`fixed inset-0 inset-0 left-14 transition duration-150 h-full
+						opacity-${props.active ? 100 : 0}	grow bg-gray-50/80
+						dark:bg-[#081024cc] backdrop-filter backdrop-blur-md`}/>
+				</Transition.Child>
+
+				{props.onClose && <Transition.Child as={Fragment}
+					enter={tw`transition duration-150`} enterFrom={tw`opacity-0`} leaveTo={tw`opacity-0`}
+					enterTo={tw`opacity-30`} leaveFrom={tw`opacity-30`} leave={tw`transition duration-150`}>
+					<Button.Ghost class={tw`absolute top-3 right-3`} size={9} icon={Icon.close} iconOnly label='Close'/>
+				</Transition.Child>}
+
+				<div class={tw`w-full h-max max-h-full overflow-y-auto will-change-transform flex justify-center p-12`}>
+					<Transition.Child
+						as={Dialog.Panel}
+						enter={merge(tw`transition duration-150`)}
+						enterFrom={tw`scale-[98%] opacity-0`}
+						enterTo={tw`scale-100 opacity-100`}
+						leave={merge(tw`transition duration-150`)}
+						leaveFrom={tw`scale-100 opacity-100`}
+						leaveTo={tw`scale-[98%] opacity-0`}
+						class={tw`w-max h-max shrink-0 text-gray-(800 dark:100)
+						icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}
+					>
+						{(open: boolean) => (
+							<Card
+								class={merge(tw``, props.class)}
+								style={props.style}
+							>
+								{props.children instanceof Function ? props.children(open) : props.children}
+							</Card>
+						)}
+					</Transition.Child>
+				</div>
+			</Dialog>
+		</Transition>
 	);
 }

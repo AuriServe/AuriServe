@@ -17,7 +17,7 @@ type AppState = 'QUERYING' | 'LOGIN' | 'AUTH';
 
 function setHijackScrollbar(hijack: boolean) {
 	document.documentElement.classList[hijack ? 'add' : 'remove']('custom_scroll',
-		...tw`scroll-(gutter-gray-900 bar-(gray-500 hover-gray-400)`.split(' ')
+		...tw`scroll-(gutter-transparent bar-(gray-500 hover-gray-400)) bg-gray-900`.split(' ')
 	);
 }
 
@@ -74,12 +74,19 @@ export default function App() {
 			.catch(() => setState('LOGIN'));
 	}, [ state, mergeData ]);
 
+	useEffect(() => {
+		const themeStyles = document.documentElement.classList.value.split(' ').filter(s => s.startsWith('dash-theme'));
+		document.documentElement.classList.remove(...themeStyles);
+		document.documentElement.classList.add(tw`theme-${data.user?.theme ?? 'blue'}`);
+	}, [ data.user?.theme ]);
+
 	return (
 		<AppContext.Provider value={{ data, mergeData, setShowChrome, setHijackScrollbar }}>
 			<div
 				class={tw`
-				${state !== 'LOGIN' && showChrome && 'pl-14'} grid min-h-screen font-sans theme-${data.user?.theme ?? 'blue'}
-				bg-gray-(100 dark:900) text-gray-(800 dark:100)
+				${state !== 'LOGIN' && showChrome && 'pl-14'}
+				grid min-h-screen
+				font-sans bg-gray-(100 dark:900) text-gray-(800 dark:100)
 				icon-p-gray-(500 dark:100) icon-s-gray-(400 dark:300)`}>
 				<Router basename='/dashboard'>
 					{state === 'AUTH' && showChrome && <Fragment>

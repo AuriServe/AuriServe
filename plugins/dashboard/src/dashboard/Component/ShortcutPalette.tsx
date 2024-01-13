@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'preac
 
 import Svg from './Svg';
 import Modal from './Modal';
-import { Transition, TransitionGroup } from './Transition';
+import { Transition } from './Transition';
 
 import { tw } from '../Twind';
 import { Shortcut, searchShortcuts } from '../Shortcut';
@@ -189,12 +189,12 @@ export default function ShortcutPalette() {
 						class={tw`relative group h-auto w-full max-h-[calc(7*14*4px+16px)] p-2 pointer-events-auto
 							bg-gray-750 shadow-md rounded-lg transition-all overflow-hidden [transform-origin:center_-128px]
 							${results.length === 0 && '!py-0 opacity-0 scale-95'}`}>
-						<TransitionGroup
+						{/* <TransitionGroup
 							duration={300}
 							enter={tw`transition-all duration-300`}
 							enterFrom={tw`opacity-0 -mb-14`}
 							enterTo={tw`opacity-100 mb-0`}
-							invertExit>
+							invertExit> */}
 							{results.map((s, i) => (
 								<button
 									key={`${s.title}_${i}`}
@@ -217,7 +217,7 @@ export default function ShortcutPalette() {
 									</div>
 								</button>
 							))}
-						</TransitionGroup>
+						{/* </TransitionGroup> */}
 					</div>
 				</div>
 			</form>

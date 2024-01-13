@@ -1,12 +1,17 @@
-import { VNode, h } from 'preact';
-import { useAsyncEffect } from 'vibin-hooks';
-import { useLayoutEffect, useMemo, useState } from 'preact/hooks';
+import { merge } from 'common';
+import { forwardRef } from 'preact/compat';
+import { ComponentChildren, VNode, createContext, h } from 'preact';
+import { useAsyncEffect, useStore, Store } from 'vibin-hooks';
+import { useContext, useLayoutEffect, useMemo } from 'preact/hooks';
 
-import { tw } from '../Twind';
-import { Icon, Svg } from '../Main';
-import { merge, titleCase } from 'common';
+import { tw } from '../../Twind';
+import { useClasses, Classes } from '../../Hooks';
 
-export type RowType = { id: any } & Record<string, any>;
+import TableBody from './TableBody';
+import TableHeader from './TableHeader';
+import TableFooter from './TableFooter';
+
+export type RowType = Record<string, any>;
 
 export type Column = {
 	name: string;
@@ -59,6 +64,9 @@ interface Props<T extends RowType> {
 	/** The number of items per page, defualts to DEFAULT_ITEMS_PER_PAGE. */
 	itemsPerPage?: number;
 
+	/** The key in the data to use as a unique ID. */
+	idKey?: keyof T;
+
 	/**
 	 * The data for the page, which is either an array of data or a function that retrieves an array of data.
 	 * If a function is specified, it will be called every time the sort, sort direction, filters, or page changes.
@@ -85,21 +93,27 @@ interface Props<T extends RowType> {
 
 	filter?: MaybeFilter<T>;
 
-	/**
-	 * A function to render a row of the table. Will be called for every visible row.
-	 */
+	class?: Classes;
 
-	children: (elem: T, ctx: DataContext & { ind: number, data: T[], columns: Column[] }) => VNode;
+	children: ComponentChildren;
+}
 
-	class?: string;
+export interface TableContextData<T extends RowType> {
+	data: Store<T[]>;
 
-	headerClass?: string;
+	filter: Store<string>;
+	sortBy: Store<string>;
+	sortReversed: Store<boolean>;
+	page: Store<number>;
+	columns: Store<Column[]>;
+	itemsPerPage: Store<number>;
+	idKey: string;
+}
 
-	bodyClass?: string;
+const TableContext = createContext<TableContextData<any>>({} as any);
 
-	rowClass?: string;
-
-	footerClass?: string;
+export function useTableContext<T extends RowType>() {
+	return useContext(TableContext) as TableContextData<T>;
 }
 
 function processArrayData<T extends RowType>(
@@ -110,13 +124,16 @@ function processArrayData<T extends RowType>(
 	return data;
 }
 
-export default function Table<T extends RowType>(props: Props<T>) {
-	const [ columns, setColumns ] = useState([ ...props.columns ]);
-	const [ sortBy, setSortBy ] = useState<string>(props.sortBy ?? props.columns[0].name);
-	const [ sortReversed, setSortReversed ] = useState(
-		props.sortReversed ?? props.columns.find(c => c.name === sortBy)?.sortReversed ?? false);
-	const [ filter, setFilter ] = useState('');
-	const [ page, setPage ] = useState(0);
+const TableRaw = forwardRef<HTMLElement, Props<RowType>>(function Table(props, ref) {
+	const classes = useClasses(props.class);
+
+	const columns = useStore([ ...props.columns ]);
+	const sortBy = useStore<string>(props.sortBy ?? props.columns[0].name);
+	const sortReversed = useStore(
+		props.sortReversed ?? props.columns.find(c => c.name === sortBy())?.sortReversed ?? false);
+	const filter = useStore('');
+	const page = useStore(0);
+	const itemsPerPage = useStore(props.itemsPerPage ?? DEFAULT_ITEMS_PER_PAGE);
 
 	if (!Array.isArray(props.data) && typeof props.sort === 'function')
 		throw new Error('`sort` must be a boolean when `data` is a function.');
@@ -124,95 +141,71 @@ export default function Table<T extends RowType>(props: Props<T>) {
 		throw new Error('`filter` must be a boolean when `data` is a function.');
 
 	const dataContext = useMemo<DataContext>(() => ({
-		filter,
-		itemsPerPage: props.itemsPerPage ?? DEFAULT_ITEMS_PER_PAGE,
-		page,
-		sortBy,
-		sortReversed
-	}), [ filter, props.itemsPerPage, page, sortBy, sortReversed ]);
+		filter: filter(),
+		itemsPerPage: itemsPerPage(),
+		page: page(),
+		sortBy: sortBy(),
+		sortReversed: sortReversed()
+	}), [ page(), filter(), sortBy(), sortReversed(), itemsPerPage() ]);
 
-	const [ data, setData ] = useState<T[]>(Array.isArray(props.data)
+	const data = useStore<RowType[]>(Array.isArray(props.data)
 		? processArrayData(props.data, dataContext, props.sort, props.filter ?? false)
 		: []);
+
+	const tableContext = useMemo<TableContextData<RowType>>(() => ({
+		data,
+		filter,
+		itemsPerPage,
+		page,
+		sortBy,
+		sortReversed,
+		columns,
+		idKey: props.idKey ?? 'id'
+	}), [ data(), filter(), itemsPerPage(), page(), sortBy(), sortReversed(), columns(), props.idKey ]);
 
 	/** When the sort, filters, or data function changes, reset the page data. */
 	useLayoutEffect(() => {
 		if (Array.isArray(props.data))
-			setData(processArrayData(props.data, dataContext, props.sort ?? DEFAULT_SORT_FN, props.filter ?? false));
+			data(processArrayData(props.data, dataContext, props.sort ?? DEFAULT_SORT_FN, props.filter ?? false));
 		else
-			setData([]);
+			data([]);
 	}, [ sortBy, sortReversed, filter, dataContext, props.data, props.sort, props.filter ])
 
 	/** When the sort, filters, page, or data function changes, get new data. */
 	useAsyncEffect(async (abort) => {
 		if (Array.isArray(props.data)) return;
 		try {
-			const data = await props.data(
-				Math.max((page - 1) * dataContext.itemsPerPage, 0),
-				(page + 1) * dataContext.itemsPerPage,
+			const newData = await props.data(
+				Math.max((page() - 1) * dataContext.itemsPerPage, 0),
+				(page() + 1) * dataContext.itemsPerPage,
 				dataContext,
 				abort
 			);
 			if (abort.aborted) return;
-			setData(data);
+			data(newData);
 		}
 		catch (e) {
 			console.error('Failed to fetch data for table:', e);
 		}
-	}, [ page, props.data, dataContext ])
-
-	function handleClickSort(sort: string) {
-		setSortBy(existing => {
-			if (sort === existing) setSortReversed(rev => !rev);
-			else setSortReversed(columns.find(c => c.name === sort)?.sortReversed ?? false);
-			return sort;
-		});
-		setPage(0);
-	}
+	}, [ page(), props.data, dataContext ])
 
 	return (
-		<div class={props.class}>
-			<div
-				class={merge(tw`grid w-full`, props.headerClass)}
-				style={{ gridTemplateColumns: columns.filter(c => c.visible ?? true).map(col => col.size ?? '1fr').join(' ') }}
-			>
-				{columns.filter(c => c.visible ?? true).map((column) => {
-					const active = sortBy === column.name;
-					return (
-						<button
-							key={column.name}
-							class={tw`p-2 flex disabled:interact-none last:flex-row-reverse select-none`}
-							onClick={() => handleClickSort(column.name)}
-							disabled={!column.sortable}
-						>
-							<span class={tw`font-bold tracking-widest uppercase text-xs ${active ? 'text-gray-100' : 'text-gray-300'}`}>
-								{column.label ?? titleCase(column.name)}
-							</span>
-							<Svg
-								src={Icon.arrow_down}
-								size={6}
-								class={tw`shrink-0 -my-1 relative icon-p-gray-300 transition
-									${sortReversed ? 'scale-y-[-100%]' : '-translate-y-0.5'}
-									${!active && 'opacity-0'}`}
-							/>
-						</button>
-					);
-				})}
+		<TableContext.Provider value={tableContext}>
+			<div class={merge(tw`flex flex-col`, classes.get())}>
+				{props.children}
 			</div>
-			<ol class={props.bodyClass}>
-				{data.slice(page * dataContext.itemsPerPage, (page + 1) * dataContext.itemsPerPage).map((elem, ind) =>
-					<li
-						key={elem.id}
-						value={page * dataContext.itemsPerPage + ind}
-						class={merge(tw``, props.rowClass)}>
-						{props.children(elem, { ...dataContext, ind, data, columns })}
-					</li>
-				)}
-			</ol>
-			<div class={merge(tw``, props.footerClass)}>
-				<p>Test</p>
-			</div>
-		</div>
+		</TableContext.Provider>
+	);
+});
 
-	)
-}
+const Table: (<T extends RowType>(props: Props<T>) => VNode) & {
+	Body: typeof TableBody;
+	Header: typeof TableHeader;
+	Footer: typeof TableFooter;
+} = TableRaw as any;
+
+Table.Body = TableBody;
+Table.Header = TableHeader;
+Table.Footer = TableFooter;
+
+export default Table;

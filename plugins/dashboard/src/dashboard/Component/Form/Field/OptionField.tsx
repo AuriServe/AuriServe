@@ -14,6 +14,7 @@ import useDerivedState from '../useDerivedState';
 import { refs } from '../../../Util';
 import * as Icon from '../../../Icon';
 import { merge, tw } from '../../../Twind';
+import { useClasses } from '../../../Hooks';
 
 type Props = FieldProps<string | null> & {
 	above?: boolean;
@@ -25,7 +26,7 @@ type Props = FieldProps<string | null> & {
 
 export default function OptionField(props: Props) {
 	const rerender = useRerender();
-	// const classes = useClasses(props.class);
+	const classes = useClasses(props.class);
 
 	const {
 		value,
@@ -112,7 +113,7 @@ export default function OptionField(props: Props) {
 					invalid={invalid}
 					disabled={disabled}
 					hideLabel={props.hideLabel}
-					class={props.class}
+					class={classes}
 					style={props.style}>
 					<Listbox.Button
 						id={id}
@@ -124,9 +125,9 @@ export default function OptionField(props: Props) {
 							text-left !outline-none resize-none transition
 							bg-gray-100 dark:bg-gray-700/75 ${disabled ? 'text-gray-300' : 'dark:focus:bg-gray-700'}
 							overflow-hidden truncate
-							${open && '!shadow-md dark:!bg-gray-700'}
-						`
-							// props.inputClass
+							${open && '!shadow-md dark:!bg-gray-700'},
+						`,
+							classes.get('text')
 						)}>
 						{props.options.get(value.current!) ?? props.options.get(null) ?? ''}
 					</Listbox.Button>

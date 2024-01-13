@@ -1,11 +1,11 @@
 import { h } from 'preact';
+import { useMemo } from 'preact/hooks';
 import { useAsyncEffect, useStore } from 'vibin-hooks';
-import { useEffect, useMemo, useRef } from 'preact/hooks';
 
 import { getThumbnail } from './Util';
 import { MediaGraph } from '../common/Type';
 import { QUERY_GET_ALL_MEDIA_OF_TYPE } from './Graph';
-import { Modal, Card, executeQuery, tw, Svg, Icon, Button, Form, Field } from 'dashboard';
+import { Modal, executeQuery, tw, Svg, Icon, Form, Field } from 'dashboard';
 
 interface Props {
 	active: boolean;

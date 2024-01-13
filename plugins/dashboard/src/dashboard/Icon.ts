@@ -40,6 +40,7 @@ export { default as info } from '@res/icon/info.svg';
 export { default as insights } from '@res/icon/insights.svg';
 export { default as launch } from '@res/icon/launch.svg';
 export { default as library } from '@res/icon/library.svg';
+export { default as link } from '@res/icon/link.svg';
 export { default as logout } from '@res/icon/logout.svg';
 export { default as menu } from '@res/icon/menu.svg';
 export { default as money } from '@res/icon/money.svg';

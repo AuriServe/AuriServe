@@ -1,6 +1,6 @@
 {
   //Stops VSCode from making suggestions.
-  "editor.wordBasedSuggestions": false,
+  "editor.wordBasedSuggestions": "off",
 
   //(Supposedly) makes VSCode only search the current file for words to auto-complete.
   //Might not work... Who knows.

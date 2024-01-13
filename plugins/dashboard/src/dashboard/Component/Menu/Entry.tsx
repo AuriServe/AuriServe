@@ -3,26 +3,29 @@ import { h, ComponentChildren, cloneElement } from 'preact';
 
 import Svg from '../Svg';
 import Shortcut from './Shortcut';
+import { Button } from '../../Main';
 import Menu, { MenuContext } from './Menu';
 
 import { tw, merge } from '../../Twind';
+import { useClasses, Classes } from '../../Hooks';
 
 import icon_arrow_more from '@res/icon/arrow_more.svg';
-import { Button } from '../../Main';
 
 interface Props {
 	icon?: string;
 	label: string;
 
-	class?: string;
 	children?: ComponentChildren;
 
 	disabled?: boolean;
 	onClick?: () => true | void;
+
+	class?: Classes;
 }
 
 export default function Entry(props: Props) {
 	const ctx = useContext(MenuContext);
+	const classes = useClasses(props.class);
 	const [hover, setHover] = useState<boolean>(false);
 
 	const shortcuts: any[] = [];
@@ -47,12 +50,14 @@ export default function Entry(props: Props) {
 		if (!keepAlive) ctx.onClose?.();
 	};
 
+	console.log(props.class);
+
 	return (
 		<li
 			class={merge(
 				tw`flex mx-1.5 mb-0.5 first-of-type:mt-1.5 last-of-type:mb-1.5 relative
 					${hover ? 'z-10' : ''}`,
-				props.class
+				classes.get()
 			)}>
 			<div
 				onMouseEnter={() => setHover(true)}
@@ -67,7 +72,7 @@ export default function Entry(props: Props) {
 						icon-p-gray-100 icon-s-gray-300 text-gray-200)
 						disabled:!(cursor-auto bg-transparent icon-p-gray-400 icon-s-gray-600 text-gray-300)
 						${hover ? '!(bg-accent-400/5 icon-p-white icon-s-accent-400 text-accent-100)' : ''}`}>
-					<Svg src={props.icon ?? ''} size={6} />
+					<Svg src={props.icon ?? ''} size={6} class={classes.get('icon')}/>
 					<p class={tw`grow leading-none pt-px font-medium transition duration-75`}>
 						{props.label}
 					</p>

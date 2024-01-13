@@ -1,7 +1,7 @@
 import { ComponentChildren, h } from 'preact';
 import { useContext, useRef, useState, useEffect } from 'preact/hooks';
 
-import { TransitionGroup } from '../Transition';
+// import { TransitionGroup } from '../Transition';
 
 import Svg from '../Svg';
 import * as Icon from '../../Icon';
@@ -168,12 +168,12 @@ export default function FloatingDescription(props: Props) {
 				props.class
 			)}>
 			<div class={tw`overflow-hidden h-full w-full relative`}>
-				<TransitionGroup
+				{/* <TransitionGroup
 					duration={175}
 					enter={tw`transition delay-75 duration-100 z-10`}
 					enterFrom={tw`opacity-0 -translate-y-1`}
 					exit={tw`transition duration-100`}
-					exitTo={tw`opacity-0 translate-y-1`}>
+					exitTo={tw`opacity-0 translate-y-1`}> */}
 					{show && (
 						<div
 							key={`${state.description}-${state.error}`}
@@ -204,7 +204,7 @@ export default function FloatingDescription(props: Props) {
 							)}
 						</div>
 					)}
-				</TransitionGroup>
+				{/* </TransitionGroup> */}
 			</div>
 		</div>
 	);

@@ -4,14 +4,14 @@ import { h } from 'preact';
 import { useMemo } from 'preact/hooks';
 import { useNavigate, useLocation, NavLink as Link } from 'react-router-dom';
 
-import Svg from '../Svg';
-import Button from '../Button';
-import Spinner from '../Spinner';
-import { getSettings } from '../../Settings';
+import Svg from '../../Svg';
+import Button from '../../Button';
+import Spinner from '../../Spinner';
+import { getSettings } from '../../../Settings';
 
-import { tw } from '../../Twind';
-import * as Icon from '../../Icon';
-import { QUERY_SELF_USER, useData } from '../../Graph';
+import { tw } from '../../../Twind';
+import * as Icon from '../../../Icon';
+import { QUERY_SELF_USER, useData } from '../../../Graph';
 
 export default function SettingsPage() {
 	const [{ user }] = useData(QUERY_SELF_USER, []);

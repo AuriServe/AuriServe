@@ -38,7 +38,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 
 	useEffect(() => {
 		// Autofocus on first render if the autofocus prop is set.
-		if (props.autofocus) setTimeout(() => ref.current?.focus(), 50);
+		if (props.autofocus) setTimeout(() => (ref.current as HTMLInputElement)?.select(), 50);
 		// This *should not* be called again if autofocus changes.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);

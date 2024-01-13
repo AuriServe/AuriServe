@@ -142,7 +142,8 @@ export default function MediaImageField(props: Props) {
 			<MediaImageChooser
 				active={choosingExisting()}
 				current={value.current}
-				onClose={() => choosingExisting(false)}/>
+				onClose={() => choosingExisting(false)}
+			/>
 		</FieldContainer>
 	);
 }

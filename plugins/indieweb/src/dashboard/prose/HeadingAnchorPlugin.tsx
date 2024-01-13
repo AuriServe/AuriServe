@@ -24,7 +24,7 @@ function applyDecorations(doc: Node) {
 	const anchors: string[] = [];
 	const decorations: Decoration[] = [];
 	doc.descendants((node, pos) => {
-		if (node.type.name !== 'heading') return;
+		if (node.type.name !== 'heading' || node.attrs.id) return;
 		// console.log(node.type);
 
 		const text = (node.textContent as string) ?? pos.toString();

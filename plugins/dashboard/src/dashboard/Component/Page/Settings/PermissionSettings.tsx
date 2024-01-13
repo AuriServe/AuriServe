@@ -1,21 +1,21 @@
 import { Fragment, h } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 
-import Svg from '../Svg';
-import Card from '../Card';
-import Button from '../Button';
-import Spinner from '../Spinner';
-import { Form, Field } from '../Form';
+import Svg from '../../Svg';
+import Card from '../../Card';
+import Button from '../../Button';
+import Spinner from '../../Spinner';
+import { Form, Field } from '../../Form';
 
-import * as Icon from '../../Icon';
-import { merge, tw } from '../../Twind';
+import * as Icon from '../../../Icon';
+import { merge, tw } from '../../../Twind';
 import {
 	QUERY_PERMISSIONS,
 	QUERY_PERMISSION_CATEGORIES,
 	QUERY_ROLES,
 	QUERY_SELF_USER,
 	useData,
-} from '../../Graph';
+} from '../../../Graph';
 
 interface Role {
 	name: string;

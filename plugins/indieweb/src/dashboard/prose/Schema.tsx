@@ -78,18 +78,34 @@ export default function makeSchema(options: SpecOptions) {
 		} : null,
 
 		heading: (numHeadings > 0 ? {
-			attrs: { level: { default: 0 } },
+			attrs: { level: { default: 0 }, id: { default: '' } },
 			content: 'inline*',
 			group: 'block',
 			defining: true,
 			parseDOM: [
-				...range(numHeadings).map(l => ({ tag: (l + headingsLevelStart <= 6) ?
-					`h${l + headingsLevelStart}` : `h6[aria-level=${l + headingsLevelStart}]`, attrs: { level: l } }
-				))
+				...range(numHeadings).map(l => ({
+					tag: (l + headingsLevelStart <= 6)
+						? `h${l + headingsLevelStart}`
+						: `h6[aria-level='${l + headingsLevelStart}']`,
+					getAttrs(dom: HTMLElement) {
+						return {
+							level: dom.tagName.toLowerCase().startsWith('h')
+								? Number.parseInt(dom.tagName.substring(1), 10) - headingsLevelStart
+								: Number.parseInt(dom.getAttribute('aria-level') ?? '1') - headingsLevelStart,
+							id: dom.getAttribute('id') ?? ''
+						}
+					}
+				}))
 			],
-			toDOM({ attrs: { level: l } }) { return [
-				`h${Math.min(l + headingsLevelStart, 6)}`,
-				{ 'aria-level': l + headingsLevelStart < 6 ? undefined : l + headingsLevelStart }, 0 ]; }
+			toDOM({ attrs: { level: l, id } }) {
+				return [
+					`h${Math.min(l + headingsLevelStart, 6)}`,
+					{
+						'aria-level': l + headingsLevelStart <= 6 ? undefined : l + headingsLevelStart,
+						id: id ? id : null
+					}, 0
+				];
+			}
 		} : null),
 
 		codeblock: (allowedNodes.includes('codeblock') ? {
@@ -142,8 +158,23 @@ export default function makeSchema(options: SpecOptions) {
 		...customNodes
 	} as Record<string, NodeSpec | null>).filter(([ _, v ]) => v != null)) as Record<string, NodeSpec>;
 
-	const marks: Record<typeof ALLOWED_TEXT_STYLE_TAGS[number], MarkSpec> = ({
-		// TODO: LINK
+	const marks: Record<string, MarkSpec> = ({
+		link: {
+			attrs: {
+				href: { default: '' },
+				newTab: { default: false }
+			},
+			parseDOM: [{
+				tag: 'a',
+				getAttrs(node) {
+					return { href: (node as HTMLElement).getAttribute('href'),
+						newTab: (node as HTMLElement).getAttribute('target') === '_blank' }
+				}
+			}],
+			toDOM(node: any) {
+				return [ 'a', { href: node.attrs.href, target: node.attrs.newTab ? '_blank' : undefined }];
+			}
+		},
 
 		code: createdStyledMark('code', textStylesByTag.code, [ { tag: 'code' } ]),
 

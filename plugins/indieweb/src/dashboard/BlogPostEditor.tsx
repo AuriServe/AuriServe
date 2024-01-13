@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useEffect } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import { EditorState } from 'prosemirror-state';
 import { ProseMirror } from '@nytimes/react-prosemirror';
 import { DOMParser, DOMSerializer } from 'prosemirror-model';
@@ -12,6 +12,7 @@ import EditorToolbar from './prose/EditorToolbar';
 import HeadingNavigation from './prose/HeadingNavigation';
 import TextStyle, { DEFAULT_TEXT_STYLES } from './prose/TextStyle';
 import { useStore } from 'vibin-hooks';
+import LinkEditorPopup from './prose/LinkEditorPopup';
 
 interface Props {
 	post: Post;
@@ -55,6 +56,8 @@ function makeSlug(text: string) {
 }
 
 export default function BlogPostEditor({ post }: Props) {
+	const showLinkEditor = useRef<(edit?: boolean) => void>(() => {});
+
 	const navigate = useNavigate();
 	const mount = useStore<HTMLElement | null>(null);
 	const editorState = useStore(() => {
@@ -64,7 +67,7 @@ export default function BlogPostEditor({ post }: Props) {
 		const [ schema, plugins ] = initialize({
 			forceTitle: true,
 			titleLevel: 1,
-			numHeadings: 5,
+			numHeadings: 10,
 			textStyles: TEXT_STYLES
 		});
 
@@ -193,6 +196,7 @@ export default function BlogPostEditor({ post }: Props) {
 						prose-strong:(text-gray-100)
 						prose-pre:(text-gray-200)
 						prose-code:(text-gray-200)
+						prose-blockquote:(not-italic border-gray-500 prose-p:text-gray-300)
 						prose-a:(text-accent-300 underline decoration-([5px] accent-300/20) no-decoration-skip underline-offset-[-2px])
 						prose-hr:after:(!bg-gray-600 !h-0.5 !w-[90%] !mx-auto)
 						prose-img:(rounded-xl mx-auto my-6 max-w-none w-full)
@@ -200,7 +204,8 @@ export default function BlogPostEditor({ post }: Props) {
 						prose-code:(before:content-none after:content-none)
 					`}
 					/>
-					<EditorToolbar styles={TEXT_STYLES}/>
+					<EditorToolbar styles={TEXT_STYLES} showLinkEditor={() => showLinkEditor.current(true)}/>
+					<LinkEditorPopup show={showLinkEditor}/>
 				</main>
 
 				<Button.Tertiary icon={Icon.tag} label='Open Right Sidebar' iconOnly size={9} disabled={rightSidebarOpen()}

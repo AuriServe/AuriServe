@@ -1,15 +1,15 @@
 import { Fragment, h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import Svg from '../Svg';
-import Card from '../Card';
-import Modal from '../Modal';
-import Button from '../Button';
-import SavePrompt from '../SavePrompt';
+import Svg from '../../Svg';
+import Card from '../../Card';
+import Modal from '../../Modal';
+import Button from '../../Button';
+import SavePrompt from '../../SavePrompt';
 
-import { tw } from '../../Twind';
-import * as Icon from '../../Icon';
-import { QUERY_PLUGINS, useData, GraphData } from '../../Graph';
+import { tw } from '../../../Twind';
+import * as Icon from '../../../Icon';
+import { QUERY_PLUGINS, useData, GraphData } from '../../../Graph';
 
 type Plugin = GraphData['plugins'][0];
 

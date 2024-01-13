@@ -1,16 +1,18 @@
 import { h } from 'preact';
 import { titleCase } from 'common';
-import { Tooltip, merge, tw } from 'dashboard';
+import { Icon, Svg, Tooltip, merge, tw } from 'dashboard';
 import { useState, useRef, useEffect } from 'preact/hooks';
 import { useEditorEffect, useEditorEventCallback } from '@nytimes/react-prosemirror';
 
 import TextStyle from './TextStyle';
+import { TextSelection } from 'prosemirror-state';
 
 interface Props {
 	styles: TextStyle[];
+	showLinkEditor?: () => void;
 }
 
-export default function EditorToolbar({ styles }: Props) {
+export default function EditorToolbar({ styles, showLinkEditor }: Props) {
 	const [ editorPos, setEditorPos ] = useState<[ number, number ]>([ 0, 0 ]);
 	const [ editorActive, setEditorActive ] = useState(false);
 	const [ activeMarks, setActiveMarks ] = useState<boolean[]>([]);
@@ -80,29 +82,38 @@ export default function EditorToolbar({ styles }: Props) {
 		}
 	}, [ maybeActivateEditor ]);
 
-	const onToggleMark = useEditorEventCallback((view, style: TextStyle) => {
+	const handleToggleMark = useEditorEventCallback((view, style: TextStyle) => {
 		if (!view) return;
 		const { from, to, ranges } = view.state.selection;
 
 		const mark = view.state.schema.marks[style.baseTag].create({ class: style.class ?? '' });
 		const hasMark = ranges.some(range => view.state.doc.rangeHasMark(range.$from.pos, range.$to.pos, mark));
 
-		if (hasMark) {
-			view.dispatch(view.state.tr.removeMark(from, to, view.state.schema.marks[style.baseTag].create(
-				{ class: style.class ?? '' })));
-		}
-		else {
-			view.dispatch(view.state.tr.addMark(from, to, view.state.schema.marks[style.baseTag].create(
-				{ class: style.class ?? '' })));
-		}
+		if (hasMark) view.dispatch(view.state.tr.removeMark(from, to, mark));
+		else view.dispatch(view.state.tr.addMark(from, to, mark));
 
 		setTimeout(() => computeActiveMarks());
 	});
 
-	const onClearMarks = useEditorEventCallback((view) => {
+	const handleToggleLink = useEditorEventCallback((view) => {
+		if (!view) return;
+		const { from, to, ranges } = view.state.selection;
+
+		const mark = view.state.schema.marks['link'].create({ href: '', newTab: false });
+		const hasMark = ranges.some(range => view.state.doc.rangeHasMark(range.$from.pos, range.$to.pos, mark.type));
+
+		if (hasMark) view.dispatch(view.state.tr.removeMark(from, to, mark.type));
+		else {
+			view.dispatch(view.state.tr.addMark(from, to, mark));
+			setTimeout(() => showLinkEditor?.());
+		}
+	});
+
+	const handleClearFormatting = useEditorEventCallback((view) => {
 		if (!view) return;
 		const { from, to } = view.state.selection;
 		view.dispatch(view.state.tr.removeMark(from, to));
+		setTimeout(() => computeActiveMarks());
 	});
 
 	return (
@@ -118,17 +129,15 @@ export default function EditorToolbar({ styles }: Props) {
 					left-[calc(50%-0.3333rem)] rotate-45 bg-[color:inherit])`}
 			>
 				<button
-					onClick={() => onClearMarks()}
+					onClick={() => handleClearFormatting()}
 					class={merge(
 						'tooltip_style_preview',
-						!activeMarks.some(v => v) && 'active',
-						tw`StylePreview~(block text-lg text-gray-200 leading-none
+						// !activeMarks.some(v => v) && 'active',
+						tw`StylePreview~(block text-lg text-gray-200 leading-none grid place-items-center
+							hover:bg-gray-input active:bg-gray-750
 							w-9 h-9 overflow-hidden aspect-square rounded-md)`)}>
-					<Tooltip position='bottom' small label='Unstyled' delay={200}/>
-					<span class='unstyled'>
-						<span>A</span>
-						<span>a</span>
-					</span>
+					<Tooltip position='bottom' small label='Reset Formatting' delay={200}/>
+					<Svg src={Icon.theme} class={tw`icon-s-gray-200`} size={6}/>
 				</button>
 
 				<hr class={tw`border-0 my-1 border-r-(1 gray-400) h-auto w-0`}/>
@@ -137,11 +146,12 @@ export default function EditorToolbar({ styles }: Props) {
 					const Tag = s.baseTag;
 					return (
 						<button key={`${s.baseTag}.${s.class}`}
-							onClick={() => onToggleMark(s)}
+							onClick={() => handleToggleMark(s)}
 							class={merge(
 								'tooltip_style_preview',
 								activeMarks[i] && 'active',
 								tw`StylePreview~(block text-lg text-gray-200 leading-none
+									hover:bg-gray-input active:bg-gray-750
 									w-9 h-9 overflow-hidden aspect-square rounded-md)`)}>
 							<Tooltip position='bottom' small label={s.label || titleCase(s.class || s.baseTag)} delay={200}/>
 							<Tag class={s.class}>
@@ -151,6 +161,29 @@ export default function EditorToolbar({ styles }: Props) {
 						</button>
 					)
 				})}
+
+				<hr class={tw`border-0 my-1 border-r-(1 gray-400) h-auto w-0`}/>
+
+				<button
+					onClick={handleToggleLink}
+					class={merge(
+						'tooltip_style_preview', /*'active',*/
+						tw`InlineFormat~(block text-lg text-gray-200 leading-none grid place-items-center
+							hover:bg-gray-input active:bg-gray-750
+							w-9 h-9 overflow-hidden aspect-square rounded-md)`)}>
+					<Tooltip position='bottom' small label='Link' delay={200}/>
+					<Svg src={Icon.link} class={tw`icon-s-gray-200`} size={6}/>
+				</button>
+
+				{/* <button
+					class={merge(
+						'tooltip_style_preview',
+						tw`InlineFormat~(block text-lg text-gray-200 leading-none grid place-items-center
+							w-9 h-9 overflow-hidden aspect-square rounded-md)`)}>
+					<Tooltip position='bottom' small label='Link' delay={200}/>
+					<Svg src={Icon.link} size={6}/>
+				</button> */}
+
 			</div>
 		</div>
 	);

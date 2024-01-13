@@ -16,7 +16,7 @@ export default function AppearanceSettings() {
 
 	function handleSetTheme(theme: string) {
 		mergeData({ user: { ...data.user, theme }});
-		executeQuery(`mutation { setTheme(theme: '${theme}') }`);
+		// executeQuery(`mutation { setTheme(theme: "${theme}") }`);
 	}
 
 	return (

@@ -64,15 +64,15 @@ export default function Tooltip(props: Props) {
 
 			const position = { top: 0, left: 0 };
 
-			if ((props.position ?? 'top') === 'top') position.top = parentBounds.top - offset;
+			if ((props.position ?? 'top') === 'top') position.top = Math.floor(parentBounds.top - offset);
 			else if (props.position === 'bottom')
-				position.top = parentBounds.top + parentBounds.height + offset;
-			else position.top = parentBounds.top + parentBounds.height / 2;
+				position.top = Math.floor(parentBounds.top + parentBounds.height + offset);
+			else position.top = Math.floor(parentBounds.top + parentBounds.height / 2);
 
-			if (props.position === 'left') position.left = parentBounds.left - offset;
+			if (props.position === 'left') position.left = Math.floor(parentBounds.left - offset);
 			else if (props.position === 'right')
-				position.left = parentBounds.left + parentBounds.width + offset;
-			else position.left = parentBounds.left + parentBounds.width / 2;
+				position.left = Math.floor(parentBounds.left + parentBounds.width + offset);
+			else position.left = Math.floor(parentBounds.left + parentBounds.width / 2);
 
 			setPosition(position);
 			setVisible(true);
@@ -99,7 +99,6 @@ export default function Tooltip(props: Props) {
 			{/* This transition renders a portal which renders a div which is our tooltip */}
 			<Transition
 				show={visible}
-				duration={75}
 				enter={tw`transition duration-75`}
 				enterFrom={tw`opacity-0 scale-95`}
 				enterTo={tw`opacity-100 scale-100`}
@@ -107,7 +106,7 @@ export default function Tooltip(props: Props) {
 				as={Portal}
 				ref={elemRef}
 				aria-hidden={true}
-				wrapperClass={tw`absolute`}
+				wrapperClass={tw`absolute interact-none`}
 				class={merge(
 					tw`Tooltip~(absolute transition rounded font-medium will-change-transform whitespace-pre-line text-center
 						${props.small ? 'text-sm py-1 px-2 text-gray-100' : 'py-1 px-2.5'}

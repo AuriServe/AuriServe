@@ -60,14 +60,26 @@ export default function HeadingNavigation() {
 		const headings: NavigationItem[] = [];
 		let highestHeadingLevel = 100;
 
+		function findElementID(dom: HTMLElement): string | null {
+			if (dom.id) return dom.id;
+
+			for (let i = 0; i < dom.children.length; i++) {
+				let recursedId = findElementID(dom.children[i] as HTMLElement);
+				if (recursedId) return recursedId;
+			}
+
+			return null;
+		}
+
 		view.state.doc.descendants((node, nodePos) => {
 			if (node.type.name !== 'heading' && node.type.name !== 'title') return;
 			const dom = view.nodeDOM(nodePos) as HTMLElement;
-			if (!dom || (dom.children[0]?.tagName !== 'SPAN' && node.type.name !== 'title')) return;
-			const id = dom.children[0]?.id ?? '';
+			if (!dom) return;
+			let id = findElementID(dom) ?? '';
+			if (!id && node.type.name !== 'title') return;
 			const textNode = document.createNodeIterator(dom, NodeFilter.SHOW_TEXT).nextNode();
 			if (!textNode && node.type.name !== 'title') return;
-			const text = textNode ? dom.innerText : 'Untitled';
+			const text = (textNode ? dom.innerText : 'Untitled').replace(/^\#* */g, '');
 			const pos = textNode ? view.posAtDOM(textNode, 0, 1) : nodePos + 1;
 			if (!text) return;
 			const level = node.type.name === 'title' ? highestHeadingLevel : node.attrs.level;

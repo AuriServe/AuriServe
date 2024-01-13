@@ -165,6 +165,8 @@ const config = Twind.defineConfig<Twind.TwindUserConfig<TailwindTheme, Twind.Pre
 		return `dash-${val}`;
 	},
 	rules: [
+		Twind.matchColor('icon-p-', { section: 'colors', property: '--icon-primary' as any }),
+		Twind.matchColor('icon-s-', { section: 'colors', property: '--icon-secondary' as any }),
 		['icon-p-([A-z0-9-]+)(?:/(\\d+))?', ({ 1: color, 2: opacity }) => ({
 			'--icon-primary': `rgb(var(--theme-${color}) / ${opacity ?? '100'}%)` }) ],
 		['icon-s-([A-z0-9-]+)(?:/(\\d+))?', ({ 1: color, 2: opacity }) => ({
