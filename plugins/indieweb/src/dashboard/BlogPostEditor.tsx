@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import { EditorState } from 'prosemirror-state';
 import { ProseMirror } from '@nytimes/react-prosemirror';
 import { DOMParser, DOMSerializer } from 'prosemirror-model';
-import { tw, executeQuery, Button, Icon, useNavigate, Form, Field } from 'dashboard';
+import { tw, executeQuery, Button, Icon, useNavigate, Form, Field, merge } from 'dashboard';
 
 import initialize from './prose';
 import { Post } from '../common/Type';
@@ -13,6 +13,8 @@ import HeadingNavigation from './prose/HeadingNavigation';
 import TextStyle, { DEFAULT_TEXT_STYLES } from './prose/TextStyle';
 import { useStore } from 'vibin-hooks';
 import LinkEditorPopup from './prose/LinkEditorPopup';
+import { AutocompleteAction } from 'prosemirror-autocomplete';
+import SlashCommandPopup from './prose/SlashCommandPopup';
 
 interface Props {
 	post: Post;
@@ -34,17 +36,24 @@ const TEXT_STYLES: TextStyle[] = [
 ];
 
 const SIDEBAR_INPUT_CLASSES = {
-	'.': tw`
-		--input-background[rgb(var(--theme-gray-900))]
-		hover:--input-background[color-mix(in_srgb,rgb(var(--theme-gray-800))_50%,rgb(var(--theme-gray-input)))]
-		--input-background-focus[rgb(var(--theme-gray-input))]
-	`,
-	input: tw`!transition-none`,
-	highlight: tw`hidden`
+	// '.': tw`
+	// 	--input-background[rgb(var(--theme-gray-900))]
+	// 	hover:--input-background[color-mix(in_srgb,rgb(var(--theme-gray-800))_50%,rgb(var(--theme-gray-input)))]
+	// 	--input-background-focus[rgb(var(--theme-gray-input))]
+	// `,
+	// input: tw`!transition-none`,
+	// highlight: tw`hidden`
+}
+
+const SIDEBAR_TEXTAREA_CLASSES = {
+	// ...SIDEBAR_INPUT_CLASSES,
+	container: tw`!h-full`
 }
 
 const DEFAULT_DESCRIPTION_MAX_LENGTH = 300;
 const DEFAULT_SLUG_MAX_LENGTH = 48;
+
+const PROPS_PANE_WIDTH = 'calc(min(min(50vw-3rem,80rem),100vw-58rem))';
 
 function makeSlug(text: string) {
 	let slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
@@ -57,6 +66,7 @@ function makeSlug(text: string) {
 
 export default function BlogPostEditor({ post }: Props) {
 	const showLinkEditor = useRef<(edit?: boolean) => void>(() => {});
+	const commandsHook = useRef<(action: AutocompleteAction) => boolean>(() => false);
 
 	const navigate = useNavigate();
 	const mount = useStore<HTMLElement | null>(null);
@@ -68,7 +78,10 @@ export default function BlogPostEditor({ post }: Props) {
 			forceTitle: true,
 			titleLevel: 1,
 			numHeadings: 10,
-			textStyles: TEXT_STYLES
+			textStyles: TEXT_STYLES,
+			hooks: {
+				commands: commandsHook
+			}
 		});
 
 		return EditorState.create({
@@ -116,8 +129,8 @@ export default function BlogPostEditor({ post }: Props) {
 		if (ellipsize) defaultDescription += '...';
 	}
 
-	const leftSidebarOpen = useStore(true);
-	const rightSidebarOpen = useStore(true);
+	const navigationOpen = useStore(true);
+	const propertiesOpen = useStore(true);
 
 	function handleSave() {
 		const fragment = DOMSerializer.fromSchema(editorState().schema).serializeFragment(editorState().doc.content);
@@ -144,9 +157,9 @@ export default function BlogPostEditor({ post }: Props) {
 	useEffect(() => {
 		if (!mount()) return;
 		const classes = tw`prose-lg max-w-[51.75rem]`;
-		if (!leftSidebarOpen() && !rightSidebarOpen()) mount()!.classList.add(...classes.split(' '));
+		if (!navigationOpen() && !propertiesOpen()) mount()!.classList.add(...classes.split(' '));
 		else mount()!.classList.remove(...classes.split(' '));
-	}, [ leftSidebarOpen(), rightSidebarOpen(), mount() ]);
+	}, [ navigationOpen(), propertiesOpen(), mount() ]);
 
 	return (
 		<ProseMirror
@@ -155,31 +168,152 @@ export default function BlogPostEditor({ post }: Props) {
 			dispatchTransaction={tr => editorState(s => s.apply(tr))}
 		>
 			<div class={tw`w-full min-h-screen flex -mb-14 bg-gray-800/50`}>
-				<Button.Tertiary icon={Icon.arrow_circle_left} label='Back' size={9}
-					class={tw`fixed top-2.5 left-16 ml-0.5 z-50 transition
-						${leftSidebarOpen() ? 'bg-gray-700/75' : 'bg-gray-750'}`}
-					onClick={() => navigate('.')}/>
-
-				<Button.Tertiary icon={Icon.book} label='Open Left Sidebar' iconOnly size={9} disabled={leftSidebarOpen()}
+				<Button.Tertiary icon={Icon.book} label='Open Left Sidebar' iconOnly size={9} disabled={navigationOpen()}
 					class={tw`fixed top-2.5 left-40 ml-2 z-30 bg-gray-750`}
-					onClick={() => leftSidebarOpen(l => !l)}/>
+					onClick={() => navigationOpen(l => !l)}/>
 
-				<aside class={tw`fixed top-0 ${leftSidebarOpen() ? 'left-14' : '-left-72'}
-					w-72 h-screen z-40 bg-gray-800 shadow-md transition-all duration-200`}>
-					<Button.Tertiary icon={Icon.book} label='Close Left Sidebar' iconOnly size={9} disabled={!leftSidebarOpen()}
+				<aside class={tw`fixed top-0 ${propertiesOpen() ? 'translate-x-0' :
+					`-translate-x-[${PROPS_PANE_WIDTH}] opacity-0`}
+					w-[${PROPS_PANE_WIDTH}] h-screen z-40 bg-gray-800 shadow-md transition duration-200`}>
+
+					<Button.Tertiary icon={Icon.arrow_circle_left} label='Back' size={9}
+						class={tw`absolute top-2.5 left-4 transition bg-gray-700/75`}
+						onClick={() => navigate('.')}/>
+
+					<Button.Secondary icon={Icon.launch} label='Publish' size={9} iconRight
+						class={tw`absolute top-2.5 right-4 ml-0.5 z-50 transition !bg-accent-500/[15%]`}
+						onClick={handleSave}/>
+
+					<div class={tw`border-b-(1 gray-900/50) h-14`}/>
+
+					<div class={tw`p-4`}>
+						<Form<ReturnType<typeof metadata>> class={tw`flex-(& col) gap-4`}
+							value={metadata()} onChange={(newMeta) => metadata(newMeta as any)}
+						>
+							<figure>
+								<figcaption class={tw`sr-only`}>
+									Properties
+								</figcaption>
+								<div class={tw`grid-(& cols-3) gap-4 items-stretch`}>
+									<MediaImageField
+										path='banner'
+										aspect={16/9}
+									/>
+									<div class={tw`col-span-2 flex-(& col) gap-4 place-content-between`}>
+										<Field.Text
+											path='slug'
+											multiline
+											optional
+											description={'A unique string used to identify the post, which will appear in its URL.'}
+											placeholder={defaultSlug}
+											class={{
+												...SIDEBAR_INPUT_CLASSES,
+												text: tw`pt-6 pb-px font-(mono bold) text-[0.8rem] --input-color[rgb(var(--theme-gray-200))]
+													text-ellipsis`
+											}}
+										/>
+										<Field.Text
+											path='tags'
+											multiline
+											optional
+											minRows={1.5}
+											description='A space separated list of tags, used to filter posts.'
+											placeholder=' '
+											class={{
+												...SIDEBAR_INPUT_CLASSES,
+												text: tw`pt-6 pb-px font-(mono bold) text-[0.8rem] --input-color[rgb(var(--theme-gray-200))]
+													text-ellipsis`
+											}}
+										/>
+										<div class={tw`grid-(& cols-3) gap-4`}>
+											<Field.DateTime
+												path='publishTime'
+												optional
+												description='The date this article was first published. Set automatically, but may be modified.'
+												class={{
+													...SIDEBAR_INPUT_CLASSES
+												}}
+											/>
+											<Field.DateTime
+												path='lastEditTime'
+												description='The last time this article was modified. May be omitted.'
+												class={{
+													...SIDEBAR_INPUT_CLASSES
+												}}
+											/>
+											<Field.DateTime
+												path='creationTime'
+												description='The canonical time this article was created. Used for historical uploads.'
+												class={{
+													...SIDEBAR_INPUT_CLASSES
+												}}
+											/>
+										</div>
+									</div>
+								</div>
+							</figure>
+
+							<figure class={tw`mt-8`}>
+								<figcaption class={tw`sr-only`}>
+									Metadata
+								</figcaption>
+
+								<div class={tw`grid-(& cols-2) gap-4 items-stretch min-h-[12rem]`}>
+									<Field.Text
+										path='description'
+										description='A short description of the post which will display in search engines and on social media.'
+										placeholder={defaultDescription}
+										class={{
+											...SIDEBAR_TEXTAREA_CLASSES,
+											text: tw`pt-6 pb-0.5 text-sm font-medium --input-color[rgb(var(--theme-gray-200))] hyphens-auto`,
+											pre: tw`line-clamp-5 peer-focus:line-clamp-none`
+										}}
+										// hideLabel
+										optional
+										multiline
+									/>
+									<Field.Text
+										path='preview'
+										description='A short preview of the post which will display in various places,
+											such as the blog index, or the dashboard.'
+										placeholder={defaultDescription}
+										class={{
+											...SIDEBAR_TEXTAREA_CLASSES,
+											text: tw`pt-6 pb-0.5 text-sm font-medium --input-color[rgb(var(--theme-gray-200))] hyphens-auto`,
+											pre: tw`line-clamp-5 peer-focus:line-clamp-none`,
+										}}
+										// hideLabel
+										optional
+										multiline
+									/>
+								</div>
+							</figure>
+
+						</Form>
+					</div>
+				</aside>
+
+				<aside class={tw`fixed top-0 ${navigationOpen() && !propertiesOpen() ? 'translate-x-0' : '-translate-x-72'}
+					w-72 h-screen z-30 bg-gray-800 shadow-md duration-200`}>
+					<Button.Tertiary icon={Icon.arrow_circle_left} label='Back' size={9}
+						class={tw`absolute top-2.5 left-2.5 transition bg-gray-700/75`}
+						onClick={() => propertiesOpen(true)}/>
+
+					<Button.Tertiary icon={Icon.book} label='Close Left Sidebar' iconOnly size={9} disabled={!navigationOpen()}
 						class={tw`absolute top-2.5 right-2.5 bg-gray-700/75 duration-100
-						${leftSidebarOpen() ? 'opacity-100' : '!opacity-0'}`}
-						onClick={() => leftSidebarOpen(l => !l)}/>
+						${navigationOpen() ? 'opacity-100' : '!opacity-0'}`}
+						onClick={() => navigationOpen(l => !l)}/>
 					<div class={tw`border-b-(1 gray-900/50) h-14 mb-3`}/>
 					<div class={tw`p-2.5`}>
 						<HeadingNavigation/>
 					</div>
 				</aside>
 
-
-				<main class={tw`grow p-8 transition-all overflow-visible
-					${leftSidebarOpen() ? 'ml-80' : rightSidebarOpen() ? 'ml-0' : 'ml-0'}
-					${rightSidebarOpen() ? 'mr-80' : leftSidebarOpen() ? 'mr-0' : 'ml-0'}`}>
+				<main
+					class={tw`grow p-8 transition-all overflow-visible duration-200
+						${propertiesOpen() ? `ml-[${PROPS_PANE_WIDTH}]` : navigationOpen() ? 'ml-80' : 'ml-0'}`}
+					onMouseUp={() => propertiesOpen(false)}
+				>
 					<div key={'wrap'} ref={mount} class={tw`
 						w-full mx-auto outline-0 pb-[45vh] max-w-[46rem] transition-all duration-75
 						prose-(&)
@@ -196,6 +330,7 @@ export default function BlogPostEditor({ post }: Props) {
 						prose-strong:(text-gray-100)
 						prose-pre:(text-gray-200)
 						prose-code:(text-gray-200)
+						prose-hr:(my-8 border-t-(2 gray-600) mx-10)
 						prose-blockquote:(not-italic border-gray-500 prose-p:text-gray-300)
 						prose-a:(text-accent-300 underline decoration-([5px] accent-300/20) no-decoration-skip underline-offset-[-2px])
 						prose-hr:after:(!bg-gray-600 !h-0.5 !w-[90%] !mx-auto)
@@ -206,95 +341,17 @@ export default function BlogPostEditor({ post }: Props) {
 					/>
 					<EditorToolbar styles={TEXT_STYLES} showLinkEditor={() => showLinkEditor.current(true)}/>
 					<LinkEditorPopup show={showLinkEditor}/>
+					<SlashCommandPopup onAction={commandsHook}/>
 				</main>
 
-				<Button.Tertiary icon={Icon.tag} label='Open Right Sidebar' iconOnly size={9} disabled={rightSidebarOpen()}
+				{/* <Button.Tertiary icon={Icon.tag} label='Open Right Sidebar' iconOnly size={9} disabled={rightSidebarOpen()}
 					class={tw`fixed top-2.5 right-32 mr-1 z-30 bg-gray-750`}
-					onClick={() => rightSidebarOpen(r => !r)}/>
+					onClick={() => rightSidebarOpen(r => !r)}/> */}
 
 				<Button.Secondary icon={Icon.launch} label='Publish' size={9} iconRight
-					class={tw`fixed top-2.5 right-2.5 ml-0.5 z-50 transition
-						${rightSidebarOpen() ? 'bg-accent-400/[15%]' : 'bg-accent-500/10'}`}
+					class={tw`fixed top-2.5 right-2.5 ml-0.5 z-50 transition !bg-accent-500/[15%]
+						${propertiesOpen() && 'opacity-0 interact-none'}`}
 					onClick={handleSave}/>
-
-				<aside class={tw`fixed top-0 ${rightSidebarOpen() ? 'right-0' : '-right-80'}
-					w-72 h-screen z-40 bg-gray-800 shadow-md transition-all duration-200`}>
-					<Button.Tertiary icon={Icon.tag} label='Close Right Sidebar' iconOnly size={9} disabled={!rightSidebarOpen()}
-						class={tw`absolute top-2.5 left-2.5 bg-gray-700/75 duration-100
-						${rightSidebarOpen() ? 'opacity-100' : '!opacity-0'}`}
-						onClick={() => rightSidebarOpen(r => !r)}/>
-					<div class={tw`border-b-(1 gray-900/50) h-14 mb-3`}/>
-					<div class={tw`p-2.5 pt-0`}>
-						<Form<ReturnType<typeof metadata>> class={tw`flex-(& col) gap-2.5`} description='left'
-							value={metadata()} onChange={(newMeta) => metadata(newMeta as any)}
-						>
-							<MediaImageField
-								path='banner'
-								aspect={16/9}
-							/>
-							<Field.Text
-								path='slug'
-								multiline
-								optional
-								description={'A unique string used to identify the post, which will appear in its URL.'}
-								placeholder={defaultSlug}
-								class={{
-									...SIDEBAR_INPUT_CLASSES,
-									text: tw`pt-6 pb-px font-(mono bold) text-[0.8rem] --input-color[rgb(var(--theme-gray-200))]
-										text-ellipsis`
-								}}
-								// hideLabel
-							/>
-							<Field.Text
-								path='tags'
-								multiline
-								optional
-								minRows={1.5}
-								description='A space separated list of tags, used to filter posts.'
-								placeholder=' '
-								class={{
-									...SIDEBAR_INPUT_CLASSES,
-									text: tw`pt-6 pb-px font-(mono bold) text-[0.8rem] --input-color[rgb(var(--theme-gray-200))]
-										text-ellipsis`
-								}}
-								// hideLabel
-							/>
-							<Field.Text
-								path='description'
-								description='A short description of the post which will display in search engines and on social media.'
-								placeholder={defaultDescription}
-								class={{
-									...SIDEBAR_INPUT_CLASSES,
-									text: tw`pt-6 pb-0.5 text-sm font-medium --input-color[rgb(var(--theme-gray-200))] hyphens-auto`,
-									pre: tw`line-clamp-5 peer-focus:line-clamp-none`
-								}}
-								// hideLabel
-								optional
-								multiline
-							/>
-							<Field.Text
-								path='preview'
-								description='A short preview of the post which will display in various places,
-									such as the blog index, or the dashboard.'
-								placeholder={defaultDescription}
-								class={{
-									...SIDEBAR_INPUT_CLASSES,
-									text: tw`pt-6 pb-0.5 text-sm font-medium --input-color[rgb(var(--theme-gray-200))] hyphens-auto`,
-									pre: tw`line-clamp-5 peer-focus:line-clamp-none`,
-								}}
-								// hideLabel
-								optional
-								multiline
-							/>
-						</Form>
-					</div>
-				</aside>
-
-				{/* <aside class={tw`w-80 shrink-0 bg-gray-800 border-l-(1 gray-700)`}>
-					<div class={tw`sticky top-0 p-8`}>
-						<Button.Secondary label='Save' onClick={handleSave}/>
-					</div>
-				</aside> */}
 			</div>
 		</ProseMirror>
 	);

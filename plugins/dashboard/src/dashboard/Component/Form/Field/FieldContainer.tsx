@@ -118,7 +118,7 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 			ref={ref}
 			onfocusin={props.onFocusIn}
 			onfocusout={props.onFocusOut}
-			class={merge(tw`group InputContainer~(relative grid w-full h-max)`, classes.get())}
+			class={merge(tw`group InputContainer~(relative grid w-full h-max)`, classes.get(), classes.get('container'))}
 			style={props.style}>
 			{props.children}
 			<label

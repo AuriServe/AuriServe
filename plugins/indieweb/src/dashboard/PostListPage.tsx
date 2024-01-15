@@ -61,7 +61,7 @@ const POST_TYPE_META: Record<string, PostTypeMeta> = {
 		create: () => {}
 	},
 	video: {
-		icon: Icon.plugin,
+		icon: Icon.film,
 		content: (post) => {
 			const title = post.data.title as string;
 			const content = post.data.content as string;

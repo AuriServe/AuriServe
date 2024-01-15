@@ -106,6 +106,7 @@ export default function EditorToolbar({ styles, showLinkEditor }: Props) {
 		else {
 			view.dispatch(view.state.tr.addMark(from, to, mark));
 			setTimeout(() => showLinkEditor?.());
+			setEditorActive(false);
 		}
 	});
 

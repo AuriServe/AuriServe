@@ -1,0 +1,5 @@
+<svg viewbox='0 0 24 24' stroke-linecap='round' stroke='var(--icon-primary)' fill='none' stroke-linejoin='round' stroke-width='2' version='1.1' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+ <path d='m5 2c-1.645 0-3 1.355-3 3v16a1.0001 1.0001 0 0 0 1.707 0.70703l3.707-3.707h11.586c1.645 0 3-1.355 3-3v-10c0-1.645-1.355-3-3-3h-14z' color='#000000' fill='var(--icon-secondary)' stroke='none'/>
+ <path d='M8 12a2 2 0 0 0 2-2V8H8'/>
+ <path d='M14 12a2 2 0 0 0 2-2V8h-2'/>
+</svg>

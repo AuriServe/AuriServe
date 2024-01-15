@@ -27,21 +27,22 @@
 		background-color: rgb(var(--theme-accent-400) / 15%);
 	}
 
-	& .block_label {
-		display: contents;
+	& .block_button {
+		/* display: contents;
 		height: 0;
-		width: 0;
+		width: 0; */
 		/* display: inline-block; */
 		/* position: relative; */
 		/* width: 0px; */
 		/* margin-top: 5px; */
 		/* height: calc(1lh - 10px); */
 		/* vertical-align: top; */
-		user-select: none;
+		/* user-select: none; */
 
-		& button {
+		& {
 			position: absolute;
-			top: -2px;
+			transform: translateY(6px);
+			top: 0;
 			right: calc(100% + 16px);
 			background-color: rgb(var(--theme-gray-800));
 			border-radius: 4px;
@@ -285,6 +286,12 @@
 .ProseMirror-focused .prosemirror-virtual-cursor-animation {
   animation: prosemirror-virtual-cursor-blink 1.5s linear infinite;
   animation-delay: 0.5s;
+}
+
+.ProseMirror-selectednode {
+	outline: 2px solid rgb(var(--theme-accent-400) / 0.4);
+	outline-offset: 4px;
+	border-radius: 8px;
 }
 
 @keyframes prosemirror-virtual-cursor-blink {

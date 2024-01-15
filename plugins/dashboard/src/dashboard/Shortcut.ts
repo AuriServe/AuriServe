@@ -37,13 +37,13 @@ export function unregisterShortcut(identifier: string): boolean {
 	return registeredShortcuts.delete(identifier);
 }
 
-export function getQueryScore(str: string, query: string) {
+export function getFuzzySearchScore(val: string, query: string) {
 	let score = 0;
 	let lastPos = -1;
 	const maxScore = 10 * query.length;
 
 	for (let i = 0; i < query.length; i++) {
-		const pos = str.indexOf(query[i], lastPos + 1);
+		const pos = val.indexOf(query[i], lastPos + 1);
 		if (pos === -1) break;
 		if (score === maxScore) break;
 
@@ -54,20 +54,30 @@ export function getQueryScore(str: string, query: string) {
 	return score / maxScore;
 }
 
-export function searchShortcuts(query: string): Shortcut[] {
-	return [...registeredShortcuts.values()]
+export function fuzzySearch<T extends Record<string, any>>(
+	query: string,
+	items: T[],
+	keys: (keyof T)[],
+	minFactor = 0.6): T[] {
+
+	return [...items.values()]
 		.map((s) => {
 			const score = Math.max(
-				getQueryScore(s.title.toLowerCase(), query),
-				getQueryScore((s.description ?? '').toLowerCase(), query),
-				...(s.aliases ?? []).map((a) => getQueryScore(a.toLowerCase(), query))
+				...keys.flatMap(k => {
+					let values = (s[k] ?? []) as string | string[];
+					if (!Array.isArray(values)) values = [ values ];
+					return values.map((v: string) => getFuzzySearchScore(v.toLowerCase(), query));
+				})
 			);
-			return [s, score] as [Shortcut, number];
+			return [s, score] as [T, number];
 		})
-		.filter(([, score]) => score > 0.6)
+		.filter(([, score]) => score > minFactor)
 		.sort(([, a], [, b]) => b - a)
 		.map(([s]) => s)
 		.slice(0, 7);
+}
+export function searchShortcuts(query: string): Shortcut[] {
+	return fuzzySearch(query, [ ...registeredShortcuts.values() ], [ 'title', 'description', 'aliases' ]).slice(0, 7);
 }
 
 registerShortcut({

@@ -99,7 +99,7 @@ export { default as EventEmitter } from './EventEmitter';
 export * as Graph from './Graph';
 export { useData, executeQuery } from './Graph';
 export { registerPage, unregisterPage } from './Page';
-export { registerShortcut, unregisterShortcut } from './Shortcut';
+export { registerShortcut, unregisterShortcut, fuzzySearch } from './Shortcut';
 export { registerSettings, unregisterSettings } from './Settings';
 export { useClasses } from './Hooks';
 export type { Classes, UseClasses } from './Hooks';

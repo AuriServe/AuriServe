@@ -7,20 +7,35 @@ function applyDecorations(doc: Node) {
 	doc.descendants((node, pos) => {
 		if (node.isInline) return;
 
-		// Decoration.widget()
-		decorations.push(Decoration.widget(pos + node.nodeSize - 1, () => {
-			const wrapper = document.createElement('div');
-			wrapper.classList.add('block_label');
-			wrapper.contentEditable = 'false';
-			const button = document.createElement('button');
-			button.innerText = node.type.name;
-			wrapper.appendChild(button);
-			return wrapper;
-		}, {
-			// side: 1,
-			ignoreSelection: true,
-			side: 1,
+		decorations.push(Decoration.widget(pos, (view, getPos) => {
+			try {
+				const button = document.createElement('button');
+				let pos = getPos()!;
 
+				let elem = view.coordsAtPos(pos, 1);
+				// let { top, left } = elem.getBoundingClientRect();
+				// top += window.scrollY;
+				// console.log(pos);
+				// left += window.scrollX;
+
+				button.classList.add('block_button');
+				button.contentEditable = 'false';
+				button.innerText = node.type.name;
+				button.style.top = `${elem.top}px`;
+				// button.style.left = `${left}px`;
+				// if (!pos) return button;
+
+				// console.log(view.coordsAtPos(getPos()!));
+				return button;
+			}
+			catch (e) {
+				console.warn(e);
+				return document.createElement('span');
+			}
+
+		}, {
+			ignoreSelection: true,
+			side: -1,
 			stopEvent: () => true
 		}));
 	});
@@ -28,13 +43,13 @@ function applyDecorations(doc: Node) {
 }
 
 export default function BlockLabelPlugin() {
-	return new Plugin({
-		state: {
-			init: (_, { doc }) => applyDecorations(doc),
-			apply: (tr, old) => tr.docChanged ? applyDecorations(tr.doc) : old,
-		},
-		props: {
-			decorations(state) { return this.getState(state) }
-		},
-	});
+	// return new Plugin({
+	// 	state: {
+	// 		init: (_, { doc }) => applyDecorations(doc),
+	// 		apply: (tr, old) => tr.docChanged ? applyDecorations(tr.doc) : old,
+	// 	},
+	// 	props: {
+	// 		decorations(state) { return this.getState(state) }
+	// 	},
+	// });
 }
