@@ -1,25 +1,30 @@
-import { FunctionalComponent, h } from 'preact';
+// import { FunctionalComponent, h } from 'preact';
 
-import BlogPostEditor from './BlogPostEditor';
-import UnknownPostEditor from './UnknownPostEditor';
+// import BlogPostEditor from './BlogPostEditor';
+// import UnknownPostEditor from './UnknownPostEditor';
 
-import { Post } from '../common/Type';
+// import { Post } from '../common/Type';
 
-interface Props {
-	post: Post;
-}
+// interface Props {
+// 	post: Post;
+// }
 
-type PostEditorComponent = FunctionalComponent<{ post: Post }>;
+// interface EditorProps {
+// 	post: Post;
+// 	// setFullscreen: (fullscreen: boolean) => void;
+// }
 
-const POST_EDITORS: Record<string, PostEditorComponent> = {
-	UNKNOWN: UnknownPostEditor,
-	blog: BlogPostEditor
-}
+// type PostEditorComponent = FunctionalComponent<EditorProps>;
 
-export default function PostEditorPage(props: Props) {
-	const Editor = POST_EDITORS[props.post.type] ?? POST_EDITORS.UNKNOWN;
+// const POST_EDITORS: Record<string, PostEditorComponent> = {
+// 	UNKNOWN: UnknownPostEditor,
+// 	blog: BlogPostEditor
+// }
 
-	return (
-		<Editor post={props.post}/>
-	)
-}
+// export default function PostEditorPage(props: Props) {
+// 	const Editor = POST_EDITORS[props.post.type] ?? POST_EDITORS.UNKNOWN;
+
+// 	return (
+// 		<Editor post={props.post}/>
+// 	)
+// }

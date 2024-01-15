@@ -8,7 +8,7 @@ import { tw, executeQuery, Button, Icon, useNavigate, Form, Field, merge } from 
 import initialize from './prose';
 import { Post } from '../common/Type';
 import { MediaImageField } from 'media';
-import EditorToolbar from './prose/EditorToolbar';
+import EditorToolbar from './prose/EditorToolbarPopup';
 import HeadingNavigation from './prose/HeadingNavigation';
 import TextStyle, { DEFAULT_TEXT_STYLES } from './prose/TextStyle';
 import { useStore } from 'vibin-hooks';
@@ -18,6 +18,7 @@ import SlashCommandPopup from './prose/SlashCommandPopup';
 
 interface Props {
 	post: Post;
+	setFullscreen: (fullscreen: boolean) => void;
 }
 
 export const QUERY_SAVE_POST = `
@@ -36,24 +37,24 @@ const TEXT_STYLES: TextStyle[] = [
 ];
 
 const SIDEBAR_INPUT_CLASSES = {
-	// '.': tw`
-	// 	--input-background[rgb(var(--theme-gray-900))]
-	// 	hover:--input-background[color-mix(in_srgb,rgb(var(--theme-gray-800))_50%,rgb(var(--theme-gray-input)))]
-	// 	--input-background-focus[rgb(var(--theme-gray-input))]
-	// `,
+	'': tw`
+		--input-background[rgb(var(--theme-gray-800))]
+		hover:--input-background[color-mix(in_srgb,rgb(var(--theme-gray-800))_50%,rgb(var(--theme-gray-input)))]
+		--input-background-focus[rgb(var(--theme-gray-input))]
+	`,
 	// input: tw`!transition-none`,
 	// highlight: tw`hidden`
 }
 
 const SIDEBAR_TEXTAREA_CLASSES = {
-	// ...SIDEBAR_INPUT_CLASSES,
+	...SIDEBAR_INPUT_CLASSES,
 	container: tw`!h-full`
 }
 
 const DEFAULT_DESCRIPTION_MAX_LENGTH = 300;
 const DEFAULT_SLUG_MAX_LENGTH = 48;
 
-const PROPS_PANE_WIDTH = 'calc(min(min(50vw-3rem,80rem),100vw-58rem))';
+const PROPS_PANE_WIDTH = 'calc(min(min(50vw-20rem,50rem),100vw-64rem))';
 
 function makeSlug(text: string) {
 	let slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
@@ -64,7 +65,7 @@ function makeSlug(text: string) {
 	return slug.substring(0, lastUnderscore);
 }
 
-export default function BlogPostEditor({ post }: Props) {
+export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }: Props) {
 	const showLinkEditor = useRef<(edit?: boolean) => void>(() => {});
 	const commandsHook = useRef<(action: AutocompleteAction) => boolean>(() => false);
 
@@ -132,6 +133,11 @@ export default function BlogPostEditor({ post }: Props) {
 	const navigationOpen = useStore(true);
 	const propertiesOpen = useStore(true);
 
+	function setFullscreen(fullscreen: boolean) {
+		propertiesOpen(!fullscreen);
+		showPostsSidebar(!fullscreen);
+	}
+
 	function handleSave() {
 		const fragment = DOMSerializer.fromSchema(editorState().schema).serializeFragment(editorState().doc.content);
 		const title = (fragment.firstChild as HTMLElement).innerText;
@@ -167,26 +173,20 @@ export default function BlogPostEditor({ post }: Props) {
 			state={editorState()}
 			dispatchTransaction={tr => editorState(s => s.apply(tr))}
 		>
-			<div class={tw`w-full min-h-screen flex -mb-14 bg-gray-800/50`}>
-				<Button.Tertiary icon={Icon.book} label='Open Left Sidebar' iconOnly size={9} disabled={navigationOpen()}
-					class={tw`fixed top-2.5 left-40 ml-2 z-30 bg-gray-750`}
-					onClick={() => navigationOpen(l => !l)}/>
+			<div class={tw`w-full min-h-screen flex -mb-14 transition
+				${propertiesOpen() ? 'bg-gray-800/20' : 'bg-gray-800/50'}`}>
 
-				<aside class={tw`fixed top-0 ${propertiesOpen() ? 'translate-x-0' :
-					`-translate-x-[${PROPS_PANE_WIDTH}] opacity-0`}
-					w-[${PROPS_PANE_WIDTH}] h-screen z-40 bg-gray-800 shadow-md transition duration-200`}>
-
-					<Button.Tertiary icon={Icon.arrow_circle_left} label='Back' size={9}
-						class={tw`absolute top-2.5 left-4 transition bg-gray-700/75`}
-						onClick={() => navigate('.')}/>
+				<aside inert={!propertiesOpen()} class={tw`fixed top-0 ${propertiesOpen() ? 'translate-x-0' :
+					`-translate-x-[${PROPS_PANE_WIDTH}] opacity-0 interact-none`} border-x-(1 gray-900/75)
+					w-[${PROPS_PANE_WIDTH}] h-screen flex-(& col) z-40 bg-gray-900 shadow-md transition duration-200`}>
 
 					<Button.Secondary icon={Icon.launch} label='Publish' size={9} iconRight
 						class={tw`absolute top-2.5 right-4 ml-0.5 z-50 transition !bg-accent-500/[15%]`}
 						onClick={handleSave}/>
 
-					<div class={tw`border-b-(1 gray-900/50) h-14`}/>
+					<div class={tw`border-b-(1 gray-900/75) bg-gray-800/50 h-14 shrink-0`}/>
 
-					<div class={tw`p-4`}>
+					<div class={tw`p-4 bg-gray-800/50 grow`}>
 						<Form<ReturnType<typeof metadata>> class={tw`flex-(& col) gap-4`}
 							value={metadata()} onChange={(newMeta) => metadata(newMeta as any)}
 						>
@@ -293,11 +293,9 @@ export default function BlogPostEditor({ post }: Props) {
 					</div>
 				</aside>
 
-				<aside class={tw`fixed top-0 ${navigationOpen() && !propertiesOpen() ? 'translate-x-0' : '-translate-x-72'}
-					w-72 h-screen z-30 bg-gray-800 shadow-md duration-200`}>
-					<Button.Tertiary icon={Icon.arrow_circle_left} label='Back' size={9}
-						class={tw`absolute top-2.5 left-2.5 transition bg-gray-700/75`}
-						onClick={() => propertiesOpen(true)}/>
+				<aside inert={!navigationOpen()}
+					class={tw`fixed z-20 top-0 left-14 ${navigationOpen() && !propertiesOpen() ? 'translate-x-0' :
+						'translate-x-[-36rem] interact-none'} w-72 h-screen z-30 bg-gray-800 shadow-md duration-200`}>
 
 					<Button.Tertiary icon={Icon.book} label='Close Left Sidebar' iconOnly size={9} disabled={!navigationOpen()}
 						class={tw`absolute top-2.5 right-2.5 bg-gray-700/75 duration-100
@@ -309,10 +307,19 @@ export default function BlogPostEditor({ post }: Props) {
 					</div>
 				</aside>
 
+				<Button.Tertiary icon={Icon.arrow_circle_left} label='Back' size={9}
+					class={tw`fixed z-30 top-2.5 ml-14 left-2.5 transition
+						${navigationOpen() ? 'bg-gray-700/75' : 'bg-gray-750'}`}
+					onClick={() => setFullscreen(false)}/>
+
+				<Button.Tertiary icon={Icon.book} label='Open Left Sidebar' iconOnly size={9} disabled={navigationOpen()}
+					class={tw`fixed top-2.5 left-40 ml-2 z-10 bg-gray-750`}
+					onClick={() => navigationOpen(l => !l)}/>
+
 				<main
 					class={tw`grow p-8 transition-all overflow-visible duration-200
 						${propertiesOpen() ? `ml-[${PROPS_PANE_WIDTH}]` : navigationOpen() ? 'ml-80' : 'ml-0'}`}
-					onMouseUp={() => propertiesOpen(false)}
+					onMouseUp={() => setFullscreen(true)}
 				>
 					<div key={'wrap'} ref={mount} class={tw`
 						w-full mx-auto outline-0 pb-[45vh] max-w-[46rem] transition-all duration-75

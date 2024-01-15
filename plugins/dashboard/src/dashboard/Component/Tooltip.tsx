@@ -25,7 +25,7 @@ interface Props {
 const TRANSFORM_ORIGINS = {
 	top: '50% 150%',
 	right: '-50% 50%',
-	bottom: '100% -50%',
+	bottom: '50% -50%',
 	left: '50% 50%',
 };
 
@@ -47,11 +47,10 @@ export default function Tooltip(props: Props) {
 	const elemRef = useRef<HTMLDivElement>(null);
 	const outerRef = useRef<HTMLDivElement>(null);
 
+	const appearTimeout = useRef<number>(0);
+
 	const [visible, setVisible] = useState<boolean>(false);
-	const [position, setPosition] = useState<{ top: number; left: number }>({
-		top: 0,
-		left: 0,
-	});
+	const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
 	useEffect(() => {
 		const parent = props.for ?? (outerRef.current?.parentElement as HTMLElement);
@@ -75,11 +74,14 @@ export default function Tooltip(props: Props) {
 			else position.left = Math.floor(parentBounds.left + parentBounds.width / 2);
 
 			setPosition(position);
-			setVisible(true);
+			if (!appearTimeout.current) appearTimeout.current =
+				setTimeout(() => setVisible(true), props.delay) as any as number;
 		};
 
 		const onMouseLeave = () => {
 			setVisible(false);
+			if (appearTimeout.current) clearTimeout(appearTimeout.current);
+			appearTimeout.current = 0;
 		};
 
 		parent.addEventListener('mouseenter', onMouseEnter);
@@ -99,7 +101,7 @@ export default function Tooltip(props: Props) {
 			{/* This transition renders a portal which renders a div which is our tooltip */}
 			<Transition
 				show={visible}
-				enter={tw`transition duration-75`}
+				enter={tw`transition duration-75]`}
 				enterFrom={tw`opacity-0 scale-95`}
 				enterTo={tw`opacity-100 scale-100`}
 				invertExit
@@ -110,7 +112,7 @@ export default function Tooltip(props: Props) {
 				class={merge(
 					tw`Tooltip~(absolute transition rounded font-medium will-change-transform whitespace-pre-line text-center
 						${props.small ? 'text-sm py-1 px-2 text-gray-100' : 'py-1 px-2.5'}
-						bg-${props.bg ?? 'gray-700'} drop-shadow-md w-max)
+						bg-${props.bg ?? 'gray-700'}) drop-shadow-md w-max)
 						after:(w-2 h-2 absolute bg-${props.bg ?? 'gray-700'}
 							rotate-45 -translate-x-1/2 -translate-y-1/2
 							${ARROW_POSITIONS[props.position ?? 'top']})
@@ -120,7 +122,6 @@ export default function Tooltip(props: Props) {
 				style={{
 					...position,
 					...(props.style ?? {}),
-					transitionDelay: visible ? `${props.delay}ms` : undefined,
 					transformOrigin: TRANSFORM_ORIGINS[props.position ?? 'top'],
 				}}>
 				{props.children ?? props.label}

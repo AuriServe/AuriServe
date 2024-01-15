@@ -123,7 +123,7 @@ export default function SlashCommandPopup(props: Props) {
 			case ActionKind.open: {
 				const coords = action.view.coordsAtPos(action.range.from);
 				active(true);
-				position([ coords.left + window.scrollX, coords.top + window.scrollY ]);
+				position([ coords.left + window.scrollX - 56, coords.top + window.scrollY ]);
 				index(0);
 				query('');
 				return true;

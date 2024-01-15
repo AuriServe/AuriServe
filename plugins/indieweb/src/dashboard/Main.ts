@@ -11,13 +11,14 @@ import './styles.pcss';
 
 import { registerPage, registerShortcut, Icon } from 'dashboard';
 
-import PostsPage from './PostsPage';
+// import PostsPage from './PostsPage';
+import PostEditorPage2 from './PostEditorPage2';
 
 registerPage({
 	identifier: 'indieweb:posts',
 	title: 'Posts',
 	path: '/posts',
-	component: PostsPage,
+	component: PostEditorPage2,
 });
 
 registerShortcut({

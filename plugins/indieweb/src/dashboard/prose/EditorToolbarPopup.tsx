@@ -48,7 +48,7 @@ export default function EditorToolbar({ styles, showLinkEditor }: Props) {
 
 		const left = Math.floor(Math.min(startLeft, endLeft, startRight, endRight));
 		const right = Math.floor(Math.max(startLeft, endLeft, startRight, endRight));
-		const x = Math.floor(left + (right - left) / 2) + window.scrollX;
+		const x = Math.floor(left + (right - left) / 2) + window.scrollX - 56;
 		const y = Math.floor(Math.max(startBottom, endBottom)) + window.scrollY;
 
 		setEditorActive(true);

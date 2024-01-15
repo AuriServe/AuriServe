@@ -67,7 +67,7 @@ export default function LinkEditorPopup(props: Props) {
 		if (!tag) return close();
 
 		const { left, right, bottom } = tag.getBoundingClientRect();
-		const x = left + (right - left) / 2 + window.scrollX;
+		const x = left + (right - left) / 2 + window.scrollX - 56;
 		const y = bottom + window.scrollY;
 
 		editing(edit);
