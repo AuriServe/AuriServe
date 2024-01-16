@@ -4,11 +4,11 @@ import { keymap } from 'prosemirror-keymap';
 import { history } from 'prosemirror-history';
 import { baseKeymap } from 'prosemirror-commands';
 import { buildKeymap } from 'prosemirror-example-setup';
+import { createVirtualCursor } from 'prosemirror-virtual-cursor';
 
 import InputRules from './InputRules';
 import BlockLabelPlugin from './BlockLabelPlugin';
 import HeadingAnchorPlugin from './HeadingAnchorPlugin';
-import VirtualCursorPlugin from './VirtualCursorPlugin';
 import SplitDecorationPlugin from './SplitDecorationPlugin';
 import SelectHighlightPlugin from './SelectHighlightPlugin';
 import makeSchema, { DEFAULT_SUPPORTED_NODES, SupportedNode } from './Schema';
@@ -16,6 +16,8 @@ import TextStyle, { DEFAULT_TEXT_STYLES } from './TextStyle';
 import SlashCommandsPlugins from './SlashCommandsPlugins';
 import { RefObject } from 'preact';
 import { AutocompleteAction } from 'prosemirror-autocomplete';
+import { dropCursor } from 'prosemirror-dropcursor';
+import { gapCursor } from 'prosemirror-gapcursor';
 
 export interface SpecOptions {
 	/** Whether or not this document should be forced to have a title heading. */
@@ -78,13 +80,13 @@ export default function initialize(partialOptions: Partial<SpecOptions>): [ Sche
 		keymap(buildKeymap(schema)),
 		keymap(baseKeymap),
 		history(),
-		// dropCursor(),
-		// gapCursor(),
-		SelectHighlightPlugin(),
-		VirtualCursorPlugin({}),
+		dropCursor({ class: 'ProseMirror-dropCursor', color: false, width: 2 }),
+		gapCursor(),
+		// SelectHighlightPlugin(),
 		SplitDecorationPlugin({}),
 		HeadingAnchorPlugin(),
 		// BlockLabelPlugin(),
+		createVirtualCursor({}),
 	];
 
 	return [ schema, plugins ];

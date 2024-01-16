@@ -1,4 +1,4 @@
-import { FunctionalComponent, VNode, h } from 'preact';
+import { Fragment, FunctionalComponent, VNode, h } from 'preact';
 
 import BlogPostEditor from './BlogPostEditor';
 import UnknownPostEditor from './UnknownPostEditor';
@@ -50,10 +50,16 @@ const POST_TYPE_META: Record<string, PostTypeMeta> = {
 			let closingTag = content.indexOf('</p>');
 			if (closingTag === -1) closingTag = content.length;
 			const slice = content.substring(openingTag, closingTag);
-			return <p class={tw`text-sm text-ellipsis overflow-hidden break-words truncate`}>
-				<span class={tw`text-gray-100 font-medium`}>{title}</span>
-				{/* <span class={tw`text-gray-200`}>{' '}- {slice}</span> */}
-			</p>
+			return (
+				<div class={tw`mb-0.5`}>
+					<p class={tw`text-(sm gray-100) font-medium text-ellipsis overflow-hidden break-words truncate`}>
+						{title}
+					</p>
+					<p class={tw`text-([13px] gray-200) font-medium text-ellipsis overflow-hidden break-words truncate`}>
+						{slice}
+					</p>
+				</div>
+			);
 		},
 		editor: BlogPostEditor,
 		create: () => {}
@@ -67,8 +73,8 @@ const POST_TYPE_META: Record<string, PostTypeMeta> = {
 			let closingTag = content.indexOf('</p>');
 			if (closingTag === -1) closingTag = content.length;
 			const slice = content.substring(openingTag, closingTag);
-			return <p class={tw`text-(sm gray-200)
-				text-ellipsis overflow-hidden break-words truncate`}
+			return <p class={tw`text-([13px] gray-200) font-medium leading-4
+				text-ellipsis overflow-hidden break-words line-clamp-3 mb-0.5`}
 				dangerouslySetInnerHTML={{ __html: slice }}/>;
 		},
 		editor: UnknownPostEditor,
@@ -140,6 +146,8 @@ export default function PostEditorPage2(props: Props) {
 
 	const Editor = meta.editor;
 
+	console.log(post);
+
 	return (
 		<div class={tw`-mb-14`}>
 			<div inert={!sidebarOpen()} class={tw`
@@ -159,7 +167,7 @@ export default function PostEditorPage2(props: Props) {
 						return (
 							<button class={tw`to-transparent flex flex-col p-2 pr-1 cursor-pointer transition rounded
 								opacity-(70 hocus:100) hocus:bg-gray-700/40 relative text-left
-								${p.id === post?.id && `!(brightness-[120%] saturate-[90%] opacity-100 shadow bg-gray-700/70
+								${p.slug === slug && `!(brightness-[120%] saturate-[90%] opacity-100 shadow bg-gray-700/70
 									before:(absolute w-1 bg-accent-500/50 rounded -left-2 top-2 bottom-2)
 								)`}`}
 								onClick={() => navigate(`/posts/${p.slug}`)}

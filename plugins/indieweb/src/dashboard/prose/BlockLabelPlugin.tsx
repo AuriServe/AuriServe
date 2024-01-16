@@ -1,3 +1,4 @@
+import { tw } from 'dashboard';
 import { Node } from 'prosemirror-model';
 import { Plugin } from 'prosemirror-state';
 import { Decoration, DecorationSet } from 'prosemirror-view';
@@ -7,32 +8,18 @@ function applyDecorations(doc: Node) {
 	doc.descendants((node, pos) => {
 		if (node.isInline) return;
 
-		decorations.push(Decoration.widget(pos, (view, getPos) => {
-			try {
-				const button = document.createElement('button');
-				let pos = getPos()!;
+		decorations.push(Decoration.widget(pos, () => {
+			const wrapper = document.createElement('div');
+			wrapper.classList.add(tw`~(relative)`);
 
-				let elem = view.coordsAtPos(pos, 1);
-				// let { top, left } = elem.getBoundingClientRect();
-				// top += window.scrollY;
-				// console.log(pos);
-				// left += window.scrollX;
+			const button = document.createElement('button');
+			button.classList.add(tw`~(absolute -left-4 -translate-x-full
+				bg-gray-700 p-2 rounded font-mono text-(xs gray-300))`);
+			button.contentEditable = 'false';
+			button.innerText = node.type.name;
 
-				button.classList.add('block_button');
-				button.contentEditable = 'false';
-				button.innerText = node.type.name;
-				button.style.top = `${elem.top}px`;
-				// button.style.left = `${left}px`;
-				// if (!pos) return button;
-
-				// console.log(view.coordsAtPos(getPos()!));
-				return button;
-			}
-			catch (e) {
-				console.warn(e);
-				return document.createElement('span');
-			}
-
+			wrapper.appendChild(button)
+			return button;
 		}, {
 			ignoreSelection: true,
 			side: -1,
@@ -43,13 +30,13 @@ function applyDecorations(doc: Node) {
 }
 
 export default function BlockLabelPlugin() {
-	// return new Plugin({
-	// 	state: {
-	// 		init: (_, { doc }) => applyDecorations(doc),
-	// 		apply: (tr, old) => tr.docChanged ? applyDecorations(tr.doc) : old,
-	// 	},
-	// 	props: {
-	// 		decorations(state) { return this.getState(state) }
-	// 	},
-	// });
+	return new Plugin({
+		state: {
+			init: (_, { doc }) => applyDecorations(doc),
+			apply: (tr, old) => tr.docChanged ? applyDecorations(tr.doc) : old,
+		},
+		props: {
+			decorations(state) { return this.getState(state) }
+		},
+	});
 }

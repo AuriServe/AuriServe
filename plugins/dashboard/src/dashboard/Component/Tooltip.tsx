@@ -101,7 +101,7 @@ export default function Tooltip(props: Props) {
 			{/* This transition renders a portal which renders a div which is our tooltip */}
 			<Transition
 				show={visible}
-				enter={tw`transition duration-75]`}
+				enter={tw`transition duration-75`}
 				enterFrom={tw`opacity-0 scale-95`}
 				enterTo={tw`opacity-100 scale-100`}
 				invertExit

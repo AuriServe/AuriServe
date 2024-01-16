@@ -51,6 +51,7 @@ export { default as money } from '@res/icon/money.svg';
 export { default as monitor } from '@res/icon/monitor.svg';
 export { default as options } from '@res/icon/options.svg';
 export { default as ordered_list } from '@res/icon/ordered_list.svg';
+export { default as paragraph } from '@res/icon/paragraph.svg';
 export { default as paste } from '@res/icon/paste.svg';
 export { default as paste_after } from '@res/icon/paste_after.svg';
 export { default as paste_before } from '@res/icon/paste_before.svg';

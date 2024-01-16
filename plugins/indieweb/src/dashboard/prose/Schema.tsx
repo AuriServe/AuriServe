@@ -123,12 +123,11 @@ export default function makeSchema(options: SpecOptions) {
 		},
 
 		image: (allowedNodes.includes('image') ? {
-			inline: true,
 			attrs: {
 				src: {},
-				alt: { default: null }
+				alt: { default: '' }
 			},
-			group: 'inline',
+			group: 'block',
 			draggable: true,
 			parseDOM: [{ tag: 'img[src]', getAttrs(dom) {
 				return {

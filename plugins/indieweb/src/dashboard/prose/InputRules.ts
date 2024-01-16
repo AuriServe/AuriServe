@@ -1,6 +1,6 @@
 import { NodeType, Schema } from 'prosemirror-model';
 import { inputRules, wrappingInputRule, textblockTypeInputRule,
-	smartQuotes, emDash, ellipsis } from 'prosemirror-inputrules';
+	smartQuotes, emDash, ellipsis, InputRule } from 'prosemirror-inputrules';
 
 import { SpecOptions } from '.';
 
@@ -27,7 +27,10 @@ export function headingRule(nodeType: NodeType, offset: number, max: number) {
 }
 
 export default function InputRules(options: SpecOptions, schema: Schema) {
-	const rules = smartQuotes.concat(ellipsis, emDash);
+	const hrRule = new InputRule(/(?:--|—)-$/, (state, _, start, end) =>
+		state.tr.replaceRangeWith(start, end, state.schema.nodes.horizontal_rule.create()));
+
+	const rules = smartQuotes.concat(ellipsis, hrRule, emDash);
 
 	if (options.allowedNodes.includes('blockquote'))
 		rules.push(blockQuoteRule(schema.nodes.blockquote))

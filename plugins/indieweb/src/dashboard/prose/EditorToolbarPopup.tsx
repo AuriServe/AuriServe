@@ -121,8 +121,8 @@ export default function EditorToolbar({ styles, showLinkEditor }: Props) {
 		<div
 			class={tw`absolute w-max -translate-x-1/2 translate-y-4 ${!editorActive && 'pointer-events-none'}`}
 			disabled={!editorActive}
-			onMouseDown={(evt) => evt.stopPropagation()}
-			onMouseUp={(evt) => evt.stopPropagation()}
+			onMouseDown={(evt) => (evt.stopPropagation(), evt.preventDefault())}
+			onMouseUp={(evt) => (evt.stopPropagation(), evt.preventDefault())}
 			style={{ left: `${editorPos[0]}px`, top: `${editorPos[1]}px` }}>
 			<div class={tw`relative ${editorActive ? 'animate-rise-fade-in' : 'opacity-0'}
 				transition duration-100 p-1.5 bg-gray-700 shadow-md rounded-lg flex gap-1 isolate justify-stretch

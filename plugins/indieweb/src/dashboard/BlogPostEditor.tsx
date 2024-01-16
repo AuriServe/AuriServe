@@ -54,7 +54,7 @@ const SIDEBAR_TEXTAREA_CLASSES = {
 const DEFAULT_DESCRIPTION_MAX_LENGTH = 300;
 const DEFAULT_SLUG_MAX_LENGTH = 48;
 
-const PROPS_PANE_WIDTH = 'calc(min(min(50vw-20rem,50rem),100vw-64rem))';
+const PROPS_PANE_WIDTH = 'calc(min(min(50vw-20rem,36rem),100vw-64rem))';
 
 function makeSlug(text: string) {
 	let slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
@@ -184,9 +184,9 @@ export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }
 						class={tw`absolute top-2.5 right-4 ml-0.5 z-50 transition !bg-accent-500/[15%]`}
 						onClick={handleSave}/>
 
-					<div class={tw`border-b-(1 gray-900/75) bg-gray-800/50 h-14 shrink-0`}/>
+					<div class={tw`border-b-(1 gray-900/75) bg-gray-800/60 h-14 shrink-0`}/>
 
-					<div class={tw`p-4 bg-gray-800/50 grow`}>
+					<div class={tw`p-4 bg-gray-800/60 grow`}>
 						<Form<ReturnType<typeof metadata>> class={tw`flex-(& col) gap-4`}
 							value={metadata()} onChange={(newMeta) => metadata(newMeta as any)}
 						>
@@ -195,11 +195,11 @@ export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }
 									Properties
 								</figcaption>
 								<div class={tw`grid-(& cols-3) gap-4 items-stretch`}>
-									<MediaImageField
+									{/* <MediaImageField
 										path='banner'
 										aspect={16/9}
-									/>
-									<div class={tw`col-span-2 flex-(& col) gap-4 place-content-between`}>
+									/> */}
+									<div class={tw`col-span-3 flex-(&) gap-4 place-content-between`}>
 										<Field.Text
 											path='slug'
 											multiline
@@ -225,7 +225,7 @@ export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }
 													text-ellipsis`
 											}}
 										/>
-										<div class={tw`grid-(& cols-3) gap-4`}>
+										{/* <div class={tw`grid-(& cols-3) gap-4`}>
 											<Field.DateTime
 												path='publishTime'
 												optional
@@ -248,17 +248,17 @@ export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }
 													...SIDEBAR_INPUT_CLASSES
 												}}
 											/>
-										</div>
+										</div> */}
 									</div>
 								</div>
 							</figure>
 
-							<figure class={tw`mt-8`}>
+							<figure class={tw``}>
 								<figcaption class={tw`sr-only`}>
 									Metadata
 								</figcaption>
 
-								<div class={tw`grid-(& cols-2) gap-4 items-stretch min-h-[12rem]`}>
+								<div class={tw`grid-(& cols-1) gap-4 items-stretch min-h-[12rem]`}>
 									<Field.Text
 										path='description'
 										description='A short description of the post which will display in search engines and on social media.'
@@ -323,9 +323,8 @@ export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }
 				>
 					<div key={'wrap'} ref={mount} class={tw`
 						w-full mx-auto outline-0 pb-[45vh] max-w-[46rem] transition-all duration-75
-						prose-(&)
-						selection:(bg-[rgba(0,0,0,0)])
-						leading-8
+						caret-accent-300/75 leading-8 selection:bg-accent-400/10
+						prose
 						prose-headings:(text-gray-100 font-medium)
 						prose-h1:(text-[1.8em] mt-8 mb-3)
 						prose-h2:(text-[1.8em] mt-7 mb-2.5)
@@ -336,7 +335,7 @@ export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }
 						prose-p:(text-gray-200 my-4 font-[450])
 						prose-strong:(text-gray-100)
 						prose-pre:(text-gray-200)
-						prose-code:(text-gray-200)
+						prose-code:(text-gray-200 font-bold)
 						prose-hr:(my-8 border-t-(2 gray-600) mx-10)
 						prose-blockquote:(not-italic border-gray-500 prose-p:text-gray-300)
 						prose-a:(text-accent-300 underline decoration-([5px] accent-300/20) no-decoration-skip underline-offset-[-2px])
