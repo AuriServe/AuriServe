@@ -5,11 +5,13 @@ import UnknownPostEditor from './UnknownPostEditor';
 
 import { Post, Visibility } from '../common/Type';
 import { Button, Icon, Svg, Tooltip, executeQuery, tw, useData, useNavigate } from 'dashboard';
-import { useAsyncMemo, useStore } from 'vibin-hooks';
+import { useAsyncEffect, useAsyncMemo, useStore } from 'vibin-hooks';
 import { titleCase } from 'common';
+import { useRef } from 'preact/hooks';
 
 interface EditorProps {
 	post: Post;
+	setPost: (post: Post) => void;
 	setFullscreen: (fullscreen: boolean) => void;
 }
 
@@ -125,6 +127,9 @@ const POST_TYPE_META: Record<string, PostTypeMeta> = {
 interface Props {
 }
 
+const MIN_IDLE_TIME = 5;
+const MAX_SAVE_INTERAL = 30;
+
 export default function PostsPage(props: Props) {
 	const navigate = useNavigate();
 	const [ data ] = useData<GraphData>(QUERY_POSTS, []);
@@ -133,20 +138,59 @@ export default function PostsPage(props: Props) {
 
 	if (!slug && posts.length) navigate(`/posts/${posts[0].slug}`, { replace: true });
 
-	const post = useAsyncMemo(async () => {
+	const serverPost = useStore<Post | null>(null);
+	const post = useStore<Post | null>(null);
+
+	const lastSaveTime = useRef<number>(0);
+	const saveTimeout = useRef<number>(0);
+
+	function isDirty() {
+		return JSON.stringify(post()) !== JSON.stringify(serverPost());
+	}
+
+	function handleSetPost(newPost: Post) {
+		post(newPost);
+		handleSave();
+	}
+
+	function handleSave(skipDebounce = false) {
+		function actuallySave() {
+			lastSaveTime.current = Date.now();
+			console.warn('Should save!');
+		}
+
+		clearTimeout(saveTimeout.current);
+		if (!isDirty()) return;
+
+		if (skipDebounce) {
+			actuallySave();
+		}
+		else {
+			if ((Date.now() - lastSaveTime.current) / 1000 < MAX_SAVE_INTERAL - MIN_IDLE_TIME) {
+				// We're not at the REQUIRED save time.
+				setTimeout(() => actuallySave(), MIN_IDLE_TIME * 1000);
+			}
+			else {
+				actuallySave();
+			}
+		}
+	}
+
+	useAsyncEffect(async (abort) => {
+		if (post() && isDirty()) handleSave(true);
+
 		if (!slug.length) return undefined;
 		const res = (await executeQuery(QUERY_POST, { slug }))?.indieweb?.postBySlug;
-		if (!res) return false;
-		return { ...res, data: JSON.parse(res.data) } as Post;
-	}, { default: undefined, cacheOnUpdate: false }, [ slug ]) as any as Post;
+		if (!res || abort.aborted) return false;
+		const newPost = { ...res, data: JSON.parse(res.data) } as Post;
+		serverPost(newPost);
+		post(newPost);
+	}, [ slug ]) as any as Post;
 
-	const meta = POST_TYPE_META[post?.type] ?? POST_TYPE_META.UNKNOWN;
-
-	const sidebarOpen = useStore(true);
-
+	const meta = POST_TYPE_META[post()?.type ?? ''] ?? POST_TYPE_META.UNKNOWN;
 	const Editor = meta.editor;
 
-	console.log(post);
+	const sidebarOpen = useStore(true);
 
 	return (
 		<div class={tw`-mb-14`}>
@@ -217,7 +261,12 @@ export default function PostsPage(props: Props) {
 				</div>
 			</div>
 			<div class={tw`relative ${sidebarOpen() && 'ml-72'} transition-all duration-200`}>
-				{post ? <Editor key={post.id} post={post} setFullscreen={sidebarOpen}/> : <div/>}
+				{post() ? <Editor
+					key={post()!.id}
+					post={post()!}
+					setPost={handleSetPost}
+					setFullscreen={sidebarOpen}
+				/> : <div/>}
 			</div>
 		</div>
 	)

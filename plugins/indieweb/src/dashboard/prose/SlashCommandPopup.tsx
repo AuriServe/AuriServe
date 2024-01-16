@@ -1,13 +1,13 @@
 import { useStore } from 'vibin-hooks';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useRef } from 'preact/hooks';
 import { EditorView } from 'prosemirror-view';
 import { Fragment, h, RefObject } from 'preact';
 import { TextSelection } from 'prosemirror-state';
 import { Icon, Svg, tw, fuzzySearch } from 'dashboard';
 import { closeAutocomplete } from 'prosemirror-autocomplete';
 import { ActionKind, AutocompleteAction } from 'prosemirror-autocomplete';
-import { NodeRange } from 'prosemirror-model';
-import { findWrapping } from 'prosemirror-transform';
+import { NodeRange, ResolvedPos } from 'prosemirror-model';
+import { findWrapping, liftTarget } from 'prosemirror-transform';
 import { useEditorEventCallback } from '@nytimes/react-prosemirror';
 
 interface Props {
@@ -130,13 +130,48 @@ const COMMANDS: Command[] = [
 	}
 ]
 
+function toggleComment(view: EditorView) {
+	let selectionRange = view.state.selection.$anchor.blockRange()!;
+	let range = selectionRange;
+
+	while (range.depth > 0) {
+		if (range.depth === 1 && range.parent.type.name === 'comment') {
+			const targetDepth = liftTarget(range);
+			if (targetDepth == null) return;
+			view.dispatch(view.state.tr.lift(range, targetDepth)
+				.deleteRange(view.state.selection.$anchor.blockRange()!.$from.before(),
+					view.state.selection.anchor - 1));
+			return;
+		}
+
+		range = new NodeRange(view.state.doc.resolve(range.$from.pos - 1),
+			view.state.doc.resolve(range.$to.pos + 1), range.depth - 1);
+	}
+
+	// let start = range.$from.pos - range.depth;
+	// let end = range.$to.pos + range.depth;
+
+	if (!findWrapping(range!, view.state.schema.nodes.comment)) return;
+	// const childType = selection.blockRange()?.parent.child(selection.blockRange()?.startIndex!);
+	// console.log(childType)
+
+	// console.log(wrapping);
+	view.dispatch(view.state.tr.wrap(range, [ { type: view.state.schema.nodes.comment } ])
+		.deleteRange(view.state.selection.$anchor.blockRange()!.$from.before() + 2,
+			view.state.selection.anchor + 1))
+
+	// setTimeout(() => closeAutocomplete(view));
+}
+
 const GRID_VIEW_WIDTH = 3;
+const COMMAND_PALETTE_APPEAR_DELAY = 150;
 
 export default function SlashCommandPopup(props: Props) {
 	const position = useStore<[ number, number ]>([ 0, 0 ]);
 	const active = useStore(false);
 	const index = useStore<number>(0);
 	const query = useStore<string>('');
+	const activeTimeout = useRef<number>(0);
 
 	const commands = query() ? fuzzySearch(query(), COMMANDS, [ 'title', 'aliases' ], 0.4) :
 		COMMANDS.slice(0, SUGGEST_AMOUNT);
@@ -148,13 +183,22 @@ export default function SlashCommandPopup(props: Props) {
 		setTimeout(() => view.focus());
 	});
 
+	function setActive(newActive: boolean, now = false) {
+		window.clearTimeout(activeTimeout.current);
+		if (!newActive) active(false);
+		else {
+			if (now) active(true);
+			else activeTimeout.current = setTimeout(() => active(true), COMMAND_PALETTE_APPEAR_DELAY) as any as number;
+		}
+	}
+
 	props.onAction.current = useCallback((action: AutocompleteAction) => {
 		switch (action.kind) {
 			default:
 				return false;
 			case ActionKind.open: {
 				const coords = action.view.coordsAtPos(action.range.from);
-				active(true);
+				setActive(true);
 				position([ coords.left + window.scrollX - 56, coords.top + window.scrollY ]);
 				index(0);
 				query('');
@@ -162,6 +206,14 @@ export default function SlashCommandPopup(props: Props) {
 			}
 			case ActionKind.filter: {
 				index(0);
+				if (action.filter === '/') {
+					toggleComment(action.view);
+					return false;
+				}
+				else {
+					if (!active()) setActive(true, true);
+				}
+
 				if (action.filter?.endsWith(' ')) {
 					closeAutocomplete(action.view);
 					return false;
@@ -170,11 +222,11 @@ export default function SlashCommandPopup(props: Props) {
 				return true;
 			}
 			case ActionKind.close: {
-				active(false);
+				setActive(false);
 				return true;
 			}
 			case ActionKind.enter: {
-				active(false);
+				setActive(false);
 				let command = commands[index()];
 				command?.action?.(action.view);
 				return true;

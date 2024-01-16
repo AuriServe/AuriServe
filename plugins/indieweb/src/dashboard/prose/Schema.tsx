@@ -15,7 +15,8 @@ export const SUPPORTED_NODES = [
 	'list',
 	'codeblock',
 	'heading',
-	'hard_break'
+	'hard_break',
+	'comment'
 ] as const;
 
 export type SupportedNode = typeof SUPPORTED_NODES[number];
@@ -45,26 +46,33 @@ export default function makeSchema(options: SpecOptions) {
 
 	const nodes = Object.fromEntries(Object.entries({
 		doc: {
-			content: 'title block+'
+			content: 'title (block|comment)+'
 		},
 
 		paragraph: {
 			content: 'inline*',
-			group: 'block',
+			group: 'block quotable',
 			parseDOM: [{ tag: 'p' }],
 			toDOM: () => { return [ 'p', 0 ]; }
 		},
 
 		blockquote: (allowedNodes.includes('blockquote') ? {
-			content: 'block+',
-			group: 'block',
+			content: 'quotable+',
+			group: 'block quotable',
 			defining: true,
 			parseDOM: [{ tag: 'blockquote' }],
 			toDOM: () => { return [ 'blockquote', 0 ]; }
 		} : null),
 
+		comment: (allowedNodes.includes('comment') ? {
+			content: 'block+',
+			defining: true,
+			parseDOM: [{ tag: 'aside[data-comment]' }],
+			toDOM: () => { return [ 'aside', { 'data-comment': 'true' }, 0 ] }
+		} : null),
+
 		horizontal_rule: (allowedNodes.includes('horizontal_rule') ? {
-			group: 'block',
+			group: 'block quotable',
 			parseDOM: [{ tag: 'hr' }],
 			toDOM: () => { return [ 'hr' ]; }
 		} : null),
@@ -80,7 +88,7 @@ export default function makeSchema(options: SpecOptions) {
 		heading: (numHeadings > 0 ? {
 			attrs: { level: { default: 0 }, id: { default: '' } },
 			content: 'inline*',
-			group: 'block',
+			group: 'block quotable',
 			defining: true,
 			parseDOM: [
 				...range(numHeadings).map(l => ({
@@ -111,7 +119,7 @@ export default function makeSchema(options: SpecOptions) {
 		codeblock: (allowedNodes.includes('codeblock') ? {
 			content: 'text*',
 			marks: '',
-			group: 'block',
+			group: 'block quotable',
 			code: true,
 			defining: true,
 			parseDOM: [{ tag: 'pre', preserveWhitespace: 'full' }],
@@ -127,7 +135,7 @@ export default function makeSchema(options: SpecOptions) {
 				src: {},
 				alt: { default: '' }
 			},
-			group: 'block',
+			group: 'block quotable',
 			draggable: true,
 			parseDOM: [{ tag: 'img[src]', getAttrs(dom) {
 				return {

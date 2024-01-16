@@ -333,3 +333,34 @@
 .ProseMirror-dropCursor {
 	color: rgb(var(--theme-accent-400) / 0.4);
 }
+
+aside[data-comment] {
+	position: relative;
+
+	& * {
+		color: rgb(var(--theme-accent-100)/0.7) !important;
+	}
+
+	& > *:first-child::before {
+		position: absolute;
+		left: -8px;
+		transform: translateX(-100%);
+		content: '//';
+		font-weight: 900;
+		color: rgb(var(--theme-accent-300)/0.4) !important;
+	}
+
+	&::before {
+		top: -0.25rem;
+		right: -0.5rem;
+		left: -1.875rem;
+		bottom: -0.25rem;
+		background: linear-gradient(to right, rgb(var(--theme-accent-500)/0.10),
+			rgb(var(--theme-accent-500)/0.06) 50%, rgb(var(--theme-accent-500)/0.04));
+		border-radius: 8px;
+		content: ' ';
+		pointer-events: none;
+		display: block;
+		position: absolute;
+	}
+}

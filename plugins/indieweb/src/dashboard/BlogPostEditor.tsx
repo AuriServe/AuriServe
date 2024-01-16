@@ -15,9 +15,11 @@ import { useStore } from 'vibin-hooks';
 import LinkEditorPopup from './prose/LinkEditorPopup';
 import { AutocompleteAction } from 'prosemirror-autocomplete';
 import SlashCommandPopup from './prose/SlashCommandPopup';
+import BlogPostProperties from './BlogPostProperties';
 
 interface Props {
 	post: Post;
+	setPost: (newPost: Post) => void;
 	setFullscreen: (fullscreen: boolean) => void;
 }
 
@@ -36,25 +38,10 @@ const TEXT_STYLES: TextStyle[] = [
 	{ baseTag: 'em', class: 'gradient' }
 ];
 
-const SIDEBAR_INPUT_CLASSES = {
-	'': tw`
-		--input-background[rgb(var(--theme-gray-800))]
-		hover:--input-background[color-mix(in_srgb,rgb(var(--theme-gray-800))_50%,rgb(var(--theme-gray-input)))]
-		--input-background-focus[rgb(var(--theme-gray-input))]
-	`,
-	// input: tw`!transition-none`,
-	// highlight: tw`hidden`
-}
-
-const SIDEBAR_TEXTAREA_CLASSES = {
-	...SIDEBAR_INPUT_CLASSES,
-	container: tw`!h-full`
-}
-
 const DEFAULT_DESCRIPTION_MAX_LENGTH = 300;
 const DEFAULT_SLUG_MAX_LENGTH = 48;
 
-const PROPS_PANE_WIDTH = 'calc(min(min(50vw-20rem,36rem),100vw-64rem))';
+const PROPS_PANE_WIDTH = 'calc(min(42rem,100vw-78rem))';
 
 function makeSlug(text: string) {
 	let slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
@@ -65,7 +52,7 @@ function makeSlug(text: string) {
 	return slug.substring(0, lastUnderscore);
 }
 
-export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }: Props) {
+export default function BlogPostEditor({ post, setPost, setFullscreen: showPostsSidebar }: Props) {
 	const showLinkEditor = useRef<(edit?: boolean) => void>(() => {});
 	const commandsHook = useRef<(action: AutocompleteAction) => boolean>(() => false);
 
@@ -187,109 +174,13 @@ export default function BlogPostEditor({ post, setFullscreen: showPostsSidebar }
 					<div class={tw`border-b-(1 gray-900/75) bg-gray-800/60 h-14 shrink-0`}/>
 
 					<div class={tw`p-4 bg-gray-800/60 grow`}>
-						<Form<ReturnType<typeof metadata>> class={tw`flex-(& col) gap-4`}
-							value={metadata()} onChange={(newMeta) => metadata(newMeta as any)}
-						>
-							<figure>
-								<figcaption class={tw`sr-only`}>
-									Properties
-								</figcaption>
-								<div class={tw`grid-(& cols-3) gap-4 items-stretch`}>
-									{/* <MediaImageField
-										path='banner'
-										aspect={16/9}
-									/> */}
-									<div class={tw`col-span-3 flex-(&) gap-4 place-content-between`}>
-										<Field.Text
-											path='slug'
-											multiline
-											optional
-											description={'A unique string used to identify the post, which will appear in its URL.'}
-											placeholder={defaultSlug}
-											class={{
-												...SIDEBAR_INPUT_CLASSES,
-												text: tw`pt-6 pb-px font-(mono bold) text-[0.8rem] --input-color[rgb(var(--theme-gray-200))]
-													text-ellipsis`
-											}}
-										/>
-										<Field.Text
-											path='tags'
-											multiline
-											optional
-											minRows={1.5}
-											description='A space separated list of tags, used to filter posts.'
-											placeholder=' '
-											class={{
-												...SIDEBAR_INPUT_CLASSES,
-												text: tw`pt-6 pb-px font-(mono bold) text-[0.8rem] --input-color[rgb(var(--theme-gray-200))]
-													text-ellipsis`
-											}}
-										/>
-										{/* <div class={tw`grid-(& cols-3) gap-4`}>
-											<Field.DateTime
-												path='publishTime'
-												optional
-												description='The date this article was first published. Set automatically, but may be modified.'
-												class={{
-													...SIDEBAR_INPUT_CLASSES
-												}}
-											/>
-											<Field.DateTime
-												path='lastEditTime'
-												description='The last time this article was modified. May be omitted.'
-												class={{
-													...SIDEBAR_INPUT_CLASSES
-												}}
-											/>
-											<Field.DateTime
-												path='creationTime'
-												description='The canonical time this article was created. Used for historical uploads.'
-												class={{
-													...SIDEBAR_INPUT_CLASSES
-												}}
-											/>
-										</div> */}
-									</div>
-								</div>
-							</figure>
-
-							<figure class={tw``}>
-								<figcaption class={tw`sr-only`}>
-									Metadata
-								</figcaption>
-
-								<div class={tw`grid-(& cols-1) gap-4 items-stretch min-h-[12rem]`}>
-									<Field.Text
-										path='description'
-										description='A short description of the post which will display in search engines and on social media.'
-										placeholder={defaultDescription}
-										class={{
-											...SIDEBAR_TEXTAREA_CLASSES,
-											text: tw`pt-6 pb-0.5 text-sm font-medium --input-color[rgb(var(--theme-gray-200))] hyphens-auto`,
-											pre: tw`line-clamp-5 peer-focus:line-clamp-none`
-										}}
-										// hideLabel
-										optional
-										multiline
-									/>
-									<Field.Text
-										path='preview'
-										description='A short preview of the post which will display in various places,
-											such as the blog index, or the dashboard.'
-										placeholder={defaultDescription}
-										class={{
-											...SIDEBAR_TEXTAREA_CLASSES,
-											text: tw`pt-6 pb-0.5 text-sm font-medium --input-color[rgb(var(--theme-gray-200))] hyphens-auto`,
-											pre: tw`line-clamp-5 peer-focus:line-clamp-none`,
-										}}
-										// hideLabel
-										optional
-										multiline
-									/>
-								</div>
-							</figure>
-
-						</Form>
+						<BlogPostProperties
+							post={post}
+							setPost={setPost}
+							defaultSlug={defaultSlug}
+							defaultPreview={defaultDescription}
+							defaultDescription={defaultDescription}
+						/>
 					</div>
 				</aside>
 
