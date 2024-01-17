@@ -61,6 +61,12 @@ export interface BlogPostRevision {
 	/** The media id for the banner image, if there is one. */
 	banner?: number;
 
+	/** The alignment of the banner image. */
+	bannerAlign?: [ number, number ];
+
+	/** Whether or not to show the banner in the post page. */
+	showBanner?: boolean;
+
 	/**
 	 * The post preview to be used on-site. HTML, but only inline formatting. No headers or images.
 	 * May be the beginning of the article, or it may be manually written.
@@ -68,13 +74,10 @@ export interface BlogPostRevision {
 	preview: string;
 
 	/** A reference to *all* media items that are used in this revision, for usage-tracking. */
-	media?: number[];
+	media: number[];
 }
 
 export interface BlogPost {
-	/** The media id for the banner image, if there is one. */
-	banner?: number;
-
 	/** The post's navigation tree. */
 	navigation: { anchor: string; title: string; level: string; }[];
 
@@ -88,7 +91,7 @@ export interface BlogPost {
 	currentRevision: number;
 
 	/** A reference to *all* media items that are used, for usage-tracking. */
-	media?: number[];
+	media: number[];
 }
 
 // export interface VideoPost

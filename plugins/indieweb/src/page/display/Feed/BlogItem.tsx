@@ -4,7 +4,7 @@ import { getOptimizedImage } from 'media';
 import PostItem from './PostItem';
 import { FeedRenderCtx } from './Feed';
 
-import { Post } from '../../../common/Type';
+import { BlogPost, Post } from '../../../common/Type';
 
 interface Props {
 	post: Post;
@@ -33,25 +33,29 @@ interface Props {
 export default function BlogItem({ post, ctx, layout = 'landscape' }: Props) {
 	if (ctx?.feedLayout === 'cards') layout = 'portrait';
 
-	let sanitizedContent = post.data.content.replace(/<(a|h1|h2|h3|h4|h5|h6|blockquote).*?>(.+?)<\/\1>/gi, '$2');
+	const blogPost = post.data as BlogPost;
+	const revision = blogPost?.revisions?.[blogPost.currentRevision];
+	const preview = revision?.preview ?? '';
+
+	console.log(preview);
 
 	return (
 		<PostItem class={`blog ${layout}`} i={ctx?.i} style={{
-			'--image': post.data.banner
-				? `url(/media/${getOptimizedImage(post.data.banner, 480)!.path})`
+			'--image': revision.banner
+				? `url(/media/${getOptimizedImage(revision.banner, 480)!.path})`
 				: undefined,
-			'--background-align': post.data.bannerAlign
-				? `${post.data.bannerAlign[0]}% ${post.data.bannerAlign[1]}%`
+			'--background-align': revision.bannerAlign
+				? `${revision.bannerAlign[0]}% ${revision.bannerAlign[1]}%`
 				: undefined
 		}}>
 			<a class='inner' href={`/blog/${post.slug}`}>
-				{post.data.banner && <img class='image_preload' data-palettize={2}
-					src={getOptimizedImage(post.data.banner, 'image_inline')!.path}/>
+				{revision.banner && <img class='image_preload' data-palettize={2}
+					src={getOptimizedImage(revision.banner, 'image_inline')!.path}/>
 				}
 				<div class='image'/>
 				<div class='content'>
-					<div class='title element-prose'><h3>{post.data.title}</h3></div>
-					<div class='text element-prose' dangerouslySetInnerHTML={{ __html: sanitizedContent }}/>
+					<div class='title element-prose'><h3>{revision.title}</h3></div>
+					<div class='text element-prose' dangerouslySetInnerHTML={{ __html: preview }}/>
 					<div class='tags'>
 						{post.tags.sort().map((tag, i) => (
 							<div key={i} class='tag'><span>{tag.replace(/_/g, ' ')}</span></div>

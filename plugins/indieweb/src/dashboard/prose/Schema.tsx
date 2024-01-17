@@ -34,7 +34,9 @@ export default function makeSchema(options: SpecOptions) {
 		textStyles,
 		allowedNodes,
 		customNodes,
-		customMarks
+		customMarks,
+		simpleOutput,
+		serializeComments
 	} = options;
 
 	assert(headingsLevelStart > titleLevel,
@@ -61,20 +63,20 @@ export default function makeSchema(options: SpecOptions) {
 			group: 'block quotable',
 			defining: true,
 			parseDOM: [{ tag: 'blockquote' }],
-			toDOM: () => { return [ 'blockquote', 0 ]; }
+			toDOM: simpleOutput ? () => [ 'div', 0 ] : () => [ 'blockquote', 0 ]
 		} : null),
 
 		comment: (allowedNodes.includes('comment') ? {
 			content: 'block+',
 			defining: true,
 			parseDOM: [{ tag: 'aside[data-comment]' }],
-			toDOM: () => { return [ 'aside', { 'data-comment': 'true' }, 0 ] }
+			toDOM: serializeComments ? () => [ 'aside', { 'data-comment': 'true' }, 0 ] : () => ''
 		} : null),
 
 		horizontal_rule: (allowedNodes.includes('horizontal_rule') ? {
 			group: 'block quotable',
 			parseDOM: [{ tag: 'hr' }],
-			toDOM: () => { return [ 'hr' ]; }
+			toDOM: () => simpleOutput ? () => [ 'p' ] : () => [ 'hr' ]
 		} : null),
 
 		title: forceTitle ? {
@@ -123,7 +125,7 @@ export default function makeSchema(options: SpecOptions) {
 			code: true,
 			defining: true,
 			parseDOM: [{ tag: 'pre', preserveWhitespace: 'full' }],
-			toDOM: () => { return [ 'pre', [ 'code', 0 ] ]; }
+			toDOM: simpleOutput ? () => '' : () => [ 'pre', [ 'code', 0 ] ]
 		} : null),
 
 		text: {
@@ -143,7 +145,7 @@ export default function makeSchema(options: SpecOptions) {
 					alt: (dom as HTMLElement).getAttribute('alt')
 				};
 			} }],
-			toDOM(node) { return [ 'img', node.attrs ]; }
+			toDOM: simpleOutput ? () => '' : (node) => [ 'img', node.attrs ]
 		} : null),
 
 		hard_break: (allowedNodes.includes('hard_break') ? {
@@ -151,7 +153,7 @@ export default function makeSchema(options: SpecOptions) {
 			group: 'inline',
 			selectable: false,
 			parseDOM: [{ tag: 'br' }],
-			toDOM: () => { return [ 'br' ]; }
+			toDOM: () => [ 'br' ]
 		} : null),
 
 		// styled_code: customStyleNode('code', customStylesByTag.code),
@@ -178,9 +180,8 @@ export default function makeSchema(options: SpecOptions) {
 						newTab: (node as HTMLElement).getAttribute('target') === '_blank' }
 				}
 			}],
-			toDOM(node: any) {
-				return [ 'a', { href: node.attrs.href, target: node.attrs.newTab ? '_blank' : undefined }];
-			}
+			toDOM: simpleOutput ? () => [ 'span', 0 ] : (node: any) =>
+				[ 'a', { href: node.attrs.href, target: node.attrs.newTab ? '_blank' : undefined }]
 		},
 
 		code: createdStyledMark('code', textStylesByTag.code, [ { tag: 'code' } ]),

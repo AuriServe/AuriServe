@@ -74,7 +74,7 @@ export default function generate(conf: Config = {}, toFile = false) {
 		},
 
 		resolve: {
-			extensions: ['.ts', '.tsx', '.js', '.jsx'],
+			extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
 			alias: conf.tsx ? {
 				'react': 'preact/compat',
 				'react-dom': 'preact/compat'

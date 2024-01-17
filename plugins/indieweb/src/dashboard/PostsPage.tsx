@@ -1,21 +1,14 @@
+import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
+import { titleCase } from 'common';
 import { Fragment, FunctionalComponent, VNode, h } from 'preact';
+import { useAsyncEffect, useAsyncMemo, useStore } from 'vibin-hooks';
+import { Button, EventEmitter, Icon, Svg, Tooltip, executeQuery, tw, useData, useNavigate } from 'dashboard';
 
 import BlogPostEditor from './BlogPostEditor';
 import UnknownPostEditor from './UnknownPostEditor';
 
-import { Post, Visibility } from '../common/Type';
-import { Button, Icon, Svg, Tooltip, executeQuery, tw, useData, useNavigate } from 'dashboard';
-import { useAsyncEffect, useAsyncMemo, useStore } from 'vibin-hooks';
-import { titleCase } from 'common';
-import { useRef } from 'preact/hooks';
-
-interface EditorProps {
-	post: Post;
-	setPost: (post: Post) => void;
-	setFullscreen: (fullscreen: boolean) => void;
-}
-
-type PostEditorComponent = FunctionalComponent<EditorProps>;
+import { BlogPost, Post, Visibility } from '../common/Type';
+import { PostEditorContext, PostEditorContextData, SaveReason, SaveState } from './PostEditorContext';
 
 const QUERY_POSTS = `indieweb { posts { id, slug, type, created, modified, visibility, data, tags, media } }`;
 const QUERY_POST = `query($slug: String!) {
@@ -30,7 +23,7 @@ interface GraphData {
 interface PostTypeMeta {
 	icon: string;
 	label?: string;
-	editor: PostEditorComponent,
+	editor: FunctionalComponent<{}>,
 	create?: () => void;
 	content: (post: Post) => VNode;
 }
@@ -45,8 +38,10 @@ const POST_TYPE_META: Record<string, PostTypeMeta> = {
 	blog: {
 		icon: Icon.book,
 		content: (post) => {
-			const title = post.data.title as string;
-			const content = post.data.content as string;
+			const blogData = post.data as BlogPost;
+			const revision = blogData.revisions[blogData.currentRevision];
+			const title = revision?.title ?? '(Untitled)';
+			const content = revision?.preview ?? '';
 			let openingTag = content.indexOf('<p>') + 3;
 			if (openingTag === 2) openingTag = 0;
 			let closingTag = content.indexOf('</p>');
@@ -124,13 +119,18 @@ const POST_TYPE_META: Record<string, PostTypeMeta> = {
 	}
 }
 
-interface Props {
-}
+const MIN_IDLE_TIME = 1;
+const MAX_SAVE_INTERAL = 10;
 
-const MIN_IDLE_TIME = 5;
-const MAX_SAVE_INTERAL = 30;
+export const QUERY_SAVE_POST = `
+	mutation($id: Int!, $data: String!, $tags: [String!], $slug: String) {
+		indieweb {
+			post(id: $id, data: $data, tags: $tags, slug: $slug)
+		}
+	}
+`;
 
-export default function PostsPage(props: Props) {
+export default function PostsPage() {
 	const navigate = useNavigate();
 	const [ data ] = useData<GraphData>(QUERY_POSTS, []);
 	const slug = location.pathname.split('/')[3] ?? '';
@@ -143,41 +143,121 @@ export default function PostsPage(props: Props) {
 
 	const lastSaveTime = useRef<number>(0);
 	const saveTimeout = useRef<number>(0);
+	const saveState = useStore<SaveState>('idle');
+
+	const event = useMemo(() => new EventEmitter() as PostEditorContextData['event'], []);
 
 	function isDirty() {
 		return JSON.stringify(post()) !== JSON.stringify(serverPost());
 	}
 
-	function handleSetPost(newPost: Post) {
-		post(newPost);
-		handleSave();
+	function updateSaveState(state: SaveState, reason: SaveReason) {
+		saveState(state);
+		event.emit('save', state, reason);
 	}
 
-	function handleSave(skipDebounce = false) {
-		function actuallySave() {
-			lastSaveTime.current = Date.now();
-			console.warn('Should save!');
+	/**
+	 * Attempts to submit changes to the server.
+	 */
+
+	function handleSubmitChanges(post: Post | null, reason: SaveReason) {
+		if(!post) return;
+		lastSaveTime.current = Date.now();
+		updateSaveState('saving', reason);
+
+		const saveStart = Date.now();
+		const data = JSON.stringify(post.data);
+		executeQuery(QUERY_SAVE_POST, {
+			id: post.id,
+			data,
+			// TODO: Tags & stuff :)
+			// tags: metadata().tags.split(' '),
+			// slug: metadata().slug || defaultSlug,
+		}).catch(e => {
+			console.error('Failed to save! Retrying.');
+			handleSave(null, true);
+		}).then(() => {
+			lastSaveTime.current = 0;
+			serverPost(post);
+
+			const IDLE_DELAY = 700;
+			const MIN_UPDATE_DELAY = 300;
+
+			function saveStateUpdater() {
+				if (saveState() !== 'saving') return;
+				updateSaveState('saved', reason);
+				setTimeout(() => {
+					if (saveState() !== 'saved') return;
+					updateSaveState('idle', reason);
+				}, IDLE_DELAY);
+			}
+
+			const now = Date.now();
+			if (now - saveStart > MIN_UPDATE_DELAY) saveStateUpdater();
+			else setTimeout(() => saveStateUpdater(), MIN_UPDATE_DELAY - (now - saveStart));
+		});
+	}
+
+	/**
+	 * Intelligently saves the post to the server, dirty checking, debouncing, and doing some deferred computation.
+	 *
+	 * @param newPost - If this is being called from an editor, this will be set either to a post object, or a
+	 *  function to generate it which should be debounced. If it's an object, we should immediate dirty check and
+	 *  discard if it is the same as the previous post object. If it's a function, we should queue the function to
+	 *  execute at the end of the debounce, and do the dirty check there. If this is being called from THIS component,
+	 *  this may be `null`. If this is the case, the current post should be saved, regardless of whether or not it's
+	 * 	dirty. This is because this will only be called like this in the case of a network error.
+	 * @param skipDebounce - If true, don't debounce, execute the save immediately.
+	 */
+
+	function handleSave(newPost: Post | (() => Post) | null, forceImmediate = false): boolean {
+		clearTimeout(saveTimeout.current);
+
+		let dirty = isDirty();
+
+		if (newPost && !(newPost instanceof Function)) {
+			post(newPost);
+			if (!forceImmediate && !dirty) return false;
+		}
+		else if (!newPost) {
+			newPost = post();
 		}
 
-		clearTimeout(saveTimeout.current);
-		if (!isDirty()) return;
-
-		if (skipDebounce) {
-			actuallySave();
+		if (forceImmediate) {
+			handleSubmitChanges(newPost instanceof Function ? newPost() : newPost, 'immediate');
+			return dirty;
 		}
 		else {
+			if (lastSaveTime.current === 0) lastSaveTime.current = Date.now();
 			if ((Date.now() - lastSaveTime.current) / 1000 < MAX_SAVE_INTERAL - MIN_IDLE_TIME) {
 				// We're not at the REQUIRED save time.
-				setTimeout(() => actuallySave(), MIN_IDLE_TIME * 1000);
+				saveTimeout.current = setTimeout(() => {
+					newPost = newPost instanceof Function ? newPost() : newPost;
+					post(newPost);
+					if (!isDirty()) return;
+					handleSubmitChanges(newPost, 'debounce');
+				}, MIN_IDLE_TIME * 1000) as any as number;
+				return true;
 			}
 			else {
-				actuallySave();
+				newPost = newPost instanceof Function ? newPost() : newPost;
+				post(newPost);
+				if (!isDirty()) return false;
+				handleSubmitChanges(newPost, 'interval');
+				return true;
 			}
 		}
 	}
 
+
+	/**
+	 * Load the post.
+	 */
+
 	useAsyncEffect(async (abort) => {
-		if (post() && isDirty()) handleSave(true);
+		if (post() && isDirty()) handleSave(null, true);
+		post(null);
+		serverPost(null);
 
 		if (!slug.length) return undefined;
 		const res = (await executeQuery(QUERY_POST, { slug }))?.indieweb?.postBySlug;
@@ -261,12 +341,15 @@ export default function PostsPage(props: Props) {
 				</div>
 			</div>
 			<div class={tw`relative ${sidebarOpen() && 'ml-72'} transition-all duration-200`}>
-				{post() ? <Editor
-					key={post()!.id}
-					post={post()!}
-					setPost={handleSetPost}
-					setFullscreen={sidebarOpen}
-				/> : <div/>}
+				{post() && <PostEditorContext.Provider value={{
+					event,
+					post: post()!,
+					serverPost: serverPost()!,
+					setPost: handleSave,
+					setSidebarVisible: sidebarOpen
+				}}>
+					<Editor key={post()!.id}/>
+				</PostEditorContext.Provider>}
 			</div>
 		</div>
 	)

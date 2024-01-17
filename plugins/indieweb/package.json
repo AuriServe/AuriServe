@@ -32,6 +32,7 @@
 		"auriserve": "file:../../api/build",
 		"color": "^4.2.3",
 		"common": "file:../../common/build",
+		"emojilib": "^3.0.11",
 		"fast-average-color": "^9.4.0",
 		"orderedmap": "^2.1.1",
 		"prosemirror-autocomplete": "^0.4.3",
@@ -45,6 +46,7 @@
 		"prosemirror-transform": "^1.8.0",
 		"prosemirror-view": "^1.32.7",
 		"prosemirror-virtual-cursor": "^0.4.2",
+		"unicode-emoji-json": "^0.4.0",
 		"vibin-hooks": "^0.6.3"
 	}
 }

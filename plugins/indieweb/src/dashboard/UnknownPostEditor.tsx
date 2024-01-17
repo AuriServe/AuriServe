@@ -1,8 +1,13 @@
 import { h } from 'preact';
-import { Post } from '../common/Type';
-import { Button, Card, Icon, tw } from 'dashboard';
+import { Card, tw } from 'dashboard';
+import { useContext } from 'preact/hooks';
 
-export default function UnknownPostEditor({ post }: { post: Post }) {
+import { Post } from '../common/Type';
+import { PostEditorContext } from './PostEditorContext';
+
+export default function UnknownPostEditor() {
+	const { post } = useContext(PostEditorContext);
+
 	return (
 		<Card class={tw`max-w-2xl my-12 mx-auto h-min`}>
 			<Card.Body class={tw`flex-(& col) items-center py-12 px-24`}>

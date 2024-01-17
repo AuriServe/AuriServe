@@ -3,10 +3,11 @@ import { RefObject } from 'preact';
 import autocomplete, { AutocompleteAction, FromTo } from 'prosemirror-autocomplete';
 
 interface Hooks {
-	commands: RefObject<(action: AutocompleteAction) => boolean>;
+	command: RefObject<(action: AutocompleteAction) => boolean>;
+	emoji: RefObject<(action: AutocompleteAction) => boolean>;
 }
 
-export default function SlashCommandsPlugins({ commands }: Hooks) {
+export default function SlashCommandsPlugins(hooks: Hooks) {
 	const autoCompletePlugins = autocomplete({
 		triggers: [
 			{
@@ -15,31 +16,30 @@ export default function SlashCommandsPlugins({ commands }: Hooks) {
 				allArrowKeys: true,
 				cancelOnFirstSpace: true,
 				decorationAttrs: {
-					// class: tw`Autocomplete~(text-(gray-300)) font-(bold mono)`
 					class: tw`Autocomplete~(text-accent-200/80 font-semibold inline-block leading-none relative
 						before:(content-[_] block absolute -inset-2 bg-accent-500/10 rounded)`,
-				},
+				}
 			},
+			{
+				name: 'emoji',
+				trigger: ':',
+				cancelOnFirstSpace: true,
+				decorationAttrs: {
+					class: tw`Autocomplete~(text-accent-200/80 font-semibold)`,
+				}
+			}
 		],
 		reducer: (action: AutocompleteAction): boolean => {
 			switch (action.type?.name) {
 				default:
 					return false;
 				case 'command':
-					return commands.current?.(action) ?? false;
+					return hooks.command.current?.(action) ?? false;
+				case 'emoji':
+					return hooks.emoji.current?.(action) ?? false;
 			}
 		},
 	});
-
-	// const hintPlugin = new Plugin({
-	//   props: {
-	//     decorations(state) {
-	//       let doc = state.doc;
-	//       if (doc.childCount == 1 && doc.firstChild?.isTextblock && doc.firstChild?.content.size == 0)
-	//         return DecorationSet.create(doc, [ Decoration.widget(1, document.createTextNode(text)) ])
-	//     }
-	//   }
-	// })
 
 	return autoCompletePlugins;
 }

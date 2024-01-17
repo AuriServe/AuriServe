@@ -40,7 +40,7 @@ export function unregisterShortcut(identifier: string): boolean {
 export function getFuzzySearchScore(val: string, query: string) {
 	let score = 0;
 	let lastPos = -1;
-	const maxScore = 10 * query.length;
+	const maxScore = 10 * Math.max(val.length, query.length);
 
 	for (let i = 0; i < query.length; i++) {
 		const pos = val.indexOf(query[i], lastPos + 1);
@@ -73,8 +73,7 @@ export function fuzzySearch<T extends Record<string, any>>(
 		})
 		.filter(([, score]) => score > minFactor)
 		.sort(([, a], [, b]) => b - a)
-		.map(([s]) => s)
-		.slice(0, 7);
+		.map(([s]) => s);
 }
 export function searchShortcuts(query: string): Shortcut[] {
 	return fuzzySearch(query, [ ...registeredShortcuts.values() ], [ 'title', 'description', 'aliases' ]).slice(0, 7);

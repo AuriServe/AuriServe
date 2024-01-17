@@ -1,12 +1,12 @@
 import { h } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
-import { EditorState } from 'prosemirror-state';
+import { useCallback, useContext, useEffect, useMemo, useRef } from 'preact/hooks';
+import { EditorState, Transaction } from 'prosemirror-state';
 import { ProseMirror } from '@nytimes/react-prosemirror';
 import { DOMParser, DOMSerializer } from 'prosemirror-model';
-import { tw, executeQuery, Button, Icon, useNavigate, Form, Field, merge } from 'dashboard';
+import { tw, executeQuery, Button, Icon, useNavigate, Form, Field, merge, Spinner } from 'dashboard';
 
-import initialize from './prose';
-import { Post } from '../common/Type';
+import initializeBlogEditorData from './prose';
+import { BlogPost, Post } from '../common/Type';
 import { MediaImageField } from 'media';
 import EditorToolbar from './prose/EditorToolbarPopup';
 import HeadingNavigation from './prose/HeadingNavigation';
@@ -16,12 +16,8 @@ import LinkEditorPopup from './prose/LinkEditorPopup';
 import { AutocompleteAction } from 'prosemirror-autocomplete';
 import SlashCommandPopup from './prose/SlashCommandPopup';
 import BlogPostProperties from './BlogPostProperties';
-
-interface Props {
-	post: Post;
-	setPost: (newPost: Post) => void;
-	setFullscreen: (fullscreen: boolean) => void;
-}
+import { PostEditorContext } from './PostEditorContext';
+import EmojiSearchPopup from './prose/EmojiSearchPopup';
 
 export const QUERY_SAVE_POST = `
 	mutation($id: Int!, $data: String!, $tags: [String!], $slug: String) {
@@ -52,29 +48,35 @@ function makeSlug(text: string) {
 	return slug.substring(0, lastUnderscore);
 }
 
-export default function BlogPostEditor({ post, setPost, setFullscreen: showPostsSidebar }: Props) {
-	const showLinkEditor = useRef<(edit?: boolean) => void>(() => {});
-	const commandsHook = useRef<(action: AutocompleteAction) => boolean>(() => false);
+export default function BlogPostEditor() {
+	const { post, event: postEvents, setPost, setSidebarVisible } = useContext(PostEditorContext);
 
-	const navigate = useNavigate();
+	const showLinkEditor = useRef<(edit?: boolean) => void>(() => {});
+	const commandHook = useRef<(action: AutocompleteAction) => boolean>(() => false);
+	const emojiHook = useRef<(action: AutocompleteAction) => boolean>(() => false);
+
+	let blogPost = post.data as BlogPost;
+	let rev = 0;
+
 	const mount = useStore<HTMLElement | null>(null);
+	const editorData = useMemo(() => initializeBlogEditorData({
+		forceTitle: true,
+		titleLevel: 1,
+		numHeadings: 10,
+		textStyles: TEXT_STYLES,
+		hooks: {
+			command: commandHook,
+			emoji: emojiHook
+		}
+	}), []);
+
 	const editorState = useStore(() => {
 		const container = document.createElement('div');
-		container.innerHTML = `<h1>${post.data.title}</h1>${post.data.content}`;
-
-		const [ schema, plugins ] = initialize({
-			forceTitle: true,
-			titleLevel: 1,
-			numHeadings: 10,
-			textStyles: TEXT_STYLES,
-			hooks: {
-				commands: commandsHook
-			}
-		});
+		container.innerHTML = `<h1>${blogPost.revisions[rev]?.title ?? ''}</h1>${blogPost.revisions[rev]?.content ?? ''}`;
 
 		return EditorState.create({
-			doc: DOMParser.fromSchema(schema).parse(container),
-			plugins
+			doc: DOMParser.fromSchema(editorData.editorSchema).parse(container),
+			plugins: editorData.plugins
 		});
 	});
 
@@ -87,9 +89,9 @@ export default function BlogPostEditor({ post, setPost, setFullscreen: showPosts
 	}>({
 		tags: (post.tags ?? []).join(' '),
 		slug: ((post.slug ?? ''), ''),
-		description: post.data.description ?? '',
-		preview: post.data.preview ?? '',
-		banner: post.data.banner ?? -1
+		description: blogPost.revisions[rev]?.description ?? '',
+		preview: blogPost.revisions[rev]?.preview ?? '',
+		banner: blogPost.revisions[rev]?.banner ?? -1
 	});
 
 	let defaultDescription = '';
@@ -120,26 +122,68 @@ export default function BlogPostEditor({ post, setPost, setFullscreen: showPosts
 	const navigationOpen = useStore(true);
 	const propertiesOpen = useStore(true);
 
+	const saveIndicatorState = useStore<'idle' | 'saved' | 'saving'>('idle');
+
 	function setFullscreen(fullscreen: boolean) {
 		propertiesOpen(!fullscreen);
-		showPostsSidebar(!fullscreen);
+		setSidebarVisible(!fullscreen);
 	}
 
-	function handleSave() {
-		const fragment = DOMSerializer.fromSchema(editorState().schema).serializeFragment(editorState().doc.content);
+	useEffect(() => postEvents.bind('save', (state, reason) => {
+		if (reason === 'interval' && saveIndicatorState() === 'idle') return;
+		saveIndicatorState(state);
+	}), [ postEvents ]);
+
+	const computeDocument = useCallback((): Post => {
+		let fragment = DOMSerializer.fromSchema(editorData.editorSchema).serializeFragment(editorState().doc.content);
 		const title = (fragment.firstChild as HTMLElement).innerText;
 		fragment.removeChild(fragment.firstChild as HTMLElement);
-		const div = document.createElement('div');
+		let div = document.createElement('div');
 		div.appendChild(fragment)
 		const content = div.innerHTML;
 
-		const data = JSON.stringify({ ...post.data, title, content });
-		executeQuery(QUERY_SAVE_POST, {
-			id: post.id,
-			data,
-			tags: metadata().tags.split(' '),
-			slug: metadata().slug || defaultSlug,
-		})
+		fragment = DOMSerializer.fromSchema(editorData.pageSchema).serializeFragment(editorState().doc.content);
+		fragment.removeChild(fragment.firstChild as HTMLElement);
+		div = document.createElement('div');
+		div.appendChild(fragment)
+		const html = div.innerHTML;
+
+		fragment = DOMSerializer.fromSchema(editorData.simpleSchema).serializeFragment(editorState().doc.content);
+		fragment.removeChild(fragment.firstChild as HTMLElement);
+		div = document.createElement('div');
+		div.appendChild(fragment);
+		const preview = div.innerHTML;
+
+		const newPost = { ...post };
+		const newData: BlogPost = newPost.data = { ...newPost.data } as BlogPost;
+		newData.revisions = [ ...newData.revisions ];
+		const revision = newData.revisions[rev] = { ...newData.revisions[rev] };
+
+		revision.title = title;
+		revision.content = content;
+		revision.preview = preview;
+		revision.description = preview;
+		newData.html = html;
+
+		return newPost;
+	}, [ post, rev ]);
+
+	useEffect(() => {
+		const saveCheckCallback = (evt: KeyboardEvent) => {
+			if (evt.key === 's' && evt.ctrlKey) {
+				evt.preventDefault();
+				evt.stopPropagation();
+				setPost(computeDocument(), true);
+			}
+		}
+
+		window.addEventListener('keydown', saveCheckCallback);
+		return () => window.removeEventListener('keydown', saveCheckCallback);
+	}, [ computeDocument ]);
+
+	function handleModified(tr: Transaction) {
+		editorState(s => s.apply(tr));
+		setPost(computeDocument);
 	}
 
 	useEffect(() => {
@@ -158,7 +202,7 @@ export default function BlogPostEditor({ post, setPost, setFullscreen: showPosts
 		<ProseMirror
 			mount={mount()}
 			state={editorState()}
-			dispatchTransaction={tr => editorState(s => s.apply(tr))}
+			dispatchTransaction={handleModified}
 		>
 			<div class={tw`w-full min-h-screen flex -mb-14 transition
 				${propertiesOpen() ? 'bg-gray-800/20' : 'bg-gray-800/50'}`}>
@@ -169,7 +213,7 @@ export default function BlogPostEditor({ post, setPost, setFullscreen: showPosts
 
 					<Button.Secondary icon={Icon.launch} label='Publish' size={9} iconRight
 						class={tw`absolute top-2.5 right-4 ml-0.5 z-50 transition !bg-accent-500/[15%]`}
-						onClick={handleSave}/>
+						onClick={() => console.warn('Nothing yet!')}/>
 
 					<div class={tw`border-b-(1 gray-900/75) bg-gray-800/60 h-14 shrink-0`}/>
 
@@ -238,17 +282,37 @@ export default function BlogPostEditor({ post, setPost, setFullscreen: showPosts
 					/>
 					<EditorToolbar styles={TEXT_STYLES} showLinkEditor={() => showLinkEditor.current(true)}/>
 					<LinkEditorPopup show={showLinkEditor}/>
-					<SlashCommandPopup onAction={commandsHook}/>
+					<SlashCommandPopup onAction={commandHook}/>
+					<EmojiSearchPopup onAction={emojiHook}/>
 				</main>
 
 				{/* <Button.Tertiary icon={Icon.tag} label='Open Right Sidebar' iconOnly size={9} disabled={rightSidebarOpen()}
 					class={tw`fixed top-2.5 right-32 mr-1 z-30 bg-gray-750`}
 					onClick={() => rightSidebarOpen(r => !r)}/> */}
 
-				<Button.Secondary icon={Icon.launch} label='Publish' size={9} iconRight
-					class={tw`fixed top-2.5 right-2.5 ml-0.5 z-50 transition !bg-accent-500/[15%]
-						${propertiesOpen() && 'opacity-0 interact-none'}`}
-					onClick={handleSave}/>
+				<div inert={propertiesOpen()} class={tw`${propertiesOpen() && 'opacity-0 interact-none'}
+					fixed top-2.5 right-2.5 z-50 transition flex gap-2`}>
+
+					<div class={tw`relative grid pt-1.5 pr-2`}>
+						<p class={tw`row-start-1 col-start-1 transition duration-200 text-right
+							${saveIndicatorState() === 'saved' ? 'delay-100' : saveIndicatorState() === 'saving'
+								? 'translate-y-1 opacity-0 !duration-0' : '-translate-y-1 opacity-0'}`}>
+							<span class={tw`font-medium text-gray-300`}>Saved.</span>
+						</p>
+
+						<p class={tw`row-start-1 col-start-1 transition duration-200 text-right
+							${saveIndicatorState() === 'saving' ? 'delay-100' : saveIndicatorState() === 'saved'
+								? '-translate-y-1 opacity-0 !duration-0' : 'translate-y-1 opacity-0'}`}>
+							<span class={tw`font-medium text-gray-300 animate-pulse`}>Saving...</span>
+						</p>
+					</div>
+
+					<Button.Secondary icon={Icon.launch} label='Publish' size={9} iconRight
+						class={tw`ml-0.5 !bg-accent-500/[15%]`} onClick={() => console.warn('Nothing yet!')}/>
+				</div>
+
+
+
 			</div>
 		</ProseMirror>
 	);

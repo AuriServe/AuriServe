@@ -1,4 +1,4 @@
-import { MarkSpec, NodeSpec, Schema } from 'prosemirror-model';
+import { MarkSpec, NodeSpec, Schema, SchemaSpec } from 'prosemirror-model';
 import { Plugin } from 'prosemirror-state';
 import { keymap } from 'prosemirror-keymap';
 import { history } from 'prosemirror-history';
@@ -13,7 +13,7 @@ import SplitDecorationPlugin from './SplitDecorationPlugin';
 import SelectHighlightPlugin from './SelectHighlightPlugin';
 import makeSchema, { DEFAULT_SUPPORTED_NODES, SupportedNode } from './Schema';
 import TextStyle, { DEFAULT_TEXT_STYLES } from './TextStyle';
-import SlashCommandsPlugins from './SlashCommandsPlugins';
+import SlashCommandsPlugins from './AutocompletePlugin';
 import { RefObject } from 'preact';
 import { AutocompleteAction } from 'prosemirror-autocomplete';
 import { dropCursor } from 'prosemirror-dropcursor';
@@ -44,10 +44,11 @@ export interface SpecOptions {
 	/** Additional marks to add to the mark list. Not processed by `makeSchema`. */
 	customMarks: Record<string, MarkSpec | null>;
 
-	/** Slash command hooks. */
-	hooks: {
-		commands: RefObject<(action: AutocompleteAction) => boolean>;
-	}
+	/** Whether or not to serialize comments. Defaults to true. */
+	serializeComments: boolean;
+
+	/** Whether or not to collapse things like blockquotes, comments, lists, etc. */
+	simpleOutput: boolean;
 }
 
 /**
@@ -63,21 +64,42 @@ export function populateSpecOptions(options: Partial<SpecOptions>): SpecOptions 
 	options.allowedNodes ??= DEFAULT_SUPPORTED_NODES;
 	options.customNodes ??= {};
 	options.customMarks ??= {};
+	options.simpleOutput ??= false;
+	options.serializeComments ??= !options.simpleOutput;
 	return options as SpecOptions;
+}
+
+interface EditorDataProps extends SpecOptions {
+	/** Autocomplete activation hooks. */
+	hooks: {
+		command: RefObject<(action: AutocompleteAction) => boolean>;
+		emoji: RefObject<(action: AutocompleteAction) => boolean>;
+	}
+}
+
+interface EditorData {
+	editorSchema: Schema;
+	pageSchema: Schema;
+	simpleSchema: Schema;
+	plugins: Plugin[];
 }
 
 /**
  * Creates an opinionated schema and plugins for a ProseMirror editor based on a `SpecOptions`.
  */
 
-export default function initialize(partialOptions: Partial<SpecOptions>): [ Schema, Plugin[] ] {
-	const options = populateSpecOptions(partialOptions);
-	const schema = makeSchema(options);
+export default function initializeBlogEditorData(partialOptions: Partial<EditorDataProps>): EditorData {
+	const editorOptions = populateSpecOptions(partialOptions);
+
+	const editorSchema = makeSchema(editorOptions);
+	const pageSchema = makeSchema(populateSpecOptions({ ...partialOptions, serializeComments: false }));
+	const simpleSchema = makeSchema(populateSpecOptions({
+		...partialOptions, simpleOutput: true, serializeComments: false }));
 
 	const plugins: Plugin[] = [
 		...SlashCommandsPlugins(partialOptions.hooks!),
-		InputRules(options, schema),
-		keymap(buildKeymap(schema)),
+		InputRules(editorOptions, editorSchema),
+		keymap(buildKeymap(editorSchema)),
 		keymap(baseKeymap),
 		history(),
 		dropCursor({ class: 'ProseMirror-dropCursor', color: false, width: 2 }),
@@ -89,5 +111,10 @@ export default function initialize(partialOptions: Partial<SpecOptions>): [ Sche
 		createVirtualCursor({}),
 	];
 
-	return [ schema, plugins ];
+	return {
+		editorSchema,
+		pageSchema,
+		simpleSchema,
+		plugins
+	};
 }
