@@ -203,15 +203,15 @@ async function init() {
 	});
 
 	routeHandlers.push(
-		router.get('/dashboard/res/dashboard.js', (_, res) => {
+		router.get('/dashboard/res/dashboard.js', (_: any, res: any) => {
 			res.sendFile(path.join(__dirname, '..', 'build', 'dashboard.js'));
 		}),
 
-		router.get('/dashboard/res/dashboard.js.map', (_, res) => {
+		router.get('/dashboard/res/dashboard.js.map', (_: any, res: any) => {
 			res.sendFile(path.join(__dirname, '..', 'build', 'dashboard.js.map'));
 		}),
 
-		router.post('/dashboard/res/auth', async (req, res) => {
+		router.post('/dashboard/res/auth', async (req: any, res: any) => {
 			try {
 				assert(
 					isType(req.body.identity, 'string') && isType(req.body.password, 'string'),
@@ -234,7 +234,7 @@ async function init() {
 			}
 		}),
 
-		router.post('/dashboard/res/reset_password', async (req, res) => {
+		router.post('/dashboard/res/reset_password', async (req: any, res: any) => {
 			try {
 				assert(isType(req.body.token, 'string') && isType(req.body.password, 'string'),
 					'Missing required information');
@@ -250,7 +250,7 @@ async function init() {
 			}
 		}),
 
-		router.post('/dashboard/res/gql', async (req, res) => {
+		router.post('/dashboard/res/gql', async (req: any, res: any) => {
 			try {
 				const token = req.headers.token as string;
 				assert(token && typeof token === 'string', 'Missing required information.');
@@ -285,7 +285,7 @@ async function init() {
 		for (const plugin of dashboardPlugins) {
 			const basePath = `/dashboard/res/plugin/${plugin.identifier}/`;
 			routeHandlers.push(
-				router.get(`${basePath}*`, (req, res) => {
+				router.get(`${basePath}*`, (req: any, res: any) => {
 					const reqPath = req.path.replace(basePath, '');
 					res.sendFile(
 						path.join(
@@ -301,11 +301,11 @@ async function init() {
 		}
 
 		routeHandlers.push(
-			router.get('/dashboard/res/:path', (req, res) => {
+			router.get('/dashboard/res/:path', (req: any, res: any) => {
 				res.sendFile(path.join(__dirname, '..', 'res', 'dashboard', req.params.path));
 			}),
 
-			router.get(['/dashboard', '/dashboard/*'], (req, res) => {
+			router.get(['/dashboard', '/dashboard/*'], (req: any, res: any) => {
 				const safe = req.query.safe != null;
 				res.status(200).send(trim`
 				<!DOCTYPE html>
@@ -317,10 +317,10 @@ async function init() {
 						<title>Dashboard</title>
 						<meta name='description' content='Website dashboard.'/>
 
-						<script src='/dashboard/res/dashboard.js' defer></script>
+						<script src='/dashboard/res/dashboard.js'></script>
 						${!safe && dashboardPlugins
 							.map((plugin) => `<script src='/dashboard/res/plugin/${plugin.identifier}/
-								${plugin.entry.dashboard}' defer></script>`)
+								${plugin.entry.dashboard}'></script>`)
 							.join('\n')}
 					</head>
 					<body id='root'>

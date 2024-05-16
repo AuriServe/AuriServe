@@ -39,7 +39,7 @@ export default function OptionField(props: Props) {
 		readonly,
 		onFocus,
 		onBlur: stateOnBlur,
-		onRef
+		onRef,
 	} = useDerivedState<string | null>(props, '', true);
 
 	const {
@@ -174,9 +174,10 @@ export default function OptionField(props: Props) {
 					</Transition>
 
 					<Svg
-						class={tw`absolute right-2 icon-p-gray-${props.disabled ? 400 : 200} transition
+						class={tw`absolute right-2
+							icon-p-gray-${props.disabled ? 400 : 200} transition
 						${props.hideLabel ? 'top-1.5' : 'top-3'}
-						${open && 'scale-y-[-100%] translate-y-px}'}`}
+						${open && 'scale-y-[-100%] translate-y-px'}`}
 						src={Icon.dropdown}
 						size={7}
 					/>

@@ -30,7 +30,7 @@ export function PostView() {
 			style={{
 				'--image': hasBanner
 					? `url(${showBanner
-						? `/media/${getOptimizedImage(revision!.banner!, 1920)?.path}`
+						? `/media/${getOptimizedImage(revision!.banner!, 2200)?.path}`
 						: getOptimizedImage(revision!.banner!, 'image_inline')?.path});`
 					: '',
 				'--background-opacity': showBanner ? 0.55 : 0.4,

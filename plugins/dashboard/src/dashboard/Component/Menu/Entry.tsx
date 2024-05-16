@@ -50,8 +50,6 @@ export default function Entry(props: Props) {
 		if (!keepAlive) ctx.onClose?.();
 	};
 
-	console.log(props.class);
-
 	return (
 		<li
 			class={merge(

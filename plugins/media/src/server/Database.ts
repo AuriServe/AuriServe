@@ -6,6 +6,7 @@ import { MediaType, MEDIA_TYPES, VARIANT_TYPES, VariantType, Media, MediaVariant
 const MEDIA_TBL = 'media_media';
 const VARIANTS_TBL = 'media_variants';
 const IMAGES_TBL = 'media_images';
+const LOST_TBL = 'media_lost'
 
 export function init() {
 	/**
@@ -72,6 +73,19 @@ export function init() {
 	).run();
 
 	database.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS media_images_vid ON ${IMAGES_TBL} (vid)`).run();
+
+	/**
+	 * Holds the paths, IDs, and types of lost media items,
+	 * which will be restored to their old ID if they are found again.
+	 */
+
+	database.prepare(
+		`CREATE TABLE IF NOT EXISTS ${LOST_TBL} (
+			mid INTEGER PRIMARY KEY,
+			path TEXT NOT NULL,
+			type TEXT NOT NULL
+		)`
+	).run();
 }
 
 init();

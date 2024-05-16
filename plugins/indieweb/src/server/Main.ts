@@ -1,20 +1,24 @@
-import path from 'path';
 import auriserve, { log } from 'auriserve';
 import { extendGQLSchema, gqlResolver } from 'dashboard';
-import { addElement, removeElement, addStylesheet, removeStylesheet } from 'elements';
+
 import * as Database from './Database';
 
-import * as Elements from '../page';
+import * as PostRegistry from './PostRegistry';
+import BlogPostType from './post_type/BlogPost';
 
-// import './Style.pcss';
-// const styles = path.join(__dirname, 'style.css');
-// addStylesheet(styles);
+import * as Elements from '../page';
+import { addElement, removeElement } from 'elements';
+import updatePost from './UpdatePost';
+
+// Add the indieweb elements to the event registry.
 
 Object.values(Elements).forEach((elem) => addElement(elem));
 auriserve.once('cleanup', () => {
 	Object.values(Elements).forEach((elem) => removeElement(elem.identifier));
 	// removeStylesheet(styles);
 });
+
+// Extend the GraphQL schema to have post endpoints.
 
 extendGQLSchema(`
 	type IndieWebPost {
@@ -36,13 +40,15 @@ extendGQLSchema(`
 	}
 
 	type IndieWebMutationAPI {
-		post(id: Int!, data: String!, tags: [String!], slug: String): Boolean!
+		update_post(id: Int!, update: [String!]): String!
+		create_post(type: String!, payload: String!): String!
 	}
 
 	extend type Query { indieweb: IndieWebQueryAPI! }
 	extend type Mutation { indieweb: IndieWebMutationAPI! }
-
 `);
+
+// Implement the GraphQL extensions.
 
 gqlResolver.indieweb = {
 	posts: () => {
@@ -62,17 +68,29 @@ gqlResolver.indieweb = {
 		if (!post) return null;
 		return { ...post, data: JSON.stringify(post.data) };
 	},
-	post: (ctx: any) => {
-		const post = Database.getPost(ctx.id);
-		if (!post) return false;
 
-		if (ctx.slug && ctx.slug !== post.slug) {
-			log.error('Cannot change slug of post at this time.');
-			return false;
-		}
+	// Either get a post, or mutate it, depending on the presence of `ctx.data`.
+	update_post: (ctx: any) => {
+		return '';
+		// console.log('HAS DATA?', !!ctx.data)
+		// if (!ctx.data) {
+		// 	const post = Database.getPost(ctx.id);
+		// 	if (!post) return false;
+		// 	return post;
+		// }
+		// else {
+		// 	console.log('UPDATING POST');
+		// 	return updatePost(ctx.id, ctx.data);
+		// }
+	},
 
-		const newPost = { ...post, data: JSON.parse(ctx.data), tags: ctx.tags ?? post.tags };
-		Database.updatePost(newPost);
-		return true;
+	create_post: (ctx: any) => {
+		const type = ctx.type;
+		console.log('create');
+		return '';
 	}
 }
+
+// Add the default post types to the post registry.
+
+PostRegistry.register(BlogPostType);

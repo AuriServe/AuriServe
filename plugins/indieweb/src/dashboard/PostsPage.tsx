@@ -1,13 +1,11 @@
-import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
+import { h } from 'preact';
 import { titleCase } from 'common';
-import { Fragment, FunctionalComponent, VNode, h } from 'preact';
-import { useAsyncEffect, useAsyncMemo, useStore } from 'vibin-hooks';
-import { Button, EventEmitter, Icon, Svg, Tooltip, executeQuery, tw, useData, useNavigate } from 'dashboard';
+import { useMemo, useRef } from 'preact/hooks';
+import { useAsyncEffect, useStore } from 'vibin-hooks';
+import { Button, EventEmitter, Icon, Menu, Svg, Tooltip, executeQuery, tw, useData, useNavigate } from 'dashboard';
 
-import BlogPostEditor from './BlogPostEditor';
-import UnknownPostEditor from './UnknownPostEditor';
-
-import { BlogPost, Post, Visibility } from '../common/Type';
+import * as Registry from './PostRegistry';
+import { Post, Visibility } from '../common/Type';
 import { PostEditorContext, PostEditorContextData, SaveReason, SaveState } from './PostEditorContext';
 
 const QUERY_POSTS = `indieweb { posts { id, slug, type, created, modified, visibility, data, tags, media } }`;
@@ -20,104 +18,96 @@ interface GraphData {
 	}
 }
 
-interface PostTypeMeta {
-	icon: string;
-	label?: string;
-	editor: FunctionalComponent<{}>,
-	create?: () => void;
-	content: (post: Post) => VNode;
-}
-
 const VISIBILITY_ICONS: Record<Visibility, string> = {
 	[Visibility.Private]: Icon.star,
 	[Visibility.Unlisted]: Icon.heart,
 	[Visibility.Public]: Icon.globe
 }
 
-const POST_TYPE_META: Record<string, PostTypeMeta> = {
-	blog: {
-		icon: Icon.book,
-		content: (post) => {
-			const blogData = post.data as BlogPost;
-			const revision = blogData.revisions[blogData.currentRevision];
-			const title = revision?.title ?? '(Untitled)';
-			const content = revision?.preview ?? '';
-			let openingTag = content.indexOf('<p>') + 3;
-			if (openingTag === 2) openingTag = 0;
-			let closingTag = content.indexOf('</p>');
-			if (closingTag === -1) closingTag = content.length;
-			const slice = content.substring(openingTag, closingTag);
-			return (
-				<div class={tw`mb-0.5`}>
-					<p class={tw`text-(sm gray-100) font-medium text-ellipsis overflow-hidden break-words truncate`}>
-						{title}
-					</p>
-					<p class={tw`text-([13px] gray-200) font-medium text-ellipsis overflow-hidden break-words truncate`}>
-						{slice}
-					</p>
-				</div>
-			);
-		},
-		editor: BlogPostEditor,
-		create: () => {}
-	},
-	note: {
-		icon: Icon.file,
-		content: (post) => {
-			const content = post.data.content as string;
-			let openingTag = content.indexOf('<p>') + 3;
-			if (openingTag === 2) openingTag = 0;
-			let closingTag = content.indexOf('</p>');
-			if (closingTag === -1) closingTag = content.length;
-			const slice = content.substring(openingTag, closingTag);
-			return <p class={tw`text-([13px] gray-200) font-medium leading-4
-				text-ellipsis overflow-hidden break-words line-clamp-3 mb-0.5`}
-				dangerouslySetInnerHTML={{ __html: slice }}/>;
-		},
-		editor: UnknownPostEditor,
-		create: () => {}
-	},
-	video: {
-		icon: Icon.film,
-		content: (post) => {
-			const title = post.data.title as string;
-			const content = post.data.content as string;
-			let openingTag = content.indexOf('<p>') + 3;
-			if (openingTag === 2) openingTag = 0;
-			let closingTag = content.indexOf('</p>');
-			if (closingTag === -1) closingTag = content.length;
-			const slice = content.substring(openingTag, closingTag);
-			return <p class={tw`text-sm text-ellipsis overflow-hidden break-words truncate`}>
-				<span class={tw`text-gray-100 font-medium`}>{title}</span>
-				{/* <span class={tw`text-gray-200`}>{' '}- {slice}</span> */}
-			</p>
-		},
-		editor: UnknownPostEditor,
-		create: () => {}
-	},
-	art: {
-		icon: Icon.image,
-		content: (post) => {
-			const content = post.data.title as string;
-			return <p class={tw`text-(sm gray-100) font-medium
-				text-ellipsis overflow-hidden break-words truncate`}>
-				{content}
-			</p>
-		},
-		editor: UnknownPostEditor,
-		create: () => {}
-	},
-	UNKNOWN: {
-		icon: Icon.close_circle,
-		content: (post) => {
-			return <p class={tw`text-(sm gray-200) font-medium italic
-				text-ellipsis overflow-hidden break-words truncate`}>
-				Post type '{post.type}' is unknown.
-			</p>
-		},
-		editor: UnknownPostEditor,
-	}
-}
+// const POST_TYPE_META: Record<string, PostTypeMeta> = {
+// 	blog: {
+// 		icon: Icon.book,
+// 		content: (post) => {
+// 			const blogData = post.data as BlogPost;
+// 			const revision = blogData.revisions[blogData.currentRevision];
+// 			const title = revision?.title ?? '(Untitled)';
+// 			const content = revision?.preview ?? '';
+// 			let openingTag = content.indexOf('<p>') + 3;
+// 			if (openingTag === 2) openingTag = 0;
+// 			let closingTag = content.indexOf('</p>');
+// 			if (closingTag === -1) closingTag = content.length;
+// 			const slice = content.substring(openingTag, closingTag);
+// 			return (
+// 				<div class={tw`mb-0.5`}>
+// 					<p class={tw`text-(sm gray-100) font-medium text-ellipsis overflow-hidden break-words truncate`}>
+// 						{title}
+// 					</p>
+// 					<p class={tw`text-([13px] gray-200) font-medium text-ellipsis overflow-hidden break-words truncate`}>
+// 						{slice}
+// 					</p>
+// 				</div>
+// 			);
+// 		},
+// 		editor: BlogPostEditor,
+// 		create: () => {}
+// 	},
+// 	note: {
+// 		icon: Icon.file,
+// 		content: (post) => {
+// 			const content = post.data.content as string;
+// 			let openingTag = content.indexOf('<p>') + 3;
+// 			if (openingTag === 2) openingTag = 0;
+// 			let closingTag = content.indexOf('</p>');
+// 			if (closingTag === -1) closingTag = content.length;
+// 			const slice = content.substring(openingTag, closingTag);
+// 			return <p class={tw`text-([13px] gray-200) font-medium leading-4
+// 				text-ellipsis overflow-hidden break-words line-clamp-3 mb-0.5`}
+// 				dangerouslySetInnerHTML={{ __html: slice }}/>;
+// 		},
+// 		editor: UnknownPostEditor,
+// 		create: () => {}
+// 	},
+// 	video: {
+// 		icon: Icon.film,
+// 		content: (post) => {
+// 			const title = post.data.title as string;
+// 			const content = post.data.content as string;
+// 			let openingTag = content.indexOf('<p>') + 3;
+// 			if (openingTag === 2) openingTag = 0;
+// 			let closingTag = content.indexOf('</p>');
+// 			if (closingTag === -1) closingTag = content.length;
+// 			const slice = content.substring(openingTag, closingTag);
+// 			return <p class={tw`text-sm text-ellipsis overflow-hidden break-words truncate`}>
+// 				<span class={tw`text-gray-100 font-medium`}>{title}</span>
+// 				{/* <span class={tw`text-gray-200`}>{' '}- {slice}</span> */}
+// 			</p>
+// 		},
+// 		editor: UnknownPostEditor,
+// 		create: () => {}
+// 	},
+// 	art: {
+// 		icon: Icon.image,
+// 		content: (post) => {
+// 			const content = post.data.title as string;
+// 			return <p class={tw`text-(sm gray-100) font-medium
+// 				text-ellipsis overflow-hidden break-words truncate`}>
+// 				{content}
+// 			</p>
+// 		},
+// 		editor: UnknownPostEditor,
+// 		create: () => {}
+// 	},
+// 	UNKNOWN: {
+// 		icon: Icon.close_circle,
+// 		content: (post) => {
+// 			return <p class={tw`text-(sm gray-200) font-medium italic
+// 				text-ellipsis overflow-hidden break-words truncate`}>
+// 				Post type '{post.type}' is unknown.
+// 			</p>
+// 		},
+// 		editor: UnknownPostEditor,
+// 	}
+// }
 
 const MIN_IDLE_TIME = 1;
 const MAX_SAVE_INTERAL = 10;
@@ -267,8 +257,11 @@ export default function PostsPage() {
 		post(newPost);
 	}, [ slug ]) as any as Post;
 
-	const meta = POST_TYPE_META[post()?.type ?? ''] ?? POST_TYPE_META.UNKNOWN;
+	const meta = Registry.get(post()?.type ?? '') ?? Registry.unknown;
 	const Editor = meta.editor;
+
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const createMenuOpen = useStore(false);
 
 	const sidebarOpen = useStore(true);
 
@@ -283,11 +276,28 @@ export default function PostsPage() {
 					<Button.Tertiary icon={Icon.arrow_circle_left} label='Back' size={9}
 						class={tw`absolute top-2.5 left-3 transition bg-gray-700/75`}
 						onClick={() => navigate('/')}/>
+					<Button.Tertiary ref={buttonRef} icon={Icon.add} label='Create New Post' size={9} iconOnly
+						class={tw`absolute top-2.5 right-3 transition bg-gray-700/75`}
+						onClick={() => createMenuOpen(true)}/>
+
+					<Menu active={createMenuOpen()} onClose={() => createMenuOpen(false)} position={{ top: 10, left: 300 }}>
+						{Registry.list().map(type => {
+							const meta = Registry.get(type)!;
+							if (meta.type === 'UNKNOWN') return null;
+							return (
+								<Menu.Entry
+									label={meta.label ?? titleCase(type)}
+									icon={meta.icon}
+									onClick={() => {}}
+								/>
+							);
+						})}
+					</Menu>
 				</div>
 
 				<div class={tw`grow overflow-(x-hidden y-auto) flex-(& col) pl-3 py-3 pr-0 gap-1`}>
 					{posts.map((p, i) => {
-						const meta = POST_TYPE_META[p.type] ?? POST_TYPE_META.UNKNOWN;
+						const meta = Registry.get(p.type) ?? Registry.unknown;
 						return (
 							<button class={tw`to-transparent flex flex-col p-2 pr-1 cursor-pointer transition rounded
 								opacity-(70 hocus:100) hocus:bg-gray-700/40 relative text-left
@@ -296,7 +306,7 @@ export default function PostsPage() {
 								)`}`}
 								onClick={() => navigate(`/posts/${p.slug}`)}
 							>
-								<div class={tw`mb-0.5 pb-px w-full overflow-hidden`}>{meta.content(p)}</div>
+								<div class={tw`mb-0.5 pb-px w-full overflow-hidden`}>{meta.preview(p)}</div>
 
 								<div class={tw`flex w-full justify-between`}>
 

@@ -1,7 +1,7 @@
 import type { DatabasePost } from '../server/Database';
 
-export type Post = Omit<DatabasePost, 'data'> & {
-	data: Record<string, any>;
+export type Post<T extends Record<string, any> = Record<string, any>> = Omit<DatabasePost, 'data'> & {
+	data: T;
 	media: number[];
 	tags: string[];
 }
@@ -42,6 +42,7 @@ export interface Comment {
 	content: string;
 }
 
+/** The type definition for a blog post revision, which are owned by blog posts. */
 export interface BlogPostRevision {
 	/** The revision's tag. */
 	tag?: string;
@@ -77,6 +78,7 @@ export interface BlogPostRevision {
 	media: number[];
 }
 
+/** The type definition for a blog post, which contains one or more `BlogPostRevision`s. */
 export interface BlogPost {
 	/** The post's navigation tree. */
 	navigation: { anchor: string; title: string; level: string; }[];
@@ -93,5 +95,3 @@ export interface BlogPost {
 	/** A reference to *all* media items that are used, for usage-tracking. */
 	media: number[];
 }
-
-// export interface VideoPost

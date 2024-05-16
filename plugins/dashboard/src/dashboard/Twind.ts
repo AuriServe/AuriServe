@@ -289,31 +289,21 @@ const config = Twind.defineConfig<Twind.TwindUserConfig<TailwindTheme, Twind.Pre
 const tw$ = Twind.twind(config, Twind.cssom());
 export const tw = Twind.tx.bind(tw$);
 
+const propertyStyle = document.createElement('style');
+propertyStyle.innerHTML = `
+	@property --icon-primary { syntax: '<color>'; }
+	@property --icon-secondary { syntax: '<color>'; }
+	@property --scroll-gutter { syntax: '<color>'; }
+	@property --scroll-bar { syntax: '<color>'; }
+	@property --scroll-bar-hover { syntax: '<color>'; }
+`;
+document.head.appendChild(propertyStyle);
+
 tw(Twind.css`
 	@font-face {
 		font-weight: 100 900;
 		font-family: 'Roboto';
 		src: url('/dashboard/res/font_roboto.ttf') format('truetype');
-	}
-
-	@property --icon-primary {
-		syntax: '<color>';
-	}
-
-	@property --icon-secondary {
-		syntax: '<color>';
-	}
-
-	@property --scroll-gutter {
-		syntax: '<color>';
-	}
-
-	@property --scroll-bar {
-		syntax: '<color>';
-	}
-
-	@property --scroll-bar-hover {
-		syntax: '<color>';
 	}
 
 	:root {

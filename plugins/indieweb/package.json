@@ -20,10 +20,12 @@
 		"@types/elements": "file:../elements",
 		"@types/elements-base": "file:../elements-base",
 		"@types/hydrated": "file:../hydrated",
+		"@types/jsdom": "^21.1.6",
 		"@types/media": "file:../media",
 		"@types/page-editor": "file:../page-editor",
 		"@types/pages": "file:../pages",
 		"@types/routes": "file:../routes",
+		"@types/sanitize-html": "^2.11.0",
 		"preact": "^10.10.2",
 		"webpack-gen": "file:../../webpack-gen"
 	},
@@ -34,6 +36,7 @@
 		"common": "file:../../common/build",
 		"emojilib": "^3.0.11",
 		"fast-average-color": "^9.4.0",
+		"jsdom": "^24.0.0",
 		"orderedmap": "^2.1.1",
 		"prosemirror-autocomplete": "^0.4.3",
 		"prosemirror-dropcursor": "^1.8.1",
@@ -46,7 +49,9 @@
 		"prosemirror-transform": "^1.8.0",
 		"prosemirror-view": "^1.32.7",
 		"prosemirror-virtual-cursor": "^0.4.2",
+		"sanitize-html": "^2.11.0",
 		"unicode-emoji-json": "^0.4.0",
-		"vibin-hooks": "^0.6.3"
+		"vibin-hooks": "^0.6.3",
+		"zod": "^3.22.4"
 	}
 }

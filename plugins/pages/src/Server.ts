@@ -53,6 +53,7 @@ async function loadAndWatchPages(pagesPath: string) {
 		return Array.prototype.concat(...files);
 	}
 
+
 	const pages = (await getPages(pagesPath)).map((page) => path.relative(pagesPath, page));
 	await Promise.all(pages.map((page) => loadPage(pagesPath, page)));
 
@@ -94,7 +95,7 @@ setTimeout(async () => {
 			.join('\n'));
 }, PLUGIN_TIMEOUT);
 
-router.get('/client.js', async (_, res) => {
+router.get('/client.js', async (_: any, res: any) => {
 	res.send(await fs.readFile(asyncClientBuildPath, 'utf8'));
 });
 

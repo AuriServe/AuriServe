@@ -142,6 +142,10 @@ export default class Plugins {
 				if (await this.plugins.get(plugin)?.enable()) this.loader.pluginEnabled(plugin);
 			}
 		}
+
+		for (const plugin of enableOrder) {
+			this.plugins.get(plugin)?.emit('loaded', {});
+		}
 	}
 
 	/** Gets the specified plugin. */

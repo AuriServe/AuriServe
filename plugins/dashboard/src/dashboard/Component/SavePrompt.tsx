@@ -94,9 +94,9 @@ export default function SavePrompt(props: Props) {
 									show={state === 'unsaved' || state === 'closed'}
 									class={tw`absolute inset-0 p-2`}
 									enter={tw`transition duration-150 delay-100`}
-									enterFrom={tw`opacity-0 scale-80`}
+									enterFrom={tw`opacity-0 scale-75`}
 									exit={tw`transition duration-150`}
-									exitTo={tw`opacity-0 scale-80`}
+									exitTo={tw`opacity-0 scale-75`}
 									as={Svg}
 									size={6}
 									src={Icon.info}
@@ -115,16 +115,14 @@ export default function SavePrompt(props: Props) {
 								/>
 								{/** Checkmark if saved. */}
 								<Transition
-									duration={250}
+									as={Svg}
 									show={state === 'saved'}
 									class={tw`absolute inset-0 p-1.5 icon-p-accent-300 icon-s-gray-500`}
 									enter={tw`transition duration-150 delay-100`}
-									enterFrom={tw`opacity-0 scale-80 translate-y-2`}
+									enterFrom={tw`opacity-0 scale-75 translate-y-2`}
 									exit={tw`transition duration-150`}
-									exitTo={tw`opacity-0 scale-80 translate-y-2`}
-									as={Svg}
-									size={7}
-									src={Icon.check}
+									exitTo={tw`opacity-0 scale-75 translate-y-2`}
+									size={7} src={Icon.check}
 								/>
 							</div>
 

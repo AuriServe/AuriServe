@@ -37,8 +37,6 @@ export default function BlogItem({ post, ctx, layout = 'landscape' }: Props) {
 	const revision = blogPost?.revisions?.[blogPost.currentRevision];
 	const preview = revision?.preview ?? '';
 
-	console.log(preview);
-
 	return (
 		<PostItem class={`blog ${layout}`} i={ctx?.i} style={{
 			'--image': revision.banner

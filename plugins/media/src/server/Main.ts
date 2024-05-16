@@ -6,6 +6,9 @@ import { MEDIA_DIR, VARIANT_DIR, reconcileMedia } from './Ingest';
 import { extendGQLSchema, gqlResolver } from 'dashboard';
 import * as Database from './Database';
 
+// import MediaManager from './MediaManager';
+// const manager = new MediaManager();
+
 const cleanupWatcher = reconcileMedia();
 
 const routes = [

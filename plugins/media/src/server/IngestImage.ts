@@ -22,7 +22,7 @@ const INLINE_MAX_SIZE = 64;
 const MAX_DB_SIZE = 1024 * 2;
 
 /** Sizes to generate for `image_scaled` images. */
-const SCALED_SIZES = [ 1920, 1440, 960, 480, 256, 128 ];
+const SCALED_SIZES = [ 2880, 1920, 1440, 960, 480, 256, 128 ];
 
 /**
  * Executes cwebp with the properties specified.

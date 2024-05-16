@@ -106,24 +106,24 @@ export type { Classes, UseClasses } from './Hooks';
 
 export { AppContext } from './Component/App';
 
-render(h(App, {}), document.getElementById('root')!);
+window.addEventListener('load', () => render(h(App, {}), document.getElementById('root')!));
 
-// try {
-// 	const DEBUG_SOCKET_ADDRESS = `ws://${location.hostname}:11148`;
-// 	const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
-// 	socket.addEventListener('open', () => {
-// 		socket.addEventListener('close', () => {
-// 			let attempts = 0;
-// 			(function awaitServerAndReload() {
-// 				const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
-// 				socket.addEventListener('open', () => window.location.reload());
-// 				socket.addEventListener('error', () => {
-// 					if (++attempts < 20) setTimeout(awaitServerAndReload, 200);
-// 				});
-// 			})();
-// 		});
-// 	});
-// }
-// catch (e) {
-// 	console.warn(e);
-// }
+try {
+	const DEBUG_SOCKET_ADDRESS = `ws://${location.hostname}:11148`;
+	const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
+	socket.addEventListener('open', () => {
+		socket.addEventListener('close', () => {
+			let attempts = 0;
+			(function awaitServerAndReload() {
+				const socket = new WebSocket(DEBUG_SOCKET_ADDRESS);
+				socket.addEventListener('open', () => setTimeout(() => window.location.reload(), 800));
+				socket.addEventListener('error', () => {
+					if (++attempts < 20) setTimeout(awaitServerAndReload, 100);
+				});
+			})();
+		});
+	});
+}
+catch (e) {
+	console.warn(e);
+}
