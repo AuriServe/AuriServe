@@ -1,6 +1,6 @@
-import { Page, Node } from 'pages';
+import { PageDocument, Node } from 'pages';
 import { h, createContext } from 'preact';
-import { tw, TransitionGroup } from 'dashboard';
+import { tw } from 'dashboard';
 import { useState, useMemo, useCallback, useContext, useEffect } from 'preact/hooks';
 import { setPath, traversePath, buildPath, splitPath, assert } from 'common';
 
@@ -9,7 +9,7 @@ import LayoutRenderer from './LayoutRenderer';
 import getBoundingBox, { BoundingBox } from './BoundingBox';
 
 export interface EditorContextData {
-	page: Page;
+	page: PageDocument;
 	hovered: string | null,
 	focused: string | null;
 
@@ -48,11 +48,11 @@ function padBounds(bounds: BoundingBox, padding: number) {
 
 interface Props {
 	layout: string;
-	initialPage: Page;
+	initialPage: PageDocument;
 }
 
 export default function Editor({ initialPage, layout }: Props) {
-	const [page, setPage] = useState<Page>(initialPage);
+	const [page, setPage] = useState<PageDocument>(initialPage);
 
 	const [placing, setPlacing] = useState<boolean>(false);
 	const [clipboard, setClipboard] = useState<string | null>(null);
@@ -256,11 +256,11 @@ export default function Editor({ initialPage, layout }: Props) {
 					onClose={() => setMenu(null)}
 					position={{ left: menu.x, top: menu.y }}
 				/>}
-				<TransitionGroup
+				{/* <TransitionGroup
 					duration={75}
 					enterFrom={tw`opacity-0 scale-[103%]`}
 					enter={tw`transition duration-75`}
-				>
+				> */}
 					{hovered && hovered !== focused && (
 						<div
 							key={hovered}
@@ -268,12 +268,12 @@ export default function Editor({ initialPage, layout }: Props) {
 							style={padBounds(getBoundingBox(document.getElementById(hovered)!), 4)}
 						/>
 					)}
-				</TransitionGroup>
-				<TransitionGroup
+				{/* </TransitionGroup> */}
+				{/* <TransitionGroup
 					duration={75}
 					enterFrom={tw`opacity-0 scale-[103%]`}
 					enter={tw`transition duration-75`}
-					invertExit>
+					invertExit> */}
 					{focused && (
 						<div
 							key={focused}
@@ -281,7 +281,7 @@ export default function Editor({ initialPage, layout }: Props) {
 							style={padBounds(getBoundingBox(document.getElementById(focused)!), 8)}
 						/>
 					)}
-				</TransitionGroup>
+				{/* </TransitionGroup> */}
 			</EditorContext.Provider>
 		</div>
 	);

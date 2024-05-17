@@ -63,16 +63,15 @@ function getLabelStyles(classes: UseClasses,
 
 	return merge(
 		tw`InputContainerLabel~(
-			absolute w-[calc(100%-1.5rem)] truncate transition-all interact-none
+			absolute w-[calc(100%-1.5rem)] truncate transition-all interact-none)
 			${populated === undefined
-				? `${posActive} input-inactive:(${posInactive})`
-				: `${populated ? posActive : posInactive}`
+				? `InputContainerLabelPopAuto~(${posActive} input-inactive:(${posInactive}))`
+				: `InputContainerLabelPopMan~(${populated ? posActive : posInactive})`
 			}
 			${active === undefined
-				? `${colInactive} ${disabled ? '' : `peer-focus-input:!(${colActive})`}`
-				: `${active ? colActive : `${colInactive} ${disabled ? '' : `peer-focus-input:!(${colActive})`}`}`
-			}
-		)`,
+				? `InputContainerLabelActiveAuto~(${colInactive} ${disabled ? '' : `peer-focus-input:!(${colActive})`})`
+				: `InputContainerLabelActiveMan~(${active ? colActive : `${colInactive} ${disabled ? '' : `peer-focus-input:!(${colActive})`}`})`
+			}`,
 		classes.get(`label`),
 		classes.get(`label.${invalid ? 'valid' : 'invalid'}`),
 		classes.get(`label.${active ? 'active' : 'inactive'}`),
@@ -116,8 +115,8 @@ export default forwardRef<HTMLDivElement, Props>(function InputContainer(props, 
 	return (
 		<div
 			ref={ref}
-			onfocusin={props.onFocusIn}
-			onfocusout={props.onFocusOut}
+			onFocusIn={props.onFocusIn}
+			onFocusOut={props.onFocusOut}
 			class={merge(tw`group InputContainer~(relative grid w-full h-max)`, classes.get(), classes.get('container'))}
 			style={props.style}>
 			{props.children}

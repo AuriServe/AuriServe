@@ -78,7 +78,6 @@ export default function MainPage() {
 
 	const shortcuts = [...getShortcuts().values()].reverse().slice(0, 3);
 
-
 	return (
 		<div>
 			<div class={tw`text-center flex-(& col-reverse) mb-12 mt-20`}>
@@ -138,7 +137,7 @@ export default function MainPage() {
 							))}
 						</div>
 					</TileLayout.Tile>
-					<TileLayout.Tile width={2} height={4}>
+					{/* <TileLayout.Tile width={2} height={4}>
 						<Card class={tw`h-full`}>
 							<Card.Body
 								class={tw`grid-(& rows-[repeat(auto-fit,3rem)] cols-[repeat(auto-fit,3rem)]) gap-1.5`}>
@@ -165,7 +164,7 @@ export default function MainPage() {
 						<Card class={tw`h-full`}>
 							<Tooltip position='right'>Hello</Tooltip>
 						</Card>
-					</TileLayout.Tile>
+					</TileLayout.Tile> */}
 				</TileLayout.Grid>
 			</TileLayout>
 		</div>

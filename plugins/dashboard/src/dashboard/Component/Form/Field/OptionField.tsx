@@ -135,10 +135,11 @@ export default function OptionField(props: Props) {
 						show={open}
 						duration={150}
 						invertExit
+						class={tw`z-50`}
 						enter={tw`transition duration-150`}
 						enterFrom={tw`opacity-0 ${props.above ? '' : '-'}translate-y-2`}>
 						<div
-							class={tw`absolute z-50 left-0
+							class={tw`absolute left-0
 								${props.above ? 'bottom-[calc(100%+0.5rem)]' : 'top-[calc(100%+0.5rem)]'}
 								w-full py-0.5 pr-0.5 rounded shadow-md bg-gray-700 grid`}>
 							<Listbox.Options

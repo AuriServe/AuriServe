@@ -1,4 +1,4 @@
-import { Document } from 'pages';
+import { Document, PageDocument } from 'pages';
 import { tw } from 'dashboard';
 import { Fragment, h } from 'preact';
 import { memo, createPortal } from 'preact/compat';
@@ -25,7 +25,7 @@ const HTMLRenderer = memo(function HTMLRenderer(props: { layout: string, setPoin
 	);
 }, (prev, next) => prev.layout === next.layout);
 
-const ElementRenderer = memo(function ElementRenderer(props: { page: Document, points: LayoutPoints }) {
+const ElementRenderer = memo(function ElementRenderer(props: { page: PageDocument, points: LayoutPoints }) {
 	console.error('Rendering Elements!');
 
 	return (
@@ -39,7 +39,7 @@ const ElementRenderer = memo(function ElementRenderer(props: { page: Document, p
 }, (prev, next) => prev.page === next.page && prev.points === next.points);
 
 interface Props {
-	page: Document;
+	page: PageDocument;
 	layout: string;
 }
 

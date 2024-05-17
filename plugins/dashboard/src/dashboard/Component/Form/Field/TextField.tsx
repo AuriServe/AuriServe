@@ -92,7 +92,8 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 
 	const handleChange = ({ target }: any) => {
 		const newValue: string | null = required ? target.value : target.value || null;
-		if (preRef.current) preRef.current.innerText = newValue ? `${newValue ?? ''}\n` : props.placeholder ?? '';
+		// if (preRef.current) preRef.current.innerText = newValue ? `${newValue ?? ''}\n` : props.placeholder ?? '';
+		// console.log(newValue)
 		const needsRerender = !!value.current !== !!newValue;
 		setValue(newValue);
 		validate(newValue);
@@ -116,7 +117,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 			labelId={id}
 			invalid={invalid}
 			class={classes}
-			populated={!!value.current || placeholderVisible}
+			// populated={!!value.current || placeholderVisible}
 			style={props.style}>
 			<Tag
 				ref={refs(autofillRef, ref, props.fieldRef, onRef)}
@@ -125,17 +126,17 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 				name={path}
 				disabled={disabled}
 				readonly={readonly}
-				placeholder={Tag === 'input' ? props.placeholder : ' '}
+				placeholder={Tag === 'input' ? props.placeholder || ' ' : ' '}
 				autocomplete={props.completion ?? 'off'}
 				aria-description={props.description}
 				class={merge(
 					tw`peer w-full px-1.5 !outline-none rounded
 						${(props.hideLabel || props.placeholderLabel) ? 'pt-[5px] pb-[3px]' : 'pt-5 pb-0'}
 						${(props.hideLabel || props.placeholderLabel) && invalid && '!text-red-300'}
-						${props.multiline && `absolute top-0 left-0 w-full h-full resize-none !transition-none
+						${props.multiline && `!absolute top-0 left-0 w-full h-full resize-none !transition-none
 							scroll-bar-(gray-500 hover-gray-400) --scroll-gutter[var(--input-background,rgb(var(--theme-gray-input)))]
 							focus:--scroll-gutter[var(--input-background-focus,rgb(var(--theme-gray-700)))]
-							not-focus:(!text-transparent !-webkit-text-fill-color[transparent])`}`,
+							not-focus:(!text-transparent !-webkit-text-fill-color[transparent]) placeholder:opacity-0`}`,
 					classes.get('input'),
 					classes.get('text'),
 					autofillClasses
@@ -164,7 +165,7 @@ function RawTextInput(props: Props & { type: 'text' | 'password' }) {
 					minHeight: props.minRows && `${props.minRows * 1.5 + 1}rem`,
 					maxHeight: props.maxRows && `${props.maxRows * 1.5 + 1}rem`,
 				}}>
-				{`${value.current || props.placeholder}\n`}
+				{`${value.current || props.placeholder || ''}\n`}
 			</pre>}
 		</InputContainer>
 	);

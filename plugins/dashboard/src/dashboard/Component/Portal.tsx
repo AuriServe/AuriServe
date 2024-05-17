@@ -46,6 +46,7 @@ export default forwardRef<HTMLElement, Props>(function Portal(
 	delete passedProps.to;
 	delete passedProps.as;
 	delete passedProps.wrapperClass;
+	delete passedProps.z;
 	passedProps.ref = ref;
 
 	return createPortal(<Tag {...passedProps} />, root);

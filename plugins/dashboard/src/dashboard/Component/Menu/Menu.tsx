@@ -39,10 +39,7 @@ export default function Menu(props: Props) {
 	const isTop = openFrom === 'topLeft' || openFrom === 'topRight';
 	const isLeft = openFrom === 'topLeft' || openFrom === 'bottomLeft';
 
-	const [position, setPosition] = useState<{ top: number; left: number }>({
-		top: 0,
-		left: 0,
-	});
+	const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
 	useLayoutEffect(() => {
 		if (!props.active) return;
@@ -83,9 +80,7 @@ export default function Menu(props: Props) {
 		return cloneElement(child, { class: mergedClasses });
 	});
 
-	const transformOrigin = `${isLeft ? '1rem' : 'calc(100% - 1rem)'} ${
-		isTop ? '1rem' : 'calc(100% - 1rem)'
-	}`;
+	const transformOrigin = `${isLeft ? '1rem' : 'calc(100% - 1rem)'} ${isTop ? '1rem' : 'calc(100% - 1rem)'}`;
 
 	const handleClose = (evt?: MouseEvent) => {
 		evt?.preventDefault();
@@ -104,7 +99,7 @@ export default function Menu(props: Props) {
 			enterFrom={tw`scale-95 opacity-0`}
 			invertExit
 			style={{ transformOrigin, ...position }}
-			class={merge(tw`Menu~(absolute isolate w-auto h-auto grid z-50)`, classes.get())}>
+			class={merge(tw`Menu~(absolute isolate w-auto h-auto grid z-50)`, 'MENU', classes.get())}>
 			<div
 				class={ctx.root
 					? tw`fixed inset-0 -z-10 w-full h-full`

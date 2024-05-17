@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { Fragment, h } from 'preact';
 import { usePrevious } from 'vibin-hooks';
 import { useMemo, useRef, useState } from 'preact/hooks';
 
@@ -90,44 +90,39 @@ export default function SavePrompt(props: Props) {
 								${state === 'unsaved' || state === 'closed' ? 'rounded' : 'rounded-[50%]'}`}>
 								{/** Info icon if unsaved. */}
 								<Transition
-									duration={250}
 									show={state === 'unsaved' || state === 'closed'}
 									class={tw`absolute inset-0 p-2`}
 									enter={tw`transition duration-150 delay-100`}
 									enterFrom={tw`opacity-0 scale-75`}
 									exit={tw`transition duration-150`}
-									exitTo={tw`opacity-0 scale-75`}
-									as={Svg}
-									size={6}
-									src={Icon.info}
-								/>
+									exitTo={tw`opacity-0 scale-75`}>
+									<Svg size={6} src={Icon.info}/>
+								</Transition>
 								{/** Loading spinner if saving. */}
 								<Transition
-									duration={400}
 									show={state === 'saving'}
 									class={tw`absolute inset-1 !animate-none`}
 									enter={tw`transition duration-300 delay-100`}
 									enterFrom={tw`opacity-0 scale-0`}
 									exit={tw`transition duration-150`}
-									exitTo={tw`opacity-0 scale-0`}
-									as={Spinner}
-									size={8}
-								/>
+									exitTo={tw`opacity-0 scale-0`}>
+									<Spinner size={8}/>
+								</Transition>
 								{/** Checkmark if saved. */}
 								<Transition
-									as={Svg}
 									show={state === 'saved'}
 									class={tw`absolute inset-0 p-1.5 icon-p-accent-300 icon-s-gray-500`}
 									enter={tw`transition duration-150 delay-100`}
 									enterFrom={tw`opacity-0 scale-75 translate-y-2`}
 									exit={tw`transition duration-150`}
-									exitTo={tw`opacity-0 scale-75 translate-y-2`}
-									size={7} src={Icon.check}
-								/>
+									exitTo={tw`opacity-0 scale-75 translate-y-2`}>
+									<Svg size={7} src={Icon.check}/>
+								</Transition>
 							</div>
 
 							{/** Text message. */}
 							<div
+								key='msg'
 								class={tw`relative transition-all duration-300
 									${state === 'unsaved' || state === 'closed' ? 'w-64' : 'w-18'}`}>
 								{/** Message if unsaved. */}
