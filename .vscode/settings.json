@@ -51,4 +51,7 @@
   "Lua.workspace.library": [
     "./.vscode/figura"
   ],
+  "cSpell.words": [
+    "nexe"
+  ],
 }

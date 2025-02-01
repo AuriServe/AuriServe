@@ -45,8 +45,8 @@ try {
 	const express = Express();
 	express.use(compression());
 	express.use(cookieParser());
-	express.use(Express.urlencoded({ extended: true }) as any);
-	express.use(Express.json() as any);
+	express.use(Express.urlencoded({ extended: true, limit: "10mb" }) as any);
+	express.use(Express.json({ limit: "10mb" }) as any);
 	express.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
 	express.set('query parser', (queryString: string): Record<string, string> => {

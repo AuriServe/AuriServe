@@ -30,7 +30,7 @@
 			"src"
 		],
 		"ext": ".ts,.js,.tsx,.json,.yaml",
-		"exec": "eslint src/**/*.ts & ts-node --project tsconfig.json src/Main.ts",
+		"exec": "ts-node --project tsconfig.json src/Main.ts",
 		"quiet": true
 	},
 	"bugs": {
@@ -49,9 +49,7 @@
 		"@types/minimist": "^1.2.2",
 		"@types/prompt": "^1.1.2",
 		"@types/websocket": "^1.0.5",
-		"eslint": "^8.7.0",
-		"eslint-plugin-jsdoc": "^37.7.0",
-		"nexe": "^4.0.0-rc.1",
+		"nexe": "^4.0.0-rc.6",
 		"nodemon": "^2.0.15"
 	},
 	"dependencies": {
